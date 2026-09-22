@@ -1,0 +1,10 @@
+.next
+node_modules
+coverage
+playwright-report
+test-results
+package-lock.json
+supabase/.temp
+supabase/migrations
+src/server/db/database.types.ts
+public

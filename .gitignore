@@ -1,0 +1,36 @@
+# dependencias
+node_modules/
+
+# build
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# tests
+coverage/
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# secretos: NUNCA se versionan. Solo .env.example, con las claves vacías.
+.env
+.env.*
+!.env.example
+
+# supabase local
+supabase/.temp/
+supabase/.branches/
+
+# vercel
+.vercel
+
+# sistema
+.DS_Store
+Thumbs.db
+*.log
+
+.cache/

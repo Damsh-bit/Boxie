@@ -1,0 +1,13 @@
+# Todo el repo en LF: el build corre en Linux (Vercel, CI) y el equipo usa
+# distintos sistemas operativos.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.mp4 binary
+*.webm binary
+*.woff2 binary

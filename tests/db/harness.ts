@@ -63,7 +63,10 @@ export async function createTestDb(): Promise<TestDb> {
   }
 }
 
-/** Datos mínimos: configuración, una temática publicada con su versión y un admin. */
+/**
+ * Datos mínimos para los tests, además del catálogo inicial que cargan las
+ * migraciones: un admin, una temática publicada propia, un borrador y un cupón.
+ */
 export async function seedBasics(db: TestDb) {
   const [admin] = await db.query<{ id: string }>(
     `insert into auth.users (email) values ('admin@boxie.test') returning id`,
@@ -74,7 +77,7 @@ export async function seedBasics(db: TestDb) {
   await db.query(`insert into public.admin_users (user_id) values ($1)`, [admin!.id])
 
   const [theme] = await db.query<{ id: string }>(
-    `insert into public.themes (slug, name, category) values ('pareja', 'Pareja', 'Amor') returning id`,
+    `insert into public.themes (slug, name, category) values ('test-tema', 'Tema de prueba', 'Amor') returning id`,
   )
   const [version] = await db.query<{ id: string }>(
     `insert into public.theme_versions (theme_id, version, config) values ($1, 1, '{"slides":[]}') returning id`,
@@ -90,9 +93,9 @@ export async function seedBasics(db: TestDb) {
   )
 
   const [coupon] = await db.query<{ id: string }>(
-    `insert into public.coupons (code, kind, value) values ('BOXIE10', 'percent', 10) returning id`,
+    `insert into public.coupons (code, kind, value) values ('TEST10', 'percent', 10) returning id`,
   )
-  await db.query(`insert into public.settings (base_price_cents, gift_lifetime_days) values (1500000, 60)`)
+  await db.query(`update public.settings set base_price_cents = 1500000, gift_lifetime_days = 60`)
 
   return {
     adminId: admin!.id,
@@ -118,7 +121,7 @@ export async function createOrder(
        coupon_id, coupon_code, buyer_name, buyer_email, payment_provider)
      values ($1, $2, $3, $4, $5, $6, $7, 'Leandro Pérez', 'leandro@example.com', 'mercadopago')
      returning id`,
-    [seed.themeId, seed.versionId, list, discount, list - discount, opts.couponId ?? null, opts.couponId ? 'BOXIE10' : null],
+    [seed.themeId, seed.versionId, list, discount, list - discount, opts.couponId ?? null, opts.couponId ? 'TEST10' : null],
   )
   return order!.id
 }

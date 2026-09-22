@@ -50,10 +50,10 @@ describe('analítica del panel', () => {
     await paidOrder('b2', { amount: 1350000, discount: 150000, couponId: seed.couponId })
 
     const themes = await asAdmin(() => db.query(`select theme_name, orders_paid, revenue_cents from public.admin_theme_ranking(${range})`))
-    expect(themes).toEqual([{ theme_name: 'Pareja', orders_paid: 2, revenue_cents: 2850000 }])
+    expect(themes).toEqual([{ theme_name: 'Tema de prueba', orders_paid: 2, revenue_cents: 2850000 }])
 
     const coupons = await asAdmin(() => db.query(`select code, uses, discount_cents from public.admin_coupon_ranking(${range})`))
-    expect(coupons).toEqual([{ code: 'BOXIE10', uses: 1, discount_cents: 150000 }])
+    expect(coupons).toEqual([{ code: 'TEST10', uses: 1, discount_cents: 150000 }])
   })
 
   it('ventas por día devuelve todos los días del período, con ceros', async () => {

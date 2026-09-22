@@ -1,0 +1,126 @@
+{
+  "slug": "cumpleanos",
+  "name": "Cumpleaños",
+  "category": "Cumpleaños",
+  "description": "¡Celebrá su día de manera especial con un detalle inolvidable!",
+  "sortOrder": 2,
+  "listing": {
+    "title": "Boxie de",
+    "highlight": "Cumpleaños",
+    "subtitle": "¡Hacé que su día sea inolvidable a la distancia!",
+    "cardDescription": "¡Celebra su día de manera especial con un detalle inolvidable!",
+    "cardColor": "#73CFEE",
+    "cardTone": "dark",
+    "images": [
+      "/themes/cumpleanos.jpg",
+      "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?q=80&w=800&auto=format&fit=crop"
+    ],
+    "features": [
+      "Portada de Festejo con toda la onda.",
+      "Recorrido por sus mejores momentos.",
+      "Tus deseos para este nuevo año.",
+      "Música de fiesta para celebrar.",
+      "Espacio final para tu gift card o sorpresa."
+    ],
+    "guide": {
+      "emoji": "🎂",
+      "title": "Para Festejar",
+      "text": "¡La fiesta digital! Perfecta para saludos grupales, videos de amigos y recuerdos de cumpleaños anteriores."
+    }
+  },
+  "config": {
+    "slides": [
+      { "key": "intro", "kind": "intro.logo" },
+      { "key": "portada", "kind": "cover.birthday" },
+      {
+        "key": "bienvenida",
+        "kind": "story.intro",
+        "props": {
+          "tag": "BIRTHDAY EDITION",
+          "title": "CELEBRACIÓN",
+          "message": "Te merecés un día lleno de magia."
+        }
+      },
+      { "key": "dedicatoria", "kind": "story.dedication" },
+      { "key": "cancion", "kind": "media.song" },
+      { "key": "playlists", "kind": "media.playlists" },
+      { "key": "game-start", "kind": "connector.gamer" },
+      { "key": "trivia", "kind": "game.trivia" },
+      { "key": "cine", "kind": "connector.cinema" },
+      { "key": "streaming", "kind": "media.streaming" },
+      { "key": "jackpot", "kind": "game.jackpot" },
+      {
+        "key": "cuponera",
+        "kind": "game.coupons",
+        "props": {
+          "suggestions": [
+            "Torta Favorita",
+            "Regalo Sorpresa",
+            "Brindis Especial",
+            "Organizo la Previa",
+            "Fotógrafo Personal",
+            "Día Libre",
+            "Bajón Post-Fiesta",
+            "Deseo de Cumple"
+          ]
+        }
+      },
+      {
+        "key": "revista",
+        "kind": "story.editorial",
+        "props": {
+          "title": {
+            "t": "rich",
+            "v": [
+              { "text": "¡Feliz" },
+              { "br": true },
+              { "text": "Vuelta al", "mark": "accent" },
+              { "br": true },
+              { "text": "Sol! 🎂" }
+            ]
+          },
+          "body1": {
+            "t": "rich",
+            "v": [
+              { "text": "Hoy el mundo brilla un poco más porque es tu día. " },
+              { "text": "Celebro tu existencia", "mark": "highlight" },
+              { "text": ", tu energía y todo lo que contagias a los que te rodean." }
+            ]
+          },
+          "body2": {
+            "t": "rich",
+            "v": [
+              {
+                "text": "Deseo que este nuevo año te traiga aventuras increíbles, salud de hierro y momentos inolvidables. Gracias por dejarme ser parte de tu historia un año más."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "key": "razones",
+        "kind": "story.reasons",
+        "props": {
+          "suggestions": [
+            "Porque iluminás todo.",
+            "Por tu energía única.",
+            "Porque te merecés todo lo bueno.",
+            "Por ser un luchador/a.",
+            "Por tu corazón enorme.",
+            "Porque inspirás a los demás.",
+            "Por cómo festejás la vida.",
+            "Porque sos inolvidable.",
+            "Por ser auténtico/a.",
+            "¡Porque es tu día!"
+          ]
+        }
+      },
+      { "key": "gratitud", "kind": "reflect.gratitude" },
+      { "key": "diario", "kind": "reflect.journal" },
+      { "key": "fortuna", "kind": "game.fortune" },
+      { "key": "anecdota", "kind": "story.anecdote" },
+      { "key": "repaso", "kind": "outro.summary" },
+      { "key": "gracias", "kind": "outro.thanks" }
+    ]
+  }
+}

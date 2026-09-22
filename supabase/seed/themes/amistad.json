@@ -1,0 +1,127 @@
+{
+  "slug": "amistad",
+  "name": "Amistad",
+  "category": "Amistad",
+  "description": "Demostrale lo mucho que lo valorás con un regalo hecho para él o ella.",
+  "sortOrder": 3,
+  "listing": {
+    "title": "Boxie para",
+    "highlight": "Amistad",
+    "subtitle": "Para esa persona que está en todas.",
+    "cardDescription": "Demuéstrale lo mucho que lo valoras con un regalo hecho para él/ella.",
+    "cardColor": "#C893D7",
+    "cardTone": "dark",
+    "images": [
+      "/themes/amistad.jpg",
+      "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop"
+    ],
+    "features": [
+      "Portada con diseño único para ustedes.",
+      "Las mejores selfies y recuerdos juntos.",
+      "Mensaje especial para agradecer la amistad.",
+      "Ese temazo que cantan a los gritos.",
+      "Espacio final para una sorpresa virtual."
+    ],
+    "guide": {
+      "emoji": "👯‍♀️",
+      "title": "Para Agradecer",
+      "text": "Para ese amigo/a de fierro. Un espacio para recordar viajes, anécdotas y risas compartidas."
+    }
+  },
+  "config": {
+    "slides": [
+      { "key": "intro", "kind": "intro.logo" },
+      { "key": "portada", "kind": "cover.friends" },
+      {
+        "key": "bienvenida",
+        "kind": "story.intro",
+        "props": {
+          "tag": "FRIEND EDITION",
+          "title": "CONEXIÓN TOTAL",
+          "message": "Risas, locuras y momentos únicos."
+        }
+      },
+      { "key": "dedicatoria", "kind": "story.dedication" },
+      { "key": "cancion", "kind": "media.song" },
+      { "key": "playlists", "kind": "media.playlists" },
+      { "key": "game-start", "kind": "connector.gamer" },
+      { "key": "trivia", "kind": "game.trivia" },
+      { "key": "cine", "kind": "connector.cinema" },
+      { "key": "streaming", "kind": "media.streaming" },
+      { "key": "jackpot", "kind": "game.jackpot" },
+      {
+        "key": "cuponera",
+        "kind": "game.coupons",
+        "props": {
+          "suggestions": [
+            "Birras & Charla",
+            "Noche de Pizza",
+            "Chofer Designado",
+            "Sesión de Terapia",
+            "Salida a Bailar",
+            "Tarde de Gaming",
+            "Secreto Guardado",
+            "Favor Especial"
+          ]
+        }
+      },
+      {
+        "key": "revista",
+        "kind": "story.editorial",
+        "props": {
+          "title": {
+            "t": "rich",
+            "v": [
+              { "text": "Más que" },
+              { "br": true },
+              { "text": "amistad", "mark": "accent" },
+              { "text": "," },
+              { "br": true },
+              { "text": "hermandad." }
+            ]
+          },
+          "body1": {
+            "t": "rich",
+            "v": [
+              { "text": "Dicen que los amigos son la familia que uno elige, y yo te elegiría mil veces. " },
+              { "text": "Sos mi partner in crime", "mark": "highlight" },
+              { "text": ", la persona que sabe todos mis secretos y aún así se queda." }
+            ]
+          },
+          "body2": {
+            "t": "rich",
+            "v": [
+              {
+                "text": "Gracias por estar en las buenas, en las malas y en las pésimas. Por las risas hasta que duele la panza y por los consejos (aunque a veces no los siga)."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "key": "razones",
+        "kind": "story.reasons",
+        "props": {
+          "suggestions": [
+            "Porque siempre estás ahí.",
+            "Por tu honestidad brutal.",
+            "Porque nadie me hace reír como vos.",
+            "Por todas nuestras anécdotas.",
+            "Porque me bancás en todas.",
+            "Por ser mi psicólog@ gratis.",
+            "Porque con vos todo es un plan.",
+            "Porque entendés mis memes.",
+            "Por no juzgarme (tanto).",
+            "Porque sos de fierro."
+          ]
+        }
+      },
+      { "key": "gratitud", "kind": "reflect.gratitude" },
+      { "key": "diario", "kind": "reflect.journal" },
+      { "key": "fortuna", "kind": "game.fortune" },
+      { "key": "anecdota", "kind": "story.anecdote" },
+      { "key": "repaso", "kind": "outro.summary" },
+      { "key": "gracias", "kind": "outro.thanks" }
+    ]
+  }
+}

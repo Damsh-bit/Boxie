@@ -1,0 +1,55 @@
+{
+  "slug": "pareja",
+  "name": "Pareja",
+  "category": "Amor",
+  "description": "Un regalo lleno de amor para celebrar su conexión única.",
+  "sortOrder": 1,
+  "listing": {
+    "title": "Boxie para",
+    "highlight": "Pareja",
+    "subtitle": "El regalo digital perfecto para celebrar su amor.",
+    "cardDescription": "Un regalo lleno de amor para celebrar su conexión única.",
+    "cardColor": "#F44E63",
+    "cardTone": "light",
+    "images": [
+      "/themes/pareja.jpg",
+      "https://images.unsplash.com/photo-1529619768328-e37af76c6fe5?q=80&w=800&auto=format&fit=crop"
+    ],
+    "features": [
+      "Portada personalizada con sus nombres.",
+      "Carrusel de 3 fotos para revivir momentos.",
+      "Carta Dedicatoria para escribir lo que sentís.",
+      "Su canción favorita sonando de fondo.",
+      "Espacio final para agregar un regalo sorpresa."
+    ],
+    "guide": {
+      "emoji": "💘",
+      "title": "Para Enamorar",
+      "text": "Ideal para aniversarios, mesesarios o simplemente decir \"Te amo\". Incluye secciones románticas y línea de tiempo."
+    }
+  },
+  "config": {
+    "slides": [
+      { "key": "intro", "kind": "intro.logo" },
+      { "key": "portada", "kind": "cover.recipient" },
+      { "key": "bienvenida", "kind": "story.intro" },
+      { "key": "dedicatoria", "kind": "story.dedication" },
+      { "key": "cancion", "kind": "media.song" },
+      { "key": "playlists", "kind": "media.playlists" },
+      { "key": "game-start", "kind": "connector.gamer" },
+      { "key": "trivia", "kind": "game.trivia" },
+      { "key": "cine", "kind": "connector.cinema" },
+      { "key": "streaming", "kind": "media.streaming" },
+      { "key": "jackpot", "kind": "game.jackpot" },
+      { "key": "cuponera", "kind": "game.coupons" },
+      { "key": "revista", "kind": "story.editorial" },
+      { "key": "razones", "kind": "story.reasons" },
+      { "key": "gratitud", "kind": "reflect.gratitude" },
+      { "key": "diario", "kind": "reflect.journal" },
+      { "key": "fortuna", "kind": "game.fortune" },
+      { "key": "anecdota", "kind": "story.anecdote" },
+      { "key": "repaso", "kind": "outro.summary" },
+      { "key": "gracias", "kind": "outro.thanks" }
+    ]
+  }
+}

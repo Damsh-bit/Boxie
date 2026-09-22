@@ -24,11 +24,13 @@ const asAdmin = <T>(fn: () => Promise<T>) => db.as('authenticated', seed.adminId
 describe('RLS · público (clave anon)', () => {
   it('ve solo las temáticas publicadas', async () => {
     const themes = await asAnon(() => db.query<{ slug: string }>(`select slug from public.themes order by slug`))
-    expect(themes.map((t) => t.slug)).toEqual(['pareja'])
+    expect(themes.map((t) => t.slug)).toEqual(['amistad', 'cumpleanos', 'pareja', 'test-tema'])
   })
 
   it('ve las versiones de temáticas publicadas y la configuración', async () => {
-    expect(await asAnon(() => db.query(`select id from public.theme_versions`))).toHaveLength(1)
+    const versions = await asAnon(() => db.query<{ theme_id: string }>(`select theme_id from public.theme_versions`))
+    expect(versions).toHaveLength(4)
+    expect(versions.some((v) => v.theme_id === seed.draftThemeId)).toBe(false)
     expect(await asAnon(() => db.query(`select base_price_cents from public.settings`))).toHaveLength(1)
   })
 
@@ -81,7 +83,7 @@ describe('RLS · usuario autenticado que no es admin', () => {
     expect(await asUser(() => db.query(`select * from public.orders`))).toEqual([])
     expect(await asUser(() => db.query(`select * from public.coupons`))).toEqual([])
     expect(await asUser(() => db.query(`select id from public.boxies`))).toEqual([])
-    expect(await asUser(() => db.query<{ slug: string }>(`select slug from public.themes`))).toHaveLength(1)
+    expect(await asUser(() => db.query<{ slug: string }>(`select slug from public.themes`))).toHaveLength(4)
   })
 
   it('no puede usar las funciones del panel', async () => {
@@ -103,15 +105,15 @@ describe('RLS · usuario autenticado que no es admin', () => {
 describe('RLS · admin', () => {
   it('ve borradores, órdenes y cupones', async () => {
     const orderId = await createOrder(db, seed)
-    expect(await asAdmin(() => db.query(`select slug from public.themes`))).toHaveLength(2)
+    expect(await asAdmin(() => db.query(`select slug from public.themes`))).toHaveLength(5)
     expect(await asAdmin(() => db.query(`select id from public.orders where id = $1`, [orderId]))).toHaveLength(1)
-    expect(await asAdmin(() => db.query(`select code from public.coupons`))).toHaveLength(1)
+    expect(await asAdmin(() => db.query(`select code from public.coupons`))).toHaveLength(6)
   })
 
   it('gestiona cupones', async () => {
-    await asAdmin(() => db.query(`insert into public.coupons (code, kind, value, max_uses) values ('PROMO35', 'percent', 35, 100)`))
+    await asAdmin(() => db.query(`insert into public.coupons (code, kind, value, max_uses) values ('NUEVO35', 'percent', 35, 100)`))
     const rows = await asAdmin(() =>
-      db.query<{ active: boolean }>(`update public.coupons set active = false where code = 'PROMO35' returning active`),
+      db.query<{ active: boolean }>(`update public.coupons set active = false where code = 'NUEVO35' returning active`),
     )
     expect(rows).toEqual([{ active: false }])
   })
@@ -214,5 +216,28 @@ describe('Storage', () => {
     await db.query(`insert into storage.objects (bucket_id, name) values ('boxie-media', 'b/1.webp')`)
     expect(await asAnon(() => db.query(`select * from storage.objects`))).toEqual([])
     expect(await asUser(() => db.query(`select * from storage.objects`))).toEqual([])
+  })
+})
+
+describe('Catálogo inicial', () => {
+  it('carga las tres temáticas del prototipo como datos, publicadas y versionadas', async () => {
+    const rows = await db.query<{ slug: string; status: string; version: number; slides: number }>(
+      `select t.slug, t.status, v.version, jsonb_array_length(v.config -> 'slides') as slides
+         from public.themes t join public.theme_versions v on v.id = t.current_version_id
+        where t.slug in ('pareja', 'amistad', 'cumpleanos') order by t.sort_order`,
+    )
+    expect(rows).toEqual([
+      { slug: 'pareja', status: 'published', version: 1, slides: 20 },
+      { slug: 'cumpleanos', status: 'published', version: 1, slides: 20 },
+      { slug: 'amistad', status: 'published', version: 1, slides: 20 },
+    ])
+  })
+
+  it('LOQUIEROYA25 descuenta 25% y es la oferta de la ficha de producto', async () => {
+    const [row] = await db.query<{ value: number; offer: boolean }>(
+      `select c.value, s.offer_coupon_id = c.id as offer
+         from public.coupons c cross join public.settings s where c.code = 'LOQUIEROYA25'`,
+    )
+    expect(row).toEqual({ value: 25, offer: true })
   })
 })

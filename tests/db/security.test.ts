@@ -1,5 +1,12 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { applyPayment, createOrder, createTestDb, seedBasics, type Seed, type TestDb } from './harness'
+import {
+  applyPayment,
+  createOrder,
+  createTestDb,
+  seedBasics,
+  type Seed,
+  type TestDb,
+} from './harness'
 
 let db: TestDb
 let seed: Seed
@@ -23,26 +30,39 @@ const asAdmin = <T>(fn: () => Promise<T>) => db.as('authenticated', seed.adminId
 
 describe('RLS · público (clave anon)', () => {
   it('ve solo las temáticas publicadas', async () => {
-    const themes = await asAnon(() => db.query<{ slug: string }>(`select slug from public.themes order by slug`))
+    const themes = await asAnon(() =>
+      db.query<{ slug: string }>(`select slug from public.themes order by slug`),
+    )
     expect(themes.map((t) => t.slug)).toEqual(['amistad', 'cumpleanos', 'pareja', 'test-tema'])
   })
 
   it('ve las versiones de temáticas publicadas y la configuración', async () => {
-    const versions = await asAnon(() => db.query<{ theme_id: string }>(`select theme_id from public.theme_versions`))
+    const versions = await asAnon(() =>
+      db.query<{ theme_id: string }>(`select theme_id from public.theme_versions`),
+    )
     expect(versions).toHaveLength(4)
     expect(versions.some((v) => v.theme_id === seed.draftThemeId)).toBe(false)
-    expect(await asAnon(() => db.query(`select base_price_cents from public.settings`))).toHaveLength(1)
+    expect(
+      await asAnon(() => db.query(`select base_price_cents from public.settings`)),
+    ).toHaveLength(1)
   })
 
-  it.each(['coupons', 'orders', 'payment_events', 'boxie_content', 'media_assets', 'affiliates', 'admin_users'])(
-    'no ve nada de %s',
-    async (table) => {
-      expect(await asAnon(() => db.query(`select * from public.${table}`))).toEqual([])
-    },
-  )
+  it.each([
+    'coupons',
+    'orders',
+    'payment_events',
+    'boxie_content',
+    'media_assets',
+    'affiliates',
+    'admin_users',
+  ])('no ve nada de %s', async (table) => {
+    expect(await asAnon(() => db.query(`select * from public.${table}`))).toEqual([])
+  })
 
   it('no puede leer Boxies (ni siquiera los tokens hasheados)', async () => {
-    await expect(asAnon(() => db.query(`select id from public.boxies`))).rejects.toThrow(/permission denied/)
+    await expect(asAnon(() => db.query(`select id from public.boxies`))).rejects.toThrow(
+      /permission denied/,
+    )
   })
 
   it('no puede crear órdenes ni cupones', async () => {
@@ -56,12 +76,18 @@ describe('RLS · público (clave anon)', () => {
       ),
     ).rejects.toThrow(/row-level security/)
     await expect(
-      asAnon(() => db.query(`insert into public.coupons (code, kind, value) values ('GRATIS', 'percent', 100)`)),
+      asAnon(() =>
+        db.query(
+          `insert into public.coupons (code, kind, value) values ('GRATIS', 'percent', 100)`,
+        ),
+      ),
     ).rejects.toThrow(/row-level security/)
   })
 
   it('no puede cambiar el precio base', async () => {
-    const rows = await asAnon(() => db.query(`update public.settings set base_price_cents = 1 returning *`))
+    const rows = await asAnon(() =>
+      db.query(`update public.settings set base_price_cents = 1 returning *`),
+    )
     expect(rows).toEqual([])
   })
 
@@ -69,12 +95,12 @@ describe('RLS · público (clave anon)', () => {
     ['generate_boxie_code()', []],
     ['lock_boxie($1)', ['00000000-0000-4000-8000-000000000000']],
     ['register_gift_open($1)', ['00000000-0000-4000-8000-000000000000']],
-    ['admin_kpis(now() - interval \'1 day\', now())', []],
-    ['publish_theme($1, \'{}\')', ['00000000-0000-4000-8000-000000000000']],
+    ["admin_kpis(now() - interval '1 day', now())", []],
+    ["publish_theme($1, '{}')", ['00000000-0000-4000-8000-000000000000']],
   ] as const)('no puede ejecutar %s', async (call, params) => {
-    await expect(asAnon(() => db.query(`select * from public.${call}`, [...params]))).rejects.toThrow(
-      /permission denied/,
-    )
+    await expect(
+      asAnon(() => db.query(`select * from public.${call}`, [...params])),
+    ).rejects.toThrow(/permission denied/)
   })
 })
 
@@ -83,7 +109,9 @@ describe('RLS · usuario autenticado que no es admin', () => {
     expect(await asUser(() => db.query(`select * from public.orders`))).toEqual([])
     expect(await asUser(() => db.query(`select * from public.coupons`))).toEqual([])
     expect(await asUser(() => db.query(`select id from public.boxies`))).toEqual([])
-    expect(await asUser(() => db.query<{ slug: string }>(`select slug from public.themes`))).toHaveLength(4)
+    expect(
+      await asUser(() => db.query<{ slug: string }>(`select slug from public.themes`)),
+    ).toHaveLength(4)
   })
 
   it('no puede usar las funciones del panel', async () => {
@@ -91,7 +119,9 @@ describe('RLS · usuario autenticado que no es admin', () => {
       asUser(() => db.query(`select * from public.admin_kpis(now() - interval '1 day', now())`)),
     ).rejects.toThrow(/forbidden/)
     await expect(
-      asUser(() => db.query(`select * from public.publish_theme($1, '{"slides":[]}')`, [seed.themeId])),
+      asUser(() =>
+        db.query(`select * from public.publish_theme($1, '{"slides":[]}')`, [seed.themeId]),
+      ),
     ).rejects.toThrow(/forbidden/)
   })
 
@@ -106,14 +136,22 @@ describe('RLS · admin', () => {
   it('ve borradores, órdenes y cupones', async () => {
     const orderId = await createOrder(db, seed)
     expect(await asAdmin(() => db.query(`select slug from public.themes`))).toHaveLength(5)
-    expect(await asAdmin(() => db.query(`select id from public.orders where id = $1`, [orderId]))).toHaveLength(1)
+    expect(
+      await asAdmin(() => db.query(`select id from public.orders where id = $1`, [orderId])),
+    ).toHaveLength(1)
     expect(await asAdmin(() => db.query(`select code from public.coupons`))).toHaveLength(6)
   })
 
   it('gestiona cupones', async () => {
-    await asAdmin(() => db.query(`insert into public.coupons (code, kind, value, max_uses) values ('NUEVO35', 'percent', 35, 100)`))
+    await asAdmin(() =>
+      db.query(
+        `insert into public.coupons (code, kind, value, max_uses) values ('NUEVO35', 'percent', 35, 100)`,
+      ),
+    )
     const rows = await asAdmin(() =>
-      db.query<{ active: boolean }>(`update public.coupons set active = false where code = 'NUEVO35' returning active`),
+      db.query<{ active: boolean }>(
+        `update public.coupons set active = false where code = 'NUEVO35' returning active`,
+      ),
     )
     expect(rows).toEqual([{ active: false }])
   })
@@ -124,12 +162,12 @@ describe('RLS · admin', () => {
 
     const visible = await asAdmin(() => db.query(`select code, recipient_name from public.boxies`))
     expect(visible).toHaveLength(1)
-    await expect(asAdmin(() => db.query(`select gift_token_hash from public.boxies`))).rejects.toThrow(
-      /permission denied/,
-    )
-    await expect(asAdmin(() => db.query(`select edit_token_hash from public.boxies`))).rejects.toThrow(
-      /permission denied/,
-    )
+    await expect(
+      asAdmin(() => db.query(`select gift_token_hash from public.boxies`)),
+    ).rejects.toThrow(/permission denied/)
+    await expect(
+      asAdmin(() => db.query(`select edit_token_hash from public.boxies`)),
+    ).rejects.toThrow(/permission denied/)
     await expect(
       asAdmin(() => db.query(`update public.boxies set edit_token_hash = 'x'`)),
     ).rejects.toThrow(/permission denied/)
@@ -137,9 +175,16 @@ describe('RLS · admin', () => {
 
   it('puede corregir el destinatario de una Boxie', async () => {
     const orderId = await createOrder(db, seed)
-    const { boxie_id } = await applyPayment(db, { orderId, paymentId: 'mp-sec-2', status: 'approved', amount: 1500000 })
+    const { boxie_id } = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-sec-2',
+      status: 'approved',
+      amount: 1500000,
+    })
     const rows = await asAdmin(() =>
-      db.query(`update public.boxies set recipient_name = 'Sofi' where id = $1 returning code`, [boxie_id]),
+      db.query(`update public.boxies set recipient_name = 'Sofi' where id = $1 returning code`, [
+        boxie_id,
+      ]),
     )
     expect(rows).toHaveLength(1)
   })
@@ -153,15 +198,18 @@ describe('Inmutabilidad de temáticas', () => {
       ),
     ).rejects.toThrow(/inmutable/)
     await expect(
-      db.as('service_role', null, () => db.query(`delete from public.theme_versions where id = $1`, [seed.versionId])),
+      db.as('service_role', null, () =>
+        db.query(`delete from public.theme_versions where id = $1`, [seed.versionId]),
+      ),
     ).rejects.toThrow(/inmutable/)
   })
 
   it('publicar crea una versión nueva y la deja vigente, sin tocar la anterior', async () => {
     const [v2] = await asAdmin(() =>
-      db.query<{ version: number; id: string }>(`select * from public.publish_theme($1, '{"slides":[{"kind":"x"}]}')`, [
-        seed.themeId,
-      ]),
+      db.query<{ version: number; id: string }>(
+        `select * from public.publish_theme($1, '{"slides":[{"kind":"x"}]}')`,
+        [seed.themeId],
+      ),
     )
     expect(v2!.version).toBe(2)
     const [theme] = await db.query<{ current_version_id: string }>(
@@ -169,23 +217,30 @@ describe('Inmutabilidad de temáticas', () => {
       [seed.themeId],
     )
     expect(theme!.current_version_id).toBe(v2!.id)
-    const [v1] = await db.query<{ config: unknown }>(`select config from public.theme_versions where id = $1`, [
-      seed.versionId,
-    ])
+    const [v1] = await db.query<{ config: unknown }>(
+      `select config from public.theme_versions where id = $1`,
+      [seed.versionId],
+    )
     expect(v1!.config).toEqual({ slides: [] })
   })
 
   it('publicar un borrador lo pasa a publicado', async () => {
-    await asAdmin(() => db.query(`select * from public.publish_theme($1, '{"slides":[]}')`, [seed.draftThemeId]))
-    const [theme] = await db.query<{ status: string }>(`select status from public.themes where id = $1`, [
-      seed.draftThemeId,
-    ])
+    await asAdmin(() =>
+      db.query(`select * from public.publish_theme($1, '{"slides":[]}')`, [seed.draftThemeId]),
+    )
+    const [theme] = await db.query<{ status: string }>(
+      `select status from public.themes where id = $1`,
+      [seed.draftThemeId],
+    )
     expect(theme!.status).toBe('published')
   })
 
   it('una temática no puede apuntar a la versión de otra', async () => {
     await expect(
-      db.query(`update public.themes set current_version_id = $1 where id = $2`, [seed.versionId, seed.draftThemeId]),
+      db.query(`update public.themes set current_version_id = $1 where id = $2`, [
+        seed.versionId,
+        seed.draftThemeId,
+      ]),
     ).rejects.toThrow(/foreign key/)
   })
 })
@@ -204,16 +259,22 @@ describe('Storage', () => {
   it('solo un admin sube assets de temáticas', async () => {
     await expect(
       asUser(() =>
-        db.query(`insert into storage.objects (bucket_id, name) values ('theme-assets', 'cs/intro.mp4')`),
+        db.query(
+          `insert into storage.objects (bucket_id, name) values ('theme-assets', 'cs/intro.mp4')`,
+        ),
       ),
     ).rejects.toThrow(/row-level security/)
     await asAdmin(() =>
-      db.query(`insert into storage.objects (bucket_id, name) values ('theme-assets', 'cs/intro.mp4')`),
+      db.query(
+        `insert into storage.objects (bucket_id, name) values ('theme-assets', 'cs/intro.mp4')`,
+      ),
     )
   })
 
   it('nadie con la clave pública lee fotos de compradores', async () => {
-    await db.query(`insert into storage.objects (bucket_id, name) values ('boxie-media', 'b/1.webp')`)
+    await db.query(
+      `insert into storage.objects (bucket_id, name) values ('boxie-media', 'b/1.webp')`,
+    )
     expect(await asAnon(() => db.query(`select * from storage.objects`))).toEqual([])
     expect(await asUser(() => db.query(`select * from storage.objects`))).toEqual([])
   })

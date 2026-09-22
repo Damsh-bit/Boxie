@@ -1,0 +1,50 @@
+/**
+ * Datos institucionales en un solo lugar. El prototipo mezclaba
+ * @boxie.com.ar y boxiedigital.com.ar; el dominio del proyecto es
+ * boxiedigital.com.ar (docs/ARQUITECTURA.md §2.1).
+ *
+ * PENDIENTE (dueño del producto): confirmar casillas, redes y datos fiscales.
+ */
+
+export const site = {
+  name: 'Boxie Digital',
+  shortName: 'Boxie',
+  tagline: 'Conectando emociones y rompiendo distancias. Regalos digitales con alma.',
+  location: 'Buenos Aires, Argentina',
+  instagramHandle: '@boxie.app',
+  emails: {
+    hello: 'hola@boxiedigital.com.ar',
+    help: 'ayuda@boxiedigital.com.ar',
+    marketing: 'marketing@boxiedigital.com.ar',
+    complaints: 'reclamos@boxiedigital.com.ar',
+    jobs: 'rrhh@boxiedigital.com.ar',
+  },
+  social: {
+    instagram: 'https://instagram.com/boxie.app',
+    tiktok: 'https://tiktok.com',
+    youtube: 'https://youtube.com',
+    facebook: 'https://facebook.com',
+  },
+  /** Datos del responsable para los textos legales. */
+  legal: {
+    companyName: '[NOMBRE COMPLETO O RAZÓN SOCIAL]',
+    cuit: '[CUIT]',
+    address: '[DIRECCIÓN FISCAL COMPLETA]',
+    jurisdiction: '[CIUDAD / JURISDICCIÓN]',
+    /** Link al formulario de Data Fiscal de ARCA (ex AFIP). Vacío = no se muestra. */
+    dataFiscalUrl: '',
+    dataFiscalImage: '',
+  },
+  consumerDefenseUrl: 'https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario',
+} as const
+
+export type ContactArea = 'ayuda' | 'marketing' | 'comercial' | 'reclamos' | 'rrhh' | 'general'
+
+export const contactAreas: { value: ContactArea; label: string; email: string }[] = [
+  { value: 'ayuda', label: 'Quiero editar mi Boxie / Ayuda', email: site.emails.help },
+  { value: 'marketing', label: 'Quiero contactarme con Publicidad', email: site.emails.marketing },
+  { value: 'comercial', label: 'Área Comercial / Ventas', email: site.emails.marketing },
+  { value: 'reclamos', label: 'Reclamos o Problemas Técnicos', email: site.emails.complaints },
+  { value: 'rrhh', label: 'Enviar mi Curriculum (RRHH)', email: site.emails.jobs },
+  { value: 'general', label: 'Otras consultas generales', email: site.emails.hello },
+]

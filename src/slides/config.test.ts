@@ -1,8 +1,14 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { z } from 'zod'
-import { collectAssetIds, missingForLock, parseBuyerContent, parseThemeConfig, readThemeConfig } from './config'
+import type { z } from 'zod'
+import {
+  collectAssetIds,
+  missingForLock,
+  parseBuyerContent,
+  parseThemeConfig,
+  readThemeConfig,
+} from './config'
 import { arrayElement, getFieldMeta, objectShape } from './fields'
 import { initialBuyerProps, SLIDE_KINDS, slideDefinitions } from './schemas'
 
@@ -11,11 +17,14 @@ const seeds = readdirSync(SEED_DIR).map((f) => JSON.parse(readFileSync(join(SEED
 const pareja = seeds.find((s) => s.slug === 'pareja')
 
 describe('registro de slides', () => {
-  it.each(SLIDE_KINDS)('%s: la temática funciona sin configurar nada (defaults completos)', (kind) => {
-    const def = slideDefinitions[kind]
-    expect(() => def.themeSchema.parse({})).not.toThrow()
-    if (def.buyerSchema) expect(() => (def.buyerSchema as z.ZodType).parse({})).not.toThrow()
-  })
+  it.each(SLIDE_KINDS)(
+    '%s: la temática funciona sin configurar nada (defaults completos)',
+    (kind) => {
+      const def = slideDefinitions[kind]
+      expect(() => def.themeSchema.parse({})).not.toThrow()
+      if (def.buyerSchema) expect(() => (def.buyerSchema as z.ZodType).parse({})).not.toThrow()
+    },
+  )
 
   it.each(SLIDE_KINDS)('%s: cada campo de la temática tiene rótulo para el formulario', (kind) => {
     const shape = objectShape(slideDefinitions[kind].themeSchema)!
@@ -39,13 +48,16 @@ describe('temáticas iniciales (criterio de aceptación de la Fase 5)', () => {
   })
 
   it('las tres tienen las 20 slides del prototipo en el mismo orden', () => {
-    const kinds = seeds.map((s) => readThemeConfig(s.config).slides.map((slide) => slide.kind.split('.')[0]))
+    const kinds = seeds.map((s) =>
+      readThemeConfig(s.config).slides.map((slide) => slide.kind.split('.')[0]),
+    )
     for (const k of kinds) expect(k).toHaveLength(20)
     expect(new Set(kinds.map((k) => k.join()))).toHaveProperty('size', 1)
   })
 
   it('cada una usa su portada y sus textos propios', () => {
-    const cover = (slug: string) => readThemeConfig(seeds.find((s) => s.slug === slug).config).slides[1]!.kind
+    const cover = (slug: string) =>
+      readThemeConfig(seeds.find((s) => s.slug === slug).config).slides[1]!.kind
     expect(cover('pareja')).toBe('cover.recipient')
     expect(cover('amistad')).toBe('cover.friends')
     expect(cover('cumpleanos')).toBe('cover.birthday')
@@ -110,17 +122,26 @@ describe('contenido del comprador', () => {
     const full = parseBuyerContent(config, {
       recipientName: 'Sofi',
       senderName: 'Lean',
-      slides: { dedicatoria: { photo }, anecdota: { photo: { assetId: '0c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f' } } },
+      slides: {
+        dedicatoria: { photo },
+        anecdota: { photo: { assetId: '0c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f' } },
+      },
     })
     if (!full.success) throw new Error('debería parsear')
     expect(missingForLock(config, full.data)).toEqual([])
-    expect(collectAssetIds(full.data).sort()).toEqual(['0c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f', photo.assetId].sort())
+    expect(collectAssetIds(full.data).sort()).toEqual(
+      ['0c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f', photo.assetId].sort(),
+    )
   })
 
   it('el editor arranca con las sugerencias de la temática', () => {
     const reasons = config.slides.find((s) => s.key === 'razones')!
-    expect(initialBuyerProps(reasons.kind, reasons.props as Record<string, unknown>).reasons).toHaveLength(10)
+    expect(
+      initialBuyerProps(reasons.kind, reasons.props as Record<string, unknown>).reasons,
+    ).toHaveLength(10)
     const coupons = config.slides.find((s) => s.key === 'cuponera')!
-    expect(initialBuyerProps(coupons.kind, coupons.props as Record<string, unknown>).coupons).toHaveLength(8)
+    expect(
+      initialBuyerProps(coupons.kind, coupons.props as Record<string, unknown>).coupons,
+    ).toHaveLength(8)
   })
 })

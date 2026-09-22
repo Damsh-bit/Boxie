@@ -15,7 +15,16 @@ export const PaletteSchema = z.object({
 export type Palette = z.infer<typeof PaletteSchema>
 export const DEFAULT_PALETTE: Palette = PaletteSchema.parse({})
 
-export const FRAME_BACKGROUNDS = ['intro', 'salmon', 'white', 'dark', 'full', 'none'] as const
+export const FRAME_BACKGROUNDS = [
+  'intro',
+  'salmon',
+  'white',
+  'dark',
+  'full',
+  'cream',
+  'party',
+  'none',
+] as const
 export const PARTICLES = ['none', 'heart', 'friend', 'bday-fest', 'circle'] as const
 
 export const FrameSchema = z.object({

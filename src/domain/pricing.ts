@@ -19,7 +19,13 @@ export interface PriceQuote {
   listPriceCents: Cents
   discountCents: Cents
   totalCents: Cents
-  coupon: { id: string; code: string; kind: Coupon['kind']; value: number; affiliateId: string | null } | null
+  coupon: {
+    id: string
+    code: string
+    kind: Coupon['kind']
+    value: number
+    affiliateId: string | null
+  } | null
 }
 
 export function listPrice(basePriceCents: Cents, themePriceCents: Cents | null): Cents {
@@ -38,7 +44,13 @@ export function quote({ basePriceCents, themePriceCents, coupon }: PriceInput): 
     discountCents,
     totalCents: listPriceCents - discountCents,
     coupon: coupon
-      ? { id: coupon.id, code: coupon.code, kind: coupon.kind, value: coupon.value, affiliateId: coupon.affiliateId }
+      ? {
+          id: coupon.id,
+          code: coupon.code,
+          kind: coupon.kind,
+          value: coupon.value,
+          affiliateId: coupon.affiliateId,
+        }
       : null,
   }
 }

@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { couponDiscount, describeCoupon, evaluateCoupon, normalizeCouponCode, type Coupon } from './coupons'
+import {
+  couponDiscount,
+  describeCoupon,
+  evaluateCoupon,
+  normalizeCouponCode,
+  type Coupon,
+} from './coupons'
 
 const NOW = new Date('2026-10-15T12:00:00-03:00')
 
@@ -41,7 +47,11 @@ describe('evaluateCoupon', () => {
   it.each([
     ['inexistente', null, 'not_found'],
     ['inactivo', coupon({ active: false }), 'inactive'],
-    ['que todavía no empezó', coupon({ startsAt: new Date('2026-11-01T00:00:00-03:00') }), 'not_started'],
+    [
+      'que todavía no empezó',
+      coupon({ startsAt: new Date('2026-11-01T00:00:00-03:00') }),
+      'not_started',
+    ],
     ['vencido', coupon({ expiresAt: new Date('2026-10-01T00:00:00-03:00') }), 'expired'],
     ['vencido justo ahora', coupon({ expiresAt: NOW }), 'expired'],
     ['sin usos disponibles', coupon({ maxUses: 5, usedCount: 5 }), 'exhausted'],

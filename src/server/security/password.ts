@@ -23,7 +23,14 @@ export function normalizeGiftPassword(password: string): string {
 export async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16)
   const key = await scrypt(normalizeGiftPassword(password), salt, PARAMS)
-  return ['scrypt', PARAMS.N, PARAMS.r, PARAMS.p, salt.toString('base64url'), key.toString('base64url')].join('$')
+  return [
+    'scrypt',
+    PARAMS.N,
+    PARAMS.r,
+    PARAMS.p,
+    salt.toString('base64url'),
+    key.toString('base64url'),
+  ].join('$')
 }
 
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {

@@ -2,7 +2,14 @@ import { randomBytes } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
 import { hashPassword, verifyPassword } from './password'
 import { expiresIn, sign, verify } from './signed'
-import { decryptToken, encryptToken, generateToken, hashToken, isWellFormedToken, issueBoxieTokens } from './tokens'
+import {
+  decryptToken,
+  encryptToken,
+  generateToken,
+  hashToken,
+  isWellFormedToken,
+  issueBoxieTokens,
+} from './tokens'
 
 const KEY = randomBytes(32).toString('base64')
 const SECRET = 'x'.repeat(40)

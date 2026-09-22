@@ -1,0 +1,131 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* ════════════════════════════════════════════════════════════════════════════
+   Boxie · Sistema de diseño
+
+   Tokens tomados del prototipo: el coral de marca (#F44E63), el violeta
+   profundo de los textos (#2A2433), el gris rosado del fondo de la home
+   (#E2DEE0) y los colores de las tarjetas de temáticas. Tipografías: Outfit
+   para texto, Josefin Sans para títulos.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  --color-brand: #f44e63;
+  --color-brand-dark: #d63a4e;
+  --color-brand-soft: #fff0f3;
+  --color-brand-muted: #ffccd5;
+  --color-ink: #2a2433;
+  --color-ink-soft: #4a4063;
+  --color-paper: #e2dee0;
+  --color-mauve: #af9ea7;
+  --color-sky: #73cfee;
+  --color-lilac: #c893d7;
+  --color-gold: #ffd700;
+  --color-night: #232127;
+  --color-night-deep: #1a191d;
+
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-josefin), var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1.5rem;
+
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-fade-in-up: fade-in-up 0.8s ease both;
+  --animate-pop-in: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  --animate-pulse-ring: pulse-ring 2s infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes pop-in {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgb(244 78 99 / 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgb(244 78 99 / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgb(244 78 99 / 0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand;
+  }
+
+  ::selection {
+    @apply bg-brand/20;
+  }
+}
+
+@layer components {
+  /* Texto legal y de ayuda (contenido largo) */
+  .prose-boxie {
+    @apply max-w-none text-[1.02rem] leading-relaxed text-neutral-700;
+  }
+  .prose-boxie h2 {
+    @apply mt-10 mb-3 font-display text-2xl font-bold text-ink;
+  }
+  .prose-boxie h3 {
+    @apply mt-8 mb-2 font-display text-xl font-bold text-ink;
+  }
+  .prose-boxie p {
+    @apply my-3;
+  }
+  .prose-boxie ul {
+    @apply my-3 list-disc space-y-1 pl-6;
+  }
+  .prose-boxie a {
+    @apply font-semibold text-brand underline underline-offset-2;
+  }
+  .prose-boxie strong {
+    @apply font-semibold text-ink;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

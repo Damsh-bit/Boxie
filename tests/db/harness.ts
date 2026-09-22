@@ -83,10 +83,10 @@ export async function seedBasics(db: TestDb) {
     `insert into public.theme_versions (theme_id, version, config) values ($1, 1, '{"slides":[]}') returning id`,
     [theme!.id],
   )
-  await db.query(`update public.themes set current_version_id = $1, status = 'published' where id = $2`, [
-    version!.id,
-    theme!.id,
-  ])
+  await db.query(
+    `update public.themes set current_version_id = $1, status = 'published' where id = $2`,
+    [version!.id, theme!.id],
+  )
 
   const [draft] = await db.query<{ id: string }>(
     `insert into public.themes (slug, name, category) values ('borrador', 'Borrador', 'Amor') returning id`,
@@ -121,7 +121,15 @@ export async function createOrder(
        coupon_id, coupon_code, buyer_name, buyer_email, payment_provider)
      values ($1, $2, $3, $4, $5, $6, $7, 'Leandro Pérez', 'leandro@example.com', 'mercadopago')
      returning id`,
-    [seed.themeId, seed.versionId, list, discount, list - discount, opts.couponId ?? null, opts.couponId ? 'TEST10' : null],
+    [
+      seed.themeId,
+      seed.versionId,
+      list,
+      discount,
+      list - discount,
+      opts.couponId ?? null,
+      opts.couponId ? 'TEST10' : null,
+    ],
   )
   return order!.id
 }

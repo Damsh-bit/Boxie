@@ -30,7 +30,9 @@ describe('giftAvailability', () => {
   })
 
   it('vence por fecha aunque el estado guardado siga activo', () => {
-    expect(giftAvailability(boxie({ lockedAt: NOW, expiresAt: new Date(NOW.getTime() - 1) }), NOW)).toBe('expired')
+    expect(
+      giftAvailability(boxie({ lockedAt: NOW, expiresAt: new Date(NOW.getTime() - 1) }), NOW),
+    ).toBe('expired')
   })
 
   it('reembolsada no se muestra, aunque esté vigente', () => {
@@ -45,7 +47,9 @@ describe('editorAvailability', () => {
   })
 
   it('una Boxie sin bloquear cuya ventana de edición pasó está vencida', () => {
-    expect(editorAvailability(boxie({ expiresAt: new Date(NOW.getTime() - day) }), NOW)).toBe('expired')
+    expect(editorAvailability(boxie({ expiresAt: new Date(NOW.getTime() - day) }), NOW)).toBe(
+      'expired',
+    )
   })
 
   it('reembolsada gana sobre todo', () => {

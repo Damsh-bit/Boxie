@@ -30,7 +30,10 @@ export type SummaryIcon =
   | 'gamepad'
   | 'party'
 
-export interface SlideDefinition<TTheme extends z.ZodType = z.ZodType, TBuyer extends z.ZodType | null = z.ZodType | null> {
+export interface SlideDefinition<
+  TTheme extends z.ZodType = z.ZodType,
+  TBuyer extends z.ZodType | null = z.ZodType | null,
+> {
   label: string
   description: string
   category: SlideCategory
@@ -67,5 +70,8 @@ export interface SlideComponentProps<TTheme = unknown, TBuyer = unknown> {
 }
 
 export type SlideComponent<D extends SlideDefinition> = ComponentType<
-  SlideComponentProps<z.output<D['themeSchema']>, D['buyerSchema'] extends z.ZodType ? z.output<D['buyerSchema']> : Record<string, never>>
+  SlideComponentProps<
+    z.output<D['themeSchema']>,
+    D['buyerSchema'] extends z.ZodType ? z.output<D['buyerSchema']> : Record<string, never>
+  >
 >

@@ -22,7 +22,9 @@ const SCHEMA = 'public'
 
 const pg = await PGlite.create({ extensions: { pgcrypto } })
 await pg.exec(readFileSync(join(ROOT, 'tests', 'db', 'supabase-shim.sql'), 'utf8'))
-for (const f of readdirSync(join(ROOT, 'supabase', 'migrations')).filter((f) => f.endsWith('.sql')).sort()) {
+for (const f of readdirSync(join(ROOT, 'supabase', 'migrations'))
+  .filter((f) => f.endsWith('.sql'))
+  .sort()) {
   await pg.exec(readFileSync(join(ROOT, 'supabase', 'migrations', f), 'utf8'))
 }
 
@@ -41,11 +43,17 @@ function tsType(udt, isArray = false) {
   if (isArray || udt.startsWith('_')) return `${tsType(udt.replace(/^_/, ''))}[]`
   if (enumNames.has(udt)) return `Database["public"]["Enums"]["${udt}"]`
   switch (udt) {
-    case 'int2': case 'int4': case 'int8': case 'float4': case 'float8': case 'numeric':
+    case 'int2':
+    case 'int4':
+    case 'int8':
+    case 'float4':
+    case 'float8':
+    case 'numeric':
       return 'number'
     case 'bool':
       return 'boolean'
-    case 'json': case 'jsonb':
+    case 'json':
+    case 'jsonb':
       return 'Json'
     case 'void':
       return 'undefined'
@@ -97,7 +105,9 @@ const uniques = await q(
   [SCHEMA],
 )
 const isOneToOne = (table, cols) =>
-  uniques.some((u) => u.table_name === table && [...u.cols].sort().join() === [...cols].sort().join())
+  uniques.some(
+    (u) => u.table_name === table && [...u.cols].sort().join() === [...cols].sort().join(),
+  )
 
 const functions = await q(
   `select p.proname as name, p.proretset as returns_set, p.prorettype::regtype::text as ret_type,
@@ -115,11 +125,17 @@ const functions = await q(
   [SCHEMA],
 )
 
-const indent = (s, n) => s.split('\n').map((l) => (l ? ' '.repeat(n) + l : l)).join('\n')
+const indent = (s, n) =>
+  s
+    .split('\n')
+    .map((l) => (l ? ' '.repeat(n) + l : l))
+    .join('\n')
 
 function renderTable(t) {
   const cols = columns.filter((c) => c.table_name === t.name)
-  const row = cols.map((c) => `${c.column_name}: ${tsType(c.udt_name)}${c.nullable ? ' | null' : ''}`)
+  const row = cols.map(
+    (c) => `${c.column_name}: ${tsType(c.udt_name)}${c.nullable ? ' | null' : ''}`,
+  )
   const insert = cols.map((c) => {
     if (c.is_generated || c.identity_generation === 'ALWAYS') return `${c.column_name}?: never`
     const optional = c.nullable || c.has_default || c.is_identity
@@ -145,8 +161,15 @@ function renderTable(t) {
   const parts =
     t.kind === 'r'
       ? [block('Row', row), block('Insert', insert), block('Update', update)]
-      : [block('Row', row.map((l) => l.replace(/: (.+?)( \| null)?$/, ': $1 | null')))]
-  parts.push(rels.length ? `Relationships: [\n${indent(rels.join('\n'), 2)}\n]` : 'Relationships: []')
+      : [
+          block(
+            'Row',
+            row.map((l) => l.replace(/: (.+?)( \| null)?$/, ': $1 | null')),
+          ),
+        ]
+  parts.push(
+    rels.length ? `Relationships: [\n${indent(rels.join('\n'), 2)}\n]` : 'Relationships: []',
+  )
   return `${t.name}: {\n${indent(parts.join('\n'), 2)}\n}`
 }
 
@@ -163,7 +186,7 @@ async function compositeFields(udt) {
 async function renderFunction(f) {
   const args = []
   const outs = []
-  const modes = f.arg_modes.length ? f.arg_modes : f.arg_udts?.map(() => 'i') ?? []
+  const modes = f.arg_modes.length ? f.arg_modes : (f.arg_udts?.map(() => 'i') ?? [])
   const firstDefault = f.n_args - f.n_defaults
   let inIndex = 0
   modes.forEach((mode, i) => {

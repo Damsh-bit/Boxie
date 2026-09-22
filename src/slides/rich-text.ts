@@ -18,7 +18,9 @@ import { z } from 'zod'
 export const RICH_MARKS = ['accent', 'bold', 'highlight', 'italic'] as const
 export type RichMark = (typeof RICH_MARKS)[number]
 
-const TextNode = z.object({ text: z.string().max(2000), mark: z.enum(RICH_MARKS).optional() }).strict()
+const TextNode = z
+  .object({ text: z.string().max(2000), mark: z.enum(RICH_MARKS).optional() })
+  .strict()
 const BreakNode = z.object({ br: z.literal(true) }).strict()
 export const RichNodeSchema = z.union([TextNode, BreakNode])
 
@@ -96,7 +98,9 @@ export function markupToRich(markup: string): RichText {
     }
     const marker = current
       ? MARKERS.find((m) => m.mark === current && source.startsWith(m.close, i))
-      : MARKERS.find((m) => source.startsWith(m.open, i) && source.indexOf(m.close, i + m.open.length) > i)
+      : MARKERS.find(
+          (m) => source.startsWith(m.open, i) && source.indexOf(m.close, i + m.open.length) > i,
+        )
     if (marker) {
       flush()
       current = current ? undefined : marker.mark

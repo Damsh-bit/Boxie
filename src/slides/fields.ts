@@ -53,7 +53,10 @@ function meta<T extends z.ZodType>(schema: T, data: FieldMeta): T {
 export const MediaUrlSchema = z
   .string()
   .max(1000)
-  .refine((v) => v === '' || v.startsWith('/') || /^https:\/\//.test(v), 'Tiene que ser una URL https o una ruta del sitio')
+  .refine(
+    (v) => v === '' || v.startsWith('/') || /^https:\/\//.test(v),
+    'Tiene que ser una URL https o una ruta del sitio',
+  )
 
 /** Foto subida por el comprador: se guarda la referencia; la URL firmada la arma el servidor. */
 export const BuyerPhotoSchema = z.object({ assetId: z.uuid() }).strict()
@@ -67,7 +70,9 @@ export function youtubeId(url: string | null | undefined): string | null {
   if (!url) return null
   const trimmed = url.trim()
   if (YOUTUBE_ID.test(trimmed)) return trimmed
-  const match = trimmed.match(/(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([A-Za-z0-9_-]{11})/)
+  const match = trimmed.match(
+    /(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([A-Za-z0-9_-]{11})/,
+  )
   return match?.[1] ?? null
 }
 
@@ -83,21 +88,31 @@ export const field = {
   },
 
   richText(label: string, o: Common & { default: z.input<typeof RichTextSchema> }) {
-    return meta(RichTextSchema.clone(), { widget: 'richtext', label, ...pick(o) }).default(o.default)
+    return meta(RichTextSchema.clone(), { widget: 'richtext', label, ...pick(o) }).default(
+      o.default,
+    )
   },
 
   /** Imagen de la temática (la carga el admin). */
   image(label: string, o: Common & { default?: string } = {}) {
-    return meta(MediaUrlSchema.clone(), { widget: 'image', label, ...pick(o) }).default(o.default ?? '')
+    return meta(MediaUrlSchema.clone(), { widget: 'image', label, ...pick(o) }).default(
+      o.default ?? '',
+    )
   },
 
   video(label: string, o: Common & { default?: string } = {}) {
-    return meta(MediaUrlSchema.clone(), { widget: 'video', label, ...pick(o) }).default(o.default ?? '')
+    return meta(MediaUrlSchema.clone(), { widget: 'video', label, ...pick(o) }).default(
+      o.default ?? '',
+    )
   },
 
   /** Foto del comprador (Supabase Storage). */
   photo(label: string, o: Common = {}) {
-    return meta(BuyerPhotoSchema.clone().nullable(), { widget: 'photo', label, ...pick(o) }).default(null)
+    return meta(BuyerPhotoSchema.clone().nullable(), {
+      widget: 'photo',
+      label,
+      ...pick(o),
+    }).default(null)
   },
 
   color(label: string, o: Common & { default: string }) {
@@ -126,7 +141,10 @@ export const field = {
   },
 
   url(label: string, o: Common & { default?: string } = {}) {
-    const s = z.string().max(500).refine((v) => v === '' || /^https:\/\//.test(v), 'Tiene que empezar con https://')
+    const s = z
+      .string()
+      .max(500)
+      .refine((v) => v === '' || /^https:\/\//.test(v), 'Tiene que empezar con https://')
     return meta(s, { widget: 'url', label, ...pick(o) }).default(o.default ?? '')
   },
 
@@ -210,20 +228,34 @@ export interface MissingField {
  * los borradores se guardan incompletos, pero no se puede regalar una Boxie a
  * la que le falta, por ejemplo, la foto de la dedicatoria.
  */
-export function missingRequired(schema: AnySchema, value: unknown, prefix = '', parentLabel = ''): MissingField[] {
+export function missingRequired(
+  schema: AnySchema,
+  value: unknown,
+  prefix = '',
+  parentLabel = '',
+): MissingField[] {
   const m = getFieldMeta(schema)
   const label = [parentLabel, m?.label].filter(Boolean).join(' · ')
   const shape = objectShape(schema)
   if (shape) {
     const obj = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>
     return Object.entries(shape).flatMap(([key, child]) =>
-      missingRequired(child, obj[key], prefix ? `${prefix}.${key}` : key, m?.widget === 'group' ? label : parentLabel),
+      missingRequired(
+        child,
+        obj[key],
+        prefix ? `${prefix}.${key}` : key,
+        m?.widget === 'group' ? label : parentLabel,
+      ),
     )
   }
   const element = arrayElement(schema)
   if (element && m?.required) {
     const list = Array.isArray(value) ? value : []
-    const minItems = (unwrap(schema)._zod.def as { checks?: { _zod: { def: { check: string; minimum?: number } } }[] }).checks
+    const minItems = (
+      unwrap(schema)._zod.def as {
+        checks?: { _zod: { def: { check: string; minimum?: number } } }[]
+      }
+    ).checks
       ?.map((c) => c._zod.def)
       .find((d) => d.check === 'min_length')?.minimum
     const expected = Math.max(minItems ?? 1, 1)

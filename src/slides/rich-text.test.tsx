@@ -1,7 +1,15 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { RichText } from './RichText'
-import { accent, br, markupToRich, rich, richToMarkup, richToPlain, RichTextSchema } from './rich-text'
+import {
+  accent,
+  br,
+  markupToRich,
+  rich,
+  richToMarkup,
+  richToPlain,
+  RichTextSchema,
+} from './rich-text'
 
 const quienEresTu = rich('¿Quién', br, accent('eres tú'), br, 'para mí?')
 

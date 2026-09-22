@@ -37,7 +37,8 @@ const schema = z
   .superRefine((env, ctx) => {
     if (env.PAYMENTS_PROVIDER === 'mercadopago') {
       for (const key of ['MP_ACCESS_TOKEN', 'MP_WEBHOOK_SECRET'] as const) {
-        if (!env[key]) ctx.addIssue({ code: 'custom', path: [key], message: 'obligatorio con Mercado Pago' })
+        if (!env[key])
+          ctx.addIssue({ code: 'custom', path: [key], message: 'obligatorio con Mercado Pago' })
       }
     }
     if (env.VERCEL_ENV === 'production' && env.PAYMENTS_PROVIDER !== 'mercadopago') {
@@ -57,7 +58,9 @@ export function env(): ServerEnv {
   if (cached) return cached
   const parsed = schema.safeParse(process.env)
   if (!parsed.success) {
-    const detail = parsed.error.issues.map((i) => `  · ${i.path.join('.')}: ${i.message}`).join('\n')
+    const detail = parsed.error.issues
+      .map((i) => `  · ${i.path.join('.')}: ${i.message}`)
+      .join('\n')
     throw new Error(`Variables de entorno inválidas:\n${detail}\nVer .env.example.`)
   }
   cached = parsed.data

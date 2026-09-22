@@ -69,5 +69,14 @@
     "unrs-resolver@1.12.2": true,
     "esbuild@0.28.2": true,
     "@sentry/cli@2.58.6": true
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs}": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "*.{json,md,css,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }

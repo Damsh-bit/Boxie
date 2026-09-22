@@ -45,7 +45,10 @@ export default defineConfig([
     files: ['src/slides/**', 'src/ui/**'],
     rules: {
       'no-restricted-imports': restrict([
-        { group: ['@/server/*'], message: 'Los componentes de UI no acceden al servidor directamente.' },
+        {
+          group: ['@/server/*'],
+          message: 'Los componentes de UI no acceden al servidor directamente.',
+        },
       ]),
     },
   },
@@ -67,6 +70,7 @@ export default defineConfig([
     'playwright-report/**',
     'test-results/**',
     'supabase/.temp/**',
+    '.cache/**',
     'src/server/db/database.types.ts',
   ]),
 ])

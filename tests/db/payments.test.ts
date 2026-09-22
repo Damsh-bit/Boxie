@@ -1,5 +1,12 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { applyPayment, createOrder, createTestDb, seedBasics, type Seed, type TestDb } from './harness'
+import {
+  applyPayment,
+  createOrder,
+  createTestDb,
+  seedBasics,
+  type Seed,
+  type TestDb,
+} from './harness'
 
 let db: TestDb
 let seed: Seed
@@ -18,17 +25,26 @@ beforeEach(async () => {
 })
 
 async function orderRow(id: string) {
-  const [row] = await db.query<{ status: string; paid_at: string | null; mp_payment_id: string | null; provider_status: string | null }>(
-    `select status, paid_at, mp_payment_id, provider_status from public.orders where id = $1`,
-    [id],
-  )
+  const [row] = await db.query<{
+    status: string
+    paid_at: string | null
+    mp_payment_id: string | null
+    provider_status: string | null
+  }>(`select status, paid_at, mp_payment_id, provider_status from public.orders where id = $1`, [
+    id,
+  ])
   return row!
 }
 
 describe('apply_payment', () => {
   it('un pago aprobado marca la orden como pagada y crea exactamente una Boxie', async () => {
     const orderId = await createOrder(db, seed)
-    const result = await applyPayment(db, { orderId, paymentId: 'mp-1', status: 'approved', amount: 1500000 })
+    const result = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-1',
+      status: 'approved',
+      amount: 1500000,
+    })
 
     expect(result.outcome).toBe('paid')
     expect(result.created).toBe(true)
@@ -39,7 +55,12 @@ describe('apply_payment', () => {
     expect(order.paid_at).not.toBeNull()
     expect(order.mp_payment_id).toBe('mp-1')
 
-    const boxies = await db.query<{ code: string; sender_name: string; theme_version_id: string; locked_at: string | null }>(
+    const boxies = await db.query<{
+      code: string
+      sender_name: string
+      theme_version_id: string
+      locked_at: string | null
+    }>(
       `select code, sender_name, theme_version_id, locked_at from public.boxies where order_id = $1`,
       [orderId],
     )
@@ -53,8 +74,18 @@ describe('apply_payment', () => {
 
   it('es idempotente: el mismo aviso repetido no crea una segunda Boxie', async () => {
     const orderId = await createOrder(db, seed)
-    const first = await applyPayment(db, { orderId, paymentId: 'mp-2', status: 'approved', amount: 1500000 })
-    const retry = await applyPayment(db, { orderId, paymentId: 'mp-2', status: 'approved', amount: 1500000 })
+    const first = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-2',
+      status: 'approved',
+      amount: 1500000,
+    })
+    const retry = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-2',
+      status: 'approved',
+      amount: 1500000,
+    })
     const viaReturn = await applyPayment(db, {
       orderId,
       paymentId: 'mp-2',
@@ -76,12 +107,22 @@ describe('apply_payment', () => {
 
   it('un pendiente seguido de un aprobado procesa ambos estados', async () => {
     const orderId = await createOrder(db, seed)
-    const pending = await applyPayment(db, { orderId, paymentId: 'mp-3', status: 'pending', amount: 1500000 })
+    const pending = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-3',
+      status: 'pending',
+      amount: 1500000,
+    })
     expect(pending.outcome).toBe('recorded')
     expect((await orderRow(orderId)).status).toBe('pending')
     expect((await orderRow(orderId)).provider_status).toBe('pending')
 
-    const approved = await applyPayment(db, { orderId, paymentId: 'mp-3', status: 'approved', amount: 1500000 })
+    const approved = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-3',
+      status: 'approved',
+      amount: 1500000,
+    })
     expect(approved.outcome).toBe('paid')
   })
 
@@ -90,13 +131,23 @@ describe('apply_payment', () => {
     await applyPayment(db, { orderId, paymentId: 'mp-4a', status: 'rejected', amount: 1500000 })
     expect((await orderRow(orderId)).status).toBe('pending')
 
-    const retry = await applyPayment(db, { orderId, paymentId: 'mp-4b', status: 'approved', amount: 1500000 })
+    const retry = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-4b',
+      status: 'approved',
+      amount: 1500000,
+    })
     expect(retry.outcome).toBe('paid')
   })
 
   it('nunca entrega una Boxie si el monto pagado no coincide con el calculado', async () => {
     const orderId = await createOrder(db, seed)
-    const result = await applyPayment(db, { orderId, paymentId: 'mp-5', status: 'approved', amount: 100 })
+    const result = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-5',
+      status: 'approved',
+      amount: 100,
+    })
 
     expect(result.outcome).toBe('amount_mismatch')
     expect(result.boxie_id).toBeNull()
@@ -120,16 +171,29 @@ describe('apply_payment', () => {
   it('detecta un segundo pago de una orden ya pagada', async () => {
     const orderId = await createOrder(db, seed)
     await applyPayment(db, { orderId, paymentId: 'mp-7a', status: 'approved', amount: 1500000 })
-    const second = await applyPayment(db, { orderId, paymentId: 'mp-7b', status: 'approved', amount: 1500000 })
+    const second = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-7b',
+      status: 'approved',
+      amount: 1500000,
+    })
     expect(second.outcome).toBe('double_payment')
     expect(second.created).toBe(false)
   })
 
   it('suma el uso del cupón solo cuando el pago se aprueba', async () => {
-    const orderId = await createOrder(db, seed, { amount: 1350000, discount: 150000, couponId: seed.couponId })
+    const orderId = await createOrder(db, seed, {
+      amount: 1350000,
+      discount: 150000,
+      couponId: seed.couponId,
+    })
     const usage = async () =>
-      (await db.query<{ used_count: number }>(`select used_count from public.coupons where id = $1`, [seed.couponId]))[0]!
-        .used_count
+      (
+        await db.query<{ used_count: number }>(
+          `select used_count from public.coupons where id = $1`,
+          [seed.couponId],
+        )
+      )[0]!.used_count
 
     expect(await usage()).toBe(0)
     await applyPayment(db, { orderId, paymentId: 'mp-8', status: 'pending', amount: 1350000 })
@@ -142,12 +206,25 @@ describe('apply_payment', () => {
 
   it('un reembolso de Mercado Pago da de baja la orden y la Boxie', async () => {
     const orderId = await createOrder(db, seed)
-    const paid = await applyPayment(db, { orderId, paymentId: 'mp-9', status: 'approved', amount: 1500000 })
-    const refund = await applyPayment(db, { orderId, paymentId: 'mp-9', status: 'refunded', amount: 1500000 })
+    const paid = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-9',
+      status: 'approved',
+      amount: 1500000,
+    })
+    const refund = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-9',
+      status: 'refunded',
+      amount: 1500000,
+    })
 
     expect(refund.outcome).toBe('refunded')
     expect((await orderRow(orderId)).status).toBe('refunded')
-    const [boxie] = await db.query<{ status: string }>(`select status from public.boxies where id = $1`, [paid.boxie_id])
+    const [boxie] = await db.query<{ status: string }>(
+      `select status from public.boxies where id = $1`,
+      [paid.boxie_id],
+    )
     expect(boxie!.status).toBe('refunded')
   })
 
@@ -159,7 +236,9 @@ describe('apply_payment', () => {
       amount: 1500000,
     })
     expect(result.outcome).toBe('order_not_found')
-    const events = await db.query(`select * from public.payment_events where provider_payment_id = 'mp-10'`)
+    const events = await db.query(
+      `select * from public.payment_events where provider_payment_id = 'mp-10'`,
+    )
     expect(events).toHaveLength(1)
   })
 
@@ -179,17 +258,27 @@ describe('apply_payment', () => {
 describe('lock_boxie', () => {
   it('bloquea una sola vez y corre el vencimiento desde el bloqueo', async () => {
     const orderId = await createOrder(db, seed)
-    const { boxie_id } = await applyPayment(db, { orderId, paymentId: 'mp-11', status: 'approved', amount: 1500000 })
+    const { boxie_id } = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-11',
+      status: 'approved',
+      amount: 1500000,
+    })
 
     const [locked] = await db.as('service_role', null, () =>
-      db.query<{ locked_at: string; expires_at: string }>(`select * from public.lock_boxie($1)`, [boxie_id]),
+      db.query<{ locked_at: string; expires_at: string }>(`select * from public.lock_boxie($1)`, [
+        boxie_id,
+      ]),
     )
     expect(locked!.locked_at).toBeTruthy()
-    const days = (new Date(locked!.expires_at).getTime() - new Date(locked!.locked_at).getTime()) / 86_400_000
+    const days =
+      (new Date(locked!.expires_at).getTime() - new Date(locked!.locked_at).getTime()) / 86_400_000
     expect(Math.round(days)).toBe(60)
 
     await expect(
-      db.as('service_role', null, () => db.query(`select * from public.lock_boxie($1)`, [boxie_id])),
+      db.as('service_role', null, () =>
+        db.query(`select * from public.lock_boxie($1)`, [boxie_id]),
+      ),
     ).rejects.toThrow(/no se puede bloquear/)
   })
 })

@@ -42,7 +42,8 @@ export function loadSeedThemes() {
       const listing = ThemeListingSchema.safeParse(seed.listing)
       if (!listing.success) throw new Error(`${file}: ficha inválida\n${listing.error.message}`)
       const config = parseThemeConfig(seed.config)
-      if (!config.success) throw new Error(`${file}: configuración inválida\n${config.issues.join('\n')}`)
+      if (!config.success)
+        throw new Error(`${file}: configuración inválida\n${config.issues.join('\n')}`)
       return { ...seed, listing: listing.data, resolved: config.data }
     })
     .sort((a, b) => a.sortOrder - b.sortOrder)

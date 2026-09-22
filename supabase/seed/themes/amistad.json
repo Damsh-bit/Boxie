@@ -83,7 +83,9 @@
           "body1": {
             "t": "rich",
             "v": [
-              { "text": "Dicen que los amigos son la familia que uno elige, y yo te elegiría mil veces. " },
+              {
+                "text": "Dicen que los amigos son la familia que uno elige, y yo te elegiría mil veces. "
+              },
               { "text": "Sos mi partner in crime", "mark": "highlight" },
               { "text": ", la persona que sabe todos mis secretos y aún así se queda." }
             ]

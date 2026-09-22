@@ -40,7 +40,8 @@ export function evaluateCoupon(coupon: Coupon | null, now: Date): CouponEvaluati
   if (!coupon.active) return { ok: false, reason: 'inactive' }
   if (coupon.startsAt && now < coupon.startsAt) return { ok: false, reason: 'not_started' }
   if (coupon.expiresAt && now >= coupon.expiresAt) return { ok: false, reason: 'expired' }
-  if (coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses) return { ok: false, reason: 'exhausted' }
+  if (coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses)
+    return { ok: false, reason: 'exhausted' }
   return { ok: true, coupon }
 }
 
@@ -49,14 +50,20 @@ export function evaluateCoupon(coupon: Coupon | null, now: Date): CouponEvaluati
  * peso entero: el total queda en pesos redondos y el descuento nunca supera lo
  * prometido. Nunca descuenta más que el precio.
  */
-export function couponDiscount(coupon: Pick<Coupon, 'kind' | 'value'>, listPriceCents: Cents): Cents {
-  const raw = coupon.kind === 'percent' ? (listPriceCents * Math.min(coupon.value, 100)) / 100 : coupon.value
+export function couponDiscount(
+  coupon: Pick<Coupon, 'kind' | 'value'>,
+  listPriceCents: Cents,
+): Cents {
+  const raw =
+    coupon.kind === 'percent' ? (listPriceCents * Math.min(coupon.value, 100)) / 100 : coupon.value
   const wholePesos = Math.floor(raw / 100) * 100
   return Math.max(0, Math.min(wholePesos, listPriceCents))
 }
 
 export function describeCoupon(coupon: Pick<Coupon, 'kind' | 'value'>): string {
-  return coupon.kind === 'percent' ? `${coupon.value}% OFF` : `$${Math.floor(coupon.value / 100).toLocaleString('es-AR')} OFF`
+  return coupon.kind === 'percent'
+    ? `${coupon.value}% OFF`
+    : `$${Math.floor(coupon.value / 100).toLocaleString('es-AR')} OFF`
 }
 
 export const COUPON_REJECTION_MESSAGE: Record<CouponRejection, string> = {

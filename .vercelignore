@@ -1,0 +1,9 @@
+.cache
+.next
+node_modules
+coverage
+playwright-report
+test-results
+supabase/.temp
+.env*
+!.env.example

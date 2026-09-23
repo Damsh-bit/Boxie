@@ -25,7 +25,7 @@
     "db:types:gen": "node scripts/gen-db-types.mjs",
     "db:types:check": "node scripts/gen-db-types.mjs --check",
     "themes:migration": "tsx scripts/build-theme-migration.ts",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "themes:check": "tsx scripts/build-theme-migration.ts --check"
   },
   "dependencies": {

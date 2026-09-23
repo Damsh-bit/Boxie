@@ -136,6 +136,11 @@ const storyDedication = {
   }),
   frame: { background: 'full', fullScreen: true },
   summary: { icon: 'heart', title: 'Dedicatoria', text: 'Palabras sinceras directo al corazón.' },
+  editor: {
+    title: 'Dedicatoria',
+    intro:
+      'La carta que abre el regalo. Escribí lo que sientas y elegí la foto que va de fondo (también es la tapa de revista).',
+  },
 } satisfies SlideDefinition
 
 const storyEditorial = {
@@ -222,6 +227,11 @@ const storyReasons = {
     title: '10 Razones',
     text: 'Un recordatorio de por qué sos especial.',
   },
+  editor: {
+    title: '10 Razones',
+    intro:
+      'Aparecen de a una, como si las escribieras en vivo. Arrancan con nuestras sugerencias: cambialas por las tuyas.',
+  },
 } satisfies SlideDefinition
 
 const storyAnecdote = {
@@ -254,6 +264,10 @@ const storyAnecdote = {
     title: 'Anécdota',
     text: 'Ese recuerdo imborrable. ¡Compartilo en Stories!',
   },
+  editor: {
+    title: 'Anécdota',
+    intro: 'Ese recuerdo que siempre vuelve: una foto, un título y la historia contada por vos.',
+  },
 } satisfies SlideDefinition
 
 // ── Música y pantallas ──────────────────────────────────────────────────────
@@ -275,6 +289,10 @@ const mediaSong = {
   }),
   frame: { background: 'full', fullScreen: true },
   summary: { icon: 'music', title: 'Nuestra Canción', text: 'Esa melodía que nos conecta.' },
+  editor: {
+    title: 'Nuestra canción',
+    intro: 'El tema que los representa, sonando a pantalla completa. Pegá el link de YouTube.',
+  },
 } satisfies SlideDefinition
 
 const playlist = field.group('Playlist', {
@@ -719,6 +737,11 @@ const gameCoupons = {
     icon: 'ticket',
     title: 'Cuponera',
     text: 'Vales por momentos para canjear cuando quieras.',
+  },
+  editor: {
+    title: 'Cuponera',
+    intro:
+      'Vales para canjear cuando quiera: una cena, un masaje, una escapada. Hasta 8, con detalle opcional.',
   },
 } satisfies SlideDefinition
 

@@ -46,6 +46,9 @@ export default defineConfig([
             '@/slides/kinds/*',
             '@/slides/registry',
             '@/slides/RichText',
+            // Del editor, el servidor solo usa el contrato de sus respuestas.
+            '@/slides/editor/*',
+            '!@/slides/editor/contract',
           ],
           message: 'server no depende de la UI.',
         },
@@ -64,8 +67,10 @@ export default defineConfig([
     },
   },
   {
-    // El player muestra media dinámica (URLs firmadas, assets de temáticas): <img> es intencional.
-    files: ['src/slides/**'],
+    // El player y el editor muestran media dinámica (URLs firmadas, fotos
+    // locales, assets de temáticas); las imágenes de Open Graph las dibuja
+    // Satori, que no conoce next/image: <img> es intencional.
+    files: ['src/slides/**', 'app/**/opengraph-image.tsx'],
     rules: { '@next/next/no-img-element': 'off' },
   },
   {

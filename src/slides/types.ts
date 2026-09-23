@@ -43,6 +43,8 @@ export interface SlideDefinition<
   frame: FrameInput
   /** Cómo aparece en el repaso final ("Todo lo que vimos"). */
   summary: { icon: SummaryIcon; title: string; text: string } | null
+  /** Cómo se presenta como módulo en el editor del comprador (slides con buyerSchema). */
+  editor?: { title: string; intro: string }
 }
 
 export interface SlideContext {

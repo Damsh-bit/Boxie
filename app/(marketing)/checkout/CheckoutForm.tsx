@@ -67,6 +67,7 @@ export function CheckoutForm({
   }
 
   const exampleHref = `/ejemplo/${theme.slug}` as Route
+  const sandboxHref = `/ejemplo/${theme.slug}/personalizar` as Route
 
   return (
     <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
@@ -146,9 +147,16 @@ export function CheckoutForm({
               <p>
                 <strong>{demo ? 'Versión de demostración.' : 'Todavía no cobramos online.'}</strong>{' '}
                 El precio y los cupones son reales (se calculan en el servidor), pero el pago con
-                Mercado Pago se habilita en el próximo paso del proyecto.
+                Mercado Pago se habilita en el próximo paso del proyecto. Mientras tanto, podés
+                probar el editor: es el mismo que usás después de comprar.
               </p>
-              <Link href={exampleHref} className={cn(buttonVariants({ block: true }))}>
+              <Link href={sandboxHref} className={cn(buttonVariants({ block: true }))}>
+                Probar cómo se personaliza
+              </Link>
+              <Link
+                href={exampleHref}
+                className={cn(buttonVariants({ variant: 'secondary', block: true }))}
+              >
                 Ver cómo queda una Boxie {theme.name}
               </Link>
             </div>

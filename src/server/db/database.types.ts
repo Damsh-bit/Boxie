@@ -648,6 +648,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      save_boxie_content: {
+        Args: {
+          p_boxie_id: string
+          p_recipient_name: string
+          p_sender_name: string
+          p_slides: Json
+        }
+        Returns: string
+      }
     }
     Enums: {
       boxie_status: "active" | "refunded" | "expired"

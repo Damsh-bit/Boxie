@@ -28,6 +28,8 @@ npm run dev
 ```
 
 Abrir <http://localhost:3000> y, para ver una Boxie completa, <http://localhost:3000/ejemplo/pareja>.
+El editor del comprador se prueba en <http://localhost:3000/ejemplo/pareja/personalizar> (modo
+prueba: guarda en el navegador).
 
 **Con Supabase local** (necesita Docker):
 
@@ -36,6 +38,9 @@ npm run db:start             # levanta Supabase y aplica supabase/migrations
 npx supabase status          # copiar API URL, anon key y service_role key a .env.local
 npm run dev
 ```
+
+Con `PAYMENTS_PROVIDER=fake`, `POST /api/dev/boxies` crea una Boxie pagada y devuelve los links
+del editor y del regalo (ver [docs/OPERACION.md](docs/OPERACION.md#editor-y-regalo)).
 
 ## Scripts
 
@@ -51,10 +56,11 @@ npm run dev
 ## Estructura
 
 ```
-app/                  rutas (sitio público, checkout, regalo de ejemplo, API)
+app/                  rutas (sitio público, checkout, editor, regalo, API)
 src/domain/           lógica pura: precios, cupones, ciclo de vida de la Boxie
-src/server/           todo lo que toca el exterior: base, mails, seguridad
+src/server/           todo lo que toca el exterior: base, storage, mails, seguridad
 src/slides/           ⭐ el motor de temáticas: contrato de cada slide, player y componentes
+src/slides/editor/    el editor del comprador: módulos, SchemaForm, fotos, modo prueba
 src/ui/               sistema de diseño
 supabase/migrations/  esquema, funciones, RLS, storage y catálogo inicial (versionado)
 supabase/seed/        las temáticas iniciales como datos

@@ -48,6 +48,36 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   nuevos con default). Nunca renombrar ni quitar campos que usan versiones publicadas.
 - **El repaso final se arma solo** con las slides de la temática (el prototipo tenía la lista fija).
 
+## Editor del comprador
+
+- **Los módulos salen de la temática.** Uno por cada slide con `buyerSchema` (dedicatoria, canción,
+  cuponera, razones, anécdota), más la portada (para quién es) y la clave opcional. Una temática
+  nueva con otras slides trae sus módulos sin tocar el editor.
+- **`<SchemaForm>` arma los formularios desde los schemas de Zod**, con todos los widgets (también
+  los del panel: texto enriquecido, color, selector, listas de grupos). El constructor de temáticas
+  del Sprint 5 lo reutiliza con el `themeSchema`.
+- **Vista previa en vivo con el player real**: lo que se escribe se ve en el celular de al lado, en
+  la slide del módulo que se está editando.
+- **Guardado automático**, sin botón. El guardado es una función SQL (`save_boxie_content`) que
+  rechaza editar una Boxie bloqueada, vencida o reembolsada aunque la app tenga un bug.
+- **Fotos comprimidas en el navegador** (WebP, 1600 px; JPEG si el navegador no encodea WebP): una
+  foto de celular de 4 MB queda en unos cientos de KB. El servidor valida el formato real por los
+  primeros bytes (no el tipo que declara el navegador) y la guarda en el bucket privado. Se ven
+  solo con URLs firmadas. Tope de 30 fotos por Boxie en la base; al bloquear se borran las
+  reemplazadas.
+- **Sesión del editor:** el link del mail se canjea por una cookie firmada `httpOnly` limitada a
+  `/editor`, y la URL queda limpia. La cookie lleva una huella del token de edición: si se reenvía
+  el link (se rota el token), las sesiones viejas dejan de valer.
+- **Modo prueba** (`/ejemplo/<temática>/personalizar`): el mismo editor guardando en el navegador.
+  Sirve para probar antes de comprar y para mostrar el producto en la demo sin base.
+- **Regalo (`/g/<token>`)**: la apertura la registra el navegador, no el servidor, así los robots
+  que arman la vista previa de WhatsApp no cuentan como aperturas. La clave opcional se valida en el
+  servidor y da una cookie firmada por regalo (cambiar la clave la invalida). Cada regalo tiene su
+  imagen de Open Graph con el nombre de quien lo recibe.
+- **El alta de la Boxie al aprobarse un pago ya está** (`applyPaymentNotice`: tokens, Boxie y mail
+  con el link del editor). El webhook de Mercado Pago solo va a tener que validar la firma, consultar
+  el pago y llamarla. En desarrollo y E2E la llama `/api/dev/boxies` con el proveedor falso.
+
 ## Bugs del prototipo que se corrigieron al portar
 
 - La cuponera ignoraba los vales que cargaba el comprador (mostraba siempre los mismos 6).
@@ -62,7 +92,8 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
 ## Modo demo
 
 `DEMO_MODE=1` levanta el sitio sin Supabase ni Mercado Pago, con el catálogo de `supabase/seed`.
-Existe para mostrar el producto en un deploy sin secretos. Nunca se activa solo.
+Existe para mostrar el producto en un deploy sin secretos. Nunca se activa solo. En demo el editor
+se usa en modo prueba y `/editor` explica cómo llegar a él.
 
 ## Rendering
 

@@ -38,7 +38,7 @@ jobs:
         run: npm run build
 
   e2e:
-    name: E2E (compra → editor → regalo)
+    name: E2E (catálogo, checkout y regalo de ejemplo)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: checks
@@ -56,16 +56,17 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: latest
-      - name: Supabase local (migraciones + seed)
+      - name: Supabase local (migraciones + catálogo inicial)
         run: |
-          supabase start -x realtime,edge-runtime,logflare,vector,studio,imgproxy
-          supabase status -o env \
-            --override-name api.url=NEXT_PUBLIC_SUPABASE_URL \
-            --override-name auth.anon_key=NEXT_PUBLIC_SUPABASE_ANON_KEY \
-            --override-name auth.service_role_key=SUPABASE_SERVICE_ROLE_KEY \
-            | grep -E '^(NEXT_PUBLIC_SUPABASE_URL|NEXT_PUBLIC_SUPABASE_ANON_KEY|SUPABASE_SERVICE_ROLE_KEY)=' >> "$GITHUB_ENV"
-          echo "SESSION_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
-          echo "TOKEN_ENCRYPTION_KEY=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
+          supabase start -x studio,imgproxy
+          supabase status -o json 2>/dev/null | sed -n '/^{/,$p' > "$RUNNER_TEMP/supabase.json"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$(jq -r '.API_URL' "$RUNNER_TEMP/supabase.json")"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$(jq -r '.ANON_KEY // .PUBLISHABLE_KEY' "$RUNNER_TEMP/supabase.json")"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$(jq -r '.SERVICE_ROLE_KEY // .SECRET_KEY' "$RUNNER_TEMP/supabase.json")"
+            echo "SESSION_SECRET=$(openssl rand -hex 32)"
+            echo "TOKEN_ENCRYPTION_KEY=$(openssl rand -base64 32)"
+          } >> "$GITHUB_ENV"
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run test:e2e

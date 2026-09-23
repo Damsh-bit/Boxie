@@ -93,6 +93,13 @@ export default async function ThemePage({ params }: PageProps<'/tematicas/[slug]
               )}
             </BuyBox>
 
+            <Link
+              href={`/ejemplo/${theme.slug}`}
+              className="mt-3 text-center text-sm font-semibold text-brand underline-offset-4 hover:underline"
+            >
+              Ver cómo queda una Boxie {theme.name} ▸
+            </Link>
+
             <div className="mt-5 border-t border-dashed border-neutral-200 pt-4">
               <h2 className="mb-2.5 text-center font-display text-[11px] font-bold text-ink">
                 ¿Por qué elegir Boxie?

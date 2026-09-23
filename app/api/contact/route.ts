@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { contactAreas } from '@/content/site'
+import { isDemoMode } from '@/server/demo'
 import { log } from '@/server/log'
 import { sendMail } from '@/server/mail/send'
 import { contactEmail } from '@/server/mail/templates'
@@ -20,6 +21,12 @@ const Body = z.object({
 })
 
 export async function POST(request: Request) {
+  if (isDemoMode()) {
+    return NextResponse.json(
+      { error: 'Esta es una versión de demostración: el formulario todavía no envía mensajes.' },
+      { status: 503 },
+    )
+  }
   const parsed = Body.safeParse(await request.json().catch(() => null))
   if (!parsed.success) {
     return NextResponse.json({ error: 'Revisá los datos del formulario.' }, { status: 400 })

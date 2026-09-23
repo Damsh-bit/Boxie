@@ -36,8 +36,19 @@ export default defineConfig([
   {
     files: ['src/server/**'],
     rules: {
+      // El contrato de las slides (schemas, validación, texto enriquecido) es
+      // lógica pura y el servidor lo necesita; los componentes, no.
       'no-restricted-imports': restrict([
-        { group: ['@/slides/*', '@/ui/*'], message: 'server no depende de la UI.' },
+        {
+          group: [
+            '@/ui/*',
+            '@/slides/player/*',
+            '@/slides/kinds/*',
+            '@/slides/registry',
+            '@/slides/RichText',
+          ],
+          message: 'server no depende de la UI.',
+        },
       ]),
     },
   },

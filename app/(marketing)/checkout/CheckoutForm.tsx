@@ -67,6 +67,7 @@ export function CheckoutForm({
   )
   const [terms, setTerms] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [paymentError, setPaymentError] = useState<string | null>(null)
 
   async function requote(cupon: string | null) {
     setBusy(true)
@@ -83,6 +84,33 @@ export function CheckoutForm({
     }
     setQuote(body)
     setCouponMessage(body.coupon ? `¡Descuento ${body.coupon.label} aplicado!` : body.couponError)
+  }
+
+  async function handlePay(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setPaymentError(null)
+    setBusy(true)
+    const form = e.currentTarget
+    const data = new FormData(form)
+    const response = await fetch('/api/checkout/preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tematica: theme.slug,
+        cupon: quote.coupon?.code ?? null,
+        nombre: data.get('name'),
+        email: data.get('email'),
+        telefono: data.get('phone'),
+      }),
+    }).catch(() => null)
+    setBusy(false)
+    if (!response?.ok) {
+      const body = (await response?.json().catch(() => null)) as { error?: string } | null
+      setPaymentError(body?.error ?? 'No pudimos crear el pago. Probá de nuevo.')
+      return
+    }
+    const { initPoint } = (await response.json()) as { initPoint: string }
+    window.location.href = initPoint
   }
 
   const exampleHref = `/ejemplo/${theme.slug}` as Route
@@ -134,9 +162,7 @@ export function CheckoutForm({
         </div>
 
         <form
-          onSubmit={(e) => {
-            e.preventDefault()
-          }}
+          onSubmit={paymentsEnabled ? handlePay : (e) => e.preventDefault()}
           className="space-y-5"
         >
           <h2 className="font-semibold text-ink">Datos de contacto</h2>
@@ -205,9 +231,16 @@ export function CheckoutForm({
           </label>
 
           {paymentsEnabled ? (
-            <Button type="submit" block size="lg" disabled={!terms || busy}>
-              <Lock className="size-4" aria-hidden /> Ir a pagar
-            </Button>
+            <div className="space-y-3">
+              {paymentError && (
+                <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {paymentError}
+                </p>
+              )}
+              <Button type="submit" block size="lg" disabled={!terms || busy}>
+                <Lock className="size-4" aria-hidden /> {busy ? 'Redirigiendo...' : 'Ir a pagar'}
+              </Button>
+            </div>
           ) : (
             <div className="space-y-3 rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
               <p>

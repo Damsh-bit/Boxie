@@ -36,10 +36,14 @@ const schema = z
   })
   .superRefine((env, ctx) => {
     if (env.PAYMENTS_PROVIDER === 'mercadopago') {
-      for (const key of ['MP_ACCESS_TOKEN', 'MP_WEBHOOK_SECRET'] as const) {
-        if (!env[key])
-          ctx.addIssue({ code: 'custom', path: [key], message: 'obligatorio con Mercado Pago' })
-      }
+      // Solo el Access Token es obligatorio para el flujo de pago.
+      // MP_WEBHOOK_SECRET se valida cuando el endpoint de webhook está activo.
+      if (!env.MP_ACCESS_TOKEN)
+        ctx.addIssue({
+          code: 'custom',
+          path: ['MP_ACCESS_TOKEN'],
+          message: 'obligatorio con Mercado Pago',
+        })
     }
     if (env.VERCEL_ENV === 'production' && env.PAYMENTS_PROVIDER !== 'mercadopago') {
       ctx.addIssue({

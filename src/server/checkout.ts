@@ -8,6 +8,7 @@ import {
   type CatalogThemeWithVersion,
 } from './catalog'
 import { isDemoMode } from './demo'
+import { env } from './env'
 
 /**
  * Cotización del checkout: el precio sale de la base y el cupón se valida
@@ -50,13 +51,7 @@ export async function quoteCheckout(
   }
 }
 
-/**
- * ¿Se puede cobrar? El circuito de Mercado Pago (preferencia + webhook) es lo
- * que queda del Sprint 2; hasta que esté, el checkout calcula el precio real
- * pero no cobra. En modo demo nunca se cobra.
- */
-const MERCADO_PAGO_READY = false
-
+/** Los pagos están habilitados cuando PAYMENTS_PROVIDER=mercadopago y no es modo demo. */
 export function paymentsEnabled(): boolean {
-  return MERCADO_PAGO_READY && !isDemoMode()
+  return env().PAYMENTS_PROVIDER === 'mercadopago' && !isDemoMode()
 }

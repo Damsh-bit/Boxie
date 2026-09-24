@@ -1,5 +1,7 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { LogoPattern } from '../player/effects'
+import { Appear, ease, frames, Loop, spring } from './motion'
 import type { Props } from './shared'
 
 interface Ticket {
@@ -16,6 +18,7 @@ interface Ticket {
  * muestran los del comprador; los de ejemplo quedan si no cargó ninguno.
  */
 export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
+  const active = ctx.active
   const [open, setOpen] = useState<Ticket | null>(null)
   const [read, setRead] = useState<number[]>([])
 
@@ -45,13 +48,28 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
     <div className="bx-coupons">
       <LogoPattern logoUrl={ctx.logoUrl} />
       <div style={{ position: 'relative', zIndex: 2, marginBottom: 20, textAlign: 'center' }}>
-        <div style={{ fontSize: '3rem', filter: 'drop-shadow(0 5px 10px rgba(0,0,0,0.1))' }}>
+        <Loop
+          active={active}
+          duration={3}
+          frames={frames.float(8, -6)}
+          style={{ fontSize: '3rem', filter: 'drop-shadow(0 5px 10px rgba(0,0,0,0.1))' }}
+        >
           {theme.emoji}
-        </div>
-        <h2 className="bx-coupons-title">{theme.title}</h2>
-        <p style={{ color: '#888', fontSize: '0.9rem' }}>{theme.subtitle}</p>
+        </Loop>
+        <Appear as="h2" active={active} y={14} className="bx-coupons-title">
+          {theme.title}
+        </Appear>
+        <Appear
+          as="p"
+          active={active}
+          delay={0.1}
+          y={10}
+          style={{ color: '#888', fontSize: '0.9rem' }}
+        >
+          {theme.subtitle}
+        </Appear>
       </div>
-      <div
+      <motion.div
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
@@ -60,16 +78,32 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
           position: 'relative',
           zIndex: 2,
         }}
+        initial="hidden"
+        animate={active ? 'show' : 'hidden'}
+        variants={{
+          hidden: {},
+          show: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
+        }}
       >
-        {tickets.map((t, i) => {
+        {tickets.map((t) => {
           const isRead = read.includes(t.id)
           return (
-            <button
+            <motion.button
               type="button"
               key={t.id}
               className="bx-ticket"
               onClick={() => setOpen(t)}
-              style={{ animationDelay: `${i * 0.1}s`, opacity: isRead ? 0.8 : 1 }}
+              variants={{
+                hidden: { opacity: 0, y: 24, scale: 0.95 },
+                show: {
+                  opacity: isRead ? 0.8 : 1,
+                  y: 0,
+                  scale: 1,
+                  transition: { duration: 0.5, ease: ease.out },
+                },
+              }}
+              whileHover={{ y: -4 }}
+              whileTap={{ scale: 0.95 }}
             >
               <div
                 style={{
@@ -119,53 +153,83 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
                   {theme.ctaLabel}
                 </p>
               </div>
-              {isRead && (
-                <div className="bx-ticket-read">
-                  <div
-                    style={{
-                      border: '3px solid #555',
-                      color: '#555',
-                      padding: '5px 10px',
-                      borderRadius: 8,
-                      fontWeight: 900,
-                      transform: 'rotate(-15deg)',
-                      fontSize: '0.9rem',
-                      opacity: 0.8,
-                    }}
+              <AnimatePresence>
+                {isRead && (
+                  <motion.div
+                    className="bx-ticket-read"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    {theme.readLabel}
-                  </div>
-                </div>
-              )}
-            </button>
+                    {/* El sello cae y queda estampado. */}
+                    <motion.div
+                      initial={{ scale: 2.2, rotate: -35, opacity: 0 }}
+                      animate={{ scale: 1, rotate: -15, opacity: 0.8 }}
+                      transition={{ ...spring.bouncy, delay: 0.25 }}
+                      style={{
+                        border: '3px solid #555',
+                        color: '#555',
+                        padding: '5px 10px',
+                        borderRadius: 8,
+                        fontWeight: 900,
+                        fontSize: '0.9rem',
+                      }}
+                    >
+                      {theme.readLabel}
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
           )
         })}
-      </div>
-      {open && (
-        <div className="bx-coupon-overlay" onClick={close}>
-          <div
-            className="bx-coupon-modal"
-            onClick={(e) => e.stopPropagation()}
-            style={{ borderTop: `10px solid ${open.color}` }}
-            role="dialog"
-            aria-modal
+      </motion.div>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="vale"
+            className="bx-coupon-overlay"
+            onClick={close}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.2, delay: 0.05 } }}
           >
-            <div className="bx-coupon-modal-icon" style={{ background: open.color }}>
-              {open.icon}
-            </div>
-            <h3 className="bx-coupon-modal-title">{open.title}</h3>
-            <div className="bx-coupon-modal-desc">&quot;{open.detail}&quot;</div>
-            <button
-              type="button"
-              className="bx-coupon-claim"
-              onClick={close}
-              style={{ background: open.color }}
+            <motion.div
+              className="bx-coupon-modal"
+              onClick={(e) => e.stopPropagation()}
+              style={{ borderTop: `10px solid ${open.color}` }}
+              role="dialog"
+              aria-modal
+              initial={{ opacity: 0, scale: 0.8, y: 40, rotate: -3 }}
+              animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20, transition: { duration: 0.18 } }}
+              transition={spring.bouncy}
             >
-              {theme.claimLabel}
-            </button>
-          </div>
-        </div>
-      )}
+              <Loop
+                active
+                delay={0.4}
+                duration={1}
+                frames={frames.bounce(8)}
+                className="bx-coupon-modal-icon"
+                style={{ background: open.color }}
+              >
+                {open.icon}
+              </Loop>
+              <h3 className="bx-coupon-modal-title">{open.title}</h3>
+              <div className="bx-coupon-modal-desc">&quot;{open.detail}&quot;</div>
+              <motion.button
+                type="button"
+                className="bx-coupon-claim"
+                onClick={close}
+                style={{ background: open.color }}
+                whileTap={{ scale: 0.96 }}
+              >
+                {theme.claimLabel}
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

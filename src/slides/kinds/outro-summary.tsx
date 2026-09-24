@@ -21,6 +21,7 @@ import {
 import { useEffect, useState } from 'react'
 import { RichText } from '../RichText'
 import type { SummaryIcon } from '../types'
+import { ease, spring } from './motion'
 import { useActivated, type Props } from './shared'
 
 const ICONS: Record<SummaryIcon, LucideIcon> = {
@@ -115,9 +116,9 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                 {theme.wait}
               </motion.h3>
               <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring' }}
+                initial={{ scale: 0.6, opacity: 0, rotate: -8 }}
+                animate={{ scale: 1, opacity: 1, rotate: -2 }}
+                transition={spring.pop}
                 style={{
                   background: 'var(--bx-primary)',
                   color: 'white',
@@ -126,7 +127,6 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                   fontWeight: 900,
                   display: 'inline-block',
                   alignSelf: 'flex-start',
-                  rotate: -2,
                   marginBottom: 15,
                   boxShadow: '5px 5px 0px rgba(0,0,0,0.1)',
                 }}
@@ -134,9 +134,9 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                 {theme.badge1}
               </motion.div>
               <motion.div
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.5 }}
+                initial={{ x: -50, opacity: 0, rotate: 1 }}
+                animate={{ x: 0, opacity: 1, rotate: 1 }}
+                transition={{ ...spring.soft, delay: 0.5 }}
                 style={{
                   background: 'var(--bx-ink)',
                   color: 'white',
@@ -144,7 +144,6 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                   fontSize: '1.5rem',
                   fontWeight: 900,
                   display: 'inline-block',
-                  rotate: 1,
                   alignSelf: 'flex-start',
                   marginBottom: 20,
                   boxShadow: '5px 5px 0px rgba(244,78,99,0.3)',
@@ -249,7 +248,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                         key={item.key}
                         initial={{ opacity: 0, x: even ? -30 : 30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, ease: 'easeOut', delay: appear }}
+                        transition={{ duration: 0.6, ease: ease.out, delay: appear }}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -259,9 +258,9 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                         }}
                       >
                         <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: appear, type: 'spring' }}
+                          initial={{ scale: 0, rotate: -45 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ ...spring.pop, delay: appear }}
                           style={{
                             width: 42,
                             height: 42,
@@ -323,7 +322,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
               key={`outro-${run}`}
               initial={{ opacity: 0, scale: 1.1 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.8, ease: ease.out }}
               style={{
                 flex: 1,
                 display: 'flex',
@@ -340,7 +339,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                 alt="Boxie"
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ type: 'spring', bounce: 0.5, delay: 0.3 }}
+                transition={{ ...spring.pop, delay: 0.3 }}
                 style={{ width: 130, marginBottom: 30 }}
               />
               <h2
@@ -367,7 +366,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
               <motion.div
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8, type: 'spring' }}
+                transition={{ ...spring.soft, delay: 0.8 }}
                 style={{
                   background: 'white',
                   padding: 25,
@@ -412,8 +411,9 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                 >
                   <Share2 size={18} /> {theme.handle}
                 </div>
-                <button
+                <motion.button
                   type="button"
+                  whileTap={{ scale: 0.94 }}
                   onClick={replay}
                   style={{
                     background: 'transparent',
@@ -426,7 +426,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                   }}
                 >
                   {theme.replayLabel}
-                </button>
+                </motion.button>
               </motion.div>
             </motion.div>
           )}

@@ -1,7 +1,9 @@
 import { RichText } from '../RichText'
+import { Appear, frames, Loop, Pop } from './motion'
 import { tint, type Props } from './shared'
 
 export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
+  const active = ctx.active
   return (
     <div
       style={{
@@ -15,7 +17,10 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
         overflow: 'hidden',
       }}
     >
-      <div
+      <Loop
+        active={active}
+        duration={12}
+        frames={['translate(0px, 0px)', 'translate(-30px, 25px)', 'translate(0px, 0px)']}
         style={{
           position: 'absolute',
           top: '-10%',
@@ -28,7 +33,11 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
           zIndex: 0,
         }}
       />
-      <div
+      <Loop
+        active={active}
+        duration={14}
+        delay={1}
+        frames={['translate(0px, 0px)', 'translate(35px, -20px)', 'translate(0px, 0px)']}
         style={{
           position: 'absolute',
           bottom: '-10%',
@@ -52,7 +61,9 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
           width: '100%',
         }}
       >
-        <div
+        <Appear
+          active={active}
+          y={-16}
           className="bx-font-fredoka"
           style={{
             fontSize: '0.9rem',
@@ -68,9 +79,13 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
           }}
         >
           {theme.badge}
-        </div>
+        </Appear>
 
-        <h1
+        <Pop
+          as="h1"
+          active={active}
+          delay={0.1}
+          from={0.5}
           className="bx-font-fredoka"
           style={{
             color: 'var(--bx-primary)',
@@ -79,17 +94,18 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
             marginBottom: 40,
             textAlign: 'center',
             textShadow: `3px 3px 0px ${tint('--bx-primary', 10)}`,
-            animation: ctx.active
-              ? 'bx-scale-up 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
-              : undefined,
             overflowWrap: 'anywhere',
             padding: '0 12px',
           }}
         >
           {ctx.recipientName || 'Alguien especial'}
-        </h1>
+        </Pop>
 
-        <div
+        <Pop
+          active={active}
+          delay={0.35}
+          from={0.6}
+          y={30}
           style={{
             background: 'white',
             padding: 30,
@@ -98,7 +114,6 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
             textAlign: 'center',
             boxShadow: '0 15px 35px rgba(0,0,0,0.08)',
             border: `2px solid ${tint('--bx-primary', 10)}`,
-            animation: ctx.active ? 'bx-cover-pop 0.8s ease-out 0.3s backwards' : undefined,
           }}
         >
           <p
@@ -124,35 +139,46 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
           >
             {theme.thanks}
           </div>
-        </div>
+        </Pop>
 
-        <div
-          style={{
-            position: 'absolute',
-            top: -90,
-            left: '10%',
-            fontSize: '3.5rem',
-            animation: 'bx-emoji-float 3s infinite ease-in-out',
-            opacity: 0.9,
-          }}
+        <Pop
+          active={active}
+          delay={0.6}
+          rotate={-30}
+          style={{ position: 'absolute', top: -90, left: '10%', opacity: 0.9 }}
         >
-          {theme.emojiTop}
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: -60,
-            right: '10%',
-            fontSize: '3.5rem',
-            animation: 'bx-emoji-float 4s infinite ease-in-out 1s',
-            opacity: 0.9,
-          }}
+          <Loop
+            active={active}
+            delay={1}
+            duration={3}
+            frames={frames.float(15, -6)}
+            style={{ fontSize: '3.5rem' }}
+          >
+            {theme.emojiTop}
+          </Loop>
+        </Pop>
+        <Pop
+          active={active}
+          delay={0.75}
+          rotate={30}
+          style={{ position: 'absolute', bottom: -60, right: '10%', opacity: 0.9 }}
         >
-          {theme.emojiBottom}
-        </div>
+          <Loop
+            active={active}
+            delay={1.4}
+            duration={4}
+            frames={frames.float(15, 6)}
+            style={{ fontSize: '3.5rem' }}
+          >
+            {theme.emojiBottom}
+          </Loop>
+        </Pop>
       </div>
 
-      <div
+      <Appear
+        active={active}
+        delay={0.9}
+        y={14}
         className="bx-font-fredoka"
         style={{
           marginTop: 50,
@@ -166,7 +192,7 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
         }}
       >
         {theme.senderPrefix} {ctx.senderName}
-      </div>
+      </Appear>
     </div>
   )
 }

@@ -1,9 +1,17 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { useState } from 'react'
 import { RichText } from '../RichText'
+import { Appear, ease, Pop, spring } from './motion'
 import { useSequence, type Props } from './shared'
 
 type View = 'intro' | 'questions' | 'outro'
+
+const fade = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.6 } },
+  exit: { opacity: 0, transition: { duration: 0.3 } },
+}
 
 export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
   const [view, setView] = useState<View>('intro')
@@ -14,6 +22,7 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
     ? theme.questions
     : [{ icon: '✨', label: '', question: '', placeholder: '' }]
   const question = questions[step] ?? questions[0]!
+  const canGo = answer.trim().length >= 2
 
   const next = () => {
     if (step < questions.length - 1) {
@@ -23,12 +32,6 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
       setView('outro')
     }
   }
-
-  const reveal = (visible: boolean, delay = '0s') => ({
-    opacity: visible ? 1 : 0,
-    transform: visible ? 'translateY(0)' : 'translateY(20px)',
-    transition: `all 1s ease ${delay}`,
-  })
 
   return (
     <div
@@ -70,7 +73,10 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
           </div>
         ))}
       </div>
-      <img
+      <Appear
+        as="img"
+        active={ctx.active}
+        y={-16}
         src={ctx.logoUrl}
         alt="Boxie"
         style={{
@@ -85,199 +91,236 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
         }}
       />
 
-      {view === 'intro' && (
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 30,
-            textAlign: 'center',
-            zIndex: 2,
-            position: 'relative',
-          }}
-        >
-          <div style={{ height: 100 }} />
-          <div style={reveal(true)}>
-            <div style={{ fontSize: '3rem', marginBottom: 20 }}>{theme.introEmoji}</div>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: 10 }}>
-              {theme.introTitle}
-            </h2>
-          </div>
-          <p
-            style={{
-              ...reveal(introStep >= 1),
-              fontSize: '1.1rem',
-              lineHeight: 1.6,
-              color: 'rgba(255,255,255,0.8)',
-              maxWidth: 300,
-            }}
-          >
-            <RichText value={theme.introText} />
-          </p>
-          <div
-            style={{
-              opacity: introStep >= 2 ? 1 : 0,
-              marginTop: 40,
-              transition: 'all 1s ease 0.5s',
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => setView('questions')}
-              style={{
-                background: 'var(--bx-primary)',
-                color: 'white',
-                border: 'none',
-                padding: '15px 40px',
-                borderRadius: 50,
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                boxShadow: '0 10px 30px rgba(244, 78, 99, 0.3)',
-              }}
-            >
-              {theme.startLabel}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {view === 'questions' && (
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            padding: 30,
-            animation: 'bx-fade-in 1s',
-            zIndex: 2,
-            position: 'relative',
-          }}
-        >
-          <div style={{ display: 'flex', gap: 5, marginTop: 120, marginBottom: 30 }}>
-            {questions.map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  flex: 1,
-                  height: 3,
-                  background: i <= step ? 'var(--bx-primary)' : 'rgba(255,255,255,0.1)',
-                  borderRadius: 2,
-                }}
-              />
-            ))}
-          </div>
-          <div
+      <AnimatePresence mode="wait" initial={false}>
+        {view === 'intro' && (
+          <motion.div
+            key="intro"
+            {...fade}
             style={{
               flex: 1,
               display: 'flex',
               flexDirection: 'column',
+              alignItems: 'center',
               justifyContent: 'center',
-              textAlign: 'left',
+              padding: 30,
+              textAlign: 'center',
+              zIndex: 2,
+              position: 'relative',
             }}
           >
-            <div
+            <div style={{ height: 100 }} />
+            <Appear active={ctx.active} y={20} duration={1}>
+              <div style={{ fontSize: '3rem', marginBottom: 20 }}>{theme.introEmoji}</div>
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: 10 }}>
+                {theme.introTitle}
+              </h2>
+            </Appear>
+            <Appear
+              as="p"
+              active={ctx.active && introStep >= 1}
+              y={20}
+              duration={1}
               style={{
-                color: 'var(--bx-primary)',
-                fontWeight: 'bold',
-                textTransform: 'uppercase',
-                letterSpacing: 2,
-                fontSize: '0.8rem',
-                marginBottom: 10,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
+                fontSize: '1.1rem',
+                lineHeight: 1.6,
+                color: 'rgba(255,255,255,0.8)',
+                maxWidth: 300,
               }}
             >
-              {question.icon} {question.label}
-            </div>
-            <h2 style={{ fontSize: '2rem', lineHeight: 1.3, marginBottom: 30 }}>
-              {question.question}
-            </h2>
-            <textarea
-              key={step}
-              autoFocus
-              placeholder={question.placeholder}
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              style={{
-                width: '100%',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: '2px solid rgba(255,255,255,0.2)',
-                color: 'white',
-                fontSize: '1.2rem',
-                padding: '10px 0',
-                outline: 'none',
-                resize: 'none',
-                fontFamily: 'inherit',
-              }}
-            />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
-            <button
-              type="button"
-              onClick={next}
-              disabled={answer.trim().length < 2}
-              aria-label="Siguiente"
-              style={{
-                background: 'white',
-                color: 'var(--bx-ink)',
-                border: 'none',
-                width: 50,
-                height: 50,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                opacity: answer.trim().length < 2 ? 0.3 : 1,
-                transition: 'all 0.2s',
-                cursor: 'pointer',
-              }}
-            >
-              <ArrowRight size={24} />
-            </button>
-          </div>
-        </div>
-      )}
+              <RichText value={theme.introText} />
+            </Appear>
+            <Pop active={ctx.active && introStep >= 2} from={0.8} y={10} style={{ marginTop: 40 }}>
+              <motion.button
+                type="button"
+                onClick={() => setView('questions')}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                transition={spring.snappy}
+                style={{
+                  background: 'var(--bx-primary)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '15px 40px',
+                  borderRadius: 50,
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  boxShadow: '0 10px 30px rgba(244, 78, 99, 0.3)',
+                }}
+              >
+                {theme.startLabel}
+              </motion.button>
+            </Pop>
+          </motion.div>
+        )}
 
-      {view === 'outro' && (
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            animation: 'bx-fade-in 1s',
-            padding: 30,
-            zIndex: 2,
-            position: 'relative',
-          }}
-        >
-          <div style={{ fontSize: '4rem', marginBottom: 20 }}>{theme.outroEmoji}</div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 'bold' }}>{theme.outroTitle}</h2>
-          <p style={{ color: 'rgba(255,255,255,0.7)', marginTop: 10 }}>
-            <RichText value={theme.outroText} />
-          </p>
-          <div
+        {view === 'questions' && (
+          <motion.div
+            key="preguntas"
+            {...fade}
             style={{
-              marginTop: 40,
-              padding: 15,
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 15,
-              fontSize: '0.9rem',
-              color: 'var(--bx-primary)',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              padding: 30,
+              zIndex: 2,
+              position: 'relative',
             }}
           >
-            {theme.outroBadge}
-          </div>
-        </div>
-      )}
+            <div style={{ display: 'flex', gap: 5, marginTop: 120, marginBottom: 30 }}>
+              {questions.map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    flex: 1,
+                    height: 3,
+                    background: 'rgba(255,255,255,0.1)',
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <motion.div
+                    style={{
+                      height: '100%',
+                      background: 'var(--bx-primary)',
+                      transformOrigin: 'left',
+                    }}
+                    initial={false}
+                    animate={{ scaleX: i <= step ? 1 : 0 }}
+                    transition={{ duration: 0.5, ease: ease.out }}
+                  />
+                </div>
+              ))}
+            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  textAlign: 'left',
+                }}
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 }}
+                transition={{ duration: 0.4, ease: ease.out }}
+              >
+                <div
+                  style={{
+                    color: 'var(--bx-primary)',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    letterSpacing: 2,
+                    fontSize: '0.8rem',
+                    marginBottom: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
+                  {question.icon} {question.label}
+                </div>
+                <h2 style={{ fontSize: '2rem', lineHeight: 1.3, marginBottom: 30 }}>
+                  {question.question}
+                </h2>
+                <textarea
+                  autoFocus
+                  placeholder={question.placeholder}
+                  value={answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    borderBottom: '2px solid rgba(255,255,255,0.2)',
+                    color: 'white',
+                    fontSize: '1.2rem',
+                    padding: '10px 0',
+                    outline: 'none',
+                    resize: 'none',
+                    fontFamily: 'inherit',
+                  }}
+                />
+              </motion.div>
+            </AnimatePresence>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
+              <motion.button
+                type="button"
+                onClick={next}
+                disabled={!canGo}
+                aria-label="Siguiente"
+                animate={{ opacity: canGo ? 1 : 0.3, scale: canGo ? 1 : 0.9 }}
+                whileHover={canGo ? { x: 3 } : undefined}
+                whileTap={canGo ? { scale: 0.9 } : undefined}
+                transition={spring.snappy}
+                style={{
+                  background: 'white',
+                  color: 'var(--bx-ink)',
+                  border: 'none',
+                  width: 50,
+                  height: 50,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <ArrowRight size={24} />
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+
+        {view === 'outro' && (
+          <motion.div
+            key="final"
+            {...fade}
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              padding: 30,
+              zIndex: 2,
+              position: 'relative',
+            }}
+          >
+            <Pop active from={0.2} rotate={-25} style={{ fontSize: '4rem', marginBottom: 20 }}>
+              {theme.outroEmoji}
+            </Pop>
+            <Appear as="h2" active delay={0.2} style={{ fontSize: '2rem', fontWeight: 'bold' }}>
+              {theme.outroTitle}
+            </Appear>
+            <Appear
+              as="p"
+              active
+              delay={0.35}
+              style={{ color: 'rgba(255,255,255,0.7)', marginTop: 10 }}
+            >
+              <RichText value={theme.outroText} />
+            </Appear>
+            <Appear
+              active
+              delay={0.55}
+              style={{
+                marginTop: 40,
+                padding: 15,
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 15,
+                fontSize: '0.9rem',
+                color: 'var(--bx-primary)',
+              }}
+            >
+              {theme.outroBadge}
+            </Appear>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

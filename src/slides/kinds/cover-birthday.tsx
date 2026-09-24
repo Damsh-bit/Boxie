@@ -1,4 +1,6 @@
+import { motion, useReducedMotion } from 'framer-motion'
 import { RichText } from '../RichText'
+import { Appear, Pop } from './motion'
 import type { Props } from './shared'
 
 const CANDLES = [
@@ -10,6 +12,9 @@ const CANDLES = [
 ]
 
 export function CoverBirthday({ theme, ctx }: Props<'cover.birthday'>) {
+  const active = ctx.active
+  const calm = useReducedMotion()
+  const flicker = active && !calm
   return (
     <div
       style={{
@@ -23,14 +28,15 @@ export function CoverBirthday({ theme, ctx }: Props<'cover.birthday'>) {
         zIndex: 10,
       }}
     >
-      <div
+      <Pop
+        active={active}
+        from={0}
         style={{
           position: 'absolute',
           top: '15%',
           width: '100%',
           textAlign: 'center',
           zIndex: 20,
-          animation: ctx.active ? 'bx-cover-pop 0.8s ease-out' : undefined,
         }}
       >
         <h1
@@ -59,9 +65,13 @@ export function CoverBirthday({ theme, ctx }: Props<'cover.birthday'>) {
         >
           {ctx.recipientName || 'Alguien especial'}
         </h2>
-      </div>
+      </Pop>
 
-      <div
+      <Appear
+        active={active}
+        delay={0.25}
+        y={90}
+        duration={1}
         style={{ width: '100%', height: '65%', position: 'relative', zIndex: 10, marginBottom: -5 }}
       >
         <svg
@@ -139,20 +149,31 @@ export function CoverBirthday({ theme, ctx }: Props<'cover.birthday'>) {
               {CANDLES.map((c) => (
                 <g key={c.x}>
                   <rect x={c.x} y={c.y} width="5" height="40" fill={c.color} rx="2" />
-                  <circle
+                  {/* La llama titila desde su base (transform-box: fill-box en el CSS). */}
+                  <motion.circle
                     cx={c.x + 2.5}
                     cy={c.y - 5}
                     r="4"
                     fill="#FFD700"
                     className="bx-flame"
-                    style={{ animationDelay: `${c.delay}s` }}
+                    initial={false}
+                    animate={
+                      flicker
+                        ? { opacity: [0.85, 1, 0.9, 1], scale: [1, 1.18, 0.96, 1.08] }
+                        : { opacity: 0.9, scale: 1 }
+                    }
+                    transition={
+                      flicker
+                        ? { duration: 0.9, delay: c.delay, repeat: Infinity, ease: 'easeInOut' }
+                        : { duration: 0.3 }
+                    }
                   />
                 </g>
               ))}
             </g>
           </g>
         </svg>
-      </div>
+      </Appear>
     </div>
   )
 }

@@ -5,9 +5,11 @@
    src/styles/Editor.css del prototipo. Diferencias deliberadas:
    · Todas las clases llevan prefijo bx- (en el prototipo `.slide` o
      `.section-title` chocaban con el resto del sitio).
-   · Las animaciones tienen nombre propio por slide: el prototipo definía
-     `popIn` tres veces distintas y cuál ganaba dependía de qué slides estaban
-     montadas en ese momento.
+   · Acá no hay animaciones: todo el movimiento (pasar de slide, entradas,
+     loops) lo hace framer-motion desde los componentes (player/motion.ts,
+     kinds/motion.tsx). Los loops van con `transform`/`opacity` para correr en
+     el compositor. El prototipo definía `popIn` tres veces distintas y cuál
+     ganaba dependía de qué slides estaban montadas en ese momento.
    · El rosa y el violeta de marca salen de la paleta de la temática
      (--bx-primary, --bx-ink); con la paleta por defecto el resultado es el
      mismo que hoy.
@@ -55,6 +57,7 @@
   background: rgba(0, 0, 0, 0.95);
   z-index: 9999;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -70,7 +73,8 @@
 
 .bx-phone {
   width: 100%;
-  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   background: #2a2433;
   position: relative;
   overflow: hidden;
@@ -79,20 +83,39 @@
   user-select: none;
   -webkit-user-select: none;
   outline: none;
+  /* Las esquinas redondeadas recortan bien a las slides que se mueven (Safari). */
+  isolation: isolate;
 }
 
 @media (min-width: 768px) {
   .bx-phone {
+    flex: none;
     width: 400px;
     height: 850px;
-    max-height: 95vh;
+    max-height: calc(95dvh - var(--bx-footer, 0px));
     border-radius: 40px;
     border: 8px solid #111;
   }
 }
 
+/* Lo que va fijo debajo del teléfono (la barra de la Boxie de ejemplo). */
+.bx-footer {
+  flex: none;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px 12px max(10px, env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+  .bx-footer {
+    padding-top: 14px;
+  }
+}
+
 /* Dentro del editor o del constructor, el teléfono se adapta al contenedor. */
 .bx-embedded .bx-phone {
+  flex: none;
   width: 100%;
   height: 100%;
   max-height: none;
@@ -113,16 +136,28 @@
 }
 
 .bx-progress-segment {
+  position: relative;
   height: 3px;
   border-radius: 2px;
   background: rgba(255, 255, 255, 0.3);
   flex: 1;
-  transition: background 0.3s;
+  overflow: hidden;
 }
 
-.bx-progress-segment.is-active {
+/* Se llena a medida que se desliza hacia esa slide (lo mueve framer-motion). */
+.bx-progress-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background: white;
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  transform-origin: left center;
+}
+
+.bx-progress-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
 }
 
 .bx-close {
@@ -153,21 +188,26 @@
 }
 
 .bx-nav-hint button {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: none;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.28);
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background-color 0.2s;
+}
+
+.bx-nav-hint button:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.45);
 }
 
 .bx-nav-hint button:disabled {
-  opacity: 0.25;
   cursor: default;
 }
 
@@ -183,6 +223,17 @@
   text-align: center;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* La slide que queda atrás se oscurece (profundidad del mazo). */
+.bx-slide-shade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+  z-index: 200;
 }
 
 .bx-slide-content {
@@ -196,10 +247,9 @@
   z-index: 10;
 }
 
+/* El degradé se mueve con GradientDrift (effects.tsx), en el compositor. */
 .bx-bg-intro {
-  background: linear-gradient(-45deg, #fdfbfb, #ffe4e6, #fdf2f3);
-  background-size: 400% 400%;
-  animation: bx-gradient 15s ease infinite;
+  background: #fdf2f3;
   color: var(--bx-ink);
 }
 
@@ -233,36 +283,10 @@
   background: linear-gradient(120deg, #ffc0cb 0%, #ffb7c5 100%);
 }
 
-@keyframes bx-gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes bx-float-up {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    transform: translateY(-100vh) rotate(360deg);
-    opacity: 0;
-  }
-}
-
 .bx-particle {
   position: absolute;
-  animation: bx-float-up linear infinite;
   pointer-events: none;
+  will-change: transform, opacity;
 }
 
 .bx-confetti {
@@ -275,23 +299,8 @@
 
 .bx-confetti-piece {
   position: absolute;
-  bottom: -50px;
-  opacity: 0;
-}
-
-.is-active .bx-confetti-piece {
-  animation: bx-confetti-rise linear forwards;
-}
-
-@keyframes bx-confetti-rise {
-  0% {
-    bottom: -10%;
-    opacity: 1;
-  }
-  100% {
-    bottom: 120%;
-    opacity: 0.8;
-  }
+  bottom: -20px;
+  will-change: transform, opacity;
 }
 
 /* Confeti de pantalla completa (premios de juegos). */
@@ -301,140 +310,6 @@
   overflow: hidden;
   pointer-events: none;
   z-index: 5;
-}
-
-.bx-confetti-layer .bx-confetti-piece {
-  animation: bx-confetti-rise linear forwards;
-}
-
-/* ── Animaciones compartidas ────────────────────────────────────────────── */
-
-@keyframes bx-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes bx-fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bx-fade-up-small {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bx-pop {
-  0% {
-    transform: scale(0);
-  }
-  80% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes bx-pop-fade {
-  0% {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes bx-bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes bx-float-logo {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes bx-pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes bx-blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes bx-shake {
-  0% {
-    transform: translate(1px, 1px) rotate(0deg);
-  }
-  10% {
-    transform: translate(-1px, -2px) rotate(-1deg);
-  }
-  20% {
-    transform: translate(-3px, 0px) rotate(1deg);
-  }
-  30% {
-    transform: translate(3px, 2px) rotate(0deg);
-  }
-  40% {
-    transform: translate(1px, -1px) rotate(1deg);
-  }
-  50% {
-    transform: translate(-1px, 2px) rotate(-1deg);
-  }
-  60% {
-    transform: translate(-3px, 1px) rotate(0deg);
-  }
-  70% {
-    transform: translate(3px, 1px) rotate(-1deg);
-  }
-  80% {
-    transform: translate(-1px, -1px) rotate(1deg);
-  }
-  90% {
-    transform: translate(1px, 2px) rotate(0deg);
-  }
-  100% {
-    transform: translate(1px, -2px) rotate(-1deg);
-  }
 }
 
 /* ── Texto enriquecido ──────────────────────────────────────────────────── */
@@ -458,45 +333,15 @@
 
 /* ── Intro ──────────────────────────────────────────────────────────────── */
 
-@keyframes bx-logo-pop {
-  0% {
-    transform: scale(0) rotate(-15deg);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2) rotate(5deg);
-    opacity: 1;
-  }
-  70% {
-    transform: scale(0.9) rotate(-3deg);
-  }
-  100% {
-    transform: scale(1) rotate(0);
-    opacity: 1;
-  }
-}
-
 .bx-intro-logo {
   width: 180px;
-  opacity: 0;
   filter: drop-shadow(0 10px 20px rgba(244, 78, 99, 0.3));
-}
-
-.is-active .bx-intro-logo {
-  animation:
-    bx-logo-pop 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards,
-    bx-float-logo 3s ease-in-out infinite 1s;
 }
 
 .bx-intro-tagline {
   margin-top: 20px;
   color: var(--bx-ink);
   font-weight: bold;
-  opacity: 0;
-}
-
-.is-active .bx-intro-tagline {
-  animation: bx-fade-up-small 1s ease 0.5s forwards;
 }
 
 .bx-swipe-hint {
@@ -504,11 +349,6 @@
   bottom: 40px;
   color: var(--bx-primary);
   font-size: 0.9rem;
-  opacity: 0;
-}
-
-.is-active .bx-swipe-hint {
-  animation: bx-fade-up-small 1s ease 1s forwards;
 }
 
 /* ── Portada · clásica ──────────────────────────────────────────────────── */
@@ -519,7 +359,6 @@
   border-radius: 50%;
   filter: blur(40px);
   z-index: 0;
-  animation: bx-move-shape 15s infinite alternate ease-in-out;
 }
 
 .bx-shape-1 {
@@ -534,54 +373,13 @@
   height: 250px;
   bottom: 50px;
   right: -80px;
-  animation-delay: -5s;
-}
-
-@keyframes bx-move-shape {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
-    transform: translate(30px, 50px) scale(1.1);
-  }
 }
 
 /* En el prototipo esta animación se llamaba `float` y chocaba con la de las
    partículas: el ícono subía y desaparecía. Esta es la que se buscaba. */
-@keyframes bx-gift-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
-}
 
 .bx-gift-icon {
-  animation: bx-gift-float 6s ease-in-out infinite;
   filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.2));
-}
-
-@keyframes bx-scale-up {
-  0% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.bx-cover-label,
-.bx-cover-name,
-.bx-cover-sender {
-  opacity: 0;
-}
-
-.is-active .bx-cover-label {
-  animation: bx-fade-up-small 1s ease 0.5s forwards;
 }
 
 .bx-cover-name {
@@ -591,12 +389,7 @@
   font-weight: 900;
   line-height: 1;
   text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
-  transform: scale(0.5);
   overflow-wrap: anywhere;
-}
-
-.is-active .bx-cover-name {
-  animation: bx-scale-up 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.8s forwards;
 }
 
 .bx-cover-sender {
@@ -607,10 +400,6 @@
   letter-spacing: 2px;
   color: rgba(255, 255, 255, 0.8);
   font-weight: 600;
-}
-
-.is-active .bx-cover-sender {
-  animation: bx-fade-up-small 1s ease 1.5s forwards;
 }
 
 .bx-cover-media {
@@ -631,79 +420,18 @@
 
 /* ── Portadas · amigos y cumpleaños ─────────────────────────────────────── */
 
-@keyframes bx-emoji-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
-}
-
-@keyframes bx-flicker {
-  0% {
-    opacity: 0.9;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-}
-
-@keyframes bx-cover-pop {
-  0% {
-    transform: scale(0);
-  }
-  80% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 .bx-flame {
+  transform-box: fill-box;
   transform-origin: center bottom;
-  animation: bx-flicker 0.3s infinite alternate;
 }
 
 /* ── Historia · stickers ────────────────────────────────────────────────── */
-
-@keyframes bx-sticker-pop {
-  0% {
-    transform: scale(0) rotate(-20deg);
-    opacity: 0;
-  }
-  60% {
-    transform: scale(1.1) rotate(5deg);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1) rotate(var(--rot));
-    opacity: 1;
-  }
-}
-
-@keyframes bx-slide-in-up {
-  0% {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
 .bx-sticker {
   display: inline-block;
   padding: 5px 15px;
   margin: 5px;
   box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.2);
-  animation: bx-sticker-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  opacity: 0;
   font-family: var(--font-fredoka), sans-serif;
   font-weight: 700;
   letter-spacing: 1px;
@@ -712,23 +440,9 @@
 .bx-scribble {
   position: absolute;
   z-index: 20;
-  animation: bx-sticker-pop 0.5s ease 0.5s forwards;
-  opacity: 0;
 }
 
 /* ── Dedicatoria ────────────────────────────────────────────────────────── */
-
-@keyframes bx-pulse-btn {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
 
 .bx-share-btn {
   background: rgba(255, 255, 255, 0.2);
@@ -744,10 +458,6 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  animation:
-    bx-fade-in-up 0.8s ease 0.8s backwards,
-    bx-pulse-btn 2s infinite 2s;
 }
 
 /* ── Canción ────────────────────────────────────────────────────────────── */
@@ -787,19 +497,6 @@
   text-align: left;
   z-index: 20;
   pointer-events: none;
-  opacity: 0;
-  transform: translateY(50px);
-}
-
-.is-active .bx-song-card {
-  animation: bx-slide-up-card 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s forwards;
-}
-
-@keyframes bx-slide-up-card {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* ── Playlists ──────────────────────────────────────────────────────────── */
@@ -878,11 +575,6 @@
   border: none;
   cursor: pointer;
   z-index: 20;
-  transition: transform 0.2s;
-}
-
-.bx-spotify-play:active {
-  transform: scale(0.95);
 }
 
 .bx-spotify-list {
@@ -944,65 +636,15 @@
 
 /* ── Game start ─────────────────────────────────────────────────────────── */
 
-@keyframes bx-gamer-float {
-  0% {
-    transform: translateY(100px) rotate(0deg);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.6;
-  }
-  80% {
-    opacity: 0.6;
-  }
-  100% {
-    transform: translateY(-100vh) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-@keyframes bx-pulse-soft {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.8;
-  }
-}
-
-@keyframes bx-loading {
-  0% {
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-  50% {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
-  51% {
-    transform-origin: right;
-  }
-  100% {
-    transform: scaleX(0);
-    transform-origin: right;
-  }
-}
-
 .bx-gamer-shape {
   position: absolute;
   bottom: 0;
   color: var(--bx-primary);
   font-weight: bold;
   opacity: 0;
+  will-change: transform, opacity;
   font-family: monospace;
   user-select: none;
-}
-
-.is-active .bx-gamer-shape {
-  animation: bx-gamer-float 4s infinite linear;
 }
 
 /* ── Trivia ─────────────────────────────────────────────────────────────── */
@@ -1052,7 +694,6 @@
   justify-content: center;
   padding: 40px;
   text-align: center;
-  animation: bx-fade-in 0.5s ease;
 }
 
 .bx-trivia-title {
@@ -1082,13 +723,12 @@
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: filter 0.3s;
   box-shadow: 0 10px 20px rgba(244, 78, 99, 0.3);
 }
 
 .bx-btn-primary:hover {
   filter: brightness(0.92);
-  transform: translateY(-3px);
 }
 
 .bx-trivia-game {
@@ -1100,7 +740,6 @@
   flex-direction: column;
   justify-content: flex-start;
   padding-top: 50px;
-  animation: bx-slide-up-card 0.5s ease;
 }
 
 .bx-trivia-card {
@@ -1162,7 +801,6 @@
   text-align: center;
   margin-bottom: 20px;
   border: 1px dashed #ffb74d;
-  animation: bx-pop 0.3s ease;
 }
 
 .bx-trivia-options {
@@ -1183,13 +821,15 @@
   color: #555;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.1s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
   text-align: center;
 }
 
 .bx-trivia-option:active {
-  transform: translateY(4px);
-  border-bottom-width: 2px;
+  border-bottom-width: 3px;
 }
 
 .bx-trivia-option.is-correct {
@@ -1202,7 +842,6 @@
   background: #f44336;
   border-color: #d32f2f;
   color: white;
-  animation: bx-shake 0.4s;
 }
 
 .bx-prize-overlay {
@@ -1213,16 +852,6 @@
   align-items: center;
   justify-content: center;
   z-index: 50;
-  animation: bx-fade-in 0.3s;
-}
-
-@keyframes bx-shine {
-  0% {
-    background-position: -200%;
-  }
-  100% {
-    background-position: 200%;
-  }
 }
 
 .bx-winner-card {
@@ -1233,7 +862,6 @@
   max-width: 90%;
   width: 350px;
   box-shadow: 0 20px 60px rgba(244, 78, 99, 0.25);
-  animation: bx-pop-fade 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   border: 4px solid #fff0f3;
 }
@@ -1253,13 +881,15 @@
   align-items: center;
 }
 
-.bx-winner-badge::after {
-  content: '';
+/* Brillo que cruza la medalla (lo mueve framer-motion con transform). */
+.bx-shine {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  background-size: 200% 100%;
-  animation: bx-shine 2s infinite linear;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  pointer-events: none;
 }
 
 /* ── Cine ───────────────────────────────────────────────────────────────── */
@@ -1283,37 +913,16 @@
   text-align: center;
   color: #f0e6d2;
   z-index: 1;
-  opacity: 0;
-  transform: scale(0.9);
-  transition: all 1.5s ease-out 0.8s;
 }
 
-.bx-cinema.is-open .bx-cinema-content {
-  opacity: 1;
-  transform: scale(1);
-}
-
+/* Centrado con la propiedad translate: el transform lo usa framer-motion. */
 .bx-cinema-message {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  translate: -50% -50%;
   width: 80%;
-  opacity: 0;
-  transition:
-    opacity 1s ease-in-out,
-    transform 1s ease;
   pointer-events: none;
-}
-
-.bx-cinema-message.is-shown {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.bx-cinema-message.is-hidden {
-  opacity: 0;
-  transform: translate(-50%, -60%) scale(0.95);
 }
 
 .bx-cinema-title {
@@ -1342,7 +951,6 @@
   background-image: repeating-linear-gradient(90deg, #6b0000 0%, #a00000 10%, #6b0000 20%);
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
   z-index: 10;
-  transition: transform 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .bx-curtain-left {
@@ -1353,14 +961,6 @@
 .bx-curtain-right {
   right: 0;
   transform-origin: right center;
-}
-
-.bx-cinema.is-open .bx-curtain-left {
-  transform: translateX(-95%);
-}
-
-.bx-cinema.is-open .bx-curtain-right {
-  transform: translateX(95%);
 }
 
 .bx-valance {
@@ -1392,7 +992,6 @@
   inset: 0;
   background-size: cover;
   background-position: center;
-  transition: background-image 0.5s ease-in-out;
 }
 
 .bx-streaming-bg.is-empty {
@@ -1427,14 +1026,11 @@
 }
 
 .bx-platform-btn {
+  position: relative;
   background: none;
   border: none;
-  padding: 5px;
+  padding: 5px 5px 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  opacity: 0.4;
-  filter: grayscale(100%);
-  transform: scale(0.9);
   color: white;
   font-weight: 700;
 }
@@ -1445,11 +1041,14 @@
   display: block;
 }
 
-.bx-platform-btn.is-active {
-  opacity: 1;
-  filter: grayscale(0%);
-  transform: scale(1.1);
-  border-bottom: 2px solid var(--bx-primary);
+.bx-platform-underline {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--bx-primary);
 }
 
 .bx-movie {
@@ -1519,12 +1118,7 @@
   gap: 8px;
   border: none;
   cursor: pointer;
-  transition: transform 0.2s;
   text-decoration: none;
-}
-
-.bx-movie-btn:active {
-  transform: scale(0.95);
 }
 
 .bx-movie-btn.is-play {
@@ -1552,24 +1146,12 @@
   overflow: hidden;
 }
 
-@keyframes bx-pulse-lights {
-  0% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0.8;
-    transform: scale(1.1);
-  }
-}
-
 .bx-slot-lights {
   position: absolute;
   inset: 0;
   background-image:
     radial-gradient(circle at 20% 30%, rgba(244, 78, 99, 0.4) 0%, transparent 50%),
     radial-gradient(circle at 80% 70%, rgba(100, 65, 165, 0.4) 0%, transparent 50%);
-  animation: bx-pulse-lights 4s infinite alternate;
   z-index: 1;
 }
 
@@ -1652,21 +1234,6 @@
   filter: drop-shadow(0 0 10px rgba(244, 78, 99, 0.5));
 }
 
-@keyframes bx-spin-blur {
-  0% {
-    transform: translateY(0);
-    filter: blur(4px);
-  }
-  100% {
-    transform: translateY(-50%);
-    filter: blur(4px);
-  }
-}
-
-.bx-reel.is-spinning .bx-reel-strip {
-  animation: bx-spin-blur 0.2s linear infinite;
-}
-
 .bx-spin-btn {
   background: linear-gradient(to right, var(--bx-primary), #ff9a9e);
   border: none;
@@ -1677,13 +1244,8 @@
   color: white;
   cursor: pointer;
   box-shadow: 0 10px 30px rgba(244, 78, 99, 0.5);
-  transition: all 0.2s;
   text-transform: uppercase;
   z-index: 10;
-}
-
-.bx-spin-btn:active {
-  transform: scale(0.95);
 }
 
 .bx-spin-btn:disabled {
@@ -1700,7 +1262,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  animation: bx-fade-in 0.5s forwards;
   text-align: center;
   padding: 30px;
 }
@@ -1714,7 +1275,6 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: bx-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   margin-bottom: 10px;
   filter: drop-shadow(0 0 20px rgba(244, 78, 99, 0.5));
 }
@@ -1724,22 +1284,10 @@
   color: white;
   margin-top: 30px;
   font-weight: bold;
-  animation: bx-bounce 2s infinite;
   background: rgba(244, 78, 99, 0.2);
   padding: 10px 30px;
   border-radius: 30px;
   border: 2px solid var(--bx-primary);
-}
-
-@keyframes bx-coin-fall {
-  0% {
-    transform: translateY(-50px) rotate(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(110vh) rotate(360deg);
-    opacity: 0.7;
-  }
 }
 
 .bx-coin {
@@ -1747,7 +1295,6 @@
   top: 0;
   font-size: 2rem;
   z-index: 101;
-  animation: bx-coin-fall 3s linear infinite;
   pointer-events: none;
 }
 
@@ -1779,20 +1326,13 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  transition: box-shadow 0.2s;
   cursor: pointer;
   height: 100%;
   min-height: 130px;
   border: none;
   padding: 0;
   font: inherit;
-  animation: bx-fade-in-up 0.5s ease backwards;
-}
-
-.bx-ticket:active {
-  transform: scale(0.95);
 }
 
 .bx-ticket::before,
@@ -1841,7 +1381,6 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  animation: bx-fade-in 0.3s;
 }
 
 .bx-coupon-modal {
@@ -1868,7 +1407,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: bx-bounce 1s infinite;
 }
 
 .bx-coupon-modal-title {
@@ -1967,11 +1505,6 @@
   height: 100%;
   object-fit: cover;
   filter: grayscale(100%) contrast(1.1);
-  transition: filter 0.5s;
-}
-
-.bx-editorial-photo:hover img.bx-editorial-img {
-  filter: grayscale(0%) contrast(1);
 }
 
 .bx-editorial-body {
@@ -1992,7 +1525,6 @@
   justify-content: center;
   align-items: center;
   padding: 20px;
-  animation: bx-fade-in 0.3s ease forwards;
 }
 
 .bx-modal {
@@ -2021,22 +1553,12 @@
   align-items: center;
 }
 
-@keyframes bx-float-blob {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
-    transform: translate(30px, 50px) scale(1.1);
-  }
-}
-
 .bx-blob {
   position: absolute;
   border-radius: 50%;
   filter: blur(60px);
   opacity: 0.6;
   z-index: 0;
-  animation: bx-float-blob 10s ease-in-out infinite alternate;
 }
 
 .bx-blob-1 {
@@ -2053,7 +1575,6 @@
   width: 250px;
   height: 250px;
   background: #ee9ca7;
-  animation-delay: -5s;
 }
 
 .bx-blob-3 {
@@ -2062,7 +1583,6 @@
   width: 200px;
   height: 200px;
   background: #c3cfe2;
-  animation-duration: 15s;
 }
 
 .bx-reasons-feed {
@@ -2082,17 +1602,6 @@
   display: none;
 }
 
-@keyframes bx-drop-in {
-  from {
-    opacity: 0;
-    transform: translateY(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .bx-reason {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px);
@@ -2104,15 +1613,7 @@
   width: 100%;
   text-align: center;
   position: relative;
-  animation: bx-drop-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-shrink: 0;
-}
-
-.bx-reason.is-old {
-  opacity: 0.5;
-  transform: scale(0.95);
-  background: rgba(255, 255, 255, 0.4);
-  transition: all 0.6s ease;
 }
 
 .bx-reason-text {
@@ -2146,82 +1647,34 @@
   background-color: var(--bx-primary);
   margin-left: 4px;
   vertical-align: sub;
-  animation: bx-blink 1s infinite;
   border-radius: 2px;
 }
 
 /* ── Fortuna ────────────────────────────────────────────────────────────── */
-
-@keyframes bx-float-cookie {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
-}
-
-@keyframes bx-header-pattern {
-  0% {
-    background-position: 0% 0%;
-  }
-  100% {
-    background-position: 100% 100%;
-  }
-}
 
 .bx-fortune-accent {
   color: var(--bx-primary);
   font-weight: bold;
 }
 
-/* ── Diario ─────────────────────────────────────────────────────────────── */
-
-@keyframes bx-bubbles {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.6;
-  }
-  80% {
-    opacity: 0.3;
-  }
-  100% {
-    transform: translateY(-120vh) scale(1.5);
-    opacity: 0;
-  }
-}
-
-/* ── Anécdota ───────────────────────────────────────────────────────────── */
-
-@keyframes bx-card-in {
-  from {
-    opacity: 0;
-    transform: translateY(40px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
 /* ── Accesibilidad ──────────────────────────────────────────────────────── */
 
+/* El movimiento lo maneja framer-motion, que ya respeta esta preferencia
+   (sin desplazamientos, loops quietos). Acá solo quedan las transiciones de
+   color y lo decorativo que no aporta nada quieto. */
 @media (prefers-reduced-motion: reduce) {
   .bx-player *,
   .bx-player *::before,
   .bx-player *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 
   .bx-particle,
   .bx-gamer-shape,
-  .bx-coin {
+  .bx-coin,
+  .bx-confetti,
+  .bx-confetti-layer,
+  .bx-decor {
     display: none;
   }
 }

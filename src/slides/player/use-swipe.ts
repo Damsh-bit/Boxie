@@ -1,10 +1,18 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
+import { animate, type MotionValue } from 'framer-motion'
+import { useCallback, useEffect, useLayoutEffect, useRef, type RefObject } from 'react'
+import { SLIDE_SPRING } from './motion'
 
 /**
  * Navegación vertical tipo historias.
  *
- * Porta la lógica del prototipo (arrastrar más de 80 px cambia de slide, con
- * resistencia en los extremos) y le agrega lo que le faltaba:
+ * El dedo mueve directamente `position` (un valor de movimiento: la slide
+ * "actual" como número continuo, 2.3 = un 30% camino a la 3). No hay estado
+ * de React en el medio, así que arrastrar no re-renderiza el player y va a la
+ * par del dedo aunque el teléfono sea modesto. Al soltar decide por distancia
+ * o por velocidad (un "flick" corto también pasa de slide) y el resorte sigue
+ * con la inercia del gesto.
+ *
+ * Además:
  *  · scroll anidado: en las slides que son listas (playlists, cuponera,
  *    revista) el dedo primero scrollea la lista y recién en el borde pasa de
  *    slide; en el prototipo las dos cosas pasaban a la vez.
@@ -12,8 +20,13 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObje
  *  · un arrastre no dispara el click del botón donde empezó.
  */
 
-const THRESHOLD = 80
-const WHEEL_COOLDOWN_MS = 700
+/** Cuánto hay que arrastrar (en slides) para pasar sin velocidad. */
+const DISTANCE = 0.14
+/** Velocidad (slides por segundo) que alcanza para pasar con un flick. */
+const FLICK = 0.55
+/** Resistencia más allá de la primera/última slide. */
+const RUBBER = 0.28
+const WHEEL_COOLDOWN_MS = 650
 
 function isEditable(el: Element | null): boolean {
   return !!el?.closest('input, textarea, select, [contenteditable="true"]')
@@ -36,23 +49,30 @@ function canScroll(el: HTMLElement, delta: number): boolean {
 
 export function useSwipe(
   ref: RefObject<HTMLElement | null>,
-  { index, count, onChange }: { index: number; count: number; onChange: (next: number) => void },
+  {
+    index,
+    count,
+    position,
+    onChange,
+  }: {
+    index: number
+    count: number
+    position: MotionValue<number>
+    onChange: (next: number) => void
+  },
 ) {
-  const [dragging, setDragging] = useState(false)
-  const [offset, setOffset] = useState(0)
-  const state = useRef({ index, count })
+  // Lo que cambia entre renders se lee de acá: los listeners se enganchan una
+  // sola vez y un re-render en medio de un arrastre no lo corta.
+  const state = useRef({ index, count, onChange })
   useLayoutEffect(() => {
-    state.current = { index, count }
-  }, [index, count])
+    state.current = { index, count, onChange }
+  }, [index, count, onChange])
 
-  const go = useCallback(
-    (delta: number) => {
-      const { index: i, count: n } = state.current
-      const next = Math.max(0, Math.min(n - 1, i + delta))
-      if (next !== i) onChange(next)
-    },
-    [onChange],
-  )
+  const go = useCallback((delta: number) => {
+    const { index: i, count: n, onChange: change } = state.current
+    const next = Math.max(0, Math.min(n - 1, i + delta))
+    if (next !== i) change(next)
+  }, [])
 
   useEffect(() => {
     const root = ref.current
@@ -60,16 +80,12 @@ export function useSwipe(
 
     let startY = 0
     let startX = 0
+    let from = 0
+    let height = 1
     let mode: 'undecided' | 'slide' | 'scroll' | 'ignore' = 'ignore'
     let scroller: HTMLElement | null = null
-    let current = 0
     let moved = false
     let lastWheel = 0
-
-    const resist = (dy: number) => {
-      const { index: i, count: n } = state.current
-      return (i === 0 && dy > 0) || (i === n - 1 && dy < 0) ? dy * 0.3 : dy
-    }
 
     const begin = (x: number, y: number, target: EventTarget | null) => {
       if (isEditable(target as Element)) {
@@ -78,7 +94,6 @@ export function useSwipe(
       }
       startX = x
       startY = y
-      current = 0
       moved = false
       mode = 'undecided'
       scroller = scrollableAncestor(target as Element, root)
@@ -86,9 +101,9 @@ export function useSwipe(
 
     const move = (x: number, y: number, event: Event) => {
       if (mode === 'ignore' || mode === 'scroll') return
-      const dy = y - startY
-      const dx = x - startX
       if (mode === 'undecided') {
+        const dy = y - startY
+        const dx = x - startX
         if (Math.abs(dy) < 6 && Math.abs(dx) < 6) return
         if (Math.abs(dx) > Math.abs(dy)) {
           mode = 'ignore'
@@ -96,22 +111,38 @@ export function useSwipe(
         }
         mode = scroller && canScroll(scroller, dy) ? 'scroll' : 'slide'
         if (mode === 'scroll') return
-        setDragging(true)
+        // Se agarra el mazo donde esté (aunque venga animándose) y sin salto.
+        position.stop()
+        from = position.get()
+        height = root.clientHeight || window.innerHeight
+        startY = y
       }
       if (event.cancelable) event.preventDefault()
+      const dy = y - startY
       moved = moved || Math.abs(dy) > 10
-      current = resist(dy)
-      setOffset(current)
+      const { index: i, count: n } = state.current
+      const min = Math.max(0, i - 1)
+      const max = Math.min(n - 1, i + 1)
+      let next = from - dy / height
+      if (next < min) next = min - (min - next) * RUBBER
+      if (next > max) next = max + (next - max) * RUBBER
+      position.set(next)
     }
 
     const end = () => {
       if (mode === 'slide') {
-        if (current < -THRESHOLD) go(1)
-        else if (current > THRESHOLD) go(-1)
+        const { index: i, count: n, onChange: change } = state.current
+        const offset = position.get() - i
+        const velocity = position.getVelocity()
+        let target = i
+        if (offset > DISTANCE || (velocity > FLICK && offset > 0.02)) target = i + 1
+        else if (offset < -DISTANCE || (velocity < -FLICK && offset < -0.02)) target = i - 1
+        target = Math.max(0, Math.min(n - 1, target))
+        // Si cambia de slide, el player anima hacia la nueva; si no, vuelve.
+        if (target !== i) change(target)
+        else animate(position, i, SLIDE_SPRING)
       }
       mode = 'ignore'
-      setDragging(false)
-      setOffset(0)
     }
 
     const onTouchStart = (e: TouchEvent) => {
@@ -177,7 +208,7 @@ export function useSwipe(
       root.removeEventListener('wheel', onWheel)
       root.removeEventListener('keydown', onKeyDown)
     }
-  }, [ref, go])
+  }, [ref, go, position])
 
-  return { dragging, offset, go }
+  return { go }
 }

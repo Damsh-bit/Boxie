@@ -1,4 +1,10 @@
-/** "¡Presumí tu regalo!": cómo compartir una captura en Stories (revista y anécdota). */
+import { motion } from 'framer-motion'
+import { spring } from './motion'
+
+/**
+ * "¡Presumí tu regalo!": cómo compartir una captura en Stories (revista y
+ * anécdota). Va dentro de un AnimatePresence: entra y sale animado.
+ */
 export function ShareHint({
   onClose,
   handle = '@boxie.app',
@@ -7,15 +13,30 @@ export function ShareHint({
   handle?: string
 }) {
   return (
-    <div className="bx-modal-overlay" onClick={onClose}>
-      <div
+    <motion.div
+      className="bx-modal-overlay"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.2, delay: 0.05 } }}
+    >
+      <motion.div
         className="bx-modal"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal
         aria-label="Compartir en Stories"
+        initial={{ opacity: 0, scale: 0.85, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0, transition: spring.bouncy }}
+        exit={{ opacity: 0, scale: 0.9, y: 20, transition: { duration: 0.18 } }}
       >
-        <div style={{ fontSize: '3rem', marginBottom: 10 }}>📸</div>
+        <motion.div
+          style={{ fontSize: '3rem', marginBottom: 10 }}
+          initial={{ scale: 0, rotate: -30 }}
+          animate={{ scale: 1, rotate: 0, transition: { ...spring.pop, delay: 0.1 } }}
+        >
+          📸
+        </motion.div>
         <h3 style={{ color: 'var(--bx-ink)', margin: '0 0 10px 0', fontSize: '1.4rem' }}>
           ¡Presumí tu regalo!
         </h3>
@@ -37,9 +58,10 @@ export function ShareHint({
           <br />
           <strong style={{ color: 'var(--bx-primary)', fontSize: '1rem' }}>{handle}</strong>
         </div>
-        <button
+        <motion.button
           type="button"
           onClick={onClose}
+          whileTap={{ scale: 0.96 }}
           style={{
             background: 'var(--bx-ink)',
             border: 'none',
@@ -53,8 +75,8 @@ export function ShareHint({
           }}
         >
           ¡Entendido!
-        </button>
-      </div>
-    </div>
+        </motion.button>
+      </motion.div>
+    </motion.div>
   )
 }

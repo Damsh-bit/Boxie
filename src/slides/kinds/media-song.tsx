@@ -1,5 +1,51 @@
+import { motion, useReducedMotion } from 'framer-motion'
 import { youtubeId } from '../fields'
+import { Appear, ease } from './motion'
 import type { Props } from './shared'
+
+/** Tres barritas de ecualizador que bailan mientras suena la canción. */
+function Equalizer({ active }: { active: boolean }) {
+  const calm = useReducedMotion()
+  const run = active && !calm
+  return (
+    <span
+      aria-hidden
+      style={{ display: 'inline-flex', alignItems: 'flex-end', gap: 3, height: 16 }}
+    >
+      {[0.9, 0.6, 1.1].map((speed, i) => (
+        <motion.span
+          key={i}
+          style={{
+            width: 4,
+            height: 16,
+            borderRadius: 2,
+            background: 'var(--bx-primary)',
+            transformOrigin: 'bottom',
+          }}
+          initial={{ transform: 'scaleY(0.3)' }}
+          animate={
+            run
+              ? {
+                  transform: [
+                    'scaleY(0.3)',
+                    'scaleY(1)',
+                    'scaleY(0.5)',
+                    'scaleY(0.85)',
+                    'scaleY(0.3)',
+                  ],
+                }
+              : { transform: 'scaleY(0.3)' }
+          }
+          transition={
+            run
+              ? { duration: speed, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 }
+              : { duration: 0.3 }
+          }
+        />
+      ))}
+    </span>
+  )
+}
 
 /**
  * El video se monta solo con la slide en pantalla. En el prototipo se montaba
@@ -29,14 +75,18 @@ export function MediaSong({ theme, buyer, ctx }: Props<'media.song'>) {
     >
       <div className="bx-video-frame">
         {id && ctx.active ? (
-          <iframe
+          <motion.iframe
             src={`https://www.youtube-nocookie.com/embed/${id}?${params}`}
             allow="autoplay; encrypted-media"
             title={buyer.songTitle || 'Nuestra canción'}
             referrerPolicy="strict-origin-when-cross-origin"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.2, delay: 0.3, ease: ease.out }}
           />
         ) : !id ? (
-          <div
+          <Appear
+            active={ctx.active}
             style={{
               width: '100%',
               height: '100%',
@@ -47,11 +97,11 @@ export function MediaSong({ theme, buyer, ctx }: Props<'media.song'>) {
             }}
           >
             {theme.emptyLabel}
-          </div>
+          </Appear>
         ) : null}
       </div>
 
-      <div className="bx-song-card">
+      <Appear active={ctx.active} delay={0.5} y={50} className="bx-song-card">
         <h3
           style={{
             color: 'white',
@@ -63,7 +113,7 @@ export function MediaSong({ theme, buyer, ctx }: Props<'media.song'>) {
             textShadow: '0 2px 4px rgba(0,0,0,0.5)',
           }}
         >
-          {buyer.songTitle} 🎵
+          {buyer.songTitle} <Equalizer active={ctx.active && !!id} />
         </h3>
         <p
           style={{
@@ -75,7 +125,7 @@ export function MediaSong({ theme, buyer, ctx }: Props<'media.song'>) {
         >
           <strong style={{ color: 'var(--bx-primary)' }}>{ctx.senderName}</strong> {theme.caption}
         </p>
-      </div>
+      </Appear>
     </div>
   )
 }

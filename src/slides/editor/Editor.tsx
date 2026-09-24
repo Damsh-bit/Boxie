@@ -1,13 +1,16 @@
 'use client'
 
-import { Check, CloudOff, Eye, Gift, LoaderCircle, RotateCcw } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowRight, Check, CloudOff, Eye, Gift, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { z } from 'zod'
 import { formatBoxieCode } from '@/domain/boxie'
-import { Button } from '@/ui/Button'
+import { Button, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { Input, Label } from '@/ui/form'
+import { Modal } from '@/ui/Modal'
+import { ease, Spinner, spring, Swap, useCalm } from '@/ui/motion'
 import { collectAssetIds, type ParsedThemeConfig } from '../config'
 import { Player, type PlayerData } from '../player/Player'
 import { slideDefinitions } from '../schemas'
@@ -81,19 +84,29 @@ export function Editor({
     const summary = progressSummary(modules, initialDraft)
     return summary.modules.find((m) => m.state === 'incomplete')?.module.id ?? modules[0]!.id
   })
-  const [preview, setPreview] = useState(() => ({
-    index: modules.find((m) => m.id === openId)?.previewIndex ?? 0,
-    nonce: 0,
-  }))
+  const [previewIndex, setPreviewIndex] = useState(
+    () => modules.find((m) => m.id === openId)?.previewIndex ?? 0,
+  )
   const [overlay, setOverlay] = useState<{ index: number } | null>(null)
   const [review, setReview] = useState<{ until: string } | null>(null)
   const [locking, setLocking] = useState(false)
   const [lockError, setLockError] = useState<string | null>(null)
+  const [confirmReset, setConfirmReset] = useState(false)
   const { status, schedule, flush } = useAutosave(backend.save)
 
-  const progress = progressSummary(modules, draft, { hasPassword })
+  // Lo último que se guardó en el estado: los cambios que llegan tarde (una
+  // foto que termina de subir) se suman a esto y no pisan lo escrito mientras.
+  const latest = useRef(draft)
+  useLayoutEffect(() => {
+    latest.current = draft
+  })
 
-  const change = (next: EditorDraft) => {
+  const progress = progressSummary(modules, draft, { hasPassword })
+  const ready = progress.missing.length === 0
+
+  const change = (update: (current: EditorDraft) => EditorDraft) => {
+    const next = update(latest.current)
+    latest.current = next
     setDraft(next)
     schedule(next)
   }
@@ -114,13 +127,10 @@ export function Editor({
     media,
   }
 
-  const showInPreview = (module: EditorModule) =>
-    setPreview((p) => ({ index: module.previewIndex, nonce: p.nonce + 1 }))
-
   function toggle(module: EditorModule) {
     const opening = openId !== module.id
     setOpenId(opening ? module.id : null)
-    if (opening) showInPreview(module)
+    if (opening) setPreviewIndex(module.previewIndex)
   }
 
   function goTo(moduleId: string) {
@@ -128,13 +138,13 @@ export function Editor({
     if (!target) return
     setReview(null)
     setOpenId(target.id)
-    showInPreview(target)
+    setPreviewIndex(target.previewIndex)
     setTimeout(
       () =>
         document
           .getElementById(`seccion-${target.id}`)
           ?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
-      50,
+      350,
     )
   }
 
@@ -165,265 +175,451 @@ export function Editor({
     window.scrollTo({ top: 0 })
   }
 
-  const overlayPlayer = overlay && (
-    <Player
-      config={config}
-      data={playerData}
-      preview
-      initialSlide={overlay.index}
-      onClose={() => setOverlay(null)}
-    />
+  const overlayPlayer = (
+    <AnimatePresence>
+      {overlay && (
+        <Player
+          key="vista-previa"
+          config={config}
+          data={playerData}
+          preview
+          animateIn
+          initialSlide={overlay.index}
+          onClose={() => setOverlay(null)}
+        />
+      )}
+    </AnimatePresence>
   )
 
-  if (locked) {
-    return (
-      <>
-        <GiftReady
-          sandbox={isSandbox}
-          recipientName={draft.recipientName}
-          giftUrl={locked.giftUrl}
-          expiresAt={locked.expiresAt}
-          emailedTo={locked.emailedTo}
-          hasPassword={hasPassword}
-          theme={theme}
-          onViewGift={() => setOverlay({ index: 0 })}
-          onKeepEditing={() => {
-            sandbox?.onUnlock()
-            setLocked(null)
-          }}
-        />
-        {overlayPlayer}
-      </>
-    )
-  }
-
   return (
-    <div className="min-h-dvh bg-[#f7f5f6]">
-      <header className="sticky top-0 z-40 border-b border-neutral-200/70 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4">
-          <Link href="/" className="shrink-0" aria-label="Boxie Digital, inicio">
-            <img src="/brand/boxie-logo.png" alt="Boxie" className="h-7 w-auto" />
-          </Link>
-          <div className="min-w-0 flex-1 border-l border-neutral-200 pl-3">
-            <p className="truncate text-sm font-semibold text-ink">Boxie {theme.name}</p>
-            <p className="truncate text-xs text-neutral-500">
-              {isSandbox ? 'Modo prueba' : code ? `Código ${formatBoxieCode(code)}` : ''}
-            </p>
-          </div>
-          <SaveIndicator status={status} sandbox={isSandbox} onRetry={() => void flush()} />
-          <Button size="sm" className="hidden sm:inline-flex" onClick={openReview}>
-            <Gift className="size-4" aria-hidden /> Regalar
-          </Button>
-        </div>
-      </header>
-
-      {isSandbox && (
-        <div className="border-b border-amber-200 bg-amber-50">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2.5 text-sm text-amber-900">
-            <p className="flex-1">
-              🧪 <strong>Modo prueba:</strong> lo que cargues queda solo en este navegador
-              <span className="hidden sm:inline">; nada se sube a ningún servidor</span>.
-            </p>
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 font-semibold underline-offset-2 hover:underline"
-              onClick={() => {
-                if (window.confirm('¿Borrar la prueba y empezar de nuevo?')) sandbox?.onReset()
-              }}
-            >
-              <RotateCcw className="size-3.5" aria-hidden /> Empezar de nuevo
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-6 pb-32 lg:grid-cols-[minmax(0,1fr)_360px] lg:pb-16">
-        <main className="min-w-0 space-y-4">
-          <section className="rounded-3xl bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] sm:p-8">
-            <p className="text-xs font-bold tracking-widest text-brand uppercase">
-              {isSandbox ? 'Probá cómo se personaliza' : 'Tu Boxie'}
-            </p>
-            <h1 className="mt-1 font-display text-3xl leading-tight font-bold text-ink">
-              Personalizá tu Boxie {theme.name}
-            </h1>
-            <p className="mt-2 leading-relaxed text-neutral-600">
-              Completá cada parte a tu ritmo: se guarda sola. Cuando esté como querés, la bloqueás y
-              te damos el link para regalarla.
-            </p>
-            <div className="mt-5">
-              <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
-                <span className="font-semibold text-ink">
-                  {progress.done} de {progress.total} partes completas
-                </span>
-                <span className={progress.missing.length ? 'text-amber-700' : 'text-green-700'}>
-                  {progress.missing.length
-                    ? `Faltan ${progress.missing.length} ${progress.missing.length === 1 ? 'dato obligatorio' : 'datos obligatorios'}`
-                    : '¡Lista para regalar!'}
-                </span>
-              </div>
-              <div
-                className="mt-2 h-2 overflow-hidden rounded-full bg-neutral-100"
-                role="progressbar"
-                aria-valuemin={0}
-                aria-valuemax={progress.total}
-                aria-valuenow={progress.done}
-                aria-label="Partes completas"
-              >
-                <div
-                  className="h-full rounded-full bg-brand transition-[width] duration-500"
-                  style={{ width: `${(progress.done / Math.max(progress.total, 1)) * 100}%` }}
-                />
-              </div>
-              {editableUntil && (
-                <p className="mt-3 text-xs text-neutral-500">
-                  Podés editarla hasta el {formatLongDate(editableUntil)}.
-                </p>
-              )}
-            </div>
-          </section>
-
-          {progress.modules.map(({ module, state, missing }) => (
-            <ModuleCard
-              key={module.id}
-              module={module}
-              progress={{ state, missing }}
-              open={openId === module.id}
-              onToggle={() => toggle(module)}
-              onPreview={() => setOverlay({ index: module.previewIndex })}
-            >
-              {module.kind === 'globals' && (
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="editor-para">
-                      Para<span className="ml-1 text-brand">*</span>
-                    </Label>
-                    <Input
-                      id="editor-para"
-                      value={draft.recipientName}
-                      maxLength={40}
-                      autoComplete="off"
-                      placeholder="Su nombre o apodo"
-                      onChange={(e) => change({ ...draft, recipientName: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="editor-de">
-                      De parte de<span className="ml-1 text-brand">*</span>
-                    </Label>
-                    <Input
-                      id="editor-de"
-                      value={draft.senderName}
-                      maxLength={40}
-                      autoComplete="off"
-                      placeholder="Tu nombre"
-                      onChange={(e) => change({ ...draft, senderName: e.target.value })}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {module.kind === 'slide' && module.slideKind && module.slideKey && (
-                <SlideFields
-                  module={module}
-                  value={draft.slides[module.slideKey]}
-                  media={mediaAdapter}
-                  onChange={(next) =>
-                    change({ ...draft, slides: { ...draft.slides, [module.slideKey!]: next } })
-                  }
-                />
-              )}
-
-              {module.kind === 'password' && (
-                <PasswordFields
-                  hasPassword={hasPassword}
-                  onSave={async (password) => {
-                    const result = await backend.setPassword(password)
-                    if (result.ok) setHasPassword(result.hasPassword)
-                    return result
-                  }}
-                />
-              )}
-            </ModuleCard>
-          ))}
-
-          <section className="rounded-3xl bg-ink p-6 text-white sm:p-8">
-            <h2 className="font-display text-2xl font-bold">¿Terminaste?</h2>
-            <p className="mt-2 text-white/70">
-              {progress.missing.length
-                ? 'Revisá lo que falta y, cuando esté completa, la bloqueás para regalarla.'
-                : 'Está todo listo. Mirala una última vez en la vista previa y regalala.'}
-            </p>
-            <Button size="lg" className="mt-5" onClick={openReview}>
-              <Gift className="size-5" aria-hidden /> Revisar y regalar
-            </Button>
-          </section>
-        </main>
-
-        <aside className="hidden lg:block" aria-label="Vista previa">
-          <div className="sticky top-24">
-            <div className="mb-3 flex items-center justify-between px-1">
-              <p className="text-sm font-semibold text-ink">Vista previa</p>
-              <p className="text-xs text-neutral-500">
-                Así la ve {draft.recipientName.trim() || 'quien la recibe'}
-              </p>
-            </div>
-            <div className="mx-auto aspect-[9/19] h-[min(700px,calc(100dvh-9rem))]">
-              <Player
-                key={preview.nonce}
-                config={config}
-                data={playerData}
-                variant="embedded"
-                preview
-                initialSlide={preview.index}
-              />
-            </div>
-            <p className="mt-3 text-center text-xs text-neutral-400">
-              Deslizá o usá las flechas para recorrerla
-            </p>
-          </div>
-        </aside>
-      </div>
-
-      <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white/95 px-3 pt-3 backdrop-blur lg:hidden"
-        style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
-      >
-        <div className="mx-auto flex max-w-lg gap-3">
-          <Button
-            variant="secondary"
-            className="flex-1"
-            onClick={() => setOverlay({ index: preview.index })}
+    <>
+      <AnimatePresence mode="wait" initial={false}>
+        {locked ? (
+          <motion.div
+            key="lista"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
           >
-            <Eye className="size-4" aria-hidden /> Vista previa
-          </Button>
-          <Button className="flex-1" onClick={openReview}>
-            <Gift className="size-4" aria-hidden /> Regalar
-          </Button>
-        </div>
-      </div>
+            <GiftReady
+              sandbox={isSandbox}
+              recipientName={draft.recipientName}
+              giftUrl={locked.giftUrl}
+              expiresAt={locked.expiresAt}
+              emailedTo={locked.emailedTo}
+              hasPassword={hasPassword}
+              theme={theme}
+              onViewGift={() => setOverlay({ index: 0 })}
+              onKeepEditing={() => {
+                sandbox?.onUnlock()
+                setLocked(null)
+              }}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="editor"
+            className="min-h-dvh bg-[#f7f5f6]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.25 } }}
+            transition={{ duration: 0.35 }}
+          >
+            <header className="sticky top-0 z-40 border-b border-neutral-200/70 bg-white/85 backdrop-blur-xl">
+              <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4">
+                <Link href="/" className="shrink-0" aria-label="Boxie Digital, inicio">
+                  <img src="/brand/boxie-logo.png" alt="Boxie" className="h-7 w-auto" />
+                </Link>
+                <div className="min-w-0 flex-1 border-l border-neutral-200 pl-3">
+                  <p className="truncate text-sm font-semibold text-ink">Boxie {theme.name}</p>
+                  <p className="truncate text-xs text-neutral-500">
+                    {isSandbox ? 'Modo prueba' : code ? `Código ${formatBoxieCode(code)}` : ''}
+                  </p>
+                </div>
+                <SaveIndicator status={status} sandbox={isSandbox} onRetry={() => void flush()} />
+                <GiftButton
+                  ready={ready}
+                  className="hidden sm:inline-flex"
+                  onClick={openReview}
+                  size="sm"
+                />
+              </div>
+            </header>
 
+            {isSandbox && (
+              <div className="border-b border-amber-200 bg-amber-50">
+                <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2.5 text-sm text-amber-900">
+                  <p className="flex-1">
+                    🧪 <strong>Modo prueba:</strong> lo que cargues queda solo en este navegador
+                    <span className="hidden sm:inline">; nada se sube a ningún servidor</span>.
+                  </p>
+                  <motion.button
+                    type="button"
+                    className="inline-flex items-center gap-1.5 font-semibold underline-offset-2 hover:underline"
+                    onClick={() => setConfirmReset(true)}
+                    initial="rest"
+                    animate="rest"
+                    whileHover="hover"
+                    whileTap={{ scale: 0.96 }}
+                  >
+                    <Nudge rotate={-180}>
+                      <RotateCcw className="size-3.5" aria-hidden />
+                    </Nudge>
+                    Empezar de nuevo
+                  </motion.button>
+                </div>
+              </div>
+            )}
+
+            <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-6 pb-32 lg:grid-cols-[minmax(0,1fr)_360px] lg:pb-16">
+              <motion.main
+                className="min-w-0 space-y-4"
+                initial="hidden"
+                animate="show"
+                variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } } }}
+              >
+                <motion.section
+                  variants={cardIn}
+                  className="rounded-3xl bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] sm:p-8"
+                >
+                  <p className="text-xs font-bold tracking-widest text-brand uppercase">
+                    {isSandbox ? 'Probá cómo se personaliza' : 'Tu Boxie'}
+                  </p>
+                  <h1 className="mt-1 font-display text-3xl leading-tight font-bold text-ink">
+                    Personalizá tu Boxie {theme.name}
+                  </h1>
+                  <p className="mt-2 leading-relaxed text-neutral-600">
+                    Completá cada parte a tu ritmo: se guarda sola. Cuando esté como querés, la
+                    bloqueás y te damos el link para regalarla.
+                  </p>
+                  <Progress
+                    done={progress.done}
+                    total={progress.total}
+                    missing={progress.missing.length}
+                    onMissing={() => {
+                      const first = progress.missing[0]
+                      if (first) goTo(first.moduleId)
+                    }}
+                  />
+                  {editableUntil && (
+                    <p className="mt-3 text-xs text-neutral-500">
+                      Podés editarla hasta el {formatLongDate(editableUntil)}.
+                    </p>
+                  )}
+                </motion.section>
+
+                {progress.modules.map(({ module, state, missing }) => (
+                  <motion.div key={module.id} variants={cardIn}>
+                    <ModuleCard
+                      module={module}
+                      progress={{ state, missing }}
+                      open={openId === module.id}
+                      onToggle={() => toggle(module)}
+                      onPreview={() => setOverlay({ index: module.previewIndex })}
+                    >
+                      {module.kind === 'globals' && (
+                        <div className="grid gap-5 sm:grid-cols-2">
+                          <div>
+                            <Label htmlFor="editor-para">
+                              Para<span className="ml-1 text-brand">*</span>
+                            </Label>
+                            <Input
+                              id="editor-para"
+                              value={draft.recipientName}
+                              maxLength={40}
+                              autoComplete="off"
+                              placeholder="Su nombre o apodo"
+                              onChange={(e) => {
+                                const recipientName = e.target.value
+                                change((d) => ({ ...d, recipientName }))
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="editor-de">
+                              De parte de<span className="ml-1 text-brand">*</span>
+                            </Label>
+                            <Input
+                              id="editor-de"
+                              value={draft.senderName}
+                              maxLength={40}
+                              autoComplete="off"
+                              placeholder="Tu nombre"
+                              onChange={(e) => {
+                                const senderName = e.target.value
+                                change((d) => ({ ...d, senderName }))
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {module.kind === 'slide' && module.slideKind && module.slideKey && (
+                        <SlideFields
+                          module={module}
+                          value={draft.slides[module.slideKey]}
+                          media={mediaAdapter}
+                          onChange={(next) =>
+                            change((d) => ({
+                              ...d,
+                              slides: { ...d.slides, [module.slideKey!]: next },
+                            }))
+                          }
+                        />
+                      )}
+
+                      {module.kind === 'password' && (
+                        <PasswordFields
+                          hasPassword={hasPassword}
+                          onSave={async (password) => {
+                            const result = await backend.setPassword(password)
+                            if (result.ok) setHasPassword(result.hasPassword)
+                            return result
+                          }}
+                        />
+                      )}
+                    </ModuleCard>
+                  </motion.div>
+                ))}
+
+                <motion.section
+                  variants={cardIn}
+                  className="relative overflow-hidden rounded-3xl bg-ink p-6 text-white sm:p-8"
+                >
+                  <motion.div
+                    aria-hidden
+                    className="pointer-events-none absolute -top-20 -right-16 size-56 rounded-full bg-brand/30 blur-3xl"
+                    animate={{ opacity: ready ? 1 : 0.35, scale: ready ? 1.15 : 1 }}
+                    transition={spring.gentle}
+                  />
+                  <h2 className="relative font-display text-2xl font-bold">¿Terminaste?</h2>
+                  <p className="relative mt-2 text-white/70">
+                    <Swap id={ready ? 'lista' : 'falta'} y={6}>
+                      {ready
+                        ? 'Está todo listo. Mirala una última vez en la vista previa y regalala.'
+                        : 'Revisá lo que falta y, cuando esté completa, la bloqueás para regalarla.'}
+                    </Swap>
+                  </p>
+                  <GiftButton
+                    ready={ready}
+                    size="lg"
+                    className="relative mt-5"
+                    onClick={openReview}
+                  >
+                    Revisar y regalar
+                  </GiftButton>
+                </motion.section>
+              </motion.main>
+
+              <aside className="hidden lg:block" aria-label="Vista previa">
+                <motion.div
+                  className="sticky top-24"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ ...spring.gentle, delay: 0.25 }}
+                >
+                  <div className="mb-3 flex items-center justify-between px-1">
+                    <p className="text-sm font-semibold text-ink">Vista previa</p>
+                    <p className="text-xs text-neutral-500">
+                      Así la ve {draft.recipientName.trim() || 'quien la recibe'}
+                    </p>
+                  </div>
+                  <div className="mx-auto aspect-[9/19] h-[min(700px,calc(100dvh-9rem))]">
+                    <Player
+                      config={config}
+                      data={playerData}
+                      variant="embedded"
+                      preview
+                      slide={previewIndex}
+                      onSlideChange={setPreviewIndex}
+                    />
+                  </div>
+                  <p className="mt-3 text-center text-xs text-neutral-400">
+                    Deslizá o usá las flechas para recorrerla
+                  </p>
+                </motion.div>
+              </aside>
+            </div>
+
+            <motion.div
+              className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white/90 px-3 pt-3 backdrop-blur-xl lg:hidden"
+              style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+              initial={{ y: 100 }}
+              animate={{ y: 0 }}
+              transition={{ ...spring.gentle, delay: 0.3 }}
+            >
+              <div className="mx-auto flex max-w-lg gap-3">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => setOverlay({ index: previewIndex })}
+                >
+                  <Eye className="size-4" aria-hidden /> Vista previa
+                </Button>
+                <GiftButton ready={ready} className="flex-1" onClick={openReview} />
+              </div>
+            </motion.div>
+
+            <ReviewDialog
+              open={review !== null}
+              onOpenChange={(open) => !open && setReview(null)}
+              recipientName={draft.recipientName.trim()}
+              senderName={draft.senderName.trim()}
+              hasPassword={hasPassword}
+              photos={collectAssetIds(draft).length}
+              missing={progress.missing.map((m) => ({
+                moduleId: m.moduleId,
+                module: m.module,
+                label: m.label,
+              }))}
+              lifetimeDays={lifetimeDays}
+              until={review?.until ?? ''}
+              sandbox={isSandbox}
+              busy={locking}
+              error={lockError}
+              onGoTo={goTo}
+              onConfirm={() => void confirmLock()}
+            />
+
+            {isSandbox && (
+              <Modal
+                open={confirmReset}
+                onOpenChange={setConfirmReset}
+                icon="🧹"
+                title="¿Empezar de nuevo?"
+                description="Se borra todo lo que cargaste en esta prueba (textos y fotos). No se puede deshacer."
+              >
+                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                  <Button variant="secondary" block onClick={() => setConfirmReset(false)}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="danger"
+                    block
+                    onClick={() => {
+                      setConfirmReset(false)
+                      sandbox?.onReset()
+                    }}
+                  >
+                    <RotateCcw className="size-4" aria-hidden /> Borrar y empezar
+                  </Button>
+                </div>
+              </Modal>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
       {overlayPlayer}
+    </>
+  )
+}
 
-      <ReviewDialog
-        open={review !== null}
-        onOpenChange={(open) => !open && setReview(null)}
-        recipientName={draft.recipientName.trim()}
-        senderName={draft.senderName.trim()}
-        hasPassword={hasPassword}
-        photos={collectAssetIds(draft).length}
-        missing={progress.missing.map((m) => ({
-          moduleId: m.moduleId,
-          module: m.module,
-          label: m.label,
-        }))}
-        lifetimeDays={lifetimeDays}
-        until={review?.until ?? ''}
-        sandbox={isSandbox}
-        busy={locking}
-        error={lockError}
-        onGoTo={goTo}
-        onConfirm={() => void confirmLock()}
-      />
+const cardIn = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: ease.out } },
+}
+
+/** "Regalar": cuando la Boxie está completa, late para invitar al último paso. */
+function GiftButton({
+  ready,
+  size = 'md',
+  className,
+  onClick,
+  children = 'Regalar',
+}: {
+  ready: boolean
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
+  onClick(): void
+  children?: string
+}) {
+  const calm = useCalm()
+  return (
+    <span className={cn('relative inline-flex', className)}>
+      {ready && (
+        <motion.span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-full bg-brand opacity-0 motion-reduce:hidden"
+          animate={
+            calm ? undefined : { opacity: [0.45, 0], transform: ['scale(1)', 'scale(1.35)'] }
+          }
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
+        />
+      )}
+      <Button size={size} block onClick={onClick} className="relative">
+        <Gift className={size === 'lg' ? 'size-5' : 'size-4'} aria-hidden /> {children}
+      </Button>
+    </span>
+  )
+}
+
+function Progress({
+  done,
+  total,
+  missing,
+  onMissing,
+}: {
+  done: number
+  total: number
+  missing: number
+  onMissing(): void
+}) {
+  const complete = missing === 0
+  return (
+    <div className="mt-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
+        <span className="font-semibold text-ink">
+          <span className="relative inline-block min-w-[1ch] tabular-nums">
+            <Swap id={done} y={10}>
+              {done}
+            </Swap>
+          </span>{' '}
+          de {total} partes completas
+        </span>
+        {complete ? (
+          <motion.span
+            className="inline-flex items-center gap-1 font-semibold text-green-700"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={spring.bouncy}
+          >
+            <Check className="size-4" aria-hidden /> ¡Lista para regalar!
+          </motion.span>
+        ) : (
+          <motion.button
+            type="button"
+            onClick={onMissing}
+            className="inline-flex items-center gap-1 text-amber-700 underline-offset-2 hover:underline"
+            initial="rest"
+            animate="rest"
+            whileHover="hover"
+          >
+            Faltan {missing} {missing === 1 ? 'dato obligatorio' : 'datos obligatorios'}
+            <Nudge x={3}>
+              <ArrowRight className="size-3.5" aria-hidden />
+            </Nudge>
+          </motion.button>
+        )}
+      </div>
+      <div
+        className="mt-2 h-2.5 overflow-hidden rounded-full bg-neutral-100"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={total}
+        aria-valuenow={done}
+        aria-label="Partes completas"
+      >
+        <motion.div
+          className={cn(
+            'h-full rounded-full transition-colors duration-500',
+            complete ? 'bg-green-500' : 'bg-[linear-gradient(90deg,#f44e63,#ff8a9b)]',
+          )}
+          initial={false}
+          animate={{ width: `${(done / Math.max(total, 1)) * 100}%` }}
+          transition={spring.gentle}
+        />
+      </div>
     </div>
   )
 }
@@ -463,41 +659,75 @@ function SaveIndicator({
   onRetry(): void
 }) {
   const base = 'inline-flex shrink-0 items-center gap-1.5 text-xs font-medium'
-  switch (status.state) {
-    case 'saving':
-      return (
-        <span className={cn(base, 'text-neutral-500')} role="status">
-          <LoaderCircle className="size-4 animate-spin" aria-hidden /> Guardando…
-        </span>
-      )
-    case 'dirty':
-      return (
-        <button type="button" onClick={onRetry} className={cn(base, 'text-neutral-500')}>
-          <span className="size-2 rounded-full bg-amber-400" aria-hidden /> Sin guardar
-        </button>
-      )
-    case 'error':
-      return (
-        <button
-          type="button"
-          onClick={onRetry}
-          className={cn(base, 'text-red-600')}
-          title={status.error ?? undefined}
-          role="alert"
+  const view = (() => {
+    switch (status.state) {
+      case 'saving':
+        return (
+          <span className={cn(base, 'text-neutral-500')} role="status">
+            <Spinner /> Guardando…
+          </span>
+        )
+      case 'dirty':
+        return (
+          <button type="button" onClick={onRetry} className={cn(base, 'text-neutral-500')}>
+            <motion.span
+              className="size-2 rounded-full bg-amber-400"
+              animate={{ opacity: [1, 0.35, 1] }}
+              transition={{ duration: 1.2, repeat: Infinity }}
+              aria-hidden
+            />
+            Sin guardar
+          </button>
+        )
+      case 'error':
+        return (
+          <button
+            type="button"
+            onClick={onRetry}
+            className={cn(base, 'text-red-600')}
+            title={status.error ?? undefined}
+            role="alert"
+          >
+            <CloudOff className="size-4" aria-hidden /> No se guardó · Reintentar
+          </button>
+        )
+      default:
+        return (
+          <span
+            className={cn(base, 'text-green-700')}
+            role="status"
+            title={sandbox ? 'Se guarda en este navegador' : 'Se guarda en tu Boxie'}
+          >
+            <svg viewBox="0 0 24 24" className="size-4" fill="none" aria-hidden>
+              <motion.path
+                d="M5 12.5l4.5 4.5L19 7.5"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.35, ease: ease.out }}
+              />
+            </svg>
+            {status.savedAt ? 'Guardado' : 'Al día'}
+          </span>
+        )
+    }
+  })()
+  return (
+    <span className="relative flex justify-end">
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={status.state}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2, ease: ease.out }}
         >
-          <CloudOff className="size-4" aria-hidden /> No se guardó · Reintentar
-        </button>
-      )
-    default:
-      return (
-        <span
-          className={cn(base, 'text-green-700')}
-          role="status"
-          title={sandbox ? 'Se guarda en este navegador' : 'Se guarda en tu Boxie'}
-        >
-          <Check className="size-4" aria-hidden />
-          {status.savedAt ? 'Guardado' : 'Al día'}
-        </span>
-      )
-  }
+          {view}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  )
 }

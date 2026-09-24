@@ -1,10 +1,12 @@
 'use client'
 
-import { ArrowDown, ArrowUp, Plus, X } from 'lucide-react'
-import { useState, type ReactNode } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowDown, ArrowUp, ChevronDown, Plus, X } from 'lucide-react'
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { z } from 'zod'
 import { cn } from '@/ui/cn'
-import { Input, Label, Select, Textarea } from '@/ui/form'
+import { FieldMessage, Input, Label, Select, Textarea } from '@/ui/form'
+import { Collapse, ease, spring } from '@/ui/motion'
 import {
   arrayElement,
   getFieldMeta,
@@ -61,45 +63,88 @@ export function SchemaForm({
   disabled = false,
 }: SchemaFormProps) {
   const shape = objectShape(schema)
-  if (!shape) return null
   const root = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>
+  // Los cambios que llegan tarde (una foto que termina de subir) se aplican
+  // sobre el valor de ese momento, no sobre el de cuando empezaron: si no,
+  // pisarían lo que se escribió mientras tanto.
+  const latest = useRef(root)
+  useLayoutEffect(() => {
+    latest.current = root
+  })
+  if (!shape) return null
   const ctx: Ctx = {
     idPrefix,
     media,
     errors,
     disabled,
     root,
-    set: (path, next) => onChange(setIn(root, path, next)),
+    set: (path, next) => {
+      const updated = setIn(latest.current, path, next)
+      latest.current = updated
+      onChange(updated)
+    },
   }
   return <Fields shape={shape} path={[]} ctx={ctx} />
 }
 
 function Fields({ shape, path, ctx }: { shape: Record<string, AnySchema>; path: Path; ctx: Ctx }) {
+  const [showAdvanced, setShowAdvanced] = useState(false)
   const entries = Object.entries(shape).filter(([, s]) => getFieldMeta(s))
   const main = entries.filter(([, s]) => !getFieldMeta(s)?.advanced)
   const advanced = entries.filter(([, s]) => getFieldMeta(s)?.advanced)
+  const advancedId = `${idOf(ctx, path)}-mas`
   return (
     <div className="space-y-5">
       {main.map(([key, s]) => (
         <FieldFor key={key} schema={s} path={[...path, key]} ctx={ctx} />
       ))}
       {advanced.length > 0 && (
-        <details className="group rounded-2xl border border-neutral-200 px-4 py-3">
-          <summary className="cursor-pointer text-sm font-semibold text-neutral-600 select-none">
+        <div className="rounded-2xl border border-neutral-200">
+          <button
+            type="button"
+            aria-expanded={showAdvanced}
+            aria-controls={advancedId}
+            onClick={() => setShowAdvanced((o) => !o)}
+            className="flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-neutral-600 transition-colors hover:text-ink"
+          >
             Más opciones
-          </summary>
-          <div className="mt-4 space-y-5">
-            {advanced.map(([key, s]) => (
-              <FieldFor key={key} schema={s} path={[...path, key]} ctx={ctx} />
-            ))}
-          </div>
-        </details>
+            <motion.span animate={{ rotate: showAdvanced ? 180 : 0 }} transition={spring.snappy}>
+              <ChevronDown className="size-4" aria-hidden />
+            </motion.span>
+          </button>
+          <Collapse open={showAdvanced} id={advancedId}>
+            <div className="space-y-5 px-4 pt-1 pb-4">
+              {advanced.map(([key, s]) => (
+                <FieldFor key={key} schema={s} path={[...path, key]} ctx={ctx} />
+              ))}
+            </div>
+          </Collapse>
+        </div>
       )}
     </div>
   )
 }
 
 const idOf = (ctx: Ctx, path: Path) => `${ctx.idPrefix}-${path.join('-')}`
+
+/** Vista previa que aparece debajo de un campo (miniatura de YouTube, imagen). */
+function Appear({ show, children }: { show: boolean; children: ReactNode }) {
+  return (
+    <AnimatePresence initial={false}>
+      {show && (
+        <motion.div
+          className="overflow-hidden"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={spring.soft}
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
 
 function FieldFor({ schema, path, ctx }: { schema: AnySchema; path: Path; ctx: Ctx }) {
   const meta = getFieldMeta(schema)
@@ -182,16 +227,20 @@ function FieldFor({ schema, path, ctx }: { schema: AnySchema; path: Path; ctx: C
             aria-invalid={error ? true : undefined}
             onChange={(e) => set(e.target.value.trim())}
           />
-          {videoId && (
+          <Appear show={!!videoId}>
             <div className="mt-3 flex items-center gap-3 rounded-xl bg-neutral-50 p-2">
-              <img
+              <motion.img
+                key={videoId}
                 src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
                 alt=""
                 className="h-12 w-20 shrink-0 rounded-lg object-cover"
+                initial={{ scale: 0.7, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={spring.bouncy}
               />
               <span className="text-sm font-medium text-green-700">✓ Video de YouTube listo</span>
             </div>
-          )}
+          </Appear>
         </>,
       )
     }
@@ -212,13 +261,13 @@ function FieldFor({ schema, path, ctx }: { schema: AnySchema; path: Path; ctx: C
             aria-invalid={error ? true : undefined}
             onChange={(e) => set(e.target.value.trim())}
           />
-          {meta.widget === 'image' && text && (
+          <Appear show={meta.widget === 'image' && !!text}>
             <img
               src={text}
               alt=""
               className="mt-3 h-20 w-32 rounded-xl border border-neutral-200 object-cover"
             />
-          )}
+          </Appear>
         </>,
       )
     }
@@ -345,15 +394,7 @@ function FieldShell({
         {counter}
       </div>
       {children}
-      {(error || meta.help) && (
-        <p
-          id={`${id}-hint`}
-          className={cn('mt-1.5 text-xs', error ? 'font-medium text-red-600' : 'text-neutral-500')}
-          role={error ? 'alert' : undefined}
-        >
-          {error ?? meta.help}
-        </p>
-      )}
+      <FieldMessage id={`${id}-hint`} error={error} hint={meta.help} />
     </div>
   )
 }
@@ -362,7 +403,10 @@ function Counter({ length, max }: { length: number; max: number }) {
   const near = length >= max * 0.9
   return (
     <span
-      className={cn('text-[11px] tabular-nums', near ? 'text-amber-600' : 'text-neutral-400')}
+      className={cn(
+        'text-[11px] tabular-nums transition-colors duration-300',
+        near ? 'font-semibold text-amber-600' : 'text-neutral-400',
+      )}
       aria-hidden
     >
       {length}/{max}
@@ -384,7 +428,7 @@ function Switch({
   onChange(next: boolean): void
 }) {
   return (
-    <button
+    <motion.button
       id={id}
       type="button"
       role="switch"
@@ -392,18 +436,19 @@ function Switch({
       aria-labelledby={labelledBy}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={cn(
-        'relative h-7 w-12 shrink-0 rounded-full transition disabled:opacity-50',
-        checked ? 'bg-brand' : 'bg-neutral-300',
-      )}
+      className="relative h-7 w-12 shrink-0 rounded-full disabled:opacity-50"
+      initial={false}
+      animate={{ backgroundColor: checked ? '#f44e63' : '#d4d4d4' }}
+      whileTap={{ scale: 0.94 }}
+      transition={{ duration: 0.2 }}
     >
-      <span
-        className={cn(
-          'absolute top-1 left-1 size-5 rounded-full bg-white shadow transition-transform',
-          checked && 'translate-x-5',
-        )}
+      <motion.span
+        className="absolute top-1 left-1 size-5 rounded-full bg-white shadow"
+        initial={false}
+        animate={{ x: checked ? 20 : 0 }}
+        transition={spring.snappy}
       />
-    </button>
+    </motion.button>
   )
 }
 
@@ -440,6 +485,31 @@ function RichTextInput({
   )
 }
 
+/**
+ * Claves estables para los ítems de una lista: así, al agregar, quitar o
+ * reordenar, cada ítem se anima desde donde estaba (y el foco no salta).
+ */
+function useItemKeys(length: number) {
+  const [state, setState] = useState(() => ({
+    keys: Array.from({ length }, (_, i) => `i${i}`),
+    next: length,
+  }))
+  // Si la lista cambió de largo desde afuera (volver a empezar), se ajusta.
+  if (state.keys.length !== length) {
+    const keys = state.keys.slice(0, length)
+    let next = state.next
+    while (keys.length < length) keys.push(`i${next++}`)
+    setState({ keys, next })
+  }
+  return {
+    keys: state.keys,
+    add: () => setState((s) => ({ keys: [...s.keys, `i${s.next}`], next: s.next + 1 })),
+    remove: (i: number) => setState((s) => ({ ...s, keys: s.keys.filter((_, j) => j !== i) })),
+    move: (from: number, to: number) =>
+      setState((s) => ({ ...s, keys: moveItem(s.keys, from, to) })),
+  }
+}
+
 function ListField({
   schema,
   meta,
@@ -452,9 +522,10 @@ function ListField({
   ctx: Ctx
 }) {
   const element = arrayElement(schema)
-  if (!element) return null
   const raw = getIn(ctx.root, path)
   const items = Array.isArray(raw) ? raw : []
+  const keys = useItemKeys(items.length)
+  if (!element) return null
   const { min = 0, max } = lengthLimits(schema)
   const elementMeta = getFieldMeta(element)
   const elementShape = objectShape(element)
@@ -466,6 +537,19 @@ function ListField({
   const canAdd = max === undefined || items.length < max
   const canRemove = items.length > min
   const noun = (elementMeta?.label ?? 'ítem').toLowerCase()
+
+  const move = (from: number, to: number) => {
+    keys.move(from, to)
+    set(moveItem(items, from, to))
+  }
+  const remove = (i: number) => {
+    keys.remove(i)
+    set(items.filter((_, j) => j !== i))
+  }
+  const add = () => {
+    keys.add()
+    set([...items, defaultFor(element)])
+  }
 
   return (
     <fieldset aria-describedby={meta.help ? `${id}-hint` : undefined}>
@@ -486,78 +570,91 @@ function ListField({
         </p>
       )}
 
-      <ol className={cn(elementShape ? 'space-y-3' : 'space-y-2')}>
-        {items.map((item, i) => {
-          const controls = (
-            <ItemControls
-              label={itemLabel(i)}
-              disabled={ctx.disabled}
-              onUp={i > 0 ? () => set(moveItem(items, i, i - 1)) : undefined}
-              onDown={i < items.length - 1 ? () => set(moveItem(items, i, i + 1)) : undefined}
-              onRemove={canRemove ? () => set(items.filter((_, j) => j !== i)) : undefined}
-            />
-          )
-          if (elementShape) {
+      <ol className={cn('relative', elementShape ? 'space-y-3' : 'space-y-2')}>
+        <AnimatePresence initial={false} mode="popLayout">
+          {items.map((item, i) => {
+            const controls = (
+              <ItemControls
+                label={itemLabel(i)}
+                disabled={ctx.disabled}
+                onUp={i > 0 ? () => move(i, i - 1) : undefined}
+                onDown={i < items.length - 1 ? () => move(i, i + 1) : undefined}
+                onRemove={canRemove ? () => remove(i) : undefined}
+              />
+            )
+            const motionProps = {
+              layout: 'position' as const,
+              initial: { opacity: 0, y: -10, scale: 0.97 },
+              animate: { opacity: 1, y: 0, scale: 1 },
+              exit: { opacity: 0, scale: 0.94, transition: { duration: 0.18 } },
+              transition: spring.soft,
+            }
+            if (elementShape) {
+              return (
+                <motion.li
+                  key={keys.keys[i] ?? i}
+                  {...motionProps}
+                  className="rounded-2xl border border-neutral-200 bg-neutral-50/60 p-4"
+                >
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <span className="text-sm font-semibold text-ink">{itemLabel(i)}</span>
+                    {controls}
+                  </div>
+                  <Fields shape={elementShape} path={[...path, i]} ctx={ctx} />
+                </motion.li>
+              )
+            }
+            const itemPath = [...path, i]
+            const itemId = idOf(ctx, itemPath)
+            const itemError = ctx.errors[itemPath.join('.')]
+            const { max: itemMax } = lengthLimits(element)
             return (
-              <li key={i} className="rounded-2xl border border-neutral-200 bg-neutral-50/60 p-4">
-                <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-sm font-semibold text-ink">{itemLabel(i)}</span>
+              <motion.li key={keys.keys[i] ?? i} {...motionProps}>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-6 shrink-0 text-right text-xs font-bold text-neutral-400 tabular-nums"
+                    aria-hidden
+                  >
+                    {i + 1}
+                  </span>
+                  <Input
+                    id={itemId}
+                    aria-label={itemLabel(i)}
+                    value={typeof item === 'string' ? item : ''}
+                    maxLength={itemMax}
+                    disabled={ctx.disabled}
+                    aria-invalid={itemError ? true : undefined}
+                    onChange={(e) => ctx.set(itemPath, e.target.value)}
+                    className="py-2.5"
+                  />
                   {controls}
                 </div>
-                <Fields shape={elementShape} path={[...path, i]} ctx={ctx} />
-              </li>
+                <FieldMessage error={itemError} className="ml-8" />
+              </motion.li>
             )
-          }
-          const itemPath = [...path, i]
-          const itemId = idOf(ctx, itemPath)
-          const itemError = ctx.errors[itemPath.join('.')]
-          const { max: itemMax } = lengthLimits(element)
-          return (
-            <li key={i}>
-              <div className="flex items-center gap-2">
-                <span
-                  className="w-6 shrink-0 text-right text-xs font-bold text-neutral-400 tabular-nums"
-                  aria-hidden
-                >
-                  {i + 1}
-                </span>
-                <Input
-                  id={itemId}
-                  aria-label={itemLabel(i)}
-                  value={typeof item === 'string' ? item : ''}
-                  maxLength={itemMax}
-                  disabled={ctx.disabled}
-                  aria-invalid={itemError ? true : undefined}
-                  onChange={(e) => ctx.set(itemPath, e.target.value)}
-                  className="py-2.5"
-                />
-                {controls}
-              </div>
-              {itemError && (
-                <p className="mt-1 ml-8 text-xs font-medium text-red-600" role="alert">
-                  {itemError}
-                </p>
-              )}
-            </li>
-          )
-        })}
+          })}
+        </AnimatePresence>
       </ol>
 
-      {canAdd && (
-        <button
-          type="button"
-          disabled={ctx.disabled}
-          onClick={() => set([...items, defaultFor(element)])}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-brand/50 px-4 py-2 text-sm font-semibold text-brand hover:bg-brand-soft disabled:opacity-50"
-        >
-          <Plus className="size-4" aria-hidden /> Agregar {noun}
-        </button>
-      )}
-      {error && (
-        <p className="mt-2 text-xs font-medium text-red-600" role="alert">
-          {error}
-        </p>
-      )}
+      <AnimatePresence initial={false}>
+        {canAdd && (
+          <motion.button
+            type="button"
+            disabled={ctx.disabled}
+            onClick={add}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-brand/50 px-4 py-2 text-sm font-semibold text-brand transition-colors hover:bg-brand-soft disabled:opacity-50"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.95 }}
+            transition={spring.snappy}
+          >
+            <Plus className="size-4" aria-hidden /> Agregar {noun}
+          </motion.button>
+        )}
+      </AnimatePresence>
+      <FieldMessage error={error} className="mt-2" />
     </fieldset>
   )
 }
@@ -576,36 +673,40 @@ function ItemControls({
   onRemove?: () => void
 }) {
   const button =
-    'grid size-8 shrink-0 place-items-center rounded-full text-neutral-400 transition hover:bg-white hover:text-ink disabled:pointer-events-none disabled:opacity-30'
+    'grid size-8 shrink-0 place-items-center rounded-full text-neutral-400 transition-colors hover:bg-white hover:text-ink disabled:pointer-events-none disabled:opacity-30'
+  const tap = { whileTap: { scale: 0.85 }, transition: { duration: 0.12, ease: ease.out } }
   return (
     <div className="flex shrink-0 items-center">
-      <button
+      <motion.button
         type="button"
         className={button}
         onClick={onUp}
         disabled={disabled || !onUp}
         aria-label={`Subir ${label}`}
+        {...tap}
       >
         <ArrowUp className="size-4" aria-hidden />
-      </button>
-      <button
+      </motion.button>
+      <motion.button
         type="button"
         className={button}
         onClick={onDown}
         disabled={disabled || !onDown}
         aria-label={`Bajar ${label}`}
+        {...tap}
       >
         <ArrowDown className="size-4" aria-hidden />
-      </button>
-      <button
+      </motion.button>
+      <motion.button
         type="button"
         className={cn(button, 'hover:text-red-600')}
         onClick={onRemove}
         disabled={disabled || !onRemove}
         aria-label={`Quitar ${label}`}
+        {...tap}
       >
         <X className="size-4" aria-hidden />
-      </button>
+      </motion.button>
     </div>
   )
 }

@@ -1,8 +1,11 @@
 'use client'
 
+import { motion } from 'framer-motion'
+import { Gift, Wand2 } from 'lucide-react'
 import type { Route } from 'next'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { ButtonLink } from '@/ui/Button'
+import { spring } from '@/ui/motion'
 import type { ParsedThemeConfig } from '@/slides/config'
 import { Player, type PlayerData } from '@/slides/player/Player'
 
@@ -20,25 +23,39 @@ export function ExamplePlayer({
   const router = useRouter()
   const back = `/tematicas/${slug}` as Route
   return (
-    <>
-      <Player config={config} data={data} preview onClose={() => router.push(back)} />
-      <div className="fixed inset-x-0 bottom-3 z-[10000] flex justify-center px-3">
-        <div className="flex items-center gap-3 rounded-full bg-white/95 py-2 pr-2 pl-4 text-sm shadow-xl backdrop-blur">
-          <span className="hidden text-neutral-600 sm:inline">Boxie {name} de ejemplo</span>
-          <Link
-            href={`/ejemplo/${slug}/personalizar` as Route}
-            className="rounded-full px-3 py-2 font-semibold text-ink hover:bg-neutral-100"
+    <Player
+      config={config}
+      data={data}
+      preview
+      onClose={() => router.push(back)}
+      footer={
+        // Debajo del teléfono (no encima): no tapa los botones de las slides.
+        <motion.div
+          className="flex w-full max-w-md items-center gap-2 rounded-full bg-white/95 p-1.5 pl-4 text-sm shadow-xl backdrop-blur"
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ ...spring.gentle, delay: 0.6 }}
+        >
+          <span className="hidden min-w-0 flex-1 truncate text-neutral-600 sm:inline">
+            Boxie {name} de ejemplo
+          </span>
+          <ButtonLink
+            href={`/ejemplo/${slug}/personalizar`}
+            variant="ghost"
+            size="sm"
+            className="h-10 flex-1 sm:flex-none"
           >
-            Personalizar
-          </Link>
-          <Link
-            href={`/checkout?tematica=${slug}` as Route}
-            className="rounded-full bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"
+            <Wand2 className="size-4" aria-hidden /> Personalizar
+          </ButtonLink>
+          <ButtonLink
+            href={`/checkout?tematica=${slug}`}
+            size="sm"
+            className="h-10 flex-1 sm:flex-none"
           >
-            Quiero la mía
-          </Link>
-        </div>
-      </div>
-    </>
+            <Gift className="size-4" aria-hidden /> Quiero la mía
+          </ButtonLink>
+        </motion.div>
+      }
+    />
   )
 }

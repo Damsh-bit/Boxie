@@ -77,8 +77,9 @@ test('comprar, personalizar, bloquear y abrir el regalo en otro dispositivo', as
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('¡Boxie lista!')
   await expect(page.locator('#editor-para')).toHaveCount(0)
 
-  // El destinatario, en su celular, sin usuario ni clave.
+  // El destinatario, en su celular, sin usuario ni clave: abre la tapa y recorre.
   await recipient.reload()
+  await recipient.getByRole('button', { name: 'Abrir mi regalo 🎁' }).click()
   await recipient.getByRole('button', { name: 'Slide siguiente' }).click()
   await expect(recipient.locator('.bx-slide.is-active')).toContainText('Sofía')
   await otherDevice.close()

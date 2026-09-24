@@ -6,6 +6,8 @@ import { notFound } from 'next/navigation'
 import { formatLongDate } from '@/slides/editor/share'
 import { isDemoMode } from '@/server/demo'
 import { findGift, giftContent, giftCookieName, hasGiftAccess, type Gift } from '@/server/gift'
+import { MessageCard } from '@/ui/MessageCard'
+import { Reveal } from '@/ui/motion'
 import { GiftPlayer } from './GiftPlayer'
 import { PasswordGate } from './PasswordGate'
 
@@ -47,7 +49,7 @@ export default async function GiftPage({ params }: PageProps<'/g/[token]'>) {
   }
 
   const { config, data } = await giftContent(found)
-  return <GiftPlayer token={token} config={config} data={data} />
+  return <GiftPlayer token={token} config={config} data={data} intro={!found.passwordHash} />
 }
 
 function GiftMessage({ gift }: { gift: Gift }) {
@@ -71,16 +73,18 @@ function GiftMessage({ gift }: { gift: Gift }) {
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-[radial-gradient(circle_at_top,#ffd6de_0%,#fff_60%)] px-5 py-12 text-center">
-      <div className="w-full max-w-md rounded-[30px] bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.1)]">
-        <div className="mb-4 text-5xl" aria-hidden>
-          {copy.emoji}
-        </div>
-        <h1 className="font-display text-2xl font-bold text-ink">{copy.title}</h1>
-        <p className="mt-3 leading-relaxed text-neutral-600">{copy.text}</p>
-      </div>
-      <Link href="/" className="mt-8 opacity-80 hover:opacity-100" aria-label="Boxie Digital">
-        <Image src="/brand/boxie-logo.png" alt="Boxie" width={103} height={36} />
-      </Link>
+      <MessageCard emoji={copy.emoji} title={copy.title} className="max-w-md">
+        <p className="leading-relaxed text-neutral-600">{copy.text}</p>
+      </MessageCard>
+      <Reveal delay={0.5} y={12}>
+        <Link
+          href="/"
+          className="mt-8 block opacity-80 transition-opacity hover:opacity-100"
+          aria-label="Boxie Digital"
+        >
+          <Image src="/brand/boxie-logo.png" alt="Boxie" width={103} height={36} />
+        </Link>
+      </Reveal>
     </div>
   )
 }

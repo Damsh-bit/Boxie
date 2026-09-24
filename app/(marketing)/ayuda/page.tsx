@@ -1,8 +1,11 @@
+import { ExternalLink } from 'lucide-react'
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import type { Route } from 'next'
 import { legalDocs } from '@/content/legal'
 import { site } from '@/content/site'
-import { buttonVariants } from '@/ui/Button'
+import { ButtonLink } from '@/ui/Button'
+import { LiftLink } from '@/ui/LiftLink'
+import { Reveal, Stagger, StaggerItem } from '@/ui/motion'
 import { Faq } from './Faq'
 
 export const metadata: Metadata = {
@@ -46,58 +49,68 @@ const FAQS = [
 export default function HelpPage() {
   return (
     <div className="bg-white px-5 pt-[90px] pb-20">
-      <header className="animate-fade-in-up pt-16 pb-12 text-center">
-        <h1 className="mb-3 text-4xl font-semibold text-black sm:text-5xl">
+      <Stagger as="header" immediate step={0.1} className="pt-16 pb-12 text-center">
+        <StaggerItem as="h1" className="mb-3 text-4xl font-semibold text-black sm:text-5xl">
           Centro de Ayuda y Legales
-        </h1>
-        <p className="text-lg text-neutral-500">
+        </StaggerItem>
+        <StaggerItem as="p" className="text-lg text-neutral-500">
           Todo lo que necesitás saber sobre Boxie, en un solo lugar.
-        </p>
-      </header>
+        </StaggerItem>
+      </Stagger>
 
       <div className="mx-auto max-w-4xl space-y-20">
         <section>
-          <h2 className="mb-6 text-3xl font-semibold text-ink">Preguntas Frecuentes</h2>
+          <Reveal as="h2" className="mb-6 text-3xl font-semibold text-ink">
+            Preguntas Frecuentes
+          </Reveal>
           <Faq items={FAQS} />
         </section>
 
         <section>
-          <h2 className="mb-2 text-3xl font-semibold text-ink">Información Legal y Políticas</h2>
-          <p className="mb-8 text-neutral-500">
+          <Reveal as="h2" className="mb-2 text-3xl font-semibold text-ink">
+            Información Legal y Políticas
+          </Reveal>
+          <Reveal as="p" delay={0.05} className="mb-8 text-neutral-500">
             Para tu tranquilidad y seguridad, cumplimos con las normativas vigentes en Argentina.
-          </p>
-          <div className="grid gap-5 sm:grid-cols-2">
+          </Reveal>
+          <Stagger className="grid gap-5 sm:grid-cols-2" step={0.08}>
             {legalDocs.map((doc) => (
-              <Link
-                key={doc.slug}
-                href={`/legales/${doc.slug}`}
-                className="rounded-3xl border border-neutral-100 bg-neutral-50 p-7 transition hover:-translate-y-1 hover:border-brand hover:bg-white"
-              >
-                <div className="mb-3 text-3xl">{doc.icon}</div>
-                <h3 className="mb-1 text-xl font-semibold text-ink">{doc.title}</h3>
-                <p className="text-neutral-500">{doc.summary}</p>
-              </Link>
+              <StaggerItem key={doc.slug} y={24}>
+                <LiftLink
+                  href={`/legales/${doc.slug}` as Route}
+                  className="block h-full rounded-3xl border border-neutral-100 bg-neutral-50 p-7 transition-[border-color,background-color] duration-300 hover:border-brand hover:bg-white"
+                >
+                  <div className="mb-3 text-3xl" aria-hidden>
+                    {doc.icon}
+                  </div>
+                  <h3 className="mb-1 text-xl font-semibold text-ink">{doc.title}</h3>
+                  <p className="text-neutral-500">{doc.summary}</p>
+                </LiftLink>
+              </StaggerItem>
             ))}
-          </div>
-          <a
-            href={site.consumerDefenseUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 block rounded-2xl border border-dashed border-neutral-300 p-5 text-center text-sm text-neutral-600 hover:border-brand hover:text-brand"
-          >
-            Defensa de las y los consumidores. Para reclamos ingresá aquí.
-          </a>
+          </Stagger>
+          <Reveal delay={0.1}>
+            <a
+              href={site.consumerDefenseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-8 flex items-center justify-center gap-2 rounded-2xl border border-dashed border-neutral-300 p-5 text-center text-sm text-neutral-600 transition-colors hover:border-brand hover:text-brand"
+            >
+              Defensa de las y los consumidores. Para reclamos ingresá aquí.
+              <ExternalLink className="size-4 shrink-0" aria-hidden />
+            </a>
+          </Reveal>
         </section>
 
-        <section className="rounded-[30px] bg-brand-soft p-10 text-center">
+        <Reveal as="section" y={30} className="rounded-[30px] bg-brand-soft p-10 text-center">
           <h2 className="mb-2 text-3xl font-semibold text-ink">¿Seguís con dudas?</h2>
           <p className="mb-6 text-neutral-600">
             Nuestro equipo está listo para ayudarte con lo que necesites.
           </p>
-          <Link href="/contacto" className={buttonVariants({ variant: 'outline' })}>
+          <ButtonLink href="/contacto" variant="outline">
             Ir a Contacto
-          </Link>
-        </section>
+          </ButtonLink>
+        </Reveal>
       </div>
     </div>
   )

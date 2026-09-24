@@ -24,7 +24,12 @@ const ERRORS: Record<string, EditorMessageKind> = {
 export default async function EditorPage({ searchParams }: PageProps<'/editor'>) {
   if (isDemoMode()) {
     const themes = await listPublishedThemes()
-    return <EditorMessage kind="demo" themes={themes} />
+    return (
+      <EditorMessage
+        kind="demo"
+        themes={themes.map((t) => ({ slug: t.slug, name: t.name, image: t.listing.images[0]! }))}
+      />
+    )
   }
 
   const { error } = await searchParams

@@ -1,7 +1,11 @@
+import { ArrowLeft } from 'lucide-react'
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getLegalDoc, legalDocs } from '@/content/legal'
+import { Nudge } from '@/ui/Button'
+import { LiftLink } from '@/ui/LiftLink'
+import { Reveal } from '@/ui/motion'
+import { ReadingProgress } from '@/ui/ReadingProgress'
 
 export const dynamicParams = false
 
@@ -22,13 +26,24 @@ export default async function LegalPage({ params }: PageProps<'/legales/[slug]'>
 
   return (
     <div className="bg-neutral-50 px-5 pt-[120px] pb-20">
-      <article className="mx-auto max-w-3xl rounded-[24px] bg-white p-8 shadow-[0_10px_40px_rgba(0,0,0,0.05)] sm:p-12">
-        <Link
+      <ReadingProgress />
+      <Reveal
+        as="article"
+        y={30}
+        className="mx-auto max-w-3xl rounded-[24px] bg-white p-8 shadow-[0_10px_40px_rgba(0,0,0,0.05)] sm:p-12"
+      >
+        <LiftLink
           href="/ayuda"
-          className="mb-6 inline-block text-sm font-semibold text-brand hover:underline"
+          lift={0}
+          className="group mb-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand"
         >
-          ← Volver al Centro de Ayuda
-        </Link>
+          <Nudge x={-4}>
+            <ArrowLeft className="size-4" aria-hidden />
+          </Nudge>
+          <span className="underline-offset-4 group-hover:underline">
+            Volver al Centro de Ayuda
+          </span>
+        </LiftLink>
         <h1 className="font-display text-4xl font-bold text-ink">{doc.title}</h1>
         <p className="mt-2 text-sm text-neutral-400">
           Última actualización:{' '}
@@ -38,7 +53,7 @@ export default async function LegalPage({ params }: PageProps<'/legales/[slug]'>
         </p>
         <hr className="my-6 border-neutral-100" />
         <div className="prose-boxie">{doc.body}</div>
-      </article>
+      </Reveal>
     </div>
   )
 }

@@ -38,6 +38,32 @@ export const site = {
   consumerDefenseUrl: 'https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario',
 } as const
 
+/** Cómo funciona una Boxie, de la compra al regalo (home y checkout). */
+export const howItWorks = [
+  {
+    icon: 'bag',
+    title: 'Elegís y comprás',
+    text: 'Elegís la temática, completás tus datos y pagás de forma segura.',
+  },
+  {
+    icon: 'mail',
+    title: 'Recibís el acceso',
+    text: 'Entrás directo al editor y te llega un mail con tu link personal.',
+  },
+  {
+    icon: 'pen',
+    title: 'Personalizás',
+    text: 'Cargás fotos, dedicatoria, su canción y anécdotas, con la vista previa en vivo.',
+  },
+  {
+    icon: 'gift',
+    title: 'Regalás',
+    text: 'La bloqueás y le mandás el link único por WhatsApp. ✨',
+  },
+] as const
+
+export type HowItWorksIcon = (typeof howItWorks)[number]['icon']
+
 export type ContactArea = 'ayuda' | 'marketing' | 'comercial' | 'reclamos' | 'rrhh' | 'general'
 
 export const contactAreas: { value: ContactArea; label: string; email: string }[] = [

@@ -1,10 +1,12 @@
+import { ArrowRight } from 'lucide-react'
 import type { Route } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { site } from '@/content/site'
-import { buttonVariants } from '@/ui/Button'
-import { cn } from '@/ui/cn'
+import { HoverZoom, LiftLink } from '@/ui/LiftLink'
+import { MessageCard } from '@/ui/MessageCard'
+import { Reveal, Stagger, StaggerItem } from '@/ui/motion'
 
 export type EditorMessageKind =
   'no-session' | 'bad-link' | 'rate' | 'server' | 'expired' | 'refunded' | 'demo'
@@ -60,8 +62,8 @@ const COPY: Record<EditorMessageKind, { emoji: string; title: string; text: Reac
     title: 'En la demo, el editor es de prueba',
     text: (
       <>
-        Esta versión de demostración no cobra ni guarda Boxies reales. Podés probar el editor
-        completo con cualquier temática: lo que cargues queda en tu navegador.
+        Esta versión de demostración no cobra ni guarda Boxies reales. Elegí una temática y probá el
+        editor completo: lo que cargues queda en tu navegador.
       </>
     ),
   },
@@ -72,33 +74,50 @@ export function EditorMessage({
   themes = [],
 }: {
   kind: EditorMessageKind
-  themes?: { slug: string; name: string }[]
+  themes?: { slug: string; name: string; image: string }[]
 }) {
   const copy = COPY[kind]
   return (
     <div className="flex min-h-dvh flex-col items-center bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] px-5 py-12">
-      <Link href="/" aria-label="Boxie Digital, inicio">
-        <Image src="/brand/boxie-logo.png" alt="Boxie" width={129} height={45} priority />
-      </Link>
-      <div className="mt-10 w-full max-w-xl rounded-[30px] bg-white p-8 text-center shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:p-10">
-        <div className="mb-4 text-5xl" aria-hidden>
-          {copy.emoji}
-        </div>
-        <h1 className="mb-3 font-display text-3xl font-bold text-ink">{copy.title}</h1>
+      <Reveal y={-12}>
+        <Link href="/" aria-label="Boxie Digital, inicio">
+          <Image src="/brand/boxie-logo.png" alt="Boxie" width={129} height={45} priority />
+        </Link>
+      </Reveal>
+      <MessageCard emoji={copy.emoji} title={copy.title} className="mt-10">
         <p className="leading-relaxed text-neutral-600">{copy.text}</p>
 
         {kind === 'demo' && themes.length > 0 && (
-          <div className="mt-6 flex flex-col gap-3">
+          <Stagger immediate delay={0.35} step={0.08} className="mt-7 grid gap-3 sm:grid-cols-3">
             {themes.map((t) => (
-              <Link
-                key={t.slug}
-                href={`/ejemplo/${t.slug}/personalizar` as Route}
-                className={cn(buttonVariants({ block: true }))}
-              >
-                Probar el editor · {t.name}
-              </Link>
+              <StaggerItem key={t.slug} y={18} className="h-full">
+                <LiftLink
+                  href={`/ejemplo/${t.slug}/personalizar` as Route}
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-100 bg-white text-left shadow-[0_6px_20px_rgba(0,0,0,0.06)] transition-[border-color,box-shadow] duration-300 hover:border-brand hover:shadow-[0_14px_34px_rgb(244_78_99/0.18)]"
+                >
+                  <div className="relative h-28 overflow-hidden">
+                    <HoverZoom className="absolute inset-0">
+                      <Image src={t.image} alt="" fill sizes="200px" className="object-cover" />
+                    </HoverZoom>
+                  </div>
+                  <span className="flex flex-1 items-center justify-between gap-2 px-3.5 py-3">
+                    <span className="leading-tight">
+                      <span className="block text-[11px] font-semibold tracking-wide text-neutral-400 uppercase">
+                        Probar
+                      </span>
+                      <span className="font-semibold text-ink transition-colors group-hover:text-brand">
+                        {t.name}
+                      </span>
+                    </span>
+                    <ArrowRight
+                      className="size-4 shrink-0 text-neutral-400 transition-colors group-hover:text-brand"
+                      aria-hidden
+                    />
+                  </span>
+                </LiftLink>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )}
 
         {kind !== 'demo' && (
@@ -110,7 +129,7 @@ export function EditorMessage({
             con el mail que usaste al comprar.
           </p>
         )}
-      </div>
+      </MessageCard>
     </div>
   )
 }

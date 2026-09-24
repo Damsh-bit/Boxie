@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { MotionProvider, NoScriptReveal } from '@/ui/motion'
 import { fontVariables } from './fonts'
 import './globals.css'
 
@@ -34,7 +35,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="es-AR" className={fontVariables}>
-      <body className="flex min-h-dvh flex-col">{children}</body>
+      <body className="flex min-h-dvh flex-col">
+        <NoScriptReveal />
+        <MotionProvider>{children}</MotionProvider>
+      </body>
     </html>
   )
 }

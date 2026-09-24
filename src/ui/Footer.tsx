@@ -1,9 +1,10 @@
 import { Mail, MapPin } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
 import type { Route } from 'next'
 import { legalDocs } from '@/content/legal'
 import { site } from '@/content/site'
+import { FooterLink, Heartbeat, SocialButton } from './FooterLinks'
+import { Stagger, StaggerItem } from './motion'
 import { SocialIcon, type SocialNetwork } from './SocialIcon'
 
 const EXPLORE: { href: Route; label: string }[] = [
@@ -38,8 +39,12 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
 export function Footer() {
   return (
     <footer className="relative mt-auto w-full overflow-hidden border-t-[3px] border-brand bg-night pt-16 text-white">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-5 pb-12 text-center md:grid-cols-2 md:text-left lg:grid-cols-4">
-        <div>
+      <Stagger
+        className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-5 pb-12 text-center md:grid-cols-2 md:text-left lg:grid-cols-4"
+        step={0.1}
+        amount={0.1}
+      >
+        <StaggerItem>
           <Image
             src="/brand/boxie-logo.png"
             alt="Boxie Digital"
@@ -54,54 +59,37 @@ export function Footer() {
           <p className="flex items-center justify-center gap-2 text-sm text-neutral-300 md:justify-start">
             <Mail size={16} className="shrink-0 text-brand" /> {site.emails.hello}
           </p>
-        </div>
+        </StaggerItem>
 
-        <div>
+        <StaggerItem>
           <FooterHeading>Explorá</FooterHeading>
           <ul className="space-y-3">
             {EXPLORE.map((l) => (
               <li key={l.href}>
-                <Link
-                  href={l.href}
-                  className="text-[0.95rem] text-neutral-400 transition-all hover:pl-1 hover:text-brand"
-                >
-                  {l.label}
-                </Link>
+                <FooterLink href={l.href}>{l.label}</FooterLink>
               </li>
             ))}
           </ul>
-        </div>
+        </StaggerItem>
 
-        <div>
+        <StaggerItem>
           <FooterHeading>Te Ayudamos</FooterHeading>
           <ul className="space-y-3">
             {HELP.map((l) => (
               <li key={l.href}>
-                <Link
-                  href={l.href}
-                  className="text-[0.95rem] text-neutral-400 transition-all hover:pl-1 hover:text-brand"
-                >
-                  {l.label}
-                </Link>
+                <FooterLink href={l.href}>{l.label}</FooterLink>
               </li>
             ))}
           </ul>
-        </div>
+        </StaggerItem>
 
-        <div>
+        <StaggerItem>
           <FooterHeading>Sigamos Conectados</FooterHeading>
           <div className="mb-8 flex flex-wrap justify-center gap-4 md:justify-start">
             {SOCIAL.map((s) => (
-              <a
-                key={s.network}
-                href={s.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={s.label}
-                className="flex size-10 items-center justify-center rounded-full bg-white/5 transition-all hover:-translate-y-1 hover:bg-brand"
-              >
+              <SocialButton key={s.network} href={s.href} label={s.label}>
                 <SocialIcon network={s.network} size={18} />
-              </a>
+              </SocialButton>
             ))}
           </div>
           {site.legal.dataFiscalUrl && site.legal.dataFiscalImage && (
@@ -118,12 +106,14 @@ export function Footer() {
               </a>
             </div>
           )}
-        </div>
-      </div>
+        </StaggerItem>
+      </Stagger>
 
       <div className="flex w-full flex-col items-center justify-between gap-2 border-t border-white/5 bg-night-deep px-5 py-5 text-center text-sm text-neutral-500 md:flex-row">
         <p>© {new Date().getFullYear()} Boxie Digital. Todos los derechos reservados.</p>
-        <p className="text-neutral-400">Hecho con ❤️ en Argentina</p>
+        <p className="text-neutral-400">
+          Hecho con <Heartbeat /> en Argentina
+        </p>
       </div>
     </footer>
   )

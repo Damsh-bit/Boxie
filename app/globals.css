@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
 
 /* ════════════════════════════════════════════════════════════════════════════
    Boxie · Sistema de diseño
@@ -27,53 +26,12 @@
 
   --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-josefin), var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  /* La letra redondeada de las slides (nombres, portadas). */
+  --font-fun: var(--font-fredoka), var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
 
   --radius-card: 1.5rem;
 
-  --animate-marquee: marquee 40s linear infinite;
-  --animate-fade-in-up: fade-in-up 0.8s ease both;
-  --animate-pop-in: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-  --animate-pulse-ring: pulse-ring 2s infinite;
-
-  @keyframes marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
-  }
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  @keyframes pop-in {
-    from {
-      transform: scale(0.8);
-      opacity: 0;
-    }
-    to {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-  @keyframes pulse-ring {
-    0% {
-      box-shadow: 0 0 0 0 rgb(244 78 99 / 0.7);
-    }
-    70% {
-      box-shadow: 0 0 0 10px rgb(244 78 99 / 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgb(244 78 99 / 0);
-    }
-  }
+  /* Las animaciones viven en framer-motion (src/ui/motion.tsx). */
 }
 
 @layer base {
@@ -92,6 +50,29 @@
   ::selection {
     @apply bg-brand/20;
   }
+
+  /* Las barras fijas de abajo se corren si hay un aviso encima (--dock). */
+  :root {
+    --dock: 0px;
+  }
+}
+
+/*
+ * Red de seguridad de los reveals: lo que aparece con framer-motion arranca
+ * invisible hasta que carga JavaScript. Si tarda (conexión lenta), a los 2,5 s
+ * se muestra igual. Al hidratar, MotionProvider marca <html data-hydrated> y
+ * framer-motion toma el control.
+ */
+@keyframes reveal-fallback {
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+html:not([data-hydrated]) [data-reveal] {
+  animation: reveal-fallback 0.6s ease 2.5s both;
 }
 
 @layer components {

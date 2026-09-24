@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { site } from '@/content/site'
+import { MessageCard } from '@/ui/MessageCard'
 
 export const metadata: Metadata = { title: 'Entrar a mi Boxie' }
 
@@ -9,10 +10,8 @@ export const metadata: Metadata = { title: 'Entrar a mi Boxie' }
  */
 export default function MyBoxiePage() {
   return (
-    <div className="bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] px-5 pt-[140px] pb-24">
-      <div className="mx-auto max-w-xl rounded-[30px] bg-white p-8 text-center shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:p-10">
-        <div className="mb-4 text-5xl">📬</div>
-        <h1 className="mb-3 text-3xl font-semibold text-ink">Entrar a mi Boxie</h1>
+    <div className="flex justify-center bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] px-5 pt-[140px] pb-24">
+      <MessageCard emoji="📬" title="Entrar a mi Boxie">
         <p className="mb-4 leading-relaxed text-neutral-600">
           Después de pagar te mandamos un mail con tu <strong>link personal de edición</strong>.
           Abrilo desde cualquier dispositivo para seguir armando tu Boxie: no hace falta usuario ni
@@ -25,7 +24,7 @@ export default function MyBoxiePage() {
           </a>{' '}
           con el mail que usaste al comprar.
         </p>
-      </div>
+      </MessageCard>
     </div>
   )
 }

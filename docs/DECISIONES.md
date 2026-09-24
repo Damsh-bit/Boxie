@@ -105,6 +105,12 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   arriba de la ficha (la foto, que es el LCP) no arranca invisible.
 - **Lo que se toca no late:** un botón que se escala en loop es más difícil de tocar y Playwright
   nunca lo ve "estable" para hacer clic. Late un anillo detrás; el botón queda quieto.
+- **Un aviso que se va ya no vale:** lo que sale de un `AnimatePresence` se sigue viendo unos
+  instantes. Los avisos ("Guardado", el del cupón, los errores) usan `Notice.p/span/div` de
+  `src/ui/motion.tsx`, que los marca `aria-hidden` mientras salen. Sin eso, un "Guardado" que se
+  estaba yendo parecía vigente: el E2E del editor real (CI) recargó en ese instante y perdió la
+  última foto. A una persona la frena el aviso de cambios sin guardar, pero un lector de pantalla
+  leía un estado viejo.
 - **La tapa del regalo:** sin clave, `/g/<token>` arranca con "Abrir mi regalo". Además de la
   emoción, ese toque cuenta como interacción con la página y habilita que la canción suene
   después (los navegadores bloquean el audio hasta entonces). La apertura se registra al abrir

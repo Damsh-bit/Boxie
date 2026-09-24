@@ -5,7 +5,7 @@ import { ImagePlus, RefreshCw, Trash2 } from 'lucide-react'
 import { useState, type DragEvent } from 'react'
 import { cn } from '@/ui/cn'
 import { FieldMessage } from '@/ui/form'
-import { AutoHeight, ease, Spinner, spring } from '@/ui/motion'
+import { AutoHeight, ease, Notice, Spinner, spring } from '@/ui/motion'
 import type { BuyerPhoto } from '../fields'
 import { compressImage, ImageError, type CompressedImage } from './compress-image'
 import type { UploadResult } from './contract'
@@ -101,7 +101,7 @@ export function PhotoField({ id, value, onChange, media, disabled, describedBy }
       <AutoHeight>
         <AnimatePresence mode="wait" initial={false}>
           {state === 'busy' && (
-            <motion.div
+            <Notice.div
               key="busy"
               {...swap}
               className="flex items-center gap-4 rounded-2xl border border-brand-muted bg-brand-soft p-4"
@@ -120,7 +120,7 @@ export function PhotoField({ id, value, onChange, media, disabled, describedBy }
                   />
                 </div>
               </div>
-            </motion.div>
+            </Notice.div>
           )}
 
           {state === 'loaded' && (

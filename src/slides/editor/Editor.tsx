@@ -10,7 +10,7 @@ import { Button, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { Input, Label } from '@/ui/form'
 import { Modal } from '@/ui/Modal'
-import { ease, Spinner, spring, Swap, useCalm } from '@/ui/motion'
+import { ease, Notice, Spinner, spring, Swap, useCalm } from '@/ui/motion'
 import { collectAssetIds, type ParsedThemeConfig } from '../config'
 import { Player, type PlayerData } from '../player/Player'
 import { slideDefinitions } from '../schemas'
@@ -718,7 +718,8 @@ function SaveIndicator({
   return (
     <span className="relative flex justify-end">
       <AnimatePresence mode="popLayout" initial={false}>
-        <motion.span
+        {/* Un "Guardado" que se va no puede hacer creer que lo último se guardó. */}
+        <Notice.span
           key={status.state}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -726,7 +727,7 @@ function SaveIndicator({
           transition={{ duration: 0.2, ease: ease.out }}
         >
           {view}
-        </motion.span>
+        </Notice.span>
       </AnimatePresence>
     </span>
   )

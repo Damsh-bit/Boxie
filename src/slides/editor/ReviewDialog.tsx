@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, CircleAlert, LockKeyhole } from 'lucide-react'
 import { Button, Nudge } from '@/ui/Button'
 import { Modal } from '@/ui/Modal'
-import { ease, Spinner, spring } from '@/ui/motion'
+import { ease, Notice, Spinner, spring } from '@/ui/motion'
 
 export interface ReviewItem {
   moduleId: string
@@ -140,7 +140,7 @@ export function ReviewDialog({
 
       <AnimatePresence initial={false}>
         {error && (
-          <motion.p
+          <Notice.p
             role="alert"
             className="overflow-hidden rounded-xl bg-red-50 px-4 text-sm text-red-700"
             initial={{ opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
@@ -155,7 +155,7 @@ export function ReviewDialog({
             transition={spring.soft}
           >
             {error}
-          </motion.p>
+          </Notice.p>
         )}
       </AnimatePresence>
 

@@ -26,6 +26,9 @@ test('se personaliza, se revisa y se "regala" sin comprar', async ({ page }) => 
   await page.locator('#m-dedicatoria-text').fill('Gracias por cada risa.')
   await page.locator('#m-dedicatoria-photo').setInputFiles(FOTO)
   await expect(page.locator('#seccion-dedicatoria img[alt="Foto elegida"]')).toBeVisible()
+  // Como en el editor real (la subida tarda): lo anterior ya quedó guardado
+  // cuando llega la próxima foto.
+  await expect(page.getByRole('status').filter({ hasText: 'Guardado' })).toBeVisible()
 
   await page.getByRole('button', { name: /^Anécdota/ }).click()
   await page.locator('#m-anecdota-photo').setInputFiles(OTRA_FOTO)
@@ -37,6 +40,8 @@ test('se personaliza, se revisa y se "regala" sin comprar', async ({ page }) => 
   await page.reload()
   await expect(page.locator('#editor-para')).toHaveValue('Sofía')
   await expect(page.locator('#seccion-dedicatoria img[alt="Foto elegida"]')).toHaveCount(1)
+  // También lo último que se cargó: "Guardado" tiene que decir la verdad.
+  await expect(page.locator('#seccion-anecdota img[alt="Foto elegida"]')).toHaveCount(1)
 
   await page.getByRole('button', { name: 'Regalar', exact: true }).click()
   const dialog = page.getByRole('dialog')

@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { contactAreas } from '@/content/site'
 import { Button } from '@/ui/Button'
 import { Field, Input, Select, Textarea } from '@/ui/form'
-import { ease, Spinner, spring } from '@/ui/motion'
+import { ease, Notice, Spinner, spring } from '@/ui/motion'
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
@@ -140,7 +140,7 @@ export function ContactForm() {
           />
           <AnimatePresence initial={false}>
             {status === 'error' && (
-              <motion.p
+              <Notice.p
                 role="alert"
                 className="overflow-hidden rounded-xl bg-red-50 px-3 text-sm text-red-700"
                 initial={{ opacity: 0, height: 0, paddingTop: 0, paddingBottom: 0 }}
@@ -149,7 +149,7 @@ export function ContactForm() {
                 transition={spring.soft}
               >
                 {error}
-              </motion.p>
+              </Notice.p>
             )}
           </AnimatePresence>
           <motion.div variants={item}>

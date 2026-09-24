@@ -1,10 +1,10 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import type { ComponentProps, ReactNode } from 'react'
 import { cn } from './cn'
-import { ease } from './motion'
+import { ease, Notice } from './motion'
 
 const control =
   'w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-base text-ink outline-none transition-[border-color,background-color,box-shadow] duration-200 placeholder:text-neutral-400 hover:border-neutral-300 focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/10 disabled:opacity-60 aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-100'
@@ -61,7 +61,7 @@ export function FieldMessage({
   return (
     <AnimatePresence initial={false} mode="wait">
       {message && (
-        <motion.p
+        <Notice.p
           key={error ? 'error' : 'hint'}
           id={id}
           role={error ? 'alert' : undefined}
@@ -76,7 +76,7 @@ export function FieldMessage({
           transition={{ duration: 0.22, ease: ease.out }}
         >
           {message}
-        </motion.p>
+        </Notice.p>
       )}
     </AnimatePresence>
   )

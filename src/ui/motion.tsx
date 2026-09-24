@@ -4,6 +4,7 @@ import {
   AnimatePresence,
   motion,
   MotionConfig,
+  useIsPresent,
   useReducedMotion,
   type HTMLMotionProps,
   type Transition,
@@ -62,6 +63,29 @@ export function MotionProvider({ children }: { children: ReactNode }) {
 /** true si el sistema pide menos movimiento: los loops decorativos no se animan. */
 export function useCalm(): boolean {
   return useReducedMotion() ?? false
+}
+
+/**
+ * `motion.p`, `motion.span` y `motion.div` para avisos que entran y salen de
+ * un AnimatePresence ("Guardado", "Cupón aplicado", un error). Lo que sale se
+ * sigue viendo unos instantes, pero ya no vale: un "Guardado" que se está
+ * yendo no puede seguir anunciándose como vigente (ni a un lector de pantalla
+ * ni a quien lo lee para decidir), así que se marca `aria-hidden`. El `ref`
+ * llega en las props, como pide `popLayout`.
+ */
+export const Notice = {
+  p: function NoticeP(props: HTMLMotionProps<'p'>) {
+    const leaving = !useIsPresent()
+    return <motion.p {...props} aria-hidden={leaving || props['aria-hidden']} />
+  },
+  span: function NoticeSpan(props: HTMLMotionProps<'span'>) {
+    const leaving = !useIsPresent()
+    return <motion.span {...props} aria-hidden={leaving || props['aria-hidden']} />
+  },
+  div: function NoticeDiv(props: HTMLMotionProps<'div'>) {
+    const leaving = !useIsPresent()
+    return <motion.div {...props} aria-hidden={leaving || props['aria-hidden']} />
+  },
 }
 
 // ── Reveals ────────────────────────────────────────────────────────────────
@@ -375,7 +399,7 @@ export function Swap({
 }: SwapProps) {
   return (
     <AnimatePresence mode={mode} initial={initial}>
-      <motion.span
+      <Notice.span
         key={id}
         className={className}
         initial={{ opacity: 0, y, filter: 'blur(4px)' }}
@@ -384,7 +408,7 @@ export function Swap({
         transition={{ duration: 0.25, ease: ease.out }}
       >
         {children}
-      </motion.span>
+      </Notice.span>
     </AnimatePresence>
   )
 }

@@ -21,7 +21,7 @@ import { formatARS } from '@/domain/money'
 import { Button, ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { Field, Input } from '@/ui/form'
-import { ease, Spinner, spring, Swap } from '@/ui/motion'
+import { ease, Notice, Spinner, spring, Swap } from '@/ui/motion'
 
 export interface Quote {
   listPriceCents: number
@@ -314,7 +314,7 @@ export function CheckoutForm({
         </form>
         <AnimatePresence initial={false} mode="wait">
           {couponMessage && (
-            <motion.p
+            <Notice.p
               key={couponMessage}
               className={cn(
                 'mt-2 flex items-center gap-1.5 text-sm',
@@ -328,7 +328,7 @@ export function CheckoutForm({
             >
               {quote.coupon && <Check className="size-4 shrink-0" aria-hidden />}
               {couponMessage}
-            </motion.p>
+            </Notice.p>
           )}
         </AnimatePresence>
 

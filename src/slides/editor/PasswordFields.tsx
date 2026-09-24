@@ -5,7 +5,7 @@ import { LockKeyhole } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/ui/Button'
 import { Input, Label } from '@/ui/form'
-import { AutoHeight, ease, Spinner, spring } from '@/ui/motion'
+import { AutoHeight, ease, Notice, Spinner, spring } from '@/ui/motion'
 import { GIFT_PASSWORD_MAX, GIFT_PASSWORD_MIN, type PasswordResult } from './contract'
 
 const swap = {
@@ -168,7 +168,7 @@ export function PasswordFields({
       </AnimatePresence>
       <AnimatePresence initial={false}>
         {message && (
-          <motion.p
+          <Notice.p
             key={message.text}
             role={message.ok ? 'status' : 'alert'}
             className={message.ok ? 'mt-3 text-sm text-green-700' : 'mt-3 text-sm text-red-600'}
@@ -178,7 +178,7 @@ export function PasswordFields({
             transition={{ duration: 0.25, ease: ease.out }}
           >
             {message.text}
-          </motion.p>
+          </Notice.p>
         )}
       </AnimatePresence>
     </AutoHeight>

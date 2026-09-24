@@ -78,6 +78,48 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   con el link del editor). El webhook de Mercado Pago solo va a tener que validar la firma, consultar
   el pago y llamarla. En desarrollo y E2E la llama `/api/dev/boxies` con el proveedor falso.
 
+## Movimiento y experiencia
+
+- **Un solo motor de animación: framer-motion.** Nada se anima con keyframes de CSS (se sacó
+  `tw-animate-css`). Las curvas y resortes están en `src/ui/motion.tsx` (sitio y editor) y en
+  `src/slides/player/motion.ts` (el player es autónomo); las piezas de las slides, en
+  `src/slides/kinds/motion.tsx` (`Appear`, `Pop`, `Loop`), que dependen de `ctx.active`: entran al
+  llegar a la slide y se repiten si se vuelve a ella, como hacía `.is-active` en el prototipo.
+- **Los loops decorativos animan `transform`/`opacity` como string** (`transform: ['…', '…']`):
+  framer-motion los manda al compositor (WAAPI) y siguen fluidos aunque el hilo principal esté
+  ocupado, por ejemplo cuando el editor re-renderiza la vista previa en cada tecla. El fondo que
+  se mueve de la intro y de la fortuna dejó de animar `background-position` (repintaba toda la
+  slide en cada cuadro): ahora se desliza una capa con `transform`.
+- **El player no re-renderiza al deslizar.** La slide actual es un valor de movimiento continuo
+  (`position`); el dedo lo mueve directo, y al soltar decide por distancia o por velocidad (un
+  flick corto también pasa) y el resorte sigue con la inercia del gesto. La transición es un mazo:
+  la que viene sube tapando a la actual, que se achica y se oscurece. Un salto de varias slides
+  (el editor abre un módulo lejano) se ve como un solo paso.
+- **Reducir movimiento:** `MotionConfig reducedMotion="user"` saca los desplazamientos y los
+  loops no arrancan. Nunca se decide qué se dibuja según `useReducedMotion()` (en el servidor no
+  se sabe y rompe la hidratación): lo decorativo se dibuja siempre y se oculta con
+  `motion-reduce:hidden` o `.bx-decor`.
+- **Lo que aparece al scrollear no puede quedar invisible:** sin JavaScript lo muestra un
+  `<noscript>`, y si la hidratación tarda más de 2,5 s, un keyframe de respaldo en
+  `globals.css` (se apaga solo cuando MotionProvider marca `<html data-hydrated>`). Lo que está
+  arriba de la ficha (la foto, que es el LCP) no arranca invisible.
+- **Lo que se toca no late:** un botón que se escala en loop es más difícil de tocar y Playwright
+  nunca lo ve "estable" para hacer clic. Late un anillo detrás; el botón queda quieto.
+- **La tapa del regalo:** sin clave, `/g/<token>` arranca con "Abrir mi regalo". Además de la
+  emoción, ese toque cuenta como interacción con la página y habilita que la canción suene
+  después (los navegadores bloquean el audio hasta entonces). La apertura se registra al abrir
+  la tapa. Con clave, la pantalla de la clave ya hizo de tapa.
+- **Mejoras de uso que salieron de la auditoría:** barra de navegación fija (se esconde al bajar),
+  barra de compra fija en el celular cuando el botón de la ficha sale de pantalla, galería de
+  fotos que se desliza con el dedo, flecha en los `<select>`, "Cómo funciona" en la home,
+  "Faltan N datos" lleva al primero que falta, "Empezar de nuevo" con confirmación propia (no
+  `window.confirm`), revisión final como hoja deslizable en el celular, esqueleto mientras carga
+  el editor de prueba y la barra de la Boxie de ejemplo debajo del teléfono (antes tapaba las
+  flechas).
+- **Bug corregido:** si se escribía mientras subía una foto, al terminar la subida se perdía lo
+  escrito (el cambio se aplicaba sobre el borrador de cuando empezó). Ahora los cambios que
+  llegan tarde se aplican sobre el último valor.
+
 ## Bugs del prototipo que se corrigieron al portar
 
 - La cuponera ignoraba los vales que cargaba el comprador (mostraba siempre los mismos 6).

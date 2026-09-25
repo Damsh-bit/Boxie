@@ -48,6 +48,13 @@ function useWidth<T extends HTMLElement>() {
   return [ref, width] as const
 }
 
+/** Se muestra una etiqueta cada `every` puntos y la última, sin pisar a la anterior. */
+function showLabel(i: number, count: number, every: number) {
+  const last = count - 1
+  if (i === last) return true
+  return i % every === 0 && last - i >= Math.ceil(every * 0.6)
+}
+
 /** Ticks "lindos" (0, 250 mil, 500 mil…) para un máximo dado. */
 export function niceTicks(max: number, count = 4): number[] {
   if (max <= 0) return [0, 1]
@@ -226,7 +233,7 @@ export function LineChart({
             </g>
           ))}
           {data.map((d, i) =>
-            i % labelEvery === 0 || i === data.length - 1 ? (
+            showLabel(i, data.length, labelEvery) ? (
               <text
                 key={d.label}
                 x={xOf(i)}
@@ -434,7 +441,7 @@ export function ColumnChart({
                     transition={{ ...spring.soft, delay: 0.1 + i * 0.03 }}
                   />
                 ))}
-                {(i % labelEvery === 0 || i === data.length - 1) && (
+                {showLabel(i, data.length, labelEvery) && (
                   <text
                     x={pad.left + band * i + band / 2}
                     y={height - 8}
@@ -693,7 +700,10 @@ export function Heatmap({
   return (
     <div className="relative">
       <div className="overflow-x-auto pb-1">
-        <table className="w-full min-w-[560px] border-separate" style={{ borderSpacing: 2 }}>
+        <table
+          className="w-full min-w-[560px] table-fixed border-separate"
+          style={{ borderSpacing: 2 }}
+        >
           <thead>
             <tr>
               <th className="w-10" />

@@ -34,6 +34,27 @@
   /* Las animaciones viven en framer-motion (src/ui/motion.tsx). */
 }
 
+/* static: los gráficos usan estas variables desde SVG (var(--color-series-1)),
+   así que tienen que existir aunque ninguna clase las nombre. */
+@theme static {
+  /* Panel de administración: fondo, líneas y gráficos. La paleta de series
+     está validada para daltonismo (orden fijo: coral, azul, aqua, ámbar,
+     violeta, rosa); los colores de estado no se usan como series. */
+  --color-canvas: #f7f4f6;
+  --color-line: #ece6ea;
+  --color-series-1: #f44e63;
+  --color-series-2: #2a78d6;
+  --color-series-3: #1baf7a;
+  --color-series-4: #eda100;
+  --color-series-5: #7a4fc4;
+  --color-series-6: #e87ba4;
+  --color-good: #0ca30c;
+  --color-good-ink: #006300;
+  --color-warning: #fab219;
+  --color-serious: #ec835a;
+  --color-critical: #d03b3b;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;

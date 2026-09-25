@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getPublishedTheme, getThemeVersionConfig } from '@/server/catalog'
+import { configForPlan } from '@/slides/plans'
+import { getPublishedTheme, getThemeVersionConfig, listPublicPlans } from '@/server/catalog'
 import { sampleGift } from '@/server/sample-gift'
 import { ExamplePlayer } from './ExamplePlayer'
 
@@ -18,12 +19,19 @@ export async function generateMetadata({
     : {}
 }
 
-/** Una Boxie de ejemplo con la temática publicada: lo que recibe el destinatario. */
-export default async function ExamplePage({ params }: PageProps<'/ejemplo/[slug]'>) {
+/** Una Boxie de ejemplo con la temática publicada: lo que recibe el destinatario (por plan, si se pide). */
+export default async function ExamplePage({ params, searchParams }: PageProps<'/ejemplo/[slug]'>) {
   const theme = await getPublishedTheme((await params).slug)
   if (!theme) notFound()
-  const config = await getThemeVersionConfig(theme.versionId)
-  if (!config) notFound()
+  const [full, plans, query] = await Promise.all([
+    getThemeVersionConfig(theme.versionId),
+    listPublicPlans(),
+    searchParams,
+  ])
+  if (!full) notFound()
+  // ?plan=clasica muestra solo lo que incluye ese plan (desde la ficha: "Ver qué incluye").
+  const plan = plans.find((p) => p.slug === query.plan)
+  const config = plan ? configForPlan(full, plan, plans) : full
 
   return (
     <ExamplePlayer config={config} data={sampleGift(config)} slug={theme.slug} name={theme.name} />

@@ -7,6 +7,11 @@ import { clientIp, rateLimit } from '@/server/rate-limit'
 const Body = z.object({
   tematica: z.string().regex(/^[a-z0-9-]{1,60}$/),
   cupon: z.string().max(40).optional().nullable(),
+  plan: z
+    .string()
+    .regex(/^[a-z0-9-]{1,40}$/)
+    .optional()
+    .nullable(),
 })
 
 /** Precio con cupón, calculado en el servidor. El checkout solo lo muestra. */
@@ -22,7 +27,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await quoteCheckout(parsed.data.tematica, parsed.data.cupon)
+    const result = await quoteCheckout(parsed.data.tematica, parsed.data.cupon, parsed.data.plan)
     if (!result) return NextResponse.json({ error: 'Esa temática no existe.' }, { status: 404 })
     return NextResponse.json({
       listPriceCents: result.quote.listPriceCents,
@@ -32,6 +37,7 @@ export async function POST(request: Request) {
         ? { code: result.quote.coupon.code, label: result.couponLabel }
         : null,
       couponError: result.couponError,
+      plan: result.plan ? { slug: result.plan.slug, name: result.plan.name } : null,
     })
   } catch (error) {
     log.error('No se pudo cotizar el checkout', error)

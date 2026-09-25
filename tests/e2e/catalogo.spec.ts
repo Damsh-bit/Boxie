@@ -23,12 +23,15 @@ async function resumen(page: Page) {
   return { subtotal: await monto('Subtotal'), total: await monto('Total') }
 }
 
-test('la home muestra las tres temáticas del catálogo inicial', async ({ page }) => {
+test('la home muestra las temáticas publicadas, empezando por el catálogo inicial', async ({
+  page,
+}) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toContainText('BOXIE')
   const tarjetas = page.locator('#emocionar a[href^="/tematicas/"]')
-  await expect(tarjetas).toHaveCount(3)
   await expect(tarjetas.first()).toHaveAttribute('href', '/tematicas/pareja')
+  // Las tres iniciales siempre; el panel puede publicar más (la demo trae algunas).
+  expect(await tarjetas.count()).toBeGreaterThanOrEqual(3)
 })
 
 test('la ficha muestra el precio de la base y el link a la Boxie de ejemplo', async ({ page }) => {

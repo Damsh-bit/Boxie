@@ -10,27 +10,69 @@ import { cn } from '@/ui/cn'
 import { Stagger, StaggerItem, Swap, ease, spring, useCalm } from '@/ui/motion'
 import { Magnetic, Mark, SectionHeading } from './primitives'
 
+/** Un plan como lo muestra la home (lo que incluye, en la temática más completa). */
+export interface HomePlan {
+  slug: string
+  name: string
+  tagline: string
+  priceCents: number
+  compareAtCents: number | null
+  highlighted: boolean
+  screens: number
+  games: number
+  days: number
+  allowPassword: boolean
+  features: string[]
+}
+
+function includedFor(plan: HomePlan): string[] {
+  return [
+    `Hasta ${plan.screens} pantallas interactivas`,
+    'Fotos, dedicatoria y su canción',
+    plan.games > 1
+      ? 'Trivia, tragamonedas, cuponera y más juegos'
+      : plan.games === 1
+        ? 'Un juego para jugar juntos'
+        : 'Las razones que la hacen especial',
+    'Link único para mandar por WhatsApp o mail',
+    ...(plan.allowPassword ? ['Clave opcional para que solo la abra quien vos quieras'] : []),
+    `Online ${plan.days} días: la abre las veces que quiera`,
+    ...plan.features,
+  ]
+}
+
 /**
  * Precio: una tarjeta con todo lo que incluye (el precio sale del catálogo, el
  * mismo que cobra el checkout), un comparador contra otros regalos y el cupón
- * de bienvenida para copiar.
+ * de bienvenida para copiar. Si la tienda vende por planes, la tarjeta se
+ * puede cambiar de plan y el precio y lo incluido la acompañan.
  */
 export function Pricing({
-  priceCents,
+  priceCents: basePrice,
   lifetimeDays,
+  plans = [],
 }: {
   priceCents: number
   lifetimeDays: number
+  plans?: HomePlan[]
 }) {
-  const included = [
-    '20 pantallas interactivas para personalizar',
-    'Fotos, dedicatoria y su canción',
-    'Trivia, tragamonedas, cuponera y más juegos',
-    'Link único para mandar por WhatsApp o mail',
-    'Clave opcional para que solo la abra quien vos quieras',
-    `Online ${lifetimeDays} días: la abre las veces que quiera`,
-    'La editás todas las veces que quieras hasta regalarla',
-  ]
+  const [planSlug, setPlanSlug] = useState(
+    () => (plans.find((p) => p.highlighted) ?? plans[Math.floor(plans.length / 2)])?.slug,
+  )
+  const plan = plans.find((p) => p.slug === planSlug)
+  const priceCents = plan?.priceCents ?? basePrice
+  const cheapest = plans.length ? Math.min(...plans.map((p) => p.priceCents)) : basePrice
+  const included = plan
+    ? includedFor(plan)
+    : [
+        '20 pantallas interactivas para personalizar',
+        'Fotos, dedicatoria y su canción',
+        'Trivia, tragamonedas, cuponera y más juegos',
+        'Link único para mandar por WhatsApp o mail',
+        'Clave opcional para que solo la abra quien vos quieras',
+        `Online ${lifetimeDays} días: la abre las veces que quiera`,
+        'La editás todas las veces que quieras hasta regalarla',
+      ]
 
   return (
     <section
@@ -45,22 +87,44 @@ export function Pricing({
             Un regalo original, <Mark>todo incluido</Mark>
           </span>
         }
-        text={`Un solo pago de ${formatARS(priceCents)} con Mercado Pago. Sin suscripciones, sin costo de envío y sin letra chica.`}
+        text={
+          plans.length > 1
+            ? `Un solo pago, desde ${formatARS(cheapest)}, con Mercado Pago. Elegí el plan: sin suscripciones, sin costo de envío y sin letra chica.`
+            : `Un solo pago de ${formatARS(priceCents)} con Mercado Pago. Sin suscripciones, sin costo de envío y sin letra chica.`
+        }
       />
 
       <div className="mx-auto grid max-w-5xl items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
-        <PriceCard priceCents={priceCents} included={included} />
+        <PriceCard
+          priceCents={priceCents}
+          included={included}
+          plans={plans}
+          plan={plan}
+          onPlan={setPlanSlug}
+        />
         <Comparator priceCents={priceCents} />
       </div>
     </section>
   )
 }
 
-function PriceCard({ priceCents, included }: { priceCents: number; included: string[] }) {
+function PriceCard({
+  priceCents,
+  included,
+  plans,
+  plan,
+  onPlan,
+}: {
+  priceCents: number
+  included: string[]
+  plans: HomePlan[]
+  plan: HomePlan | undefined
+  onPlan(slug: string): void
+}) {
   return (
     <motion.div
       data-reveal=""
-      className="relative flex flex-col overflow-hidden rounded-[32px] bg-white p-7 shadow-[0_30px_70px_-30px_rgba(244,78,99,0.45)] ring-2 ring-brand sm:p-9"
+      className="relative flex flex-col overflow-clip rounded-[32px] bg-white p-7 shadow-[0_30px_70px_-30px_rgba(244,78,99,0.45)] ring-2 ring-brand sm:p-9"
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
@@ -74,19 +138,62 @@ function PriceCard({ priceCents, included }: { priceCents: number; included: str
       <span className="relative inline-flex self-start rounded-full bg-brand px-3 py-1 text-xs font-bold tracking-wide text-white uppercase">
         Pago único
       </span>
-      <h3 className="relative mt-4 font-display text-2xl font-bold text-ink">Tu Boxie completa</h3>
+      {plans.length > 1 && (
+        <div
+          role="radiogroup"
+          aria-label="Plan"
+          className="relative mt-5 grid gap-1 rounded-full bg-brand-soft p-1"
+          style={{ gridTemplateColumns: `repeat(${plans.length}, minmax(0, 1fr))` }}
+        >
+          {plans.map((p) => {
+            const selected = p.slug === plan?.slug
+            return (
+              <button
+                key={p.slug}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => onPlan(p.slug)}
+                className={cn(
+                  'relative rounded-full py-2 text-sm font-bold transition-colors',
+                  selected ? 'text-white' : 'text-brand hover:text-brand-dark',
+                )}
+              >
+                {selected && (
+                  <motion.span
+                    layoutId="home-plan"
+                    className="absolute inset-0 rounded-full bg-brand shadow-[0_6px_16px_rgba(244,78,99,0.35)]"
+                    transition={spring.snappy}
+                  />
+                )}
+                <span className="relative">{p.name}</span>
+              </button>
+            )
+          })}
+        </div>
+      )}
+      <h3 className="relative mt-4 font-display text-2xl font-bold text-ink">
+        <Swap id={plan?.slug ?? 'unica'}>{plan ? `Plan ${plan.name}` : 'Tu Boxie completa'}</Swap>
+      </h3>
       <p className="relative mt-1 text-sm text-ink/60">
-        Cualquier temática: Pareja, Cumpleaños o Amistad.
+        {plan?.tagline || 'Cualquier temática: Pareja, Cumpleaños o Amistad.'}
       </p>
 
-      <p className="relative mt-5 flex items-end gap-2">
+      <p className="relative mt-5 flex flex-wrap items-end gap-x-2">
         <span className="font-display text-6xl leading-none font-bold text-ink sm:text-7xl">
-          {formatARS(priceCents)}
+          <Swap id={priceCents} y={16}>
+            {formatARS(priceCents)}
+          </Swap>
         </span>
         <span className="mb-1.5 text-sm font-semibold text-ink/50">ARS</span>
+        {plan?.compareAtCents && (
+          <span className="mb-1.5 text-base text-ink/40 line-through">
+            {formatARS(plan.compareAtCents)}
+          </span>
+        )}
       </p>
 
-      <Stagger as="ul" className="relative mt-7 space-y-3" step={0.06}>
+      <Stagger key={plan?.slug ?? 'unica'} as="ul" className="relative mt-7 space-y-3" step={0.06}>
         {included.map((item) => (
           <StaggerItem
             as="li"

@@ -4,14 +4,20 @@ import { homeFaqs } from '@/content/home'
 import { site, siteUrl } from '@/content/site'
 import type { CatalogTheme } from '@/domain/catalog'
 import { formatARS } from '@/domain/money'
-import { getPublicSettings, listPublishedThemes } from '@/server/catalog'
+import { planContents } from '@/slides/plans'
+import {
+  getPublicSettings,
+  getThemeVersionConfig,
+  listPublicPlans,
+  listPublishedThemes,
+} from '@/server/catalog'
 import { LiftLink } from '@/ui/LiftLink'
 import { FinalCta } from './_home/FinalCta'
 import { Hero } from './_home/Hero'
 import { HowItWorks } from './_home/HowItWorks'
 import { InsideBoxie } from './_home/InsideBoxie'
 import { OccasionMarquee } from './_home/OccasionMarquee'
-import { Pricing } from './_home/Pricing'
+import { Pricing, type HomePlan } from './_home/Pricing'
 import { Mark, SectionHeading } from './_home/primitives'
 import { Reaction } from './_home/Reaction'
 import { StickyBuyBar } from './_home/StickyBuyBar'
@@ -24,14 +30,45 @@ export const dynamic = 'force-dynamic'
 
 const TITLE = 'Boxie · Regalo digital personalizado con fotos, música y juegos'
 
-/** El precio más bajo del catálogo (el "desde" de la home). */
-function fromPrice(themes: CatalogTheme[], fallback: number) {
+/** El precio más bajo del catálogo (el "desde" de la home): el plan más barato, si hay planes. */
+function fromPrice(themes: CatalogTheme[], fallback: number, plans: { priceCents: number }[] = []) {
+  if (plans.length) return Math.min(...plans.map((p) => p.priceCents))
   return themes.length ? Math.min(...themes.map((t) => t.priceCents)) : fallback
 }
 
+/** Los planes para la home: cuántas pantallas y juegos incluye cada uno (en la temática más completa). */
+async function homePlans(themes: { versionId: string }[]): Promise<HomePlan[]> {
+  const plans = await listPublicPlans()
+  if (plans.length === 0) return []
+  const configs = (await Promise.all(themes.map((t) => getThemeVersionConfig(t.versionId)))).filter(
+    (c) => c !== null,
+  )
+  const contents = configs.map((c) => planContents(c, plans))
+  return plans.map((p) => {
+    const mine = contents.map((list) => list.find((x) => x.planSlug === p.slug))
+    return {
+      slug: p.slug,
+      name: p.name,
+      tagline: p.tagline,
+      priceCents: p.priceCents,
+      compareAtCents: p.compareAtCents,
+      highlighted: p.highlighted,
+      screens: Math.max(0, ...mine.map((c) => c?.screens ?? 0)),
+      games: Math.max(0, ...mine.map((c) => c?.games ?? 0)),
+      days: p.limits.giftLifetimeDays,
+      allowPassword: p.limits.allowPassword,
+      features: p.features,
+    }
+  })
+}
+
 export async function generateMetadata(): Promise<Metadata> {
-  const [themes, settings] = await Promise.all([listPublishedThemes(), getPublicSettings()])
-  const price = formatARS(fromPrice(themes, settings.basePriceCents))
+  const [themes, settings, plans] = await Promise.all([
+    listPublishedThemes(),
+    getPublicSettings(),
+    listPublicPlans(),
+  ])
+  const price = formatARS(fromPrice(themes, settings.basePriceCents, plans))
   const description = `Regalá una Boxie: un regalo digital personalizado con fotos, dedicatoria, su canción y juegos, que se abre desde el celular. Ideal para aniversarios, cumpleaños y regalos a distancia. Llega al instante por WhatsApp, desde ${price}.`
   return {
     title: { absolute: TITLE },
@@ -61,10 +98,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /** Datos estructurados: la marca, el producto con su precio y las preguntas frecuentes. */
-function structuredData(themes: CatalogTheme[], priceCents: number) {
+function structuredData(themes: CatalogTheme[], priceCents: number, plans: HomePlan[]) {
   const url = siteUrl()
   const absolute = (path: string) => (path.startsWith('http') ? path : `${url}${path}`)
-  const prices = themes.map((t) => t.priceCents / 100)
+  const prices = plans.length
+    ? plans.map((p) => p.priceCents / 100)
+    : themes.map((t) => t.priceCents / 100)
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -97,7 +136,7 @@ function structuredData(themes: CatalogTheme[], priceCents: number) {
           priceCurrency: 'ARS',
           lowPrice: prices.length ? Math.min(...prices) : priceCents / 100,
           highPrice: prices.length ? Math.max(...prices) : priceCents / 100,
-          offerCount: Math.max(themes.length, 1),
+          offerCount: Math.max(plans.length || themes.length, 1),
           availability: 'https://schema.org/InStock',
           url: absolute('/galeria'),
         },
@@ -116,7 +155,8 @@ function structuredData(themes: CatalogTheme[], priceCents: number) {
 
 export default async function HomePage() {
   const [themes, settings] = await Promise.all([listPublishedThemes(), getPublicSettings()])
-  const priceCents = fromPrice(themes, settings.basePriceCents)
+  const plans = await homePlans(themes)
+  const priceCents = fromPrice(themes, settings.basePriceCents, plans)
   const price = formatARS(priceCents)
   const sample = themes[0]?.slug ?? 'pareja'
   const exampleHref = `/ejemplo/${sample}` as Route
@@ -130,7 +170,7 @@ export default async function HomePage() {
     tone: t.listing.cardTone,
     images: t.listing.images,
     features: t.listing.features,
-    price: formatARS(t.priceCents),
+    price: formatARS(plans.length ? priceCents : t.priceCents),
   }))
 
   // Tres fotos para la demo de la galería: primero la principal de cada temática.
@@ -139,7 +179,7 @@ export default async function HomePage() {
     ...themes.flatMap((t) => t.listing.images.slice(1)),
   ].slice(0, 3)
 
-  const jsonLd = JSON.stringify(structuredData(themes, priceCents)).replace(/</g, '\\u003c')
+  const jsonLd = JSON.stringify(structuredData(themes, priceCents, plans)).replace(/</g, '\\u003c')
 
   return (
     <div className="overflow-x-clip bg-paper">
@@ -151,7 +191,7 @@ export default async function HomePage() {
       <InsideBoxie photos={photos} exampleHref={exampleHref} />
       <HowItWorks price={price} editorHref={editorHref} exampleHref={exampleHref} />
       <Reaction lifetimeDays={settings.giftLifetimeDays} />
-      <Pricing priceCents={priceCents} lifetimeDays={settings.giftLifetimeDays} />
+      <Pricing priceCents={priceCents} lifetimeDays={settings.giftLifetimeDays} plans={plans} />
       <WhyBoxie />
 
       <section

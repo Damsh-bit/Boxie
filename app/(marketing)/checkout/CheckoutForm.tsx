@@ -29,13 +29,24 @@ export interface Quote {
   totalCents: number
   coupon: { code: string; label: string | null } | null
   couponError: string | null
+  /** El plan cotizado (null si la tienda no vende por planes). */
+  plan: { slug: string; name: string } | null
+}
+
+export interface CheckoutPlan {
+  slug: string
+  name: string
+  priceCents: number
+  days: number
 }
 
 interface Props {
   theme: { slug: string; name: string; image: string }
   initialQuote: Quote
+  plans: CheckoutPlan[]
   giftLifetimeDays: number
   paymentsEnabled: boolean
+  salesPaused: boolean
   demo: boolean
 }
 
@@ -54,8 +65,10 @@ const item = {
 export function CheckoutForm({
   theme,
   initialQuote,
-  giftLifetimeDays,
+  plans,
+  giftLifetimeDays: baseLifetimeDays,
   paymentsEnabled,
+  salesPaused,
   demo,
 }: Props) {
   const [quote, setQuote] = useState(initialQuote)
@@ -69,12 +82,14 @@ export function CheckoutForm({
   const [busy, setBusy] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
 
-  async function requote(cupon: string | null) {
+  const giftLifetimeDays = plans.find((p) => p.slug === quote.plan?.slug)?.days ?? baseLifetimeDays
+
+  async function requote(cupon: string | null, plan: string | null = quote.plan?.slug ?? null) {
     setBusy(true)
     const response = await fetch('/api/checkout/quote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tematica: theme.slug, cupon }),
+      body: JSON.stringify({ tematica: theme.slug, cupon, plan }),
     }).catch(() => null)
     setBusy(false)
     const body = (await response?.json().catch(() => null)) as (Quote & { error?: string }) | null
@@ -98,6 +113,7 @@ export function CheckoutForm({
       body: JSON.stringify({
         tematica: theme.slug,
         cupon: quote.coupon?.code ?? null,
+        plan: quote.plan?.slug ?? null,
         nombre: data.get('name'),
         email: data.get('email'),
         telefono: data.get('phone'),
@@ -244,10 +260,22 @@ export function CheckoutForm({
           ) : (
             <div className="space-y-3 rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
               <p>
-                <strong>{demo ? 'Versión de demostración.' : 'Todavía no cobramos online.'}</strong>{' '}
-                El precio y los cupones son reales (se calculan en el servidor), pero el pago con
-                Mercado Pago se habilita en el próximo paso del proyecto. Mientras tanto, podés
-                probar el editor: es el mismo que usás después de comprar.
+                {salesPaused && !demo ? (
+                  <>
+                    <strong>Las ventas están pausadas por un rato.</strong> Volvé a probar más
+                    tarde. Mientras tanto, podés probar el editor: es el mismo que usás después de
+                    comprar.
+                  </>
+                ) : (
+                  <>
+                    <strong>
+                      {demo ? 'Versión de demostración.' : 'Todavía no cobramos online.'}
+                    </strong>{' '}
+                    El precio y los cupones son reales (se calculan en el servidor), pero el pago
+                    con Mercado Pago se habilita en el próximo paso del proyecto. Mientras tanto,
+                    podés probar el editor: es el mismo que usás después de comprar.
+                  </>
+                )}
               </p>
               <ButtonLink href={sandboxHref} block>
                 Probar cómo se personaliza
@@ -271,7 +299,10 @@ export function CheckoutForm({
             <Image src={theme.image} alt={theme.name} fill sizes="70px" className="object-cover" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold">Boxie {theme.name}</h3>
+            <h3 className="text-lg font-semibold">
+              Boxie {theme.name}
+              {quote.plan && <span className="text-brand"> · {quote.plan.name}</span>}
+            </h3>
             <ul className="text-xs leading-relaxed text-neutral-500">
               <li>✅ Experiencia 100% digital</li>
               <li>✏️ Editable hasta que la bloqueás</li>
@@ -279,6 +310,40 @@ export function CheckoutForm({
             </ul>
           </div>
         </div>
+
+        {plans.length > 1 && (
+          <div className="mb-5" role="radiogroup" aria-label="Plan">
+            <p className="mb-2 text-xs font-bold tracking-wide text-neutral-500 uppercase">Plan</p>
+            <div className="grid grid-cols-3 gap-2">
+              {plans.map((p) => {
+                const selected = quote.plan?.slug === p.slug
+                return (
+                  <motion.button
+                    key={p.slug}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    disabled={busy}
+                    onClick={() => !selected && void requote(quote.coupon?.code ?? null, p.slug)}
+                    className={cn(
+                      'relative rounded-2xl border-2 px-2 py-2.5 text-center transition-colors',
+                      selected
+                        ? 'border-brand bg-brand-soft'
+                        : 'border-neutral-200 hover:border-brand/50',
+                    )}
+                    whileTap={{ scale: 0.96 }}
+                    transition={spring.snappy}
+                  >
+                    <span className="block text-xs font-bold text-ink">{p.name}</span>
+                    <span className="block text-sm font-semibold text-ink tabular-nums">
+                      {formatARS(p.priceCents)}
+                    </span>
+                  </motion.button>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         <form
           className="flex gap-2"

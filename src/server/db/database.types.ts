@@ -13,18 +13,111 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          id: number
+          at: string
+          actor_id: string | null
+          actor_email: string
+          action: string
+          entity: string
+          entity_id: string | null
+          summary: string
+        }
+        Insert: {
+          id?: never
+          at?: string
+          actor_id?: string | null
+          actor_email: string
+          action: string
+          entity: string
+          entity_id?: string | null
+          summary: string
+        }
+        Update: {
+          id?: never
+          at?: string
+          actor_id?: string | null
+          actor_email?: string
+          action?: string
+          entity?: string
+          entity_id?: string | null
+          summary?: string
+        }
+        Relationships: []
+      }
+      admin_tasks: {
+        Row: {
+          id: string
+          title: string
+          description: string
+          status: Database["public"]["Enums"]["task_status"]
+          priority: Database["public"]["Enums"]["task_priority"]
+          assignee: string | null
+          tags: string[]
+          due_on: string | null
+          position: number
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string
+          status?: Database["public"]["Enums"]["task_status"]
+          priority?: Database["public"]["Enums"]["task_priority"]
+          assignee?: string | null
+          tags?: string[]
+          due_on?: string | null
+          position?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string
+          status?: Database["public"]["Enums"]["task_status"]
+          priority?: Database["public"]["Enums"]["task_priority"]
+          assignee?: string | null
+          tags?: string[]
+          due_on?: string | null
+          position?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           user_id: string
           created_at: string
+          email: string | null
+          name: string
+          role: Database["public"]["Enums"]["admin_role"]
+          invited_at: string | null
+          last_seen_at: string | null
         }
         Insert: {
           user_id: string
           created_at?: string
+          email?: string | null
+          name?: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          invited_at?: string | null
+          last_seen_at?: string | null
         }
         Update: {
           user_id?: string
           created_at?: string
+          email?: string | null
+          name?: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          invited_at?: string | null
+          last_seen_at?: string | null
         }
         Relationships: []
       }
@@ -36,6 +129,8 @@ export type Database = {
           commission_bps: number
           active: boolean
           created_at: string
+          email: string
+          notes: string
         }
         Insert: {
           id?: string
@@ -44,6 +139,8 @@ export type Database = {
           commission_bps?: number
           active?: boolean
           created_at?: string
+          email?: string
+          notes?: string
         }
         Update: {
           id?: string
@@ -52,6 +149,8 @@ export type Database = {
           commission_bps?: number
           active?: boolean
           created_at?: string
+          email?: string
+          notes?: string
         }
         Relationships: []
       }
@@ -221,6 +320,45 @@ export type Database = {
           },
         ]
       }
+      expenses: {
+        Row: {
+          id: string
+          category: Database["public"]["Enums"]["expense_category"]
+          description: string
+          vendor: string
+          amount_cents: number
+          recurrence: string
+          starts_on: string
+          ends_on: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          category: Database["public"]["Enums"]["expense_category"]
+          description: string
+          vendor?: string
+          amount_cents: number
+          recurrence: string
+          starts_on: string
+          ends_on?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          category?: Database["public"]["Enums"]["expense_category"]
+          description?: string
+          vendor?: string
+          amount_cents?: number
+          recurrence?: string
+          starts_on?: string
+          ends_on?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       media_assets: {
         Row: {
           id: string
@@ -283,6 +421,7 @@ export type Database = {
           paid_at: string | null
           created_at: string
           updated_at: string
+          plan_id: string | null
         }
         Insert: {
           id?: string
@@ -306,6 +445,7 @@ export type Database = {
           paid_at?: string | null
           created_at?: string
           updated_at?: string
+          plan_id?: string | null
         }
         Update: {
           id?: string
@@ -329,6 +469,7 @@ export type Database = {
           paid_at?: string | null
           created_at?: string
           updated_at?: string
+          plan_id?: string | null
         }
         Relationships: [
           {
@@ -343,6 +484,13 @@ export type Database = {
             columns: ["coupon_id"]
             isOneToOne: false
             referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
             referencedColumns: ["id"]
           },
           {
@@ -405,6 +553,63 @@ export type Database = {
           },
         ]
       }
+      plans: {
+        Row: {
+          id: string
+          slug: string
+          name: string
+          tagline: string
+          price_cents: number
+          compare_at_cents: number | null
+          rank: number
+          color: string
+          features: Json
+          gift_lifetime_days: number
+          max_photos: number
+          allow_password: boolean
+          highlighted: boolean
+          active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          slug: string
+          name: string
+          tagline?: string
+          price_cents: number
+          compare_at_cents?: number | null
+          rank: number
+          color?: string
+          features?: Json
+          gift_lifetime_days?: number
+          max_photos?: number
+          allow_password?: boolean
+          highlighted?: boolean
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          slug?: string
+          name?: string
+          tagline?: string
+          price_cents?: number
+          compare_at_cents?: number | null
+          rank?: number
+          color?: string
+          features?: Json
+          gift_lifetime_days?: number
+          max_photos?: number
+          allow_password?: boolean
+          highlighted?: boolean
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           id: boolean
@@ -414,6 +619,17 @@ export type Database = {
           offer_coupon_id: string | null
           offer_delay_seconds: number
           updated_at: string
+          gateway_fee_bps: number
+          gateway_vat_bps: number
+          gateway_fixed_cents: number
+          tax_bps: number
+          variable_cost_cents: number
+          monthly_goal_cents: number
+          business_name: string
+          support_email: string
+          whatsapp: string
+          instagram: string
+          sales_paused: boolean
         }
         Insert: {
           id?: boolean
@@ -423,6 +639,17 @@ export type Database = {
           offer_coupon_id?: string | null
           offer_delay_seconds?: number
           updated_at?: string
+          gateway_fee_bps?: number
+          gateway_vat_bps?: number
+          gateway_fixed_cents?: number
+          tax_bps?: number
+          variable_cost_cents?: number
+          monthly_goal_cents?: number
+          business_name?: string
+          support_email?: string
+          whatsapp?: string
+          instagram?: string
+          sales_paused?: boolean
         }
         Update: {
           id?: boolean
@@ -432,6 +659,17 @@ export type Database = {
           offer_coupon_id?: string | null
           offer_delay_seconds?: number
           updated_at?: string
+          gateway_fee_bps?: number
+          gateway_vat_bps?: number
+          gateway_fixed_cents?: number
+          tax_bps?: number
+          variable_cost_cents?: number
+          monthly_goal_cents?: number
+          business_name?: string
+          support_email?: string
+          whatsapp?: string
+          instagram?: string
+          sales_paused?: boolean
         }
         Relationships: [
           {
@@ -493,6 +731,7 @@ export type Database = {
           current_version_id: string | null
           created_at: string
           updated_at: string
+          origin: string
         }
         Insert: {
           id?: string
@@ -508,6 +747,7 @@ export type Database = {
           current_version_id?: string | null
           created_at?: string
           updated_at?: string
+          origin?: string
         }
         Update: {
           id?: string
@@ -523,6 +763,7 @@ export type Database = {
           current_version_id?: string | null
           created_at?: string
           updated_at?: string
+          origin?: string
         }
         Relationships: [
           {
@@ -567,11 +808,27 @@ export type Database = {
           gifts_opened: number
         }[]
       }
+      admin_plan_ranking: {
+        Args: {
+          p_from: string
+          p_to: string
+        }
+        Returns: {
+          plan_id: string
+          plan_name: string
+          orders_paid: number
+          revenue_cents: number
+        }[]
+      }
       admin_refund_boxie: {
         Args: {
           p_boxie_id: string
         }
         Returns: undefined
+      }
+      admin_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["admin_role"]
       }
       admin_sales_by_day: {
         Args: {
@@ -659,10 +916,14 @@ export type Database = {
       }
     }
     Enums: {
+      admin_role: "owner" | "admin" | "editor" | "support"
       boxie_status: "active" | "refunded" | "expired"
       coupon_kind: "percent" | "fixed"
+      expense_category: "infraestructura" | "marketing" | "herramientas" | "equipo" | "impuestos" | "otros"
       media_owner: "boxie" | "theme"
       order_status: "pending" | "paid" | "refunded" | "cancelled"
+      task_priority: "alta" | "media" | "baja"
+      task_status: "todo" | "doing" | "done"
       theme_status: "draft" | "published" | "archived"
     }
     CompositeTypes: {

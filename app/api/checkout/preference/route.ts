@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { getPublicSettings } from '@/server/catalog'
 import { quoteCheckout } from '@/server/checkout'
 import { serviceDb, unwrap } from '@/server/db/client'
 import { env, siteUrl } from '@/server/env'
@@ -13,6 +14,11 @@ const Body = z.object({
   nombre: z.string().min(2).max(120),
   email: z.string().email().max(254),
   telefono: z.string().max(40).optional().nullable(),
+  plan: z
+    .string()
+    .regex(/^[a-z0-9-]{1,40}$/)
+    .optional()
+    .nullable(),
 })
 
 /**
@@ -34,11 +40,17 @@ export async function POST(request: Request) {
     )
   }
 
-  const { tematica, cupon, nombre, email, telefono } = parsed.data
+  const { tematica, cupon, nombre, email, telefono, plan } = parsed.data
 
   try {
-    const result = await quoteCheckout(tematica, cupon)
+    const result = await quoteCheckout(tematica, cupon, plan)
     if (!result) return NextResponse.json({ error: 'Esa temática no existe.' }, { status: 404 })
+    if ((await getPublicSettings()).salesPaused) {
+      return NextResponse.json(
+        { error: 'Las ventas están pausadas por un rato. Probá más tarde.' },
+        { status: 409 },
+      )
+    }
 
     const { theme, quote } = result
 
@@ -72,6 +84,8 @@ export async function POST(request: Request) {
           buyer_email: email,
           buyer_phone: telefono ?? null,
           payment_provider: 'mercadopago',
+          // Solo con planes (la columna llega con la migración del panel).
+          ...(result.plan ? { plan_id: result.plan.id } : {}),
         })
         .select('id')
         .single(),
@@ -83,7 +97,7 @@ export async function POST(request: Request) {
     const preference = await createPreference({
       items: [
         {
-          title: `Boxie ${theme.name}`,
+          title: `Boxie ${theme.name}${result.plan ? ` · ${result.plan.name}` : ''}`,
           quantity: 1,
           // MP trabaja en pesos (no centavos).
           unit_price: quote.totalCents / 100,

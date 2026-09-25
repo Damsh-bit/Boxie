@@ -1,20 +1,22 @@
 import 'server-only'
 import { cache } from 'react'
 import { ThemeListingSchema, type CatalogTheme } from '@/domain/catalog'
-import { couponDiscount, evaluateCoupon, normalizeCouponCode, type Coupon } from '@/domain/coupons'
+import { evaluateCoupon, normalizeCouponCode, type Coupon } from '@/domain/coupons'
 import { listPrice } from '@/domain/pricing'
 import { readThemeConfig, type ParsedThemeConfig } from '@/slides/config'
 import { publicDb, serviceDb, unwrap, unwrapMaybe } from './db/client'
+import { activePlans, type Plan } from '@/domain/plans'
 import {
-  DEMO_COUPONS,
-  DEMO_OFFER_CODE,
-  DEMO_SETTINGS,
+  demoCoupons,
+  demoOffer,
+  demoPlans,
+  demoSettings,
   demoThemeConfig,
   demoThemes,
   isDemoMode,
 } from './demo'
 import { log } from './log'
-import { toCoupon } from './mappers'
+import { toCoupon, toPlan } from './mappers'
 
 /**
  * Catálogo leído de la base (elimina el productsData hardcodeado del
@@ -26,22 +28,41 @@ export interface PublicSettings {
   basePriceCents: number
   giftLifetimeDays: number
   currency: string
+  /** Ventas pausadas desde el panel: el checkout avisa y no cobra. */
+  salesPaused: boolean
 }
 
 export const getPublicSettings = cache(async (): Promise<PublicSettings> => {
-  if (isDemoMode()) return DEMO_SETTINGS
-  const row = unwrap(
-    await publicDb()
-      .from('settings')
-      .select('base_price_cents, gift_lifetime_days, currency')
-      .single(),
-    'settings',
-  )
+  if (isDemoMode()) return demoSettings()
+  // select('*'): sales_paused llega con la migración del panel; sin ella, no está pausado.
+  const row = unwrap(await publicDb().from('settings').select('*').single(), 'settings') as {
+    base_price_cents: number
+    gift_lifetime_days: number
+    currency: string
+    sales_paused?: boolean
+  }
   return {
     basePriceCents: row.base_price_cents,
     giftLifetimeDays: row.gift_lifetime_days,
     currency: row.currency,
+    salesPaused: row.sales_paused === true,
   }
+})
+
+/**
+ * Los planes a la venta, del más básico al más completo. Sin planes (o sin la
+ * migración del panel), la tienda cobra el precio base como siempre.
+ */
+export const listPublicPlans = cache(async (): Promise<Plan[]> => {
+  if (isDemoMode()) return demoPlans()
+  const result = await publicDb().from('plans').select('*').eq('active', true).order('rank')
+  if (result.error) {
+    log.warn('No se pudieron leer los planes: se vende al precio base', {
+      error: result.error.message,
+    })
+    return []
+  }
+  return activePlans(result.data.map(toPlan))
 })
 
 export interface CatalogThemeWithVersion extends CatalogTheme {
@@ -134,7 +155,7 @@ export const getThemeVersionConfig = cache(
 export async function findCoupon(input: string | null | undefined): Promise<Coupon | null> {
   const code = normalizeCouponCode(input)
   if (!code) return null
-  if (isDemoMode()) return DEMO_COUPONS.find((c) => c.code === code) ?? null
+  if (isDemoMode()) return demoCoupons().find((c) => c.code === code) ?? null
   const row = unwrapMaybe(
     await serviceDb().from('coupons').select('*').eq('code', code).maybeSingle(),
     'coupon',
@@ -159,7 +180,10 @@ export const getUrgencyOffer = cache(async (): Promise<UrgencyOffer | null> => {
   let coupon: Coupon | null
   let delaySeconds = 15
   if (isDemoMode()) {
-    coupon = await findCoupon(DEMO_OFFER_CODE)
+    const offer = demoOffer()
+    if (!offer.couponId) return null
+    delaySeconds = offer.delaySeconds
+    coupon = demoCoupons().find((c) => c.id === offer.couponId) ?? null
   } else {
     const settings = unwrap(
       await serviceDb().from('settings').select('offer_coupon_id, offer_delay_seconds').single(),
@@ -186,10 +210,3 @@ export const getUrgencyOffer = cache(async (): Promise<UrgencyOffer | null> => {
     delaySeconds,
   }
 })
-
-export function applyOffer(
-  offer: { kind: 'percent' | 'fixed'; value: number },
-  listCents: number,
-): number {
-  return listCents - couponDiscount(offer, listCents)
-}

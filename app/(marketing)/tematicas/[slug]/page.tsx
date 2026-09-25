@@ -3,10 +3,12 @@ import type { Metadata } from 'next'
 import type { Route } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
+import { describePlanContents, planContents } from '@/slides/plans'
 import {
-  applyOffer,
   getPublishedTheme,
+  getThemeVersionConfig,
   getUrgencyOffer,
+  listPublicPlans,
   listPublishedThemes,
 } from '@/server/catalog'
 import { HoverZoom, LiftLink } from '@/ui/LiftLink'
@@ -38,12 +40,30 @@ const WHY = [
 
 export default async function ThemePage({ params }: PageProps<'/tematicas/[slug]'>) {
   const { slug } = await params
-  const [theme, all, offer] = await Promise.all([
+  const [theme, all, offer, plans] = await Promise.all([
     getPublishedTheme(slug),
     listPublishedThemes(),
     getUrgencyOffer(),
+    listPublicPlans(),
   ])
   if (!theme) notFound()
+
+  // Qué incluye cada plan en esta temática (las pantallas dependen de la temática).
+  const config = plans.length ? await getThemeVersionConfig(theme.versionId) : null
+  const contents = config ? planContents(config, plans) : []
+  const buyPlans = plans.map((p) => {
+    const c = contents.find((x) => x.planSlug === p.slug)
+    return {
+      slug: p.slug,
+      name: p.name,
+      tagline: p.tagline,
+      priceCents: p.priceCents,
+      compareAtCents: p.compareAtCents,
+      highlighted: p.highlighted,
+      summary: c ? describePlanContents(c) : p.tagline,
+      days: p.limits.giftLifetimeDays,
+    }
+  })
 
   const others = all.filter((t) => t.id !== theme.id)
 
@@ -76,13 +96,15 @@ export default async function ThemePage({ params }: PageProps<'/tematicas/[slug]
                 slug={theme.slug}
                 name={theme.name}
                 priceCents={theme.priceCents}
+                plans={buyPlans}
                 offer={
                   offer
                     ? {
                         code: offer.code,
                         label: offer.label,
                         delaySeconds: offer.delaySeconds,
-                        priceCents: applyOffer(offer, theme.priceCents),
+                        kind: offer.kind,
+                        value: offer.value,
                       }
                     : null
                 }

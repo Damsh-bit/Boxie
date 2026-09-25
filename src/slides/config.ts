@@ -16,7 +16,14 @@ import { FrameSchema, ThemeConfigSchema, type Frame, type Palette } from './them
  */
 
 export type ParsedSlide = {
-  [K in SlideKind]: { key: string; kind: K; props: ThemePropsOf<K>; frame: Frame }
+  [K in SlideKind]: {
+    key: string
+    kind: K
+    props: ThemePropsOf<K>
+    frame: Frame
+    /** Plan desde el que se incluye (slug). Sin plan: en todos. */
+    plan?: string
+  }
 }[SlideKind]
 
 export interface ParsedThemeConfig {
@@ -56,7 +63,13 @@ export function parseThemeConfig(input: unknown): ParseResult<ParsedThemeConfig>
       return
     }
     const frame = FrameSchema.parse({ ...definition.frame, ...slide.frame })
-    slides.push({ key: slide.key, kind: slide.kind, props: props.data, frame } as ParsedSlide)
+    slides.push({
+      key: slide.key,
+      kind: slide.kind,
+      props: props.data,
+      frame,
+      ...(slide.plan ? { plan: slide.plan } : {}),
+    } as ParsedSlide)
   })
 
   if (issues.length) return { success: false, issues }

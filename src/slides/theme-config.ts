@@ -46,6 +46,15 @@ export const SlideInstanceSchema = z.object({
   kind: z.string().min(1),
   props: z.record(z.string(), z.unknown()).default({}),
   frame: FrameSchema.partial().optional(),
+  /**
+   * Plan desde el que se incluye la slide (slug de la tabla plans). Sin plan,
+   * va en todos. Ver src/slides/plans.ts.
+   */
+  plan: z
+    .string()
+    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
+    .max(40)
+    .optional(),
 })
 
 export const ThemeConfigSchema = z.object({

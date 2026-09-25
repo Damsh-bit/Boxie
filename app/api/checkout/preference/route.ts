@@ -140,12 +140,16 @@ export async function POST(request: Request) {
     // Guardar el preference_id para trazabilidad.
     await serviceDb().from('orders').update({ mp_preference_id: preference.id }).eq('id', order.id)
 
-    // Si el token es de producción (APP_USR-), usamos init_point. En sandbox con TEST-, usamos sandbox_init_point.
-    const isProductionToken = env().MP_ACCESS_TOKEN?.startsWith('APP_USR-')
-    const isProduction = env().VERCEL_ENV === 'production' || isProductionToken
-    const initPoint = isProduction
-      ? preference.init_point
-      : preference.sandbox_init_point || preference.init_point
+    // En sandbox usamos sandbox_init_point; en producción, init_point.
+    // Si MP_SANDBOX está definido en el entorno, manda eso; de lo contrario, en local usa sandbox.
+    const useSandbox =
+      env().MP_SANDBOX !== undefined
+        ? env().MP_SANDBOX === 'true'
+        : env().VERCEL_ENV !== 'production'
+
+    const initPoint = useSandbox
+      ? preference.sandbox_init_point || preference.init_point
+      : preference.init_point
 
     return NextResponse.json({ initPoint })
   } catch (error) {

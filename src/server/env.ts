@@ -33,6 +33,7 @@ const schema = z
     ADMIN_HOST: optional,
     CRON_SECRET: optional,
     VERCEL_ENV: optional,
+    MP_SANDBOX: optional,
   })
   .superRefine((env, ctx) => {
     if (env.PAYMENTS_PROVIDER === 'mercadopago') {

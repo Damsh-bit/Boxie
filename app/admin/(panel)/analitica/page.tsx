@@ -157,7 +157,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<'/admin/
           />
         </div>
 
-        <div className="mt-5 grid gap-5 xl:grid-cols-2">
+        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
           <Card delay={0.1}>
             <CardHeader
               icon={<MousePointerClick />}
@@ -165,7 +165,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<'/admin/
               description="De las compras iniciadas en el período, cuántas llegaron a cada paso"
             />
             <Funnel steps={steps} />
-            <div className="mt-5 grid gap-2 text-sm sm:grid-cols-2">
+            <div className="mt-5 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
               {steps.slice(1).map((s, i) => {
                 const lost = steps[i]!.count - s.count
                 return (
@@ -231,7 +231,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<'/admin/
           </p>
         </Card>
 
-        <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_400px]">
+        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_400px]">
           <Card delay={0.2} padded={false}>
             <div className="p-5 pb-2 sm:p-6 sm:pb-2">
               <CardHeader
@@ -290,7 +290,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<'/admin/
           </Card>
         </div>
 
-        <div className="mt-5 grid gap-5 xl:grid-cols-2">
+        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
           <Card delay={0.2}>
             <CardHeader
               icon={<Repeat />}

@@ -117,7 +117,7 @@ export default async function FinancePage({ searchParams }: PageProps<'/admin/fi
           />
         </div>
 
-        <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_400px]">
+        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_400px]">
           <Card delay={0.1}>
             <CardHeader
               title="Estado de resultados"
@@ -291,7 +291,7 @@ export default async function FinancePage({ searchParams }: PageProps<'/admin/fi
           </div>
         </Card>
 
-        <div className="mt-5 grid gap-5 xl:grid-cols-2">
+        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
           <Card delay={0.2} padded={false}>
             <div className="p-5 pb-2 sm:p-6 sm:pb-2">
               <CardHeader
@@ -314,7 +314,7 @@ export default async function FinancePage({ searchParams }: PageProps<'/admin/fi
           </Card>
         </div>
 
-        <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
           <Card delay={0.2} padded={false}>
             <ExpensesTable expenses={data.expenses} />
           </Card>

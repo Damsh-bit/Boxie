@@ -6,7 +6,8 @@ destinatario la abre desde el celular con un link.
 Reescritura del prototipo `Damsh-bit/boxiedigital` según el
 [documento de arquitectura y roadmap](https://boxie-roadmap.vercel.app/). Las decisiones tomadas al
 implementarlo están en [docs/DECISIONES.md](docs/DECISIONES.md) y la operación (variables, deploy,
-Supabase) en [docs/OPERACION.md](docs/OPERACION.md).
+Supabase) en [docs/OPERACION.md](docs/OPERACION.md). El panel de administración, en
+[docs/ADMIN.md](docs/ADMIN.md).
 
 ## Stack
 
@@ -30,6 +31,9 @@ npm run dev
 Abrir <http://localhost:3000> y, para ver una Boxie completa, <http://localhost:3000/ejemplo/pareja>.
 El editor del comprador se prueba en <http://localhost:3000/ejemplo/pareja/personalizar> (modo
 prueba: guarda en el navegador).
+
+El panel de administración está en <http://localhost:3000/admin> (en demo: `admin@boxie.demo` /
+`boxie-admin`, con un año de ventas de muestra).
 
 **Con Supabase local** (necesita Docker):
 
@@ -57,10 +61,12 @@ del editor y del regalo (ver [docs/OPERACION.md](docs/OPERACION.md#editor-y-rega
 
 ```
 app/                  rutas (sitio público, checkout, editor, regalo, API)
-src/domain/           lógica pura: precios, cupones, ciclo de vida de la Boxie
+app/admin/            panel de administración (ver docs/ADMIN.md)
+src/domain/           lógica pura: precios, planes, cupones, ciclo de vida, métricas y finanzas
 src/server/           todo lo que toca el exterior: base, storage, mails, seguridad
 src/slides/           ⭐ el motor de temáticas: contrato de cada slide, player y componentes
 src/slides/editor/    el editor del comprador: módulos, SchemaForm, fotos, modo prueba
+src/slides/generator/ el generador de temáticas del panel
 src/ui/               sistema de diseño
 supabase/migrations/  esquema, funciones, RLS, storage y catálogo inicial (versionado)
 supabase/seed/        las temáticas iniciales como datos

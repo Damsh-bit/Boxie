@@ -301,7 +301,7 @@ export default async function DashboardPage({ searchParams }: PageProps<'/admin'
           />
         </div>
 
-        <div className="mt-4 grid gap-4 lg:mt-5 lg:gap-5 xl:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-5 lg:gap-5 xl:grid-cols-2">
           <Card delay={0.15}>
             <CardHeader
               title="Temáticas que más venden"
@@ -385,7 +385,7 @@ export default async function DashboardPage({ searchParams }: PageProps<'/admin'
           </Card>
         </div>
 
-        <div className="mt-4 grid gap-4 lg:mt-5 lg:gap-5 xl:grid-cols-5">
+        <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-5 lg:gap-5 xl:grid-cols-5">
           <Card className="xl:col-span-3" delay={0.2}>
             <CardHeader
               title="Del checkout al regalo abierto"
@@ -411,7 +411,7 @@ export default async function DashboardPage({ searchParams }: PageProps<'/admin'
           </Card>
         </div>
 
-        <div className="mt-4 grid gap-4 lg:mt-5 lg:gap-5 xl:grid-cols-5">
+        <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-5 lg:gap-5 xl:grid-cols-5">
           <Card className="xl:col-span-3" delay={0.25} padded={false}>
             <div className="flex items-center justify-between p-5 pb-3 sm:p-6 sm:pb-3">
               <h2 className="font-semibold text-ink">Últimos movimientos</h2>

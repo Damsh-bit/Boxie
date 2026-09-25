@@ -160,11 +160,43 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   el texto.
 - El swipe no convivía con las listas scrolleables (playlists, cuponera): ahora primero scrollea.
 
+## Panel de administración
+
+Detalle de uso en [ADMIN.md](ADMIN.md). Lo que se decidió:
+
+- **Un contrato de datos (`AdminRepo`) con dos implementaciones**, demo y Supabase. Las páginas no
+  saben cuál corre. Permitió construir y probar todo el panel sin base, y conectar la base es cambiar
+  de implementación, no reescribir pantallas.
+- **La analítica se calcula en el servidor con funciones puras** (`src/domain/admin`) sobre las
+  órdenes del período, no en SQL. Con el volumen actual (cientos de órdenes por mes) sobra y deja
+  todo testeado sin base. Las funciones SQL (`admin_kpis`, etc.) quedan para cuando haga falta.
+- **Sesión propia del panel** (cookie firmada limitada a `/admin`), no la de Supabase en el
+  navegador: el panel no expone la base al cliente y todo pasa por Server Actions con el rol
+  verificado en cada una. El login cuenta solo los intentos fallidos (para no bloquear a quien entra
+  y sale seguido).
+- **Roles simples** (dueño, administrador, editor, soporte) en vez de permisos por sección: alcanza
+  para un equipo chico y se entiende de un vistazo.
+- **Bitácora inmutable** (`admin_audit_log`): cada cambio del panel queda con quién y cuándo, y la base
+  no deja editarla ni borrarla.
+- **Planes como niveles del mismo regalo**, no temáticas distintas: cada slide dice desde qué plan
+  entra y un plan incluye todo lo de abajo. Sin planes cargados, todo sigue como antes (precio
+  base). El plan se guarda en la orden y manda sobre el editor, el regalo, las fotos, la clave y los
+  días online. Un plan que se vendió no se borra (se pausa).
+- **El generador es determinístico y sin IA**: arquetipos con textos escritos a mano, paletas y
+  fotos verificadas. Resultado predecible, gratis, sin depender de un proveedor y siempre válido
+  contra el contrato de las slides. El servidor vuelve a generar al crear, no confía en el
+  navegador.
+- **Márgenes con costos configurables** (comisión de Mercado Pago con IVA, impuestos, costo variable
+  por venta, gastos fijos prorrateados por día). Son estimaciones para decidir, no contabilidad.
+- **Los cambios del panel revalidan solo lo que tocan**: las páginas públicas de a una (revalidar el
+  layout raíz rompía las estáticas), el panel entero por layout.
+
 ## Modo demo
 
 `DEMO_MODE=1` levanta el sitio sin Supabase ni Mercado Pago, con el catálogo de `supabase/seed`.
 Existe para mostrar el producto en un deploy sin secretos. Nunca se activa solo. En demo el editor
-se usa en modo prueba y `/editor` explica cómo llegar a él.
+se usa en modo prueba y `/editor` explica cómo llegar a él. El panel usa un año de ventas simuladas
+(semilla fija: siempre los mismos números) y lo que se cambia en él se ve en la tienda.
 
 ## Rendering
 

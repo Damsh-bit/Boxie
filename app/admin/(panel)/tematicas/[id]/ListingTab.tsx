@@ -329,7 +329,7 @@ export function ListingTab({
             />
           </div>
 
-          <div className="mt-5 grid gap-4 sm:grid-cols-[88px_1fr]">
+          <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-[88px_1fr]">
             <Field label="Emoji" htmlFor="g-emoji">
               <Input
                 id="g-emoji"

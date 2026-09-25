@@ -300,7 +300,7 @@ function SlideRow({
               <FrameEditor slide={slide} kind={kind} onChange={(frame) => onChange({ frame })} />
             )}
 
-            <div className="mt-5 grid gap-4 rounded-2xl bg-canvas p-4 sm:grid-cols-2">
+            <div className="mt-5 grid grid-cols-1 gap-4 rounded-2xl bg-canvas p-4 sm:grid-cols-2">
               <div className="md:hidden">
                 <Label htmlFor={`plan-${slide.key}`}>Plan</Label>
                 {structural ? (

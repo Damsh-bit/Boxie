@@ -42,7 +42,7 @@ export function PageHeader({
           {title}
         </h1>
         {description && (
-          <p className="mt-1.5 max-w-2xl text-[15px] text-neutral-600">{description}</p>
+          <p className="mt-1.5 max-w-2xl text-[15px] break-words text-neutral-600">{description}</p>
         )}
         {children}
       </motion.div>
@@ -108,7 +108,9 @@ export function CardHeader({
         )}
         <div className="min-w-0">
           <h2 className="text-base font-semibold text-ink">{title}</h2>
-          {description && <p className="mt-0.5 text-sm text-neutral-500">{description}</p>}
+          {description && (
+            <p className="mt-0.5 text-sm break-words text-neutral-500">{description}</p>
+          )}
         </div>
       </div>
       {action && <div className="shrink-0">{action}</div>}

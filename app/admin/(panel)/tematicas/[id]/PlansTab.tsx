@@ -64,7 +64,7 @@ export function PlansTab({
 
   return (
     <div>
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {plans.map((plan, i) => {
           const c = contents.find((x) => x.planSlug === plan.slug)
           return (

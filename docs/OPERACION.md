@@ -13,6 +13,7 @@ Variables_; nunca en el repo.
 | `MP_ACCESS_TOKEN`                                           | Mercado Pago → Tus integraciones → Credenciales (el **nuevo**, rotado) |
 | `MP_WEBHOOK_SECRET`                                         | Mercado Pago → Tus integraciones → Webhooks                            |
 | `RESEND_API_KEY`                                            | Resend, con el dominio verificado (DKIM)                               |
+| `ADMIN_DEMO_EMAIL`, `ADMIN_DEMO_PASSWORD`                   | Solo en modo demo: el usuario del panel (si no, el de muestra)         |
 
 ## Supabase: primera vez
 
@@ -23,11 +24,14 @@ Variables_; nunca en el repo.
 
 1. Crear el proyecto `boxie` en la organización _Damsh-bit's Org_, región `sa-east-1` (São Paulo).
 2. Aplicar las migraciones: `npx supabase link --project-ref <ref>` y `npx supabase db push`
-   (son 6: esquema, funciones, RLS, storage, catálogo inicial y editor).
+   (son 7: esquema, funciones, RLS, storage, catálogo inicial, editor y panel de administración).
 3. Revisar los avisos de seguridad del panel (_Advisors_): tienen que estar en cero.
-4. Crear el primer admin: registrar el usuario en _Authentication_ y agregarlo a `admin_users`:
-   `insert into public.admin_users (user_id) values ('<uuid del usuario>');`
+4. Crear el primer admin: registrar el usuario en _Authentication_ y agregarlo a `admin_users` como
+   dueño (después suma al resto del equipo desde el panel, en _Equipo_):
+   `insert into public.admin_users (user_id, email, name, role) values ('<uuid>', '<mail>', '<nombre>', 'owner');`
 5. Cargar en Vercel las variables de la tabla de arriba y sacar `DEMO_MODE`.
+6. Recorrer el panel con la checklist de [ADMIN.md](ADMIN.md#conectar-supabase) (planes, gastos,
+   configuración).
 
 La base cambia solo por migraciones. Nunca desde el panel.
 
@@ -39,6 +43,10 @@ página del editor hace varias consultas: desde `iad1` (el default, EE.UU.) cada
 - `main` → producción en Vercel. Cada PR → deploy de preview.
 - El modo demo (`DEMO_MODE=1`) es solo para deploys de muestra sin secretos. En demo, el editor
   funciona en modo prueba (`/ejemplo/<temática>/personalizar`) y `/g/<token>` no existe.
+- En demo, el panel (`/admin`) funciona con datos de muestra y lo que se cambia ahí (temáticas,
+  planes, cupones, precio) se ve en la tienda. Esos cambios viven en la memoria de cada instancia:
+  se pierden con cada deploy o cuando la instancia se recicla. **Definir `ADMIN_DEMO_PASSWORD`** en
+  un deploy público: sin ella se entra con la clave de muestra.
 
 ## Editor y regalo
 
@@ -59,14 +67,18 @@ curl -X POST http://localhost:3000/api/dev/boxies -H "content-type: application/
 
 Devuelve el link del editor y el del regalo (en la vida real llegan por mail).
 
+## Panel de administración
+
+Todo en [ADMIN.md](ADMIN.md): secciones, roles, planes, generador y cómo conectarlo a la base.
+
 ## Límites y abuso
 
 Los límites de pedidos (contacto, checkout, editor, fotos, clave del regalo) viven en memoria de
 cada instancia: frenan lo obvio. Para límites globales, activar reglas de rate limiting en el
 Firewall de Vercel sobre `/api/*`, `/editor/*` y `/g/*`.
 
-Cada Boxie admite hasta 30 fotos (lo exige la base); al bloquearla se borran las que se
-reemplazaron.
+Cada Boxie admite hasta 30 fotos (lo exige la base) y el plan comprado puede bajar ese tope; al
+bloquearla se borran las que se reemplazaron.
 
 ## Checklist de seguridad (Sprint 0)
 

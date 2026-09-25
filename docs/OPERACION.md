@@ -45,8 +45,8 @@ página del editor hace varias consultas: desde `iad1` (el default, EE.UU.) cada
   funciona en modo prueba (`/ejemplo/<temática>/personalizar`) y `/g/<token>` no existe.
 - En demo, el panel (`/admin`) funciona con datos de muestra y lo que se cambia ahí (temáticas,
   planes, cupones, precio) se ve en la tienda. Esos cambios viven en la memoria de cada instancia:
-  se pierden con cada deploy o cuando la instancia se recicla. **Definir `ADMIN_DEMO_PASSWORD`** en
-  un deploy público: sin ella se entra con la clave de muestra.
+  se pierden con cada deploy o cuando la instancia se recicla. En Vercel la clave de muestra no sirve: el
+  panel queda cerrado hasta **definir `ADMIN_DEMO_PASSWORD`** (_Settings → Environment Variables_).
 
 ## Editor y regalo
 

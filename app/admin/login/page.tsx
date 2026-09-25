@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { demoCredentials } from '@/server/admin/auth'
+import { DEMO_LOCKED_MESSAGE, demoCredentials } from '@/server/admin/auth'
 import { getAdminSession } from '@/server/admin/session'
 import { isDemoMode } from '@/server/demo'
 import { LoginScreen } from './LoginScreen'
@@ -17,7 +17,10 @@ export default async function LoginPage({ searchParams }: PageProps<'/admin/logi
     <LoginScreen
       next={typeof next === 'string' ? next : ''}
       demo={demo}
-      hint={creds?.isDefault ? { email: creds.email, password: creds.password } : null}
+      hint={
+        creds?.isDefault && !creds.locked ? { email: creds.email, password: creds.password } : null
+      }
+      locked={creds?.locked ? DEMO_LOCKED_MESSAGE : null}
     />
   )
 }

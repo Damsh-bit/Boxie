@@ -191,7 +191,7 @@ export function connections(): Connection[] {
       what: 'Quién puede entrar',
       state: defaultAdmin ? 'warning' : 'ok',
       detail: defaultAdmin
-        ? 'Se entra con el usuario de muestra (admin@boxie.demo). En un deploy público, definí ADMIN_DEMO_PASSWORD.'
+        ? 'Se entra con el usuario de muestra (admin@boxie.demo). En un deploy esa clave no sirve: sin ADMIN_DEMO_PASSWORD el panel queda cerrado.'
         : demo
           ? 'Usuario de demo con clave propia (ADMIN_DEMO_PASSWORD).'
           : 'Supabase Auth + admin_users.',

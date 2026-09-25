@@ -10,6 +10,9 @@ import { DEFAULT_DEMO_EMAIL, DEFAULT_DEMO_PASSWORD, type AdminIdentity } from '.
  *
  * - Modo demo: un usuario de muestra (ADMIN_DEMO_EMAIL / ADMIN_DEMO_PASSWORD;
  *   sin definirlas, los valores de muestra que muestra la pantalla de login).
+ *   En un deploy (Vercel) la clave de muestra no sirve: es pública (está en
+ *   el repo) y cualquiera podría cambiar el catálogo de la demo. Ahí el panel
+ *   queda cerrado hasta definir ADMIN_DEMO_PASSWORD.
  * - Con Supabase: Supabase Auth (mail y clave) + la tabla admin_users. El
  *   alta del primer admin está en docs/OPERACION.md.
  */
@@ -28,8 +31,12 @@ export function demoCredentials() {
   const email = (process.env.ADMIN_DEMO_EMAIL?.trim() || DEFAULT_DEMO_EMAIL).toLowerCase()
   const password = process.env.ADMIN_DEMO_PASSWORD?.trim() || DEFAULT_DEMO_PASSWORD
   const isDefault = !process.env.ADMIN_DEMO_PASSWORD?.trim()
-  return { email, password, isDefault }
+  const locked = isDefault && process.env.VERCEL === '1'
+  return { email, password, isDefault, locked }
 }
+
+export const DEMO_LOCKED_MESSAGE =
+  'El panel de esta demo está cerrado: falta definir ADMIN_DEMO_PASSWORD en Vercel.'
 
 export async function authenticateAdmin(emailInput: string, password: string): Promise<AuthResult> {
   const email = emailInput.trim().toLowerCase()
@@ -37,6 +44,7 @@ export async function authenticateAdmin(emailInput: string, password: string): P
 
   if (isDemoMode()) {
     const demo = demoCredentials()
+    if (demo.locked) return { ok: false, error: DEMO_LOCKED_MESSAGE }
     // Se comparan las dos cosas siempre (mismo tiempo acierte o no el mail).
     const okEmail = same(email, demo.email)
     const okPassword = same(password, demo.password)

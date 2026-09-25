@@ -20,8 +20,9 @@ sesión"). El proxy (`proxy.ts`) manda al login a quien no tiene sesión, y adem
 acción** vuelven a verificarla (y el rol): el proxy es la primera barrera, no la única. Los intentos
 fallidos de login se limitan por IP y por mail.
 
-> En un deploy público en modo demo, definí `ADMIN_DEMO_PASSWORD`: si no, cualquiera entra con la
-> clave de muestra (que la pantalla de login muestra). En **Sistema** hay un aviso mientras falte.
+> La clave de muestra solo sirve en local y en CI: es pública (está en este repo). En un deploy de
+> Vercel en modo demo, **el panel queda cerrado hasta definir `ADMIN_DEMO_PASSWORD`** (y opcionalmente
+> `ADMIN_DEMO_EMAIL`); el login lo explica.
 
 ## Secciones
 

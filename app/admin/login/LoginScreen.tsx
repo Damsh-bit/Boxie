@@ -23,10 +23,13 @@ export function LoginScreen({
   next,
   demo,
   hint,
+  locked,
 }: {
   next: string
   demo: boolean
   hint: { email: string; password: string } | null
+  /** Demo publicada sin clave propia: se explica por qué no se puede entrar. */
+  locked: string | null
 }) {
   const [state, action, pending] = useActionState<LoginState, FormData>(login, {
     error: null,
@@ -163,6 +166,7 @@ export function LoginScreen({
               <p className="mt-1">
                 El panel muestra datos de muestra: la base de datos todavía no está conectada.
               </p>
+              {locked && <p className="mt-2 font-semibold">{locked}</p>}
               {hint && (
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <code className="rounded-lg bg-white/80 px-2 py-1 text-xs">{hint.email}</code>

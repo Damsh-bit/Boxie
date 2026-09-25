@@ -1,200 +1,199 @@
-import { Play, Sparkles, Wand2 } from 'lucide-react'
-import Image from 'next/image'
-import { listPublishedThemes } from '@/server/catalog'
-import { ButtonLink } from '@/ui/Button'
-import { cn } from '@/ui/cn'
-import { Float, Reveal, Stagger, StaggerItem } from '@/ui/motion'
-import { HomeHero } from './HomeHero'
-import { StepsTimeline } from './StepsTimeline'
-import { ThemeCarousel } from './ThemeCarousel'
+import { ArrowRight, MessageCircleHeart } from 'lucide-react'
+import type { Metadata, Route } from 'next'
+import { homeFaqs } from '@/content/home'
+import { site, siteUrl } from '@/content/site'
+import type { CatalogTheme } from '@/domain/catalog'
+import { formatARS } from '@/domain/money'
+import { getPublicSettings, listPublishedThemes } from '@/server/catalog'
+import { LiftLink } from '@/ui/LiftLink'
+import { FinalCta } from './_home/FinalCta'
+import { Hero } from './_home/Hero'
+import { HowItWorks } from './_home/HowItWorks'
+import { InsideBoxie } from './_home/InsideBoxie'
+import { OccasionMarquee } from './_home/OccasionMarquee'
+import { Pricing } from './_home/Pricing'
+import { Mark, SectionHeading } from './_home/primitives'
+import { Reaction } from './_home/Reaction'
+import { StickyBuyBar } from './_home/StickyBuyBar'
+import type { HomeTheme } from './_home/theme-look'
+import { ThemeShowcase } from './_home/ThemeShowcase'
+import { WhyBoxie } from './_home/WhyBoxie'
+import { Faq } from './ayuda/Faq'
 
 export const dynamic = 'force-dynamic'
 
-const BENEFITS = [
-  {
-    title: '¡¡LLEGA AL INSTANTE!!',
-    text: 'Elegís la Boxie, la personalizás con un mensaje y ¡listo! Se entrega por mail o link en minutos.',
-    decoration: '/brand/decoration-1.png',
-  },
-  {
-    title: 'EMOCIONA DE VERDAD',
-    text: 'No es un archivo más. Cada Boxie está diseñada para despertar sonrisas, lágrimas lindas o ese "ay, qué hermoso".',
-    decoration: '/brand/decoration-2.png',
-  },
-  {
-    title: 'ES FÁCIL, ACCESIBLE Y SIEMPRE QUEDA BIEN',
-    text: 'No necesitás gastar una fortuna ni salir corriendo a comprar algo. Es un detalle distinto, emocional y pensado.',
-    decoration: '/brand/decoration-3.png',
-  },
-]
+const TITLE = 'Boxie · Regalo digital personalizado con fotos, música y juegos'
+
+/** El precio más bajo del catálogo (el "desde" de la home). */
+function fromPrice(themes: CatalogTheme[], fallback: number) {
+  return themes.length ? Math.min(...themes.map((t) => t.priceCents)) : fallback
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [themes, settings] = await Promise.all([listPublishedThemes(), getPublicSettings()])
+  const price = formatARS(fromPrice(themes, settings.basePriceCents))
+  const description = `Regalá una Boxie: un regalo digital personalizado con fotos, dedicatoria, su canción y juegos, que se abre desde el celular. Ideal para aniversarios, cumpleaños y regalos a distancia. Llega al instante por WhatsApp, desde ${price}.`
+  return {
+    title: { absolute: TITLE },
+    description,
+    keywords: [
+      'regalo digital',
+      'regalo virtual',
+      'regalo personalizado',
+      'regalo original',
+      'regalo para mi novia',
+      'regalo para mi novio',
+      'regalo de cumpleaños',
+      'regalo de aniversario',
+      'regalo a distancia',
+      'regalo de último momento',
+    ],
+    alternates: { canonical: '/' },
+    openGraph: {
+      title: TITLE,
+      description,
+      url: '/',
+      type: 'website',
+      images: themes[0] ? [{ url: themes[0].listing.images[0]!, alt: 'Una Boxie de regalo' }] : [],
+    },
+    twitter: { card: 'summary_large_image', title: TITLE, description },
+  }
+}
+
+/** Datos estructurados: la marca, el producto con su precio y las preguntas frecuentes. */
+function structuredData(themes: CatalogTheme[], priceCents: number) {
+  const url = siteUrl()
+  const absolute = (path: string) => (path.startsWith('http') ? path : `${url}${path}`)
+  const prices = themes.map((t) => t.priceCents / 100)
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': `${url}/#organizacion`,
+        name: site.name,
+        url,
+        logo: absolute('/brand/boxie-logo.png'),
+        email: site.emails.hello,
+        sameAs: [site.social.instagram],
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${url}/#sitio`,
+        url,
+        name: site.name,
+        inLanguage: 'es-AR',
+        publisher: { '@id': `${url}/#organizacion` },
+      },
+      {
+        '@type': 'Product',
+        name: 'Boxie · Regalo digital personalizado',
+        description:
+          'Experiencia digital personalizada con fotos, dedicatoria, música y juegos, que se regala con un link y se abre desde el celular.',
+        brand: { '@type': 'Brand', name: site.shortName },
+        image: themes.map((t) => absolute(t.listing.images[0]!)),
+        offers: {
+          '@type': 'AggregateOffer',
+          priceCurrency: 'ARS',
+          lowPrice: prices.length ? Math.min(...prices) : priceCents / 100,
+          highPrice: prices.length ? Math.max(...prices) : priceCents / 100,
+          offerCount: Math.max(themes.length, 1),
+          availability: 'https://schema.org/InStock',
+          url: absolute('/galeria'),
+        },
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: homeFaqs.map((f) => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: { '@type': 'Answer', text: f.answer },
+        })),
+      },
+    ],
+  }
+}
 
 export default async function HomePage() {
-  const themes = await listPublishedThemes()
+  const [themes, settings] = await Promise.all([listPublishedThemes(), getPublicSettings()])
+  const priceCents = fromPrice(themes, settings.basePriceCents)
+  const price = formatARS(priceCents)
   const sample = themes[0]?.slug ?? 'pareja'
+  const exampleHref = `/ejemplo/${sample}` as Route
+  const editorHref = `/ejemplo/${sample}/personalizar` as Route
+
+  const homeThemes: HomeTheme[] = themes.map((t) => ({
+    slug: t.slug,
+    name: t.name,
+    description: t.description,
+    color: t.listing.cardColor,
+    tone: t.listing.cardTone,
+    images: t.listing.images,
+    features: t.listing.features,
+    price: formatARS(t.priceCents),
+  }))
+
+  // Tres fotos para la demo de la galería: primero la principal de cada temática.
+  const photos = [
+    ...themes.map((t) => t.listing.images[0]!),
+    ...themes.flatMap((t) => t.listing.images.slice(1)),
+  ].slice(0, 3)
+
+  const jsonLd = JSON.stringify(structuredData(themes, priceCents)).replace(/</g, '\\u003c')
 
   return (
-    <div className="bg-paper">
-      <HomeHero />
+    <div className="overflow-x-clip bg-paper">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
 
-      {/* Temáticas */}
+      <Hero themes={homeThemes} />
+      <OccasionMarquee />
+      <ThemeShowcase themes={homeThemes} />
+      <InsideBoxie photos={photos} exampleHref={exampleHref} />
+      <HowItWorks price={price} editorHref={editorHref} exampleHref={exampleHref} />
+      <Reaction lifetimeDays={settings.giftLifetimeDays} />
+      <Pricing priceCents={priceCents} lifetimeDays={settings.giftLifetimeDays} />
+      <WhyBoxie />
+
       <section
-        id="emocionar"
-        className="relative z-10 scroll-mt-24 rounded-b-[40px] bg-gradient-to-b from-paper to-mauve pt-14 pb-10 text-center"
+        id="preguntas"
+        aria-labelledby="preguntas-title"
+        className="scroll-mt-24 rounded-t-[40px] bg-white px-5 pt-20 pb-14 sm:px-8 sm:pt-24"
       >
-        <Reveal
-          as="h2"
-          className="mb-3 px-4 font-display text-[32px] leading-tight font-bold sm:text-4xl"
-        >
-          ¿A QUIÉN QUERÉS EMOCIONAR HOY?
-        </Reveal>
-        <Reveal as="p" delay={0.1} className="mb-8 px-4 text-lg text-ink/70">
-          Elegí la temática: cada una trae sus propias sorpresas.
-        </Reveal>
-        <ThemeCarousel themes={themes} />
-      </section>
-
-      {/* Cómo funciona */}
-      <section id="como-funciona" className="scroll-mt-24 px-5 py-20 sm:px-8">
-        <div className="mx-auto mb-14 max-w-2xl text-center">
-          <Reveal
-            as="span"
-            className="mb-3 inline-block text-xs font-extrabold tracking-[0.2em] text-brand uppercase"
-          >
-            Así de simple
-          </Reveal>
-          <Reveal
-            as="h2"
-            delay={0.05}
-            className="font-display text-[32px] leading-tight font-bold sm:text-4xl"
-          >
-            ¿CÓMO FUNCIONA?
-          </Reveal>
-          <Reveal as="p" delay={0.1} className="mt-3 text-lg text-ink/70">
-            En cuatro pasos, y sin instalar nada: ni vos ni quien la recibe.
-          </Reveal>
-        </div>
-
-        <StepsTimeline />
-
-        <Reveal
-          className="mt-14 flex flex-col items-center justify-center gap-3 sm:flex-row"
-          delay={0.2}
-        >
-          <ButtonLink
-            href={`/ejemplo/${sample}/personalizar`}
-            size="lg"
-            block
-            className="sm:w-auto"
-          >
-            <Wand2 className="size-5" aria-hidden /> Probá el editor gratis
-          </ButtonLink>
-          <ButtonLink
-            href={`/ejemplo/${sample}`}
-            variant="white"
-            size="lg"
-            block
-            className="sm:w-auto"
-          >
-            <Play className="size-4 fill-current text-brand" aria-hidden /> Ver una Boxie de ejemplo
-          </ButtonLink>
-        </Reveal>
-      </section>
-
-      {/* Beneficios */}
-      <section className="relative z-10 pb-20">
-        <Reveal
-          as="h2"
-          className="mb-3 px-4 text-center font-display text-[32px] leading-tight font-bold sm:text-4xl"
-        >
-          ¡ESTO ES LO QUE HACE ESPECIAL A UNA BOXIE!
-        </Reveal>
-        <Reveal as="p" delay={0.1} className="mb-10 px-4 text-center text-xl text-ink/80">
-          Regalá diferente, regalá con intención.
-        </Reveal>
-        <Stagger
-          className="mx-auto grid max-w-6xl grid-cols-1 gap-4 px-4 md:grid-cols-[60%_1fr] md:grid-rows-2 md:px-8"
-          step={0.12}
-        >
-          {BENEFITS.map((b, i) => (
-            <StaggerItem
-              key={b.title}
-              y={40}
-              className={cn(
-                'relative flex min-h-[250px] flex-col gap-4 overflow-hidden rounded-[28px] border-2 border-brand bg-brand/5 p-8 transition-colors duration-300 hover:bg-brand/10',
-                i === 1 && 'md:col-start-2 md:row-span-2 md:row-start-1',
-              )}
-              whileHover={{ y: -6 }}
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+          <div>
+            <SectionHeading
+              align="left"
+              eyebrow="Preguntas frecuentes"
+              title={
+                <span id="preguntas-title">
+                  Todo sobre tu <Mark>regalo digital</Mark>
+                </span>
+              }
+              text="Lo que más nos preguntan antes de regalar una Boxie."
+              className="lg:mb-8"
+            />
+            <LiftLink
+              href="/contacto"
+              className="mx-auto flex max-w-md items-center gap-4 rounded-3xl bg-paper/60 p-5 ring-1 ring-black/5 lg:mx-0"
             >
-              <span className="relative z-10 font-display text-[26px] leading-tight font-bold sm:text-[28px]">
-                {b.title}
+              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand text-white">
+                <MessageCircleHeart className="size-6" aria-hidden />
               </span>
-              <p className="relative z-10 w-4/5 text-lg">{b.text}</p>
-              <Float
-                className="absolute right-2.5 bottom-2.5 w-[150px] opacity-30"
-                distance={8}
-                rotate={4}
-                duration={6 + i}
-                delay={i * 0.8}
-                aria-hidden
-              >
-                <Image
-                  src={b.decoration}
-                  alt=""
-                  width={150}
-                  height={100}
-                  className="h-auto w-full"
-                />
-              </Float>
-            </StaggerItem>
-          ))}
-        </Stagger>
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold text-ink">¿Te quedó alguna duda?</span>
+                <span className="block text-sm text-ink/60">
+                  Escribinos y te ayudamos a elegir.
+                </span>
+              </span>
+              <ArrowRight className="size-5 text-brand" aria-hidden />
+            </LiftLink>
+          </div>
+          <Faq items={[...homeFaqs]} />
+        </div>
       </section>
 
-      {/* Cierre */}
-      <section className="px-4 pb-20 sm:px-8">
-        <Reveal
-          y={40}
-          className="relative mx-auto max-w-6xl overflow-hidden rounded-[40px] bg-ink px-6 py-16 text-center text-white sm:px-12 sm:py-20"
-        >
-          <Float
-            className="pointer-events-none absolute -top-24 -left-20 size-72 rounded-full bg-brand/40 blur-3xl"
-            distance={24}
-            duration={9}
-            aria-hidden
-          />
-          <Float
-            className="pointer-events-none absolute -right-16 -bottom-28 size-80 rounded-full bg-lilac/30 blur-3xl"
-            distance={20}
-            duration={11}
-            delay={1}
-            aria-hidden
-          />
-          <div className="relative">
-            <Sparkles className="mx-auto mb-5 size-9 text-brand-muted" aria-hidden />
-            <h2 className="mx-auto max-w-2xl font-display text-3xl leading-tight font-bold sm:text-5xl">
-              Un regalo que se abre con el corazón
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-white/70">
-              Elegí la temática, personalizala en minutos y mandala por WhatsApp. Llega al instante,
-              esté donde esté.
-            </p>
-            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <ButtonLink href="/galeria" size="lg" block className="sm:w-auto">
-                Elegir mi Boxie
-              </ButtonLink>
-              <ButtonLink
-                href={`/ejemplo/${sample}/personalizar`}
-                variant="white"
-                size="lg"
-                block
-                className="sm:w-auto"
-              >
-                Probar el editor gratis
-              </ButtonLink>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <FinalCta price={price} editorHref={editorHref} />
+      <StickyBuyBar price={price} />
     </div>
   )
 }

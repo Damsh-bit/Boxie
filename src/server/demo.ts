@@ -20,7 +20,8 @@ export function isDemoMode(): boolean {
 
 const SEEDS = [pareja, cumpleanos, amistad]
 
-export const DEMO_SETTINGS = { basePriceCents: 1_500_000, giftLifetimeDays: 60, currency: 'ARS' }
+/** Precio de referencia de la demo (ficticio): el real vive en la tabla settings. */
+export const DEMO_SETTINGS = { basePriceCents: 499_000, giftLifetimeDays: 60, currency: 'ARS' }
 
 export function demoThemes() {
   return SEEDS.map((seed) => ({

@@ -38,6 +38,16 @@ export const site = {
   consumerDefenseUrl: 'https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario',
 } as const
 
+/** URL pública del sitio (metadatos, links absolutos y datos estructurados). */
+export function siteUrl(): string {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : 'http://localhost:3000')
+  )
+}
+
 /** Cómo funciona una Boxie, de la compra al regalo (home y checkout). */
 export const howItWorks = [
   {

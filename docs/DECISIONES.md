@@ -126,6 +126,29 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   escrito (el cambio se aplicaba sobre el borrador de cuando empezó). Ahora los cambios que
   llegan tarde se aplican sobre el último valor.
 
+## Home de venta
+
+- **Embudo:** portada con armador en vivo (temática + nombre → el celular lo muestra) → ocasiones
+  → temáticas con precio → demos jugables de lo que trae → 4 pasos → reacción → precio con
+  comparador → beneficios → preguntas → cierre. Barra de compra fija en el celular entre la
+  portada y el cierre. Los componentes viven en `app/(marketing)/_home/` y los textos en
+  `src/content/home.ts`.
+- **Referencias de la competencia:** vista previa en vivo antes de pagar y selector de ocasiones
+  (Digital Love Story, MiYo Gift, iLoveYou.gift), precio visible y "pago único, sin suscripción"
+  (Love4U, QLovy), demo navegable (Tiempo Juntos) y navegación por ocasión (Bigbox).
+- **El precio sale del catálogo**, el mismo que cobra el checkout: la home nunca promete un precio
+  distinto. En demo es un precio de referencia ($4.990, `DEMO_SETTINGS`). Los precios del
+  comparador (flores, desayuno…) son valores de referencia ficticios y lo dicen.
+- **Sin reseñas ni cifras inventadas:** la charla de WhatsApp está rotulada "Recreación de ejemplo"
+  y los números son del producto (20 pantallas, días online, 0 apps). Cuando haya reseñas reales,
+  van en esa sección.
+- **SEO:** título y descripción propios, canonical, Open Graph y JSON-LD (Organization, WebSite,
+  Product con AggregateOffer y FAQPage). Un solo `h1`; cada sección con su `h2` con palabras que
+  se buscan (regalo digital, regalo personalizado, a distancia, cumpleaños, aniversario).
+- **Demos de la home:** son maquetas livianas (`_home/demos.tsx`), no el player: cargan rápido y
+  no dependen del contrato de las slides. Las pestañas pasan solas como historias y se frenan al
+  tocar, al pasar el mouse por el celular o fuera de pantalla.
+
 ## Bugs del prototipo que se corrigieron al portar
 
 - La cuponera ignoraba los vales que cargaba el comprador (mostraba siempre los mismos 6).

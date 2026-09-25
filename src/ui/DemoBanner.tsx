@@ -68,8 +68,8 @@ export function DemoBanner() {
         >
           <FlaskConical className="size-4 shrink-0 text-brand-muted" aria-hidden />
           <p className="flex-1">
-            <strong className="font-semibold">Versión de demostración:</strong> el catálogo y los
-            precios son reales, el cobro todavía está desactivado.
+            <strong className="font-semibold">Versión de demostración:</strong> los precios son de
+            referencia y el cobro todavía está desactivado.
           </p>
           <motion.button
             type="button"

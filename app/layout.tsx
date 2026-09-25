@@ -1,16 +1,11 @@
 import type { Metadata, Viewport } from 'next'
+import { siteUrl } from '@/content/site'
 import { MotionProvider, NoScriptReveal } from '@/ui/motion'
 import { fontVariables } from './fonts'
 import './globals.css'
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'http://localhost:3000')
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(siteUrl()),
   title: {
     default: 'Boxie Digital · Regalos digitales que emocionan',
     template: '%s · Boxie Digital',

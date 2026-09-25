@@ -71,6 +71,7 @@ export async function quoteCheckout(
  * demo y las ventas no están pausadas desde el panel.
  */
 export async function paymentsEnabled(): Promise<boolean> {
-  if (isDemoMode() || env().PAYMENTS_PROVIDER !== 'mercadopago') return false
+  if (isDemoMode()) return false
+  if (env().PAYMENTS_PROVIDER !== 'mercadopago' && env().PAYMENTS_PROVIDER !== 'fake') return false
   return !(await getPublicSettings()).salesPaused
 }

@@ -91,33 +91,45 @@ export type Database = {
         }
         Relationships: []
       }
-      admin_users: {
+      users: {
         Row: {
           user_id: string
           created_at: string
           email: string | null
           name: string
-          role: Database["public"]["Enums"]["admin_role"]
+          role: Database["public"]["Enums"]["admin_role"] | null
           invited_at: string | null
           last_seen_at: string | null
+          phone: string | null
+          avatar_url: string | null
+          is_active: boolean
+          preferences: Json
         }
         Insert: {
           user_id: string
           created_at?: string
           email?: string | null
           name?: string
-          role?: Database["public"]["Enums"]["admin_role"]
+          role?: Database["public"]["Enums"]["admin_role"] | null
           invited_at?: string | null
           last_seen_at?: string | null
+          phone?: string | null
+          avatar_url?: string | null
+          is_active?: boolean
+          preferences?: Json
         }
         Update: {
           user_id?: string
           created_at?: string
           email?: string | null
           name?: string
-          role?: Database["public"]["Enums"]["admin_role"]
+          role?: Database["public"]["Enums"]["admin_role"] | null
           invited_at?: string | null
           last_seen_at?: string | null
+          phone?: string | null
+          avatar_url?: string | null
+          is_active?: boolean
+          preferences?: Json
         }
         Relationships: []
       }

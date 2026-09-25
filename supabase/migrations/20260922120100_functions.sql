@@ -19,7 +19,7 @@ security definer
 set search_path = ''
 as $$
   select exists (
-    select 1 from public.admin_users where user_id = (select auth.uid())
+    select 1 from public.users where user_id = (select auth.uid()) and role is not null
   )
 $$;
 

@@ -1136,7 +1136,10 @@ export const supabaseRepo: AdminRepo = {
   // ── Equipo, bitácora y tareas ─────────────────────────────────────────────
 
   async listTeam() {
-    const rows = unwrap(await db().from('admin_users').select('*').order('created_at'), 'equipo')
+    const rows = unwrap(
+      await db().from('users').select('*').not('role', 'is', null).order('created_at'),
+      'equipo',
+    )
     return rows.map((r): AdminUser => ({
       id: r.user_id,
       email: r.email ?? '',
@@ -1156,7 +1159,7 @@ export const supabaseRepo: AdminRepo = {
     })
     if (error || !data.user)
       throw new AdminRepoError(`No se pudo invitar: ${error?.message ?? 'sin usuario'}`)
-    const { error: insertError } = await db().from('admin_users').insert({
+    const { error: insertError } = await db().from('users').insert({
       user_id: data.user.id,
       email,
       name: input.name,
@@ -1180,7 +1183,7 @@ export const supabaseRepo: AdminRepo = {
 
   async updateMemberRole(id, role, actor) {
     const { data, error } = await db()
-      .from('admin_users')
+      .from('users')
       .update({ role })
       .eq('user_id', id)
       .select('email')
@@ -1193,7 +1196,7 @@ export const supabaseRepo: AdminRepo = {
   async removeMember(id, actor) {
     if (id === actor.id) throw new AdminRepoError('No te podés sacar a vos.', 'conflict')
     const { data, error } = await db()
-      .from('admin_users')
+      .from('users')
       .delete()
       .eq('user_id', id)
       .select('email')
@@ -1204,7 +1207,7 @@ export const supabaseRepo: AdminRepo = {
   },
 
   async touchMember(email) {
-    await db().from('admin_users').update({ last_seen_at: now() }).eq('email', email.toLowerCase())
+    await db().from('users').update({ last_seen_at: now() }).eq('email', email.toLowerCase())
   },
 
   async listAudit(limit = 100) {

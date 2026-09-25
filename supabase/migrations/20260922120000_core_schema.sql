@@ -30,13 +30,24 @@ begin
 end
 $$;
 
--- ── Administradores ─────────────────────────────────────────────────────────
--- Un usuario de Supabase Auth es admin si figura acá. Se da de alta con
--- `npm run admin:create` (usa la API de administración), nunca desde el cliente.
+-- ── Usuarios ─────────────────────────────────────────────────────────────────
+-- Tabla unificada de perfiles. Todos los usuarios que hacen login tienen una
+-- fila aquí (se crea en el primer acceso vía trigger o desde la app).
+-- Un admin tiene role IS NOT NULL. Se da de alta con `npm run admin:create`.
 
-create table public.admin_users (
-  user_id    uuid primary key references auth.users (id) on delete cascade,
-  created_at timestamptz not null default now()
+create table public.users (
+  user_id      uuid primary key references auth.users (id) on delete cascade,
+  email        text check (email is null or length(email) <= 254),
+  name         text not null default '' check (length(name) <= 80),
+  -- null = usuario común. Valor = admin con ese rol.
+  role         public.admin_role,
+  phone        text check (phone is null or length(phone) <= 40),
+  avatar_url   text check (avatar_url is null or length(avatar_url) <= 500),
+  is_active    boolean not null default true,
+  preferences  jsonb not null default '{}'::jsonb,
+  invited_at   timestamptz,
+  last_seen_at timestamptz,
+  created_at   timestamptz not null default now()
 );
 
 -- ── Catálogo ────────────────────────────────────────────────────────────────

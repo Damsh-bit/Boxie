@@ -17,12 +17,9 @@
 
 create type public.admin_role as enum ('owner', 'admin', 'editor', 'support');
 
-alter table public.admin_users
-  add column email        text check (email is null or length(email) <= 254),
-  add column name         text not null default '' check (length(name) <= 80),
-  add column role         public.admin_role not null default 'owner',
-  add column invited_at   timestamptz,
-  add column last_seen_at timestamptz;
+-- Nota: la tabla public.users ya tiene todas las columnas del equipo desde
+-- la migra core_schema (email, name, role, phone, avatar_url, is_active,
+-- preferences, invited_at, last_seen_at). No se necesita ALTER TABLE.
 
 -- El rol del usuario de la sesión (null si no es admin).
 create function public.admin_role()
@@ -32,17 +29,17 @@ stable
 security definer
 set search_path = ''
 as $$
-  select role from public.admin_users where user_id = (select auth.uid())
+  select role from public.users where user_id = (select auth.uid()) and role is not null
 $$;
 
 -- Solo el dueño administra el equipo (la lectura ya la tienen todos los admins).
-create policy admin_users_owner_insert on public.admin_users
+create policy users_owner_insert on public.users
   for insert to authenticated with check ((select public.admin_role()) = 'owner');
-create policy admin_users_owner_update on public.admin_users
+create policy users_owner_update on public.users
   for update to authenticated
   using ((select public.admin_role()) = 'owner')
   with check ((select public.admin_role()) = 'owner');
-create policy admin_users_owner_delete on public.admin_users
+create policy users_owner_delete on public.users
   for delete to authenticated using ((select public.admin_role()) = 'owner');
 
 -- Nunca queda el equipo sin dueño.
@@ -53,9 +50,9 @@ set search_path = ''
 as $$
 begin
   if (tg_op = 'DELETE' and old.role = 'owner')
-     or (tg_op = 'UPDATE' and old.role = 'owner' and new.role <> 'owner') then
+     or (tg_op = 'UPDATE' and old.role = 'owner' and (new.role is null or new.role <> 'owner')) then
     if not exists (
-      select 1 from public.admin_users where role = 'owner' and user_id <> old.user_id
+      select 1 from public.users where role = 'owner' and user_id <> old.user_id
     ) then
       raise exception 'Tiene que quedar al menos un dueño' using errcode = 'check_violation';
     end if;
@@ -64,7 +61,7 @@ begin
 end
 $$;
 
-create trigger admin_users_keep_owner before update or delete on public.admin_users
+create trigger users_keep_owner before update or delete on public.users
   for each row execute function public.keep_one_owner();
 
 -- ── Planes ──────────────────────────────────────────────────────────────────

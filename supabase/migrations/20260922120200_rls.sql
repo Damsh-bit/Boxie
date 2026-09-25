@@ -3,7 +3,7 @@
 --
 -- Regla general:
 --   · anon / authenticated ven solo el catálogo publicado y la configuración.
---   · Los admins (tabla admin_users) gestionan todo desde el panel con su sesión.
+--   · Los admins (tabla users, role IS NOT NULL) gestionan todo desde el panel con su sesión.
 --   · El servidor usa el service role (bypassea RLS) solo en los flujos que
 --     validan su propia credencial: checkout, webhook, editor y regalo por token.
 --
@@ -11,7 +11,7 @@
 -- Boxies, cupones y pagos no tienen ninguna política pública.
 -- ════════════════════════════════════════════════════════════════════════════
 
-alter table public.admin_users    enable row level security;
+alter table public.users             enable row level security;
 alter table public.themes         enable row level security;
 alter table public.theme_versions enable row level security;
 alter table public.affiliates     enable row level security;
@@ -53,7 +53,7 @@ create policy settings_update on public.settings
 
 -- ── Solo administradores ────────────────────────────────────────────────────
 
-create policy admin_users_select on public.admin_users
+create policy users_select on public.users
   for select to authenticated using ((select public.is_admin()));
 
 create policy affiliates_admin on public.affiliates

@@ -11,7 +11,7 @@ export * from './token'
 /**
  * Sesión del panel: una cookie firmada httpOnly, limitada a /admin, igual que
  * la del editor. La emite el login después de validar la credencial (Supabase
- * Auth + tabla admin_users, o el usuario de demo) y el servidor la verifica en
+ * Auth + tabla users (role IS NOT NULL = admin), o el usuario de demo) y el servidor la verifica en
  * el proxy, en cada página y en cada Server Action: nunca se confía solo en el
  * proxy (un matcher mal escrito lo saltearía).
  */

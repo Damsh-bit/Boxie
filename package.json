@@ -26,7 +26,9 @@
     "db:types:check": "node scripts/gen-db-types.mjs --check",
     "themes:migration": "tsx scripts/build-theme-migration.ts",
     "prepare": "husky || true",
-    "themes:check": "tsx scripts/build-theme-migration.ts --check"
+    "themes:check": "tsx scripts/build-theme-migration.ts --check",
+    "admin:create": "node scripts/create-admin.mjs",
+    "db:seed": "node scripts/seed.mjs"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.75.2",

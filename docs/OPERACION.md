@@ -26,9 +26,9 @@ Variables_; nunca en el repo.
 2. Aplicar las migraciones: `npx supabase link --project-ref <ref>` y `npx supabase db push`
    (son 7: esquema, funciones, RLS, storage, catálogo inicial, editor y panel de administración).
 3. Revisar los avisos de seguridad del panel (_Advisors_): tienen que estar en cero.
-4. Crear el primer admin: registrar el usuario en _Authentication_ y agregarlo a `admin_users` como
-   dueño (después suma al resto del equipo desde el panel, en _Equipo_):
-   `insert into public.admin_users (user_id, email, name, role) values ('<uuid>', '<mail>', '<nombre>', 'owner');`
+4. Crear el primer admin: registrar el usuario en _Authentication_ y agregarlo a `users` con rol
+   (después suma al resto del equipo desde el panel, en _Equipo_). O usar `npm run admin:create`:
+   `insert into public.users (user_id, email, name, role) values ('<uuid>', '<mail>', '<nombre>', 'owner');`
 5. Cargar en Vercel las variables de la tabla de arriba y sacar `DEMO_MODE`.
 6. Recorrer el panel con la checklist de [ADMIN.md](ADMIN.md#conectar-supabase) (planes, gastos,
    configuración).

@@ -13,8 +13,9 @@ import { DEFAULT_DEMO_EMAIL, DEFAULT_DEMO_PASSWORD, type AdminIdentity } from '.
  *   En un deploy (Vercel) la clave de muestra no sirve: es pública (está en
  *   el repo) y cualquiera podría cambiar el catálogo de la demo. Ahí el panel
  *   queda cerrado hasta definir ADMIN_DEMO_PASSWORD.
- * - Con Supabase: Supabase Auth (mail y clave) + la tabla admin_users. El
- *   alta del primer admin está en docs/OPERACION.md.
+ * - Con Supabase: Supabase Auth (mail y clave) + la tabla users (donde
+ *   role IS NOT NULL indica que es admin). El alta del primer admin está en
+ *   docs/OPERACION.md.
  */
 
 export type AuthResult = { ok: true; identity: AdminIdentity } | { ok: false; error: string }
@@ -66,9 +67,8 @@ export async function authenticateAdmin(emailInput: string, password: string): P
 }
 
 /**
- * ⚠️ Pendiente de probar contra el proyecto real: Supabase Auth valida la
- * clave y la tabla admin_users decide si es admin (y con qué rol, columna que
- * agrega la migración admin_backoffice).
+ * Supabase Auth valida la clave y public.users decide si es admin
+ * (role IS NOT NULL) y con qué rol.
  */
 async function authenticateWithSupabase(email: string, password: string): Promise<AuthResult> {
   try {
@@ -82,9 +82,10 @@ async function authenticateWithSupabase(email: string, password: string): Promis
 
     const { serviceDb } = await import('../db/client')
     const { data: admin } = await serviceDb()
-      .from('admin_users')
+      .from('users')
       .select('*')
       .eq('user_id', data.user.id)
+      .not('role', 'is', null)
       .maybeSingle()
     await auth.auth.signOut().catch(() => {})
     if (!admin) return { ok: false, error: 'Esa cuenta no es administradora de Boxie.' }

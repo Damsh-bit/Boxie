@@ -8,7 +8,7 @@ import { adminRepo } from '@/server/admin/repo'
 import { ADMIN_COOKIE, adminCookieOptions, issueAdminSession } from '@/server/admin/session'
 import { isDemoMode } from '@/server/demo'
 import { log } from '@/server/log'
-import { clientIp, rateLimit } from '@/server/rate-limit'
+import { clientIp, isRateLimited, rateLimit } from '@/server/rate-limit'
 
 export interface LoginState {
   error: string | null
@@ -28,16 +28,22 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
   const password = String(form.get('password') ?? '').slice(0, 200)
   const remember = form.get('remember') === 'on'
 
+  // Contra la fuerza bruta cuentan los intentos fallidos (por IP y por mail).
   const ip = clientIp(await headers())
+  const byIp = `admin-login-fail:${ip}`
+  const byEmail = `admin-login-fail:${email.toLowerCase()}`
+  const span = { windowMs: 15 * 60_000 }
   if (
-    !rateLimit(`admin-login:${ip}`, { limit: 8, windowMs: 10 * 60_000 }) ||
-    !rateLimit(`admin-login:${email.toLowerCase()}`, { limit: 5, windowMs: 10 * 60_000 })
+    isRateLimited(byIp, { limit: 10, ...span }) ||
+    isRateLimited(byEmail, { limit: 5, ...span })
   ) {
     return { error: 'Demasiados intentos. Esperá unos minutos y probá de nuevo.', email }
   }
 
   const result = await authenticateAdmin(email, password)
   if (!result.ok) {
+    rateLimit(byIp, { limit: 10, ...span })
+    rateLimit(byEmail, { limit: 5, ...span })
     log.warn('Login del panel rechazado', { ip })
     return { error: result.error, email }
   }

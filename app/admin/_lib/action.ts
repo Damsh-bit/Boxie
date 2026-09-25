@@ -32,7 +32,13 @@ export async function runAction<T = null>(
     const repo = await adminRepo()
     const result =
       (await fn({ session, repo, actor: { email: session.email, name: session.name } })) ?? {}
-    for (const path of options.revalidate ?? ['/admin']) revalidatePath(path, 'layout')
+    for (const path of options.revalidate ?? ['/admin']) {
+      // El panel se revalida entero (todo es dinámico). En el sitio público,
+      // solo la página: revalidar '/' como layout invalida también las páginas
+      // estáticas (legales) y pueden dar 404 hasta regenerarse.
+      if (path.startsWith('/admin')) revalidatePath(path, 'layout')
+      else revalidatePath(path)
+    }
     return { ok: true, ...result }
   } catch (error) {
     if (error instanceof AdminAuthError) return { ok: false, error: error.message }

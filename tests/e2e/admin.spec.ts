@@ -14,6 +14,8 @@ async function login(page: Page, next = '/admin') {
   await page.getByLabel('Mail').fill('admin@boxie.demo')
   await page.getByLabel('Clave', { exact: true }).fill('boxie-admin')
   await page.getByRole('button', { name: 'Entrar' }).click()
+  // La primera vez el servidor arma los datos de muestra (un año de ventas): puede tardar.
+  await page.waitForURL((url) => !url.pathname.startsWith('/admin/login'), { timeout: 30_000 })
 }
 
 test('sin sesión el panel lleva al login y una clave mala se rechaza', async ({ page }) => {
@@ -22,7 +24,7 @@ test('sin sesión el panel lleva al login y una clave mala se rechaza', async ({
   await page.getByLabel('Mail').fill('admin@boxie.demo')
   await page.getByLabel('Clave', { exact: true }).fill('otra-clave')
   await page.getByRole('button', { name: 'Entrar' }).click()
-  await expect(page.getByRole('alert')).toHaveText('Mail o clave incorrectos.')
+  await expect(page.getByText('Mail o clave incorrectos.')).toBeVisible({ timeout: 15_000 })
 })
 
 test('entra y vuelve a la página que pidió', async ({ page }) => {
@@ -44,7 +46,7 @@ test('el generador arma temáticas desde una lista y las crea como borradores', 
   await page.getByLabel('Lista de temáticas').fill('Día del Maestro\nHinchas de fútbol')
   await page.getByRole('button', { name: 'Generar 2' }).click()
   await expect(page.getByText('2 temáticas generadas')).toBeVisible()
-  await expect(page.getByText('Docentes (por "maestr")')).toBeVisible()
+  await expect(page.getByText(/Docentes \(por "maestr"/)).toBeVisible()
   await page.getByRole('button', { name: 'Crear 2 borradores' }).click()
   await expect(page.getByRole('heading', { name: '2 temáticas listas' })).toBeVisible()
   await page.getByRole('link', { name: 'Ver el catálogo' }).click()

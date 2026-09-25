@@ -26,6 +26,19 @@ export function rateLimit(
   return true
 }
 
+/**
+ * ¿La clave ya alcanzó el límite? No registra un intento: sirve para contar
+ * solo los fallidos (el login del panel limita las claves erradas, no los
+ * ingresos correctos).
+ */
+export function isRateLimited(
+  key: string,
+  { limit, windowMs }: { limit: number; windowMs: number },
+  now = Date.now(),
+): boolean {
+  return (buckets.get(key) ?? []).filter((t) => now - t < windowMs).length >= limit
+}
+
 export function clientIp(headers: Headers): string {
   return (
     headers.get('x-real-ip') ?? headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'

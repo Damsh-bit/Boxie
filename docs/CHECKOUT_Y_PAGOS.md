@@ -72,7 +72,7 @@ Cupones de prueba iniciales:
 
 ## 3. Escenarios de Prueba
 
-### Método A: Probar con Mercado Pago Sandbox (Flujo Real)
+### Método A: Probar con Mercado Pago (Flujo Real)
 
 Este método prueba toda la integración real: formulario, generación de preferencia, ventana de pago de Mercado Pago y retorno a la aplicación.
 
@@ -83,13 +83,20 @@ Asegurate de tener configuradas las siguientes variables:
 ```env
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 PAYMENTS_PROVIDER=mercadopago
-MP_ACCESS_TOKEN=TEST-XXXXXXXXXXXXXXXX-XXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXXXXX
+MP_ACCESS_TOKEN=APP_USR-XXXXXXXXXXXXXXXX-XXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXXXXX
 # MP_WEBHOOK_SECRET= (opcional para el retorno básico en local)
 DEMO_MODE=
 ```
 
 > [!WARNING]
-> Para pruebas locales, usá un **Access Token de prueba** (`TEST-...`) de tu cuenta de Mercado Pago Developers. No uses un token de producción (`APP_USR-...`) para testear tarjetas de prueba ni pagarte con tu propia cuenta.
+> Las credenciales de prueba de Mercado Pago ahora también empiezan con `APP_USR-`. Para probar,
+> usá el Access Token de un **usuario de prueba vendedor** (Tus integraciones → Cuentas de
+> prueba) y pagá logueado con **otro usuario de prueba comprador**: así no se cobra nada real.
+> Nunca uses las credenciales de tu cuenta real para probar.
+>
+> El pago se hace en el checkout normal de Mercado Pago (`init_point`). El checkout sandbox
+> (`sandbox_init_point`) es el flujo viejo de los tokens `TEST-`: con las credenciales nuevas
+> falla con "Oh, no, algo anduvo mal". Solo se usa con `MP_SANDBOX=true`.
 
 #### 2. Pasos para ejecutar la prueba
 
@@ -109,7 +116,7 @@ DEMO_MODE=
    - Aceptá los **Términos y Condiciones**.
 5. Hacé clic en **"Ir a pagar"**.
    - El sistema llamará a `/api/checkout/preference`.
-   - Se abrirá la pasarela de Mercado Pago (Sandbox).
+   - Se abrirá el Checkout Pro de Mercado Pago: entrá con el usuario de prueba comprador.
 
 #### 3. Tarjetas de prueba de Mercado Pago (Argentina)
 

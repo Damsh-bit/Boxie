@@ -140,16 +140,13 @@ export async function POST(request: Request) {
     // Guardar el preference_id para trazabilidad.
     await serviceDb().from('orders').update({ mp_preference_id: preference.id }).eq('id', order.id)
 
-    // En sandbox usamos sandbox_init_point; en producción, init_point.
-    // Si MP_SANDBOX está definido en el entorno, manda eso; de lo contrario, en local usa sandbox.
-    const useSandbox =
-      env().MP_SANDBOX !== undefined
-        ? env().MP_SANDBOX === 'true'
-        : env().VERCEL_ENV !== 'production'
-
-    const initPoint = useSandbox
-      ? preference.sandbox_init_point || preference.init_point
-      : preference.init_point
+    // Siempre init_point: las credenciales de prueba actuales (APP_USR- de un usuario de
+    // prueba) pagan en el checkout normal y en el sandbox fallan. sandbox_init_point es el
+    // flujo viejo de los tokens TEST-: solo con MP_SANDBOX=true.
+    const initPoint =
+      env().MP_SANDBOX === 'true'
+        ? preference.sandbox_init_point || preference.init_point
+        : preference.init_point
 
     return NextResponse.json({ initPoint })
   } catch (error) {

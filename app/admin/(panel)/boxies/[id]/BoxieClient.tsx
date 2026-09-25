@@ -176,22 +176,26 @@ export function BoxiePreview({
   recipientName,
   senderName,
   empty,
+  media,
 }: {
   config: ParsedThemeConfig
   content: Record<string, Record<string, unknown>>
   recipientName: string
   senderName: string
   empty: boolean
+  /** URLs firmadas de sus fotos (con la base real). */
+  media?: Record<string, string>
 }) {
   const data = useMemo(() => {
     const sample = sampleGift(config, { recipientName, senderName })
     return {
       recipientName: recipientName || 'Quien la recibe',
       senderName: senderName || 'Quien la regala',
-      content: empty ? {} : { ...sample.content, ...content },
-      media: sample.media,
+      // Lo que cargó el comprador, tal cual (lo que falta se ve vacío, como en el regalo).
+      content: empty ? {} : content,
+      media: { ...sample.media, ...media },
     }
-  }, [config, content, recipientName, senderName, empty])
+  }, [config, content, recipientName, senderName, empty, media])
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">

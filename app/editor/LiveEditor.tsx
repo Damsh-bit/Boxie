@@ -16,6 +16,7 @@ export interface LiveEditorProps {
   hasPassword: boolean
   editableUntil: string
   lifetimeDays: number
+  allowPassword: boolean
   locked: { giftUrl: string; expiresAt: string } | null
 }
 
@@ -59,6 +60,7 @@ export function LiveEditor(props: LiveEditorProps) {
       initialDraft={draft}
       initialMedia={props.media}
       initialHasPassword={props.hasPassword}
+      allowPassword={props.allowPassword}
       initialLocked={props.locked ? { ...props.locked, emailedTo: null } : null}
       backend={backend}
     />

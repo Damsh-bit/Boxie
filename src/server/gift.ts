@@ -7,6 +7,7 @@ import {
   readThemeConfig,
   type ParsedThemeConfig,
 } from '@/slides/config'
+import { applyPlan, planOfOrder } from './boxie-plan'
 import { serviceDb, unwrap, unwrapMaybe } from './db/client'
 import { env, siteUrl } from './env'
 import { toLifecycle } from './mappers'
@@ -32,6 +33,8 @@ export interface Gift {
   expiresAt: string
   themeName: string
   versionId: string
+  /** La orden (de ahí sale el plan: qué pantallas incluye el regalo). */
+  orderId: string
   passwordHash: string | null
 }
 
@@ -42,7 +45,7 @@ export const findGift = cache(async (token: string): Promise<Gift | null> => {
     await serviceDb()
       .from('boxies')
       .select(
-        'id, status, locked_at, expires_at, recipient_name, sender_name, theme_version_id, gift_password_hash, order:orders(theme:themes(name))',
+        'id, order_id, status, locked_at, expires_at, recipient_name, sender_name, theme_version_id, gift_password_hash, order:orders(theme:themes(name))',
       )
       .eq('gift_token_hash', hashToken(token))
       .maybeSingle(),
@@ -57,6 +60,7 @@ export const findGift = cache(async (token: string): Promise<Gift | null> => {
     expiresAt: row.expires_at,
     themeName: row.order?.theme?.name ?? 'Boxie',
     versionId: row.theme_version_id,
+    orderId: row.order_id,
     passwordHash: row.gift_password_hash,
   }
 })
@@ -72,7 +76,7 @@ export interface GiftContent {
 }
 
 export async function giftContent(gift: Gift): Promise<GiftContent> {
-  const [version, rows] = await Promise.all([
+  const [version, rows, plan] = await Promise.all([
     serviceDb()
       .from('theme_versions')
       .select('config')
@@ -84,8 +88,9 @@ export async function giftContent(gift: Gift): Promise<GiftContent> {
       .select('slide_key, props')
       .eq('boxie_id', gift.boxieId)
       .then((r) => unwrap(r, 'contenido del regalo')),
+    planOfOrder(gift.orderId),
   ])
-  const config = readThemeConfig(version.config)
+  const config = applyPlan(readThemeConfig(version.config), plan)
   const parsed = parseBuyerContent(config, {
     recipientName: gift.recipientName,
     senderName: gift.senderName,

@@ -126,6 +126,27 @@ describe('planes', () => {
     expect(Number(ranking[0]?.orders_paid)).toBe(1)
   })
 
+  it('al bloquear, el regalo dura los días del plan comprado', async () => {
+    const [plan] = await db.query<{ id: string }>(
+      `insert into public.plans (slug, name, price_cents, rank, gift_lifetime_days) values ('corto', 'Corto', 100000, 1, 15) returning id`,
+    )
+    const orderId = await createOrder(db, seed)
+    await db.query(`update public.orders set plan_id = $1 where id = $2`, [plan!.id, orderId])
+    const paid = await applyPayment(db, {
+      orderId,
+      paymentId: 'dias-1',
+      status: 'approved',
+      amount: 1500000,
+    })
+    const [locked] = await asService(() =>
+      db.query<{ days: number }>(
+        `select extract(day from (expires_at - locked_at))::int as days from public.lock_boxie($1)`,
+        [paid.boxie_id],
+      ),
+    )
+    expect(locked?.days).toBe(15)
+  })
+
   it('la analítica por plan es solo para admins', async () => {
     await expect(
       asUser(() =>
@@ -200,6 +221,38 @@ describe('gastos, tareas y bitácora', () => {
       db.query<{ status: string }>(`select status from public.admin_tasks`),
     )
     expect(task?.status).toBe('done')
+  })
+})
+
+describe('estadísticas por Boxie', () => {
+  it('cuentan contenido cargado y fotos, y solo las lee el servidor', async () => {
+    const orderId = await createOrder(db, seed)
+    const paid = await applyPayment(db, {
+      orderId,
+      paymentId: 'stats-1',
+      status: 'approved',
+      amount: 1500000,
+    })
+    await db.query(
+      `insert into public.boxie_content (boxie_id, slide_key, props) values ($1, 'dedicatoria', '{"text":"Hola"}'), ($1, 'cancion', '{}')`,
+      [paid.boxie_id],
+    )
+    const [row] = await asService(() =>
+      db.query<{
+        filled_slides: number
+        photos: number
+        has_password: boolean
+        last_edited_at: string | null
+      }>(
+        `select filled_slides, photos, has_password, last_edited_at from public.admin_boxie_stats where boxie_id = $1`,
+        [paid.boxie_id],
+      ),
+    )
+    expect(row).toMatchObject({ filled_slides: 1, photos: 0, has_password: false })
+    expect(row?.last_edited_at).not.toBeNull()
+    await expect(
+      asAdmin(() => db.query(`select * from public.admin_boxie_stats`)),
+    ).rejects.toThrow()
   })
 })
 

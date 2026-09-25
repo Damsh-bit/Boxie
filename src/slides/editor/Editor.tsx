@@ -52,6 +52,8 @@ export interface EditorProps {
   backend: EditorBackend
   /** Solo en el modo prueba. */
   sandbox?: { onReset(): void; onUnlock(): void }
+  /** El plan comprado permite clave (sin planes, sí). */
+  allowPassword?: boolean
 }
 
 /**
@@ -73,9 +75,13 @@ export function Editor({
   initialLocked,
   backend,
   sandbox,
+  allowPassword = true,
 }: EditorProps) {
   const isSandbox = mode === 'sandbox'
-  const modules = useMemo(() => editorModules(config), [config])
+  const modules = useMemo(
+    () => editorModules(config, { password: allowPassword }),
+    [config, allowPassword],
+  )
   const [draft, setDraft] = useState(initialDraft)
   const [media, setMedia] = useState(initialMedia)
   const [hasPassword, setHasPassword] = useState(initialHasPassword)

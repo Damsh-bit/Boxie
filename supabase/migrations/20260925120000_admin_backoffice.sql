@@ -236,6 +236,61 @@ begin
 end
 $$;
 
+-- ── Días online según el plan ───────────────────────────────────────────────
+-- Al bloquear, el regalo queda disponible los días del plan que se compró
+-- (sin plan, los de la configuración general, como antes).
+
+create or replace function public.lock_boxie(p_boxie_id uuid)
+returns public.boxies
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_boxie public.boxies%rowtype;
+begin
+  update public.boxies b
+     set locked_at = now(),
+         expires_at = now() + make_interval(days => coalesce(
+           (select p.gift_lifetime_days
+              from public.orders o
+              join public.plans p on p.id = o.plan_id
+             where o.id = b.order_id),
+           (select s.gift_lifetime_days from public.settings s where s.id)
+         ))
+   where b.id = p_boxie_id
+     and b.locked_at is null
+     and b.status = 'active'
+     and b.expires_at > now()
+  returning * into v_boxie;
+
+  if v_boxie.id is null then
+    raise exception 'La Boxie no se puede bloquear (ya está bloqueada, vencida o reembolsada)'
+      using errcode = 'check_violation';
+  end if;
+  return v_boxie;
+end
+$$;
+
+-- ── Estadísticas por Boxie ──────────────────────────────────────────────────
+-- Lo que el panel muestra de cada Boxie sin leer su contenido: cuándo se editó
+-- por última vez, cuántas slides tienen algo cargado, cuántas fotos y si tiene
+-- clave. Solo el servidor (service role): lee columnas que el panel no ve.
+
+create view public.admin_boxie_stats
+with (security_invoker = true) as
+select b.id as boxie_id,
+       (select max(c.updated_at) from public.boxie_content c where c.boxie_id = b.id) as last_edited_at,
+       (select count(*) from public.boxie_content c
+         where c.boxie_id = b.id and c.props <> '{}'::jsonb)::integer as filled_slides,
+       (select count(*) from public.media_assets m
+         where m.owner_type = 'boxie' and m.owner_id = b.id)::integer as photos,
+       (b.gift_password_hash is not null) as has_password
+  from public.boxies b;
+
+revoke all on public.admin_boxie_stats from public, anon, authenticated;
+grant select on public.admin_boxie_stats to service_role;
+
 -- ── RLS ─────────────────────────────────────────────────────────────────────
 
 alter table public.plans           enable row level security;

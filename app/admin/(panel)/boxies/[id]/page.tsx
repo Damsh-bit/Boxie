@@ -206,6 +206,7 @@ export default async function BoxiePage({ params }: PageProps<'/admin/boxies/[id
                 recipientName={boxie.recipientName}
                 senderName={boxie.senderName}
                 empty={!boxie.lastEditedAt}
+                media={detail.media}
               />
             ) : (
               <Card>

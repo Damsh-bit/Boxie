@@ -777,7 +777,16 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_boxie_stats: {
+        Row: {
+          boxie_id: string | null
+          last_edited_at: string | null
+          filled_slides: number | null
+          photos: number | null
+          has_password: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_coupon_ranking: {

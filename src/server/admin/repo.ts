@@ -42,6 +42,8 @@ import { isDemoMode } from '../demo'
 export interface Actor {
   email: string
   name: string
+  /** Usuario de Supabase Auth (con la base real; en demo no hace falta). */
+  id?: string
 }
 
 /** Todo lo que la analítica necesita en una sola lectura. */
@@ -76,6 +78,8 @@ export interface BoxieDetail {
   version: number | null
   /** Lo que cargó el comprador, por clave de slide. */
   content: Record<string, Record<string, unknown>>
+  /** assetId → URL firmada de sus fotos (con la base real). */
+  media?: Record<string, string>
 }
 
 export interface NewTheme {

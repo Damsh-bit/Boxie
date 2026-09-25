@@ -59,6 +59,7 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
       hasPassword={data.hasPassword}
       editableUntil={data.expiresAt}
       lifetimeDays={data.lifetimeDays}
+      allowPassword={data.allowPassword}
       locked={data.giftUrl ? { giftUrl: data.giftUrl, expiresAt: data.expiresAt } : null}
     />
   )

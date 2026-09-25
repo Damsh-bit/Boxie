@@ -17,6 +17,7 @@ import {
   type SaveResult,
   type UploadResult,
 } from '@/slides/editor/contract'
+import { applyPlan, planOfOrder } from './boxie-plan'
 import { getPublicSettings } from './catalog'
 import { serviceDb, unwrap, unwrapMaybe } from './db/client'
 import type { Json } from './db/database.types'
@@ -110,6 +111,15 @@ async function versionConfig(versionId: string): Promise<ParsedThemeConfig> {
   return readThemeConfig(row.config)
 }
 
+/** La temática de la Boxie recortada al plan que se compró (y el plan, para sus límites). */
+async function boxieConfig(boxie: Pick<BoxieRow, 'theme_version_id' | 'order_id'>) {
+  const [config, plan] = await Promise.all([
+    versionConfig(boxie.theme_version_id),
+    planOfOrder(boxie.order_id),
+  ])
+  return { config: applyPlan(config, plan), plan: plan.plan }
+}
+
 async function storedContent(boxie: BoxieRow): Promise<BuyerContent> {
   const rows = unwrap(
     await serviceDb().from('boxie_content').select('slide_key, props').eq('boxie_id', boxie.id),
@@ -139,6 +149,8 @@ export interface EditorData {
   media: Record<string, string>
   hasPassword: boolean
   lifetimeDays: number
+  /** El plan comprado permite ponerle clave al regalo. */
+  allowPassword: boolean
   /** Solo si ya está bloqueada. */
   giftUrl: string | null
   buyerEmail: string
@@ -148,14 +160,14 @@ export async function loadEditor(session: EditorSession): Promise<EditorData | n
   const boxie = await sessionBoxie(session)
   if (!boxie) return null
 
-  const [order, config, content, media, settings] = await Promise.all([
+  const [order, { config, plan }, content, media, settings] = await Promise.all([
     serviceDb()
       .from('orders')
       .select('buyer_email, theme:themes(name, slug)')
       .eq('id', boxie.order_id)
       .single()
       .then((r) => unwrap(r, 'orden de la Boxie')),
-    versionConfig(boxie.theme_version_id),
+    boxieConfig(boxie),
     storedContent(boxie),
     signedMediaUrls(boxie.id, EDITOR_MEDIA_TTL_SECONDS),
     getPublicSettings(),
@@ -171,7 +183,8 @@ export async function loadEditor(session: EditorSession): Promise<EditorData | n
     content,
     media,
     hasPassword: boxie.gift_password_hash !== null,
-    lifetimeDays: settings.giftLifetimeDays,
+    lifetimeDays: plan?.limits.giftLifetimeDays ?? settings.giftLifetimeDays,
+    allowPassword: plan?.limits.allowPassword ?? true,
     giftUrl: availability === 'locked' ? giftUrlOf(boxie) : null,
     buyerEmail: order.buyer_email,
   }
@@ -195,7 +208,7 @@ export async function saveDraft(session: EditorSession, input: unknown): Promise
   if (!guard.ok) return guard
   const { boxie } = guard
 
-  const config = await versionConfig(boxie.theme_version_id)
+  const { config } = await boxieConfig(boxie)
   const parsed = parseBuyerContent(config, input)
   if (!parsed.success) {
     log.warn('Borrador inválido', { boxieId: boxie.id, issues: parsed.issues.slice(0, 5) })
@@ -249,13 +262,22 @@ export async function uploadPhoto(
   const mime = sniffImage(bytes)
   if (!mime) return { ok: false, error: 'Ese archivo no es una foto JPG, PNG o WebP.' }
 
-  const { count } = await serviceDb()
-    .from('media_assets')
-    .select('id', { count: 'exact', head: true })
-    .eq('owner_type', 'boxie')
-    .eq('owner_id', boxie.id)
-  if ((count ?? 0) >= MAX_PHOTOS_PER_BOXIE) {
-    return { ok: false, error: 'Llegaste al máximo de fotos de esta Boxie.' }
+  const [{ count }, { plan }] = await Promise.all([
+    serviceDb()
+      .from('media_assets')
+      .select('id', { count: 'exact', head: true })
+      .eq('owner_type', 'boxie')
+      .eq('owner_id', boxie.id),
+    planOfOrder(boxie.order_id),
+  ])
+  const maxPhotos = Math.min(plan?.limits.maxPhotos ?? MAX_PHOTOS_PER_BOXIE, MAX_PHOTOS_PER_BOXIE)
+  if ((count ?? 0) >= maxPhotos) {
+    return {
+      ok: false,
+      error: plan
+        ? `Tu plan ${plan.name} permite hasta ${maxPhotos} fotos.`
+        : 'Llegaste al máximo de fotos de esta Boxie.',
+    }
   }
 
   const assetId = randomUUID()
@@ -305,6 +327,9 @@ export async function setGiftPassword(
 
   let hash: string | null = null
   if (password !== null) {
+    const { plan } = await planOfOrder(guard.boxie.order_id)
+    if (plan && !plan.limits.allowPassword)
+      return { ok: false, error: `El plan ${plan.name} no incluye clave para el regalo.` }
     const clean = password.trim()
     if (clean.length < GIFT_PASSWORD_MIN || clean.length > GIFT_PASSWORD_MAX) {
       return {
@@ -333,7 +358,7 @@ export async function lockForGifting(session: EditorSession): Promise<LockResult
   if (!guard.ok) return guard
   const { boxie } = guard
 
-  const config = await versionConfig(boxie.theme_version_id)
+  const { config } = await boxieConfig(boxie)
   const parsed = parseBuyerContent(config, await storedContent(boxie))
   if (!parsed.success) {
     return {

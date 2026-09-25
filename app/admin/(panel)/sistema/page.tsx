@@ -159,8 +159,8 @@ export default async function SystemPage() {
               'Aplicar las migraciones: npx supabase link y npx supabase db push (incluye admin_backoffice).',
               'Crear el primer admin en Authentication y sumarlo a admin_users con rol owner.',
               'Cargar en Vercel NEXT_PUBLIC_SUPABASE_URL, la anon key, SUPABASE_SERVICE_ROLE_KEY, SESSION_SECRET y TOKEN_ENCRYPTION_KEY.',
-              'Implementar src/server/admin/supabase-repo.ts (hoy responde "pendiente de conectar").',
-              'Sacar DEMO_MODE del entorno y entrar al panel con el admin real.',
+              'Sacar DEMO_MODE: el panel pasa solo a src/server/admin/supabase-repo.ts (ya implementado).',
+              'Entrar con el admin real y recorrer el panel una vez (checklist en docs/ADMIN.md).',
             ].map((step, i) => (
               <li key={step} className="flex gap-3">
                 <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand-soft text-xs font-bold text-brand">

@@ -127,13 +127,18 @@ export async function POST(request: Request) {
         email,
         ...(telefono ? { phone: { number: telefono } } : {}),
       },
-      back_urls: {
-        success: returnBase,
-        failure: returnBase,
-        pending: returnBase,
-      },
-      // auto_return: MP solo lo admite cuando back_urls.success es una URL HTTPS pública.
-      ...(isHttps ? { auto_return: 'approved' as const } : {}),
+      // Mercado Pago bloquea URLs HTTP y dominios locales (localhost/127.0.0.1) en Checkout Pro.
+      // Solo se envían si la URL base es HTTPS (por ejemplo con ngrok o en staging/producción).
+      ...(isHttps
+        ? {
+            back_urls: {
+              success: returnBase,
+              failure: returnBase,
+              pending: returnBase,
+            },
+            auto_return: 'approved' as const,
+          }
+        : {}),
       external_reference: order.id,
     })
 

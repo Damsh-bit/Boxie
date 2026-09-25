@@ -1152,32 +1152,23 @@ export const supabaseRepo: AdminRepo = {
   },
 
   async inviteMember(input, actor) {
-    const email = input.email.toLowerCase()
-    const { data, error } = await db().auth.admin.inviteUserByEmail(email, {
-      redirectTo: siteUrl('/admin/login'),
-      data: { name: input.name },
-    })
-    if (error || !data.user)
-      throw new AdminRepoError(`No se pudo invitar: ${error?.message ?? 'sin usuario'}`)
-    const { error: insertError } = await db().from('users').insert({
-      user_id: data.user.id,
-      email,
-      name: input.name,
-      role: input.role,
-      invited_at: now(),
-    })
-    if (insertError?.code === '23505')
-      throw new AdminRepoError('Esa persona ya está en el equipo.', 'conflict')
-    check(insertError, 'Equipo')
-    await audit(actor, 'team.invite', 'team', data.user.id, `Invitó a ${email} como ${input.role}`)
-    return {
-      id: data.user.id,
-      email,
-      name: input.name,
-      role: input.role,
-      pending: true,
-      lastSeenAt: null,
-      createdAt: now(),
+    try {
+      const { createMemberInvite } = await import('./invite')
+      const result = await createMemberInvite(input, actor)
+      await audit(
+        actor,
+        'team.invite',
+        'team',
+        result.id,
+        `Invitó a ${result.email} como ${result.role}`,
+      )
+      return result
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'No se pudo invitar'
+      if (message.includes('ya está en el equipo')) {
+        throw new AdminRepoError(message, 'conflict')
+      }
+      throw new AdminRepoError(message)
     }
   },
 

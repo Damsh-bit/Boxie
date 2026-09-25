@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import 'server-only'
 import { createHash, timingSafeEqual } from 'node:crypto'
 import type { AdminRole } from '@/domain/admin/types'
@@ -63,45 +64,100 @@ export async function authenticateAdmin(emailInput: string, password: string): P
     }
   }
 
-  return authenticateWithSupabase(email, password)
+  return authenticateUser(email, password)
 }
 
 /**
- * Supabase Auth valida la clave y public.users decide si es admin
- * (role IS NOT NULL) y con qué rol.
+ * Autentica contra la columna password_hash de public.users.
+ * Con fallback de auto-migración para usuarios antiguos de Supabase Auth.
  */
-async function authenticateWithSupabase(email: string, password: string): Promise<AuthResult> {
+async function authenticateUser(email: string, password: string): Promise<AuthResult> {
   try {
-    const { createClient } = await import('@supabase/supabase-js')
-    const { env } = await import('../env')
-    const auth = createClient(env().NEXT_PUBLIC_SUPABASE_URL, env().NEXT_PUBLIC_SUPABASE_ANON_KEY, {
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
-    })
-    const { data, error } = await auth.auth.signInWithPassword({ email, password })
-    if (error || !data.user) return { ok: false, error: INVALID }
-
     const { serviceDb } = await import('../db/client')
-    const { data: admin } = await serviceDb()
+    const { hashPassword, verifyPassword } = await import('./password')
+
+    const db = serviceDb()
+    const { data: admin, error } = await db
       .from('users')
       .select('*')
-      .eq('user_id', data.user.id)
+      .ilike('email', email)
       .not('role', 'is', null)
       .maybeSingle()
-    await auth.auth.signOut().catch(() => {})
-    if (!admin) return { ok: false, error: 'Esa cuenta no es administradora de Boxie.' }
 
-    const row = admin as { role?: AdminRole; name?: string }
-    return {
-      ok: true,
-      identity: {
-        uid: data.user.id,
-        email,
-        name: row.name || email.split('@')[0]!,
-        role: row.role ?? 'owner',
-      },
+    if (error || !admin) return { ok: false, error: INVALID }
+
+    const row = admin as {
+      user_id: string
+      role?: AdminRole
+      name?: string
+      password_hash?: string | null
     }
+
+    // 1. Si la tabla users ya tiene password_hash:
+    if (row.password_hash) {
+      const { ok, needsRehash } = verifyPassword(password, row.password_hash)
+      if (!ok) return { ok: false, error: INVALID }
+
+      if (needsRehash) {
+        Promise.resolve(
+          db
+            .from('users')
+            .update({ password_hash: hashPassword(password) } as any)
+            .eq('user_id', row.user_id),
+        )
+          .then(() => log.info('Clave de admin migrada a scrypt', { email }))
+          .catch((err: unknown) => log.error('No se pudo rehashear la clave', err))
+      }
+
+      return {
+        ok: true,
+        identity: {
+          uid: row.user_id,
+          email,
+          name: row.name || email.split('@')[0]!,
+          role: row.role ?? 'owner',
+        },
+      }
+    }
+
+    // 2. Fallback de migración para usuarios preexistentes en Supabase Auth:
+    try {
+      const { createClient } = await import('@supabase/supabase-js')
+      const { env } = await import('../env')
+      const auth = createClient(
+        env().NEXT_PUBLIC_SUPABASE_URL,
+        env().NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        {
+          auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+        },
+      )
+      const { data, error: authError } = await auth.auth.signInWithPassword({ email, password })
+      await auth.auth.signOut().catch(() => {})
+
+      if (!authError && data?.user) {
+        // Guardamos el hash en users para los siguientes inicios de sesión
+        await db
+          .from('users')
+          .update({ password_hash: hashPassword(password) } as any)
+          .eq('user_id', row.user_id)
+
+        return {
+          ok: true,
+          identity: {
+            uid: row.user_id,
+            email,
+            name: row.name || email.split('@')[0]!,
+            role: row.role ?? 'owner',
+          },
+        }
+      }
+    } catch {
+      // Ignorar fallback si falla Auth
+    }
+
+    return { ok: false, error: INVALID }
   } catch (error) {
-    log.error('Login del panel: falló la validación con Supabase', error)
+    log.error('Login del panel: falló la validación con la tabla users', error)
     return { ok: false, error: 'No se pudo validar la cuenta. Probá de nuevo en un rato.' }
   }
 }

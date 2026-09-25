@@ -220,6 +220,8 @@ export interface AdminUser {
   pending: boolean
   lastSeenAt: string | null
   createdAt: string
+  /** URL de activación generada al invitar (para copiar en el panel). */
+  inviteUrl?: string
 }
 
 export interface AuditEntry {

@@ -15,6 +15,7 @@ export async function inviteMember(input: unknown) {
         repo.mode === 'demo'
           ? `${member.email} sumado (en demo no sale la invitación)`
           : `Le mandamos la invitación a ${member.email}`,
+      inviteUrl: member.inviteUrl,
     }
   })
 }

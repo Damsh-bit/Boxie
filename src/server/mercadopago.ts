@@ -49,7 +49,7 @@ export interface MpPreferenceInput {
     email: string
     phone?: { number: string }
   }
-  back_urls: {
+  back_urls?: {
     success: string
     failure: string
     pending: string

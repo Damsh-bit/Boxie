@@ -251,3 +251,36 @@ ${p.adminUrl}
     text,
   }
 }
+
+export function teamInviteEmail(p: {
+  name: string
+  inviterName: string
+  roleLabel: string
+  inviteUrl: string
+  expiresAt: Date
+}): MailContent {
+  const first = p.name.trim().split(/\s+/)[0] ?? ''
+  const html = layout({
+    preheader: `Te invitaron al equipo de Boxie como ${p.roleLabel}`,
+    body: `<p style="font-size:20px;font-weight:bold;margin:0 0 12px">¡Hola${first ? `, ${esc(first)}` : ''}!</p>
+<p><strong>${esc(p.inviterName)}</strong> te sumó al equipo de Boxie con el rol de <strong>${esc(p.roleLabel)}</strong>.</p>
+<p>Para activar tu cuenta y elegir tu contraseña para acceder al panel de administración, hacé clic en el botón de abajo:</p>
+${button(p.inviteUrl, 'Activar mi cuenta y crear clave')}
+<p style="font-size:14px;color:#6b6272">Este enlace es personal e intransferible. Vence el <strong>${dateAR(p.expiresAt)}</strong>.</p>
+<p style="font-size:14px;color:#6b6272">Si no esperabas esta invitación, podés ignorar este correo.</p>`,
+  })
+  const text = `¡Hola${first ? `, ${first}` : ''}!
+
+${p.inviterName} te sumó al equipo de Boxie como ${p.roleLabel}.
+
+Para activar tu cuenta y elegir tu clave, ingresá al siguiente enlace:
+${p.inviteUrl}
+
+Este enlace vence el ${dateAR(p.expiresAt)}.
+`
+  return {
+    subject: `Te invitaron al equipo de Boxie 🎁`,
+    html,
+    text,
+  }
+}

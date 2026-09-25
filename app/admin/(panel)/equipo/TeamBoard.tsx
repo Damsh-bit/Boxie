@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Mail, ShieldCheck, Trash2, UserPlus } from 'lucide-react'
+import { Check, Copy, Mail, ShieldCheck, Trash2, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { formatRelative, initials } from '@/domain/admin/format'
 import type { MemberInput } from '@/domain/admin/inputs'
@@ -36,6 +36,8 @@ export function TeamBoard({
   const { run, pending, fields } = useAdminAction()
   const [inviting, setInviting] = useState(false)
   const [draft, setDraft] = useState<MemberInput>({ email: '', name: '', role: 'support' })
+  const [inviteUrlResult, setInviteUrlResult] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   return (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
@@ -47,7 +49,13 @@ export function TeamBoard({
             description="Cada una entra con su mail y su clave."
           />
           {canManage && (
-            <Button size="sm" onClick={() => setInviting(true)}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setInviteUrlResult(null)
+                setInviting(true)
+              }}
+            >
               <UserPlus className="size-4" aria-hidden /> Invitar
             </Button>
           )}
@@ -143,71 +151,121 @@ export function TeamBoard({
 
       <Sheet
         open={inviting}
-        onOpenChange={setInviting}
+        onOpenChange={(open) => {
+          setInviting(open)
+          if (!open) setInviteUrlResult(null)
+        }}
         locked={pending}
-        title="Invitar al equipo"
-        description="Le llega un mail para crear su clave. Con Supabase conectado usa la invitación de Supabase Auth."
+        title={inviteUrlResult ? 'Invitación enviada' : 'Invitar al equipo'}
+        description={
+          inviteUrlResult
+            ? 'Le enviamos un correo con el link de activación. También podés copiarlo acá abajo.'
+            : 'Le llega un mail de Boxie para crear su contraseña y activar su cuenta.'
+        }
         footer={
-          <>
-            <Button variant="ghost" onClick={() => setInviting(false)} disabled={pending}>
-              Cancelar
-            </Button>
+          inviteUrlResult ? (
             <Button
-              disabled={pending}
-              onClick={() =>
-                void run(() => inviteMember(draft), {
-                  onSuccess: () => {
-                    setInviting(false)
-                    setDraft({ email: '', name: '', role: 'support' })
-                  },
-                })
-              }
+              onClick={() => {
+                setInviting(false)
+                setInviteUrlResult(null)
+              }}
             >
-              {pending ? <Spinner /> : <Mail className="size-4" aria-hidden />} Invitar
+              Listo
             </Button>
-          </>
+          ) : (
+            <>
+              <Button variant="ghost" onClick={() => setInviting(false)} disabled={pending}>
+                Cancelar
+              </Button>
+              <Button
+                disabled={pending}
+                onClick={() =>
+                  void run(() => inviteMember(draft), {
+                    onSuccess: (data: unknown) => {
+                      const res = data as { inviteUrl?: string } | undefined
+                      if (res?.inviteUrl) {
+                        setInviteUrlResult(res.inviteUrl)
+                      } else {
+                        setInviting(false)
+                      }
+                      setDraft({ email: '', name: '', role: 'support' })
+                    },
+                  })
+                }
+              >
+                {pending ? <Spinner /> : <Mail className="size-4" aria-hidden />} Invitar
+              </Button>
+            </>
+          )
         }
       >
-        <div className="space-y-4">
-          <Field label="Nombre" htmlFor="m-name" error={fields.name}>
-            <Input
-              id="m-name"
-              value={draft.name}
-              maxLength={80}
-              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-            />
-          </Field>
-          <Field label="Mail" htmlFor="m-email" error={fields.email}>
-            <Input
-              id="m-email"
-              type="email"
-              value={draft.email}
-              onChange={(e) => setDraft({ ...draft, email: e.target.value })}
-            />
-          </Field>
-          <div>
-            <p className="mb-2 text-xs font-bold tracking-wide text-neutral-500 uppercase">Rol</p>
-            <div className="grid gap-2">
-              {ADMIN_ROLES.map((r) => (
-                <button
-                  key={r.value}
-                  type="button"
-                  onClick={() => setDraft({ ...draft, role: r.value })}
-                  className={cn(
-                    'rounded-2xl border p-3 text-left transition-colors',
-                    draft.role === r.value
-                      ? 'border-brand bg-brand-soft/50'
-                      : 'border-line hover:border-neutral-300',
-                  )}
-                  aria-pressed={draft.role === r.value}
-                >
-                  <p className="text-sm font-semibold text-ink">{r.label}</p>
-                  <p className="text-xs text-neutral-500">{r.description}</p>
-                </button>
-              ))}
+        {inviteUrlResult ? (
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900">
+              <p className="text-sm font-bold">¡Invitación creada con éxito!</p>
+              <p className="mt-1 text-xs text-emerald-700">
+                El enlace es válido por 48 horas. Podés copiarlo a continuación para enviarlo
+                directamente:
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Input readOnly value={inviteUrlResult} className="font-mono text-xs select-all" />
+              <Button
+                type="button"
+                className="w-full"
+                onClick={() => {
+                  void navigator.clipboard.writeText(inviteUrlResult)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2500)
+                }}
+              >
+                {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                {copied ? '¡Enlace copiado al portapapeles!' : 'Copiar enlace de invitación'}
+              </Button>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="space-y-4">
+            <Field label="Nombre" htmlFor="m-name" error={fields.name}>
+              <Input
+                id="m-name"
+                value={draft.name}
+                maxLength={80}
+                onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+              />
+            </Field>
+            <Field label="Mail" htmlFor="m-email" error={fields.email}>
+              <Input
+                id="m-email"
+                type="email"
+                value={draft.email}
+                onChange={(e) => setDraft({ ...draft, email: e.target.value })}
+              />
+            </Field>
+            <div>
+              <p className="mb-2 text-xs font-bold tracking-wide text-neutral-500 uppercase">Rol</p>
+              <div className="grid gap-2">
+                {ADMIN_ROLES.map((r) => (
+                  <button
+                    key={r.value}
+                    type="button"
+                    onClick={() => setDraft({ ...draft, role: r.value })}
+                    className={cn(
+                      'rounded-2xl border p-3 text-left transition-colors',
+                      draft.role === r.value
+                        ? 'border-brand bg-brand-soft/50'
+                        : 'border-line hover:border-neutral-300',
+                    )}
+                    aria-pressed={draft.role === r.value}
+                  >
+                    <p className="text-sm font-semibold text-ink">{r.label}</p>
+                    <p className="text-xs text-neutral-500">{r.description}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </Sheet>
     </div>
   )

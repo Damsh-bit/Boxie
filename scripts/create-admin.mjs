@@ -68,124 +68,91 @@ if (!VALID_ROLES.includes(ROLE)) {
 // -- Helpers de fetch contra la API de Supabase --
 const base = SUPABASE_URL.replace(/\/$/, '')
 
-async function supabaseApi(method, path, body) {
-  const res = await fetch(`${base}${path}`, {
-    method,
-    headers: {
-      apikey: SERVICE_KEY,
-      Authorization: `Bearer ${SERVICE_KEY}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  })
-  const text = await res.text()
-  let json
-  try {
-    json = JSON.parse(text)
-  } catch {
-    json = { raw: text }
-  }
-  return { status: res.status, ok: res.ok, json }
+import { randomBytes, scryptSync } from 'node:crypto'
+
+function hashPassword(password) {
+  const salt = randomBytes(16).toString('hex')
+  const hash = scryptSync(password, salt, 64).toString('hex')
+  return `${salt}:${hash}`
 }
 
 // -- Main --
 console.log()
-console.log('Boxie - Crear administrador')
+console.log('Boxie - Crear administrador (public.users)')
 console.log(`  Proyecto : ${SUPABASE_URL}`)
 console.log(`  Email    : ${EMAIL}`)
 console.log(`  Nombre   : ${NAME}`)
 console.log(`  Rol      : ${ROLE}`)
 console.log()
 
-// 1. Verificar si el usuario ya existe en auth.users
-console.log('1/3  Verificando si el usuario ya existe en Supabase Auth...')
-const listRes = await supabaseApi('GET', `/auth/v1/admin/users?filter=${encodeURIComponent(EMAIL)}`)
+const passwordHash = hashPassword(PASSWORD)
 
-let existingUser = null
-if (listRes.ok && listRes.json?.users) {
-  existingUser = listRes.json.users.find((u) => u.email?.toLowerCase() === EMAIL.toLowerCase())
-}
+// 1. Verificar si el usuario ya existe en public.users
+console.log('1/2  Verificando en public.users...')
+const checkRes = await fetch(
+  `${base}/rest/v1/users?email=ilike.${encodeURIComponent(EMAIL)}&select=user_id,email`,
+  {
+    headers: {
+      apikey: SERVICE_KEY,
+      Authorization: `Bearer ${SERVICE_KEY}`,
+    },
+  },
+)
+const existingUsers = checkRes.ok ? await checkRes.json() : []
+const existing = Array.isArray(existingUsers) && existingUsers.length > 0 ? existingUsers[0] : null
 
 let userId
 
-if (existingUser) {
-  userId = existingUser.id
-  console.log(`     Existe en Auth. UUID: ${userId}`)
-  console.log('     Actualizando contrasena...')
-  const updRes = await supabaseApi('PUT', `/auth/v1/admin/users/${userId}`, {
-    password: PASSWORD,
-    email_confirm: true,
+if (existing) {
+  userId = existing.user_id
+  console.log(`     Usuario encontrado (UUID: ${userId}). Actualizando clave y rol...`)
+  const updateRes = await fetch(`${base}/rest/v1/users?user_id=eq.${userId}`, {
+    method: 'PATCH',
+    headers: {
+      apikey: SERVICE_KEY,
+      Authorization: `Bearer ${SERVICE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal',
+    },
+    body: JSON.stringify({
+      name: NAME,
+      role: ROLE,
+      password_hash: passwordHash,
+    }),
   })
-  if (!updRes.ok) {
-    console.error('No se pudo actualizar la contrasena:', JSON.stringify(updRes.json, null, 2))
+  if (!updateRes.ok) {
+    console.error('Error al actualizar en public.users:', await updateRes.text())
     process.exit(1)
   }
-  console.log('     Contrasena actualizada OK')
+  console.log('     Actualizado OK')
 } else {
-  // 2. Crear el usuario en Supabase Auth
-  console.log('2/3  Creando usuario en Supabase Auth...')
-  const createRes = await supabaseApi('POST', '/auth/v1/admin/users', {
-    email: EMAIL,
-    password: PASSWORD,
-    email_confirm: true,
-    user_metadata: { name: NAME },
-  })
-
-  if (!createRes.ok) {
-    console.error('Error al crear usuario en Auth:')
-    console.error(JSON.stringify(createRes.json, null, 2))
-    process.exit(1)
-  }
-
-  userId = createRes.json.id
-  console.log(`     Creado. UUID: ${userId}`)
-}
-
-// 3. Insertar / actualizar en public.users
-console.log()
-console.log('3/3  Insertando en public.users...')
-
-const upsertRes = await fetch(
-  `${SUPABASE_URL.replace(/\/$/, '')}/rest/v1/users?on_conflict=user_id`,
-  {
+  console.log('2/2  Insertando nuevo usuario en public.users...')
+  const insertRes = await fetch(`${base}/rest/v1/users`, {
     method: 'POST',
     headers: {
       apikey: SERVICE_KEY,
       Authorization: `Bearer ${SERVICE_KEY}`,
       'Content-Type': 'application/json',
-      Prefer: 'resolution=merge-duplicates,return=minimal',
+      Prefer: 'return=representation',
     },
     body: JSON.stringify({
-      user_id: userId,
       email: EMAIL,
       name: NAME,
       role: ROLE,
+      password_hash: passwordHash,
     }),
-  },
-)
-const upsertJson = {
-  status: upsertRes.status,
-  ok: upsertRes.ok,
-  json: await upsertRes.text().then((t) => {
-    try {
-      return JSON.parse(t)
-    } catch {
-      return t
-    }
-  }),
-}
-
-if (upsertJson.status === 200 || upsertJson.status === 201 || upsertJson.status === 204) {
-  console.log('     Insertado/actualizado en public.users OK')
-} else {
-  console.error('Error al insertar en public.users:')
-  console.error(JSON.stringify(upsertJson.json, null, 2))
-  process.exit(1)
+  })
+  if (!insertRes.ok) {
+    console.error('Error al insertar en public.users:', await insertRes.text())
+    process.exit(1)
+  }
+  const inserted = await insertRes.json()
+  userId = inserted[0]?.user_id
+  console.log(`     Creado OK (UUID: ${userId})`)
 }
 
 console.log()
-console.log('=== Admin creado correctamente ===')
+console.log('=== Admin listo en la tabla public.users ===')
 console.log(`  Email : ${EMAIL}`)
 console.log(`  Clave : ${PASSWORD}`)
 console.log(`  Rol   : ${ROLE}`)

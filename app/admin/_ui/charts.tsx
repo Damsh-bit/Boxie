@@ -15,6 +15,9 @@ import {
 import { cn } from '@/ui/cn'
 import { ease, spring } from '@/ui/motion'
 import { formatValue, type NumberFormat } from './format-value'
+import { SERIES } from './palette'
+
+export { SERIES }
 
 /**
  * Gráficos del panel, en SVG propio y animados con framer-motion.
@@ -27,7 +30,6 @@ import { formatValue, type NumberFormat } from './format-value'
  * texto siempre en tinta, nunca del color de la serie.
  */
 
-export const SERIES = [1, 2, 3, 4, 5, 6].map((n) => `var(--color-series-${n})`)
 const GRID = '#efe9ed'
 const AXIS = '#d9d1d6'
 const MUTED = '#8a8189'

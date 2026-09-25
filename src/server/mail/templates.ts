@@ -23,7 +23,19 @@ export function esc(value: string): string {
 const BRAND = '#F44E63'
 const INK = '#2A2433'
 
-function layout({ preheader, body }: { preheader: string; body: string }) {
+const PURCHASE_REASON =
+  'Recibís este mail porque hiciste una compra en Boxie Digital. Si no fuiste vos, respondé este mensaje.'
+
+function layout({
+  preheader,
+  body,
+  reason = PURCHASE_REASON,
+}: {
+  preheader: string
+  body: string
+  /** Por qué le llega este mail (pie). */
+  reason?: string
+}) {
   return `<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Boxie</title></head>
 <body style="margin:0;padding:0;background:#f4f1f2;font-family:Helvetica,Arial,sans-serif;color:${INK}">
@@ -34,7 +46,7 @@ function layout({ preheader, body }: { preheader: string; body: string }) {
 <tr><td style="background:${BRAND};padding:22px 32px;color:#fff;font-size:22px;font-weight:bold;letter-spacing:.5px">Boxie 🎁</td></tr>
 <tr><td style="padding:32px;font-size:16px;line-height:1.6">${body}</td></tr>
 <tr><td style="padding:20px 32px;background:#faf7f8;color:#8a8190;font-size:12px;line-height:1.5">
-Recibís este mail porque hiciste una compra en Boxie Digital. Si no fuiste vos, respondé este mensaje.<br>
+${esc(reason)}<br>
 Boxie Digital · Buenos Aires, Argentina
 </td></tr>
 </table></td></tr></table></body></html>`
@@ -131,5 +143,111 @@ export function contactEmail(p: {
     subject: `[Contacto web · ${p.area}] ${p.name}`,
     html,
     text: `Área: ${p.area}\nDe: ${p.name} <${p.email}>\n\n${p.message}`,
+  }
+}
+
+// ── Soporte ─────────────────────────────────────────────────────────────────
+
+const SUPPORT_REASON =
+  'Recibís este mail porque escribiste a soporte de Boxie Digital. Si no fuiste vos, ignoralo.'
+
+/** Un mensaje citado (sin HTML del usuario, con los saltos de línea). */
+function quote(text: string) {
+  const short = text.length > 600 ? `${text.slice(0, 597)}…` : text
+  return `<p style="white-space:pre-wrap;background:#fff0f3;border-radius:14px;padding:14px 16px;margin:18px 0">${esc(short)}</p>`
+}
+
+/** Al cliente: recibimos su consulta y cómo seguirla desde cualquier dispositivo. */
+export function supportTicketCreatedEmail(p: {
+  name: string
+  number: number
+  subject: string
+  url: string
+}): MailContent {
+  const first = p.name.trim().split(/\s+/)[0] ?? ''
+  const html = layout({
+    preheader: `Tu consulta #${p.number} llegó al equipo de Boxie`,
+    reason: SUPPORT_REASON,
+    body: `<p style="font-size:20px;font-weight:bold;margin:0 0 12px">¡Hola${first ? `, ${esc(first)}` : ''}!</p>
+<p>Recibimos tu consulta <strong>#${p.number}</strong>: «${esc(p.subject)}». Te va a responder una persona del equipo por el chat, y te avisamos por acá cuando haya respuesta.</p>
+${button(p.url, 'Ver mi consulta')}
+<p style="font-size:14px;color:#6b6272">Con este link seguís la conversación desde cualquier dispositivo. Es personal: no lo compartas.</p>`,
+  })
+  const text = `¡Hola${first ? `, ${first}` : ''}!
+
+Recibimos tu consulta #${p.number}: «${p.subject}». Te respondemos por el chat y te avisamos por mail.
+
+Seguí la conversación acá (link personal):
+${p.url}
+`
+  return { subject: `Recibimos tu consulta #${p.number} 💬`, html, text }
+}
+
+/** Al cliente: el equipo le respondió. */
+export function supportReplyEmail(p: {
+  name: string
+  number: number
+  agentName: string
+  message: string
+  url: string
+}): MailContent {
+  const first = p.name.trim().split(/\s+/)[0] ?? ''
+  const html = layout({
+    preheader: `${p.agentName} te respondió: ${p.message.slice(0, 80)}`,
+    reason: SUPPORT_REASON,
+    body: `<p style="font-size:20px;font-weight:bold;margin:0 0 12px">¡Hola${first ? `, ${esc(first)}` : ''}!</p>
+<p><strong>${esc(p.agentName)}</strong> te respondió en tu consulta <strong>#${p.number}</strong>:</p>
+${quote(p.message)}
+${button(p.url, 'Responder')}`,
+  })
+  const text = `¡Hola${first ? `, ${first}` : ''}!
+
+${p.agentName} te respondió en tu consulta #${p.number}:
+
+${p.message}
+
+Respondé acá: ${p.url}
+`
+  return { subject: `Te respondimos tu consulta #${p.number}`, html, text }
+}
+
+/** Al equipo: una consulta nueva, o el cliente volvió a escribir. */
+export function supportTeamEmail(p: {
+  kind: 'new' | 'reply'
+  number: number
+  topic: string
+  subject: string
+  customerName: string
+  customerEmail: string
+  message: string
+  adminUrl: string
+}): MailContent {
+  const heading =
+    p.kind === 'new'
+      ? `Nueva consulta #${p.number} · ${esc(p.topic)}`
+      : `${esc(p.customerName)} respondió en #${p.number}`
+  const html = layout({
+    preheader: `${p.customerName}: ${p.message.slice(0, 90)}`,
+    reason: 'Aviso interno del soporte de Boxie Digital.',
+    body: `<p style="font-size:20px;font-weight:bold;margin:0 0 12px">${heading}</p>
+<p><strong>${esc(p.subject)}</strong><br><span style="color:#6b6272">${esc(p.customerName)} &lt;${esc(p.customerEmail)}&gt;</span></p>
+${quote(p.message)}
+${button(p.adminUrl, 'Abrir en el panel')}`,
+  })
+  const text = `${p.kind === 'new' ? `Nueva consulta #${p.number} (${p.topic})` : `${p.customerName} respondió en #${p.number}`}
+${p.subject}
+${p.customerName} <${p.customerEmail}>
+
+${p.message}
+
+${p.adminUrl}
+`
+  return {
+    subject:
+      p.kind === 'new'
+        ? `[Soporte #${p.number}] ${p.topic} · ${p.subject}`
+        : `[Soporte #${p.number}] Nueva respuesta de ${p.customerName}`,
+    html,
+    text,
   }
 }

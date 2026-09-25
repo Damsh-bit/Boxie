@@ -11,6 +11,7 @@ import { cn } from '@/ui/cn'
 import { Input, Label } from '@/ui/form'
 import { Modal } from '@/ui/Modal'
 import { ease, Notice, Spinner, spring, Swap, useCalm } from '@/ui/motion'
+import { useBottomBar } from '@/ui/use-bottom-bar'
 import { collectAssetIds, type ParsedThemeConfig } from '../config'
 import { Player, type PlayerData } from '../player/Player'
 import { slideDefinitions } from '../schemas'
@@ -99,6 +100,9 @@ export function Editor({
   const [lockError, setLockError] = useState<string | null>(null)
   const [confirmReset, setConfirmReset] = useState(false)
   const { status, schedule, flush } = useAutosave(backend.save)
+  // La barra de abajo (celular) sube el botón de ayuda para que no la tape.
+  const bottomBar = useRef<HTMLDivElement>(null)
+  useBottomBar(bottomBar, !locked)
 
   // Lo último que se guardó en el estado: los cambios que llegan tarde (una
   // foto que termina de subir) se suman a esto y no pisan lo escrito mientras.
@@ -449,6 +453,7 @@ export function Editor({
             </div>
 
             <motion.div
+              ref={bottomBar}
               className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white/90 px-3 pt-3 backdrop-blur-xl lg:hidden"
               style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
               initial={{ y: 100 }}

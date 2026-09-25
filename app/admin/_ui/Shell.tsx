@@ -34,6 +34,8 @@ interface ShellProps {
   user: ShellUser
   demo: boolean
   alerts: number
+  /** Contadores junto a una sección del menú (consultas esperando respuesta). */
+  badges?: Partial<Record<string, number>>
   logout: () => Promise<void>
   children: ReactNode
 }
@@ -67,7 +69,7 @@ function setCollapsedStored(value: boolean) {
  * cajón en el celular), barra superior con el buscador (Ctrl/⌘ K) y el
  * contenido, que entra con un fundido corto en cada cambio de sección.
  */
-export function Shell({ user, demo, alerts, logout, children }: ShellProps) {
+export function Shell({ user, demo, alerts, badges = {}, logout, children }: ShellProps) {
   const pathname = usePathname()
   const groups = navFor(user.role)
   const collapsed = useSyncExternalStore(subscribeCollapse, readCollapsed, () => false)
@@ -109,6 +111,7 @@ export function Shell({ user, demo, alerts, logout, children }: ShellProps) {
               collapsed={collapsed}
               user={user}
               demo={demo}
+              badges={badges}
               logout={logout}
               onToggle={() => setCollapsedStored(!collapsed)}
             />
@@ -147,6 +150,7 @@ export function Shell({ user, demo, alerts, logout, children }: ShellProps) {
                     collapsed={false}
                     user={user}
                     demo={demo}
+                    badges={badges}
                     logout={logout}
                     mobile
                   />
@@ -193,6 +197,7 @@ function Sidebar({
   collapsed,
   user,
   demo,
+  badges,
   logout,
   onToggle,
   mobile = false,
@@ -202,6 +207,7 @@ function Sidebar({
   collapsed: boolean
   user: ShellUser
   demo: boolean
+  badges: Partial<Record<string, number>>
   logout: () => Promise<void>
   onToggle?: () => void
   mobile?: boolean
@@ -292,6 +298,11 @@ function Sidebar({
                         >
                           <Icon className="size-[19px]" aria-hidden />
                         </motion.span>
+                        <NavBadge
+                          count={badges[item.href] ?? 0}
+                          collapsed={collapsed}
+                          active={active}
+                        />
                         <AnimatePresence initial={false}>
                           {!collapsed && (
                             <motion.span
@@ -459,5 +470,40 @@ function Topbar({
         </div>
       </div>
     </header>
+  )
+}
+
+/** Contador de una sección (a la derecha; con el menú achicado, un punto sobre el ícono). */
+function NavBadge({
+  count,
+  collapsed,
+  active,
+}: {
+  count: number
+  collapsed: boolean
+  active: boolean
+}) {
+  return (
+    <AnimatePresence>
+      {count > 0 && (
+        <motion.span
+          key={collapsed ? 'dot' : 'count'}
+          className={cn(
+            'absolute rounded-full font-bold tabular-nums',
+            collapsed
+              ? 'top-2 left-7 size-2.5 ring-2 ring-ink'
+              : 'right-3 min-w-5 px-1.5 text-center text-[11px] leading-5',
+            active ? 'bg-white text-brand' : 'bg-brand text-white',
+          )}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0 }}
+          transition={spring.bouncy}
+          aria-label={`${count} esperando respuesta`}
+        >
+          {collapsed ? null : count > 99 ? '99+' : count}
+        </motion.span>
+      )}
+    </AnimatePresence>
   )
 }

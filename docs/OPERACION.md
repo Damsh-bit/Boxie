@@ -24,7 +24,8 @@ Variables_; nunca en el repo.
 
 1. Crear el proyecto `boxie` en la organización _Damsh-bit's Org_, región `sa-east-1` (São Paulo).
 2. Aplicar las migraciones: `npx supabase link --project-ref <ref>` y `npx supabase db push`
-   (son 7: esquema, funciones, RLS, storage, catálogo inicial, editor y panel de administración).
+   (son 8: esquema, funciones, RLS, storage, catálogo inicial, editor, panel de administración y
+   soporte).
 3. Revisar los avisos de seguridad del panel (_Advisors_): tienen que estar en cero.
 4. Crear el primer admin: registrar el usuario en _Authentication_ y agregarlo a `users` con rol
    (después suma al resto del equipo desde el panel, en _Equipo_). O usar `npm run admin:create`:
@@ -69,13 +70,35 @@ Devuelve el link del editor y el del regalo (en la vida real llegan por mail).
 
 ## Panel de administración
 
-Todo en [ADMIN.md](ADMIN.md): secciones, roles, planes, generador y cómo conectarlo a la base.
+Todo en [ADMIN.md](ADMIN.md): secciones, roles, planes, generador, soporte y cómo conectarlo a la
+base.
+
+## Soporte
+
+| Ruta                     | Qué es                                                                   |
+| ------------------------ | ------------------------------------------------------------------------ |
+| Botón de ayuda           | Widget del sitio, el editor y el editor de prueba (abajo a la izquierda) |
+| `/soporte`               | Las consultas de este navegador, a pantalla completa                     |
+| `/soporte/<token>`       | El link personal del mail: se canjea por la cookie y vuelve a /soporte   |
+| `/api/soporte/*`         | La API del cliente (cookie httpOnly que solo viaja a esta ruta)          |
+| `/api/soporte/eventos`   | Stream en vivo del cliente (SSE)                                         |
+| `/admin/soporte`         | La bandeja del equipo                                                    |
+| `/admin/soporte/eventos` | Stream en vivo de la bandeja (SSE)                                       |
+
+- **Vercel:** los streams cierran solos a los 50 s y el navegador reconecta (las rutas declaran
+  `maxDuration = 60`). Con la base real, cada stream abierto consulta los cambios cada 2,5 s (una
+  consulta chica e indexada): con unos pocos agentes y clientes conectados a la vez, sobra.
+- **Mails:** salen por Resend como el resto; el equipo los recibe en el mail de soporte de
+  **Configuración**. Sin `TOKEN_ENCRYPTION_KEY`, los avisos de respuesta llevan el link a
+  `/soporte` (sirve en el mismo navegador) en vez del link personal.
+- **Límites:** 10 consultas nuevas por hora por IP, 40 mensajes cada 10 minutos, y la recuperación
+  de links por mail tiene tope por IP y por mail.
 
 ## Límites y abuso
 
-Los límites de pedidos (contacto, checkout, editor, fotos, clave del regalo) viven en memoria de
-cada instancia: frenan lo obvio. Para límites globales, activar reglas de rate limiting en el
-Firewall de Vercel sobre `/api/*`, `/editor/*` y `/g/*`.
+Los límites de pedidos (contacto, checkout, editor, fotos, clave del regalo, soporte) viven en
+memoria de cada instancia: frenan lo obvio. Para límites globales, activar reglas de rate limiting
+en el Firewall de Vercel sobre `/api/*`, `/editor/*`, `/g/*` y `/soporte/*`.
 
 Cada Boxie admite hasta 30 fotos (lo exige la base) y el plan comprado puede bajar ese tope; al
 bloquearla se borran las que se reemplazaron.

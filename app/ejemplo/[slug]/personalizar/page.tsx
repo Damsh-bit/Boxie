@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPublicSettings, getPublishedTheme, getThemeVersionConfig } from '@/server/catalog'
+import { SupportWidget } from '@/ui/support/SupportWidget'
 import { SandboxLoader } from './SandboxLoader'
 
 export const dynamic = 'force-dynamic'
@@ -31,10 +32,13 @@ export default async function SandboxPage({ params }: PageProps<'/ejemplo/[slug]
   if (!config) notFound()
 
   return (
-    <SandboxLoader
-      config={config}
-      theme={{ name: theme.name, slug: theme.slug }}
-      lifetimeDays={settings.giftLifetimeDays}
-    />
+    <>
+      <SandboxLoader
+        config={config}
+        theme={{ name: theme.name, slug: theme.slug }}
+        lifetimeDays={settings.giftLifetimeDays}
+      />
+      <SupportWidget nudge={false} />
+    </>
   )
 }

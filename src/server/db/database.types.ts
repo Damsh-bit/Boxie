@@ -651,6 +651,152 @@ export type Database = {
           },
         ]
       }
+      support_messages: {
+        Row: {
+          id: string
+          ticket_id: string
+          author: string
+          author_name: string
+          author_email: string | null
+          body: string
+          internal: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          ticket_id: string
+          author: string
+          author_name: string
+          author_email?: string | null
+          body: string
+          internal?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          ticket_id?: string
+          author?: string
+          author_name?: string
+          author_email?: string | null
+          body?: string
+          internal?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          id: string
+          number: number
+          topic: Database["public"]["Enums"]["support_topic"]
+          status: Database["public"]["Enums"]["support_status"]
+          priority: Database["public"]["Enums"]["support_priority"]
+          subject: string
+          customer_name: string
+          customer_email: string
+          boxie_code: string | null
+          boxie_id: string | null
+          order_id: string | null
+          assignee: string | null
+          context: Json
+          access_token_hash: string
+          access_token_enc: string | null
+          rating: string | null
+          first_response_at: string | null
+          resolved_at: string | null
+          last_message_at: string
+          last_customer_message_at: string | null
+          last_agent_message_at: string | null
+          customer_read_at: string | null
+          agent_read_at: string | null
+          customer_notified_at: string | null
+          team_notified_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          number?: number
+          topic: Database["public"]["Enums"]["support_topic"]
+          status?: Database["public"]["Enums"]["support_status"]
+          priority?: Database["public"]["Enums"]["support_priority"]
+          subject: string
+          customer_name: string
+          customer_email: string
+          boxie_code?: string | null
+          boxie_id?: string | null
+          order_id?: string | null
+          assignee?: string | null
+          context?: Json
+          access_token_hash: string
+          access_token_enc?: string | null
+          rating?: string | null
+          first_response_at?: string | null
+          resolved_at?: string | null
+          last_message_at?: string
+          last_customer_message_at?: string | null
+          last_agent_message_at?: string | null
+          customer_read_at?: string | null
+          agent_read_at?: string | null
+          customer_notified_at?: string | null
+          team_notified_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          number?: number
+          topic?: Database["public"]["Enums"]["support_topic"]
+          status?: Database["public"]["Enums"]["support_status"]
+          priority?: Database["public"]["Enums"]["support_priority"]
+          subject?: string
+          customer_name?: string
+          customer_email?: string
+          boxie_code?: string | null
+          boxie_id?: string | null
+          order_id?: string | null
+          assignee?: string | null
+          context?: Json
+          access_token_hash?: string
+          access_token_enc?: string | null
+          rating?: string | null
+          first_response_at?: string | null
+          resolved_at?: string | null
+          last_message_at?: string
+          last_customer_message_at?: string | null
+          last_agent_message_at?: string | null
+          customer_read_at?: string | null
+          agent_read_at?: string | null
+          customer_notified_at?: string | null
+          team_notified_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_boxie_id_fkey"
+            columns: ["boxie_id"]
+            isOneToOne: false
+            referencedRelation: "boxies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_tickets_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       theme_versions: {
         Row: {
           id: string
@@ -935,6 +1081,18 @@ export type Database = {
         }
         Returns: string
       }
+      support_post_message: {
+        Args: {
+          p_ticket_id: string
+          p_author: string
+          p_author_name: string
+          p_body: string
+          p_author_email?: string
+          p_internal?: boolean
+          p_status?: Database["public"]["Enums"]["support_status"]
+        }
+        Returns: Database["public"]["Tables"]["support_messages"]["Row"]
+      }
     }
     Enums: {
       admin_role: "owner" | "admin" | "editor" | "support"
@@ -943,6 +1101,9 @@ export type Database = {
       expense_category: "infraestructura" | "marketing" | "herramientas" | "equipo" | "impuestos" | "otros"
       media_owner: "boxie" | "theme"
       order_status: "pending" | "paid" | "refunded" | "cancelled"
+      support_priority: "baja" | "normal" | "alta" | "urgente"
+      support_status: "open" | "pending" | "resolved" | "closed"
+      support_topic: "boxie" | "error" | "pago" | "otro"
       task_priority: "alta" | "media" | "baja"
       task_status: "todo" | "doing" | "done"
       theme_status: "draft" | "published" | "archived"

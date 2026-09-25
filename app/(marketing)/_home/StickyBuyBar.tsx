@@ -3,9 +3,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Gift, Wand2 } from 'lucide-react'
 import type { Route } from 'next'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ButtonLink } from '@/ui/Button'
 import { spring } from '@/ui/motion'
+import { useBottomBar } from '@/ui/use-bottom-bar'
 
 /**
  * Barra de compra fija en el celular: aparece cuando el armador de la portada
@@ -24,6 +25,8 @@ export function StickyBuyBar({
   editorHref: Route
 }) {
   const [show, setShow] = useState(false)
+  const bar = useRef<HTMLDivElement>(null)
+  useBottomBar(bar, show)
 
   useEffect(() => {
     const start = document.getElementById('armador')
@@ -52,6 +55,7 @@ export function StickyBuyBar({
     <AnimatePresence>
       {show && (
         <motion.div
+          ref={bar}
           className="fixed inset-x-3 z-30 lg:hidden"
           style={{ bottom: 'calc(var(--dock) + 12px)' }}
           initial={{ y: 120, opacity: 0 }}

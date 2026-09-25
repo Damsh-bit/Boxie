@@ -4,6 +4,7 @@ import {
   Gift,
   Handshake,
   LayoutDashboard,
+  LifeBuoy,
   Layers,
   Palette,
   Plug,
@@ -66,6 +67,18 @@ export const NAV: NavGroup[] = [
         icon: ChartLine,
         hint: 'Embudo, horarios, temáticas y cohortes',
         roles: MONEY,
+      },
+    ],
+  },
+  {
+    label: 'Atención',
+    items: [
+      {
+        href: '/admin/soporte',
+        label: 'Soporte',
+        icon: LifeBuoy,
+        hint: 'Consultas de clientes: chat en vivo, estados y respuestas',
+        roles: SUPPORT,
       },
     ],
   },

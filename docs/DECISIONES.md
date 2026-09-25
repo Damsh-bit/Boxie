@@ -191,6 +191,70 @@ Detalle de uso en [ADMIN.md](ADMIN.md). Lo que se decidió:
 - **Los cambios del panel revalidan solo lo que tocan**: las páginas públicas de a una (revalidar el
   layout raíz rompía las estáticas), el panel entero por layout.
 
+## El sitio lee el panel (vidriera)
+
+- **Un solo resumen por pedido, `getStorefront()`** (`src/server/storefront.ts`): planes, precio
+  "desde", días online por plan, pantallas de la Boxie más completa, desde qué plan viene cada
+  pantalla, cupón de bienvenida, datos del negocio y ventas pausadas. La home, la galería,
+  /precios y la ayuda leen de ahí: ningún número queda fijo en el código ("20 pantallas", "60
+  días", "10% OFF") y nunca se promete algo distinto de lo que cobra el checkout o entrega el
+  regalo.
+- **Lo que el panel crea se ve bien sin tocar código.** Una temática generada trae su emoji (el de
+  su guía) y suma su ocasión en "¿A quién querés emocionar hoy?"; el selector de la portada y el
+  carrusel escalan a cualquier cantidad de temáticas.
+- **Dos bugs de diseño responsive que aparecían con datos del panel:** con más de 3 temáticas
+  publicadas, el selector de la portada ensanchaba toda la grilla en el celular (544 px en una
+  pantalla de 375); y el carrusel centrado con `justify-center` cortaba la primera tarjeta en
+  escritorio. Regla desde ahora: las grillas de una columna van con `grid-cols-1` (minmax(0,1fr))
+  y los carruseles con `justify-center-safe`.
+- **El cupón de bienvenida se valida contra la base**: si en el panel se pausa, vence o agota, la
+  home deja de ofrecerlo; el descuento que se muestra es el del cupón real.
+- **Datos del negocio del panel** (mail de soporte, WhatsApp, Instagram) en el pie, contacto,
+  ayuda y datos estructurados. Si la base no responde (el build de CI no tiene base), el pie usa
+  los de `site.ts`. Redes sin perfil cargado no se muestran (antes linkeaban a la portada de
+  TikTok, YouTube y Facebook).
+- **La tienda (anon) ya no puede leer la rentabilidad**: con la clave pública se podía pedir
+  `settings` entera (meta de facturación, comisiones, costos). La migración de soporte le deja a
+  anon solo las columnas públicas.
+- **"Entrar a mi Boxie" recupera el acceso de verdad** (la ayuda lo prometía y no existía): se
+  reenvía el link de edición (rotado) o el del regalo, responde siempre igual y enseguida (el
+  envío sigue con `after()`), así no sirve para averiguar quién compró.
+- **Páginas nuevas:** /precios (planes y comparación pantalla por pantalla), /soporte, 404 con
+  marca, error con "reintentar" y "reportar", `sitemap.xml`, `robots.txt` y manifest.
+
+## Soporte
+
+Detalle de uso en [ADMIN.md](ADMIN.md#soporte). Lo que se decidió:
+
+- **Tickets con chat, no un formulario de contacto.** El botón de ayuda (abajo a la izquierda, en
+  el sitio, el editor y el editor de prueba; no en el regalo) abre una consulta sobre una Boxie,
+  un error, un pago u otra cosa, y la conversación sigue ahí. El formulario de contacto queda
+  para ventas, prensa y trabajo.
+- **Sin cuentas: cada consulta tiene un token** (192 bits; en la base, el hash y una copia
+  cifrada como el link del regalo). El navegador guarda los tokens en una cookie httpOnly que
+  solo viaja a `/api/soporte`; el mail de confirmación trae `/soporte/<token>` para seguir desde
+  otro dispositivo (se canjea por la cookie y la URL queda limpia). Cada respuesta del equipo
+  manda el mismo link personal.
+- **Tiempo real con Server-Sent Events**, no WebSockets ni Supabase Realtime en el navegador: el
+  navegador nunca habla con la base (igual que el panel). El stream escucha un bus en memoria (lo
+  instantáneo) y, con la base real, relee cada 2,5 s una ventana de los últimos 15 s para
+  enterarse de lo que pasó en otra instancia de Vercel (una ventana y no "desde lo último visto":
+  una transacción que confirma tarde no se pierde). Cierra a los 50 s y el navegador reconecta
+  pidiendo el estado completo, así ninguna función queda abierta más de lo que permite Vercel.
+  Si hace falta más escala, el paso siguiente es Supabase Realtime (broadcast) solo como aviso.
+- **Publicar un mensaje es una función de la base** (`support_post_message`): inserta el mensaje
+  y actualiza el ticket (estado, primera respuesta, lectura) en la misma transacción. Una
+  consulta cerrada no se reabre y los mensajes no se editan, aunque la app tenga un bug.
+- **Estados:** abierto (le toca al equipo) → esperando al cliente (el equipo respondió) →
+  resuelto (si el cliente escribe, se reabre) → cerrado (hay que abrir otra). Las notas internas
+  no cambian el estado ni le llegan al cliente.
+- **Mails sin llenar bandejas:** al cliente, uno por respuesta como mucho cada 10 minutos; al
+  equipo, siempre por una consulta nueva y cada 30 minutos si el cliente vuelve a escribir.
+- **Prioridad y "atrasada":** los pagos entran con prioridad alta; una consulta se marca
+  atrasada según su prioridad (2 h urgente, 8 h alta, 24 h normal, 48 h baja). Quien responde
+  primero se queda con la consulta.
+- **"Escribiendo…"** viaja solo por el bus (es efímero): entre instancias puede no verse.
+
 ## Modo demo
 
 `DEMO_MODE=1` levanta el sitio sin Supabase ni Mercado Pago, con el catálogo de `supabase/seed`.

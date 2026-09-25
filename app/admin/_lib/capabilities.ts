@@ -96,6 +96,13 @@ export const CAPABILITIES: Capability[] = [
     note: 'Columnas nuevas: costos, meta, datos del negocio, pausar ventas.',
   },
   {
+    section: 'Soporte',
+    href: '/admin/soporte',
+    uses: 'support_tickets · support_messages · support_post_message()',
+    status: 'migration',
+    note: 'Migración 20260926120000_support.sql. En vivo: stream SSE (bus en memoria + lectura de cambios cada 2,5 s).',
+  },
+  {
     section: 'Tareas',
     href: '/admin/tareas',
     uses: 'admin_tasks',

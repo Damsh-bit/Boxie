@@ -5,6 +5,7 @@ import { isDemoMode } from '@/server/demo'
 import { loadEditor } from '@/server/editor'
 import { EDITOR_COOKIE, readEditorSession } from '@/server/editor-session'
 import { log } from '@/server/log'
+import { SupportWidget } from '@/ui/support/SupportWidget'
 import { EditorMessage, type EditorMessageKind } from './EditorMessage'
 import { LiveEditor } from './LiveEditor'
 
@@ -50,17 +51,21 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
   if (data.availability === 'refunded') return <EditorMessage kind="refunded" />
 
   return (
-    <LiveEditor
-      code={data.code}
-      config={data.config}
-      theme={data.theme}
-      content={data.content}
-      media={data.media}
-      hasPassword={data.hasPassword}
-      editableUntil={data.expiresAt}
-      lifetimeDays={data.lifetimeDays}
-      allowPassword={data.allowPassword}
-      locked={data.giftUrl ? { giftUrl: data.giftUrl, expiresAt: data.expiresAt } : null}
-    />
+    <>
+      <LiveEditor
+        code={data.code}
+        config={data.config}
+        theme={data.theme}
+        content={data.content}
+        media={data.media}
+        hasPassword={data.hasPassword}
+        editableUntil={data.expiresAt}
+        lifetimeDays={data.lifetimeDays}
+        allowPassword={data.allowPassword}
+        locked={data.giftUrl ? { giftUrl: data.giftUrl, expiresAt: data.expiresAt } : null}
+      />
+      {/* El botón de ayuda ya sabe de qué Boxie se trata. */}
+      <SupportWidget hint={{ boxieCode: data.code, topic: 'boxie' }} nudge={false} />
+    </>
   )
 }

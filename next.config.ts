@@ -42,6 +42,8 @@ const nextConfig: NextConfig = {
       { source: '/g/:path*', headers: tokenRouteHeaders },
       { source: '/editor/:path*', headers: tokenRouteHeaders },
       { source: '/editor', headers: tokenRouteHeaders },
+      // El link personal de una consulta de soporte también es una credencial.
+      { source: '/soporte/:path*', headers: tokenRouteHeaders },
     ]
   },
   async redirects() {

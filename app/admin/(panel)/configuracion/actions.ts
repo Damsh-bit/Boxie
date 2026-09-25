@@ -1,12 +1,24 @@
 'use server'
 
+import { legalDocs } from '@/content/legal'
 import { SettingsInputSchema } from '@/domain/admin/inputs'
 import { AdminRepoError } from '@/server/admin/repo'
 import { MONEY_ROLES, runAction } from '../../_lib/action'
 
 export async function saveSettings(input: unknown) {
   return runAction(
-    { roles: MONEY_ROLES, revalidate: ['/admin', '/admin/configuracion', '/admin/finanzas', '/'] },
+    {
+      roles: MONEY_ROLES,
+      // Los datos del negocio salen en el pie de todo el sitio: también las páginas estáticas.
+      revalidate: [
+        '/admin',
+        '/admin/configuracion',
+        '/admin/finanzas',
+        '/',
+        '/mi-boxie',
+        ...legalDocs.map((d) => `/legales/${d.slug}`),
+      ],
+    },
     async ({ repo, actor }) => {
       await repo.saveSettings(SettingsInputSchema.parse(input), actor)
       return { message: 'Configuración guardada' }

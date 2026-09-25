@@ -10,6 +10,7 @@ import { formatARS } from '@/domain/money'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { ease, spring, useCalm } from '@/ui/motion'
+import { useBottomBar } from '@/ui/use-bottom-bar'
 
 /** Un plan tal como lo muestra la ficha (lo que incluye en esta temática). */
 export interface BuyPlan {
@@ -73,6 +74,8 @@ export function BuyBox({
   const priceCents = plan ? plan.priceCents : basePrice
   const cta = useRef<HTMLDivElement>(null)
   const ctaHidden = useOutOfView(cta)
+  const bar = useRef<HTMLDivElement>(null)
+  useBottomBar(bar, ctaHidden)
   const calm = useCalm()
 
   const delay = offer?.delaySeconds
@@ -188,6 +191,7 @@ export function BuyBox({
       <AnimatePresence>
         {ctaHidden && (
           <motion.div
+            ref={bar}
             className="fixed inset-x-3 z-30 lg:hidden"
             style={{ bottom: 'calc(var(--dock) + 12px)' }}
             initial={{ y: 120, opacity: 0 }}

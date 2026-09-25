@@ -4,6 +4,7 @@ import { isDemoMode } from '@/server/demo'
 import { DemoBanner } from '@/ui/DemoBanner'
 import { Footer } from '@/ui/Footer'
 import { Navbar } from '@/ui/Navbar'
+import { SupportWidget } from '@/ui/support/SupportWidget'
 
 export default async function MarketingLayout({ children }: LayoutProps<'/'>) {
   // Los datos de contacto del pie salen de la Configuración del panel.
@@ -14,6 +15,7 @@ export default async function MarketingLayout({ children }: LayoutProps<'/'>) {
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer contact={contact} />
+      <SupportWidget />
     </>
   )
 }

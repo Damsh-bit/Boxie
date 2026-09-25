@@ -33,7 +33,8 @@ El editor del comprador se prueba en <http://localhost:3000/ejemplo/pareja/perso
 prueba: guarda en el navegador).
 
 El panel de administración está en <http://localhost:3000/admin> (en demo: `admin@boxie.demo` /
-`boxie-admin`, con un año de ventas de muestra).
+`boxie-admin`, con un año de ventas de muestra). Las consultas del botón de ayuda del sitio se
+atienden en <http://localhost:3000/admin/soporte> (en demo trae conversaciones de muestra).
 
 **Con Supabase local** (necesita Docker):
 
@@ -64,10 +65,13 @@ app/                  rutas (sitio público, checkout, editor, regalo, API)
 app/admin/            panel de administración (ver docs/ADMIN.md)
 src/domain/           lógica pura: precios, planes, cupones, ciclo de vida, métricas y finanzas
 src/server/           todo lo que toca el exterior: base, storage, mails, seguridad
+src/server/storefront.ts  la vidriera: lo que el sitio muestra y se decide en el panel
+src/server/support/   soporte: tickets, chat en vivo (SSE) y mails, en demo y con Supabase
 src/slides/           ⭐ el motor de temáticas: contrato de cada slide, player y componentes
 src/slides/editor/    el editor del comprador: módulos, SchemaForm, fotos, modo prueba
 src/slides/generator/ el generador de temáticas del panel
 src/ui/               sistema de diseño
+src/ui/support/       el botón de ayuda y el chat del cliente
 supabase/migrations/  esquema, funciones, RLS, storage y catálogo inicial (versionado)
 supabase/seed/        las temáticas iniciales como datos
 tests/db/             tests de las migraciones y la RLS sobre PGlite

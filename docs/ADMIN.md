@@ -26,38 +26,74 @@ fallidos de login se limitan por IP y por mail.
 
 ## Secciones
 
-| Sección           | Para qué                                                                                                                                                                                                            |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Resumen**       | Facturación vs. el período anterior, meta del mes con proyección, KPIs, temáticas y planes que más venden, embudo, alertas, movimientos y cupones.                                                                  |
-| **Finanzas**      | Estado de resultados (cobrado → comisiones → impuestos → contribución → gastos fijos → resultado), mes a mes, rentabilidad por temática y por plan, gastos fijos, punto de equilibrio y simulador "¿qué pasa si…?". |
-| **Analítica**     | Embudo con lo que se pierde en cada paso, checkouts vs. ventas, mapa de calor por día y hora, conversión por temática, tiempos del regalo, cupones y recompra por cohorte.                                          |
-| **Ventas**        | Todas las órdenes (se paguen o no) con filtros, exportación a CSV y detalle con el historial de pagos, lo que dejó la venta y el reembolso.                                                                         |
-| **Boxies**        | Buscador de soporte (código `K7M2-Q9XD`, mail o destinatario) y detalle: módulos completos, vista previa del regalo, extender, desbloquear, reenviar mails y corregir nombres.                                      |
-| **Clientes**      | Las órdenes agrupadas por mail: recurrentes, nuevos, top 5 %, los que no compraron (con un mail listo para recuperarlos) y exportación.                                                                             |
-| **Cupones**       | Alta y edición, estados (activo, programado, agotado, vencido, pausado), uso con tope, vista previa del descuento por plan y la oferta de la ficha.                                                                 |
-| **Afiliados**     | Códigos de creadores y comercios, comisión y lo que hay que liquidar cada mes.                                                                                                                                      |
-| **Temáticas**     | El catálogo. Cada temática tiene su editor: módulos (orden, textos, marco, plan), grilla de planes, ficha de la tienda, paleta y versiones, con la vista previa del regalo real.                                    |
-| **Generador**     | Se pega una lista de ocasiones y cada temática se arma sola (ver [Generador](#generador)).                                                                                                                          |
-| **Planes**        | Los niveles de precio y qué incluye cada uno (ver [Planes](#planes)).                                                                                                                                               |
-| **Tareas**        | Tablero kanban del equipo (por hacer, haciendo, hecho).                                                                                                                                                             |
-| **Actividad**     | Bitácora: cada cambio del panel queda registrado con quién y cuándo.                                                                                                                                                |
-| **Equipo**        | Administradores, roles e invitaciones (solo el dueño).                                                                                                                                                              |
-| **Configuración** | Precio base, vida del regalo, oferta, pausar ventas, costos por venta, meta mensual y datos del negocio.                                                                                                            |
-| **Sistema**       | Qué está conectado, qué falta y qué parte del panel necesita qué tabla de la base.                                                                                                                                  |
+| Sección           | Para qué                                                                                                                                                                                                             |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Resumen**       | Facturación vs. el período anterior, meta del mes con proyección, KPIs, temáticas y planes que más venden, embudo, alertas, movimientos y cupones.                                                                   |
+| **Finanzas**      | Estado de resultados (cobrado → comisiones → impuestos → contribución → gastos fijos → resultado), mes a mes, rentabilidad por temática y por plan, gastos fijos, punto de equilibrio y simulador "¿qué pasa si…?".  |
+| **Analítica**     | Embudo con lo que se pierde en cada paso, checkouts vs. ventas, mapa de calor por día y hora, conversión por temática, tiempos del regalo, cupones y recompra por cohorte.                                           |
+| **Soporte**       | Las consultas de los clientes (botón de ayuda del sitio): chat en vivo, notas internas, estados, prioridad, asignación, respuestas rápidas y los datos del cliente (su Boxie, sus compras). Ver [Soporte](#soporte). |
+| **Ventas**        | Todas las órdenes (se paguen o no) con filtros, exportación a CSV y detalle con el historial de pagos, lo que dejó la venta y el reembolso.                                                                          |
+| **Boxies**        | Buscador de soporte (código `K7M2-Q9XD`, mail o destinatario) y detalle: módulos completos, vista previa del regalo, extender, desbloquear, reenviar mails y corregir nombres.                                       |
+| **Clientes**      | Las órdenes agrupadas por mail: recurrentes, nuevos, top 5 %, los que no compraron (con un mail listo para recuperarlos) y exportación.                                                                              |
+| **Cupones**       | Alta y edición, estados (activo, programado, agotado, vencido, pausado), uso con tope, vista previa del descuento por plan y la oferta de la ficha.                                                                  |
+| **Afiliados**     | Códigos de creadores y comercios, comisión y lo que hay que liquidar cada mes.                                                                                                                                       |
+| **Temáticas**     | El catálogo. Cada temática tiene su editor: módulos (orden, textos, marco, plan), grilla de planes, ficha de la tienda, paleta y versiones, con la vista previa del regalo real.                                     |
+| **Generador**     | Se pega una lista de ocasiones y cada temática se arma sola (ver [Generador](#generador)).                                                                                                                           |
+| **Planes**        | Los niveles de precio y qué incluye cada uno (ver [Planes](#planes)).                                                                                                                                                |
+| **Tareas**        | Tablero kanban del equipo (por hacer, haciendo, hecho).                                                                                                                                                              |
+| **Actividad**     | Bitácora: cada cambio del panel queda registrado con quién y cuándo.                                                                                                                                                 |
+| **Equipo**        | Administradores, roles e invitaciones (solo el dueño).                                                                                                                                                               |
+| **Configuración** | Precio base, vida del regalo, oferta, pausar ventas, costos por venta, meta mensual y datos del negocio.                                                                                                             |
+| **Sistema**       | Qué está conectado, qué falta y qué parte del panel necesita qué tabla de la base.                                                                                                                                   |
 
 Atajo: **Ctrl/⌘ K** abre el buscador (secciones, acciones y búsqueda directa de Boxies y clientes).
 
 ### Roles
 
-| Rol           | Puede                                                                         |
-| ------------- | ----------------------------------------------------------------------------- |
-| Dueño         | Todo, incluido el equipo y restablecer la demo.                               |
-| Administrador | Todo menos el equipo.                                                         |
-| Editor        | Resumen, temáticas, generador, tareas y actividad.                            |
-| Soporte       | Resumen, ventas, Boxies (reembolsos, reenvíos), clientes, tareas y actividad. |
+| Rol           | Puede                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------- |
+| Dueño         | Todo, incluido el equipo y restablecer la demo.                                        |
+| Administrador | Todo menos el equipo.                                                                  |
+| Editor        | Resumen, temáticas, generador, tareas y actividad.                                     |
+| Soporte       | Resumen, soporte, ventas, Boxies (reembolsos, reenvíos), clientes, tareas y actividad. |
 
 El menú muestra solo lo que el rol puede usar, y las acciones lo verifican en el servidor
 (`runAction` con `roles`). En la base, solo el dueño escribe en `users` y siempre queda uno.
+
+## Soporte
+
+Las consultas que los clientes abren con el **botón de ayuda** (abajo a la izquierda en todo el
+sitio, en el editor y en el editor de prueba; no en el regalo). El cliente elige el tema (su
+Boxie, un error, un pago u otra cosa), deja su nombre, su mail y, si es sobre una Boxie, el código
+(el panel la vincula sola). En un reporte de error se suma, con su permiso, la página, el
+navegador y el tamaño de pantalla.
+
+**La bandeja** (`/admin/soporte`) tiene tres columnas en pantallas grandes (consultas,
+conversación, datos del cliente) y una por vez en el celular:
+
+- **Pestañas:** Por responder (le toca al equipo) · Esperando (le toca al cliente) · Resueltas ·
+  Todas; y Todas / Mías / Sin asignar. Buscador por número (#1042), nombre, mail o código.
+- **En vivo:** los mensajes nuevos, los cambios de estado y "escribiendo…" llegan solos. El
+  contador del menú muestra las consultas que esperan respuesta. Con la campanita se activan el
+  sonido y las notificaciones del navegador, para enterarse aunque la pestaña esté oculta.
+- **Responder:** Ctrl/⌘ + Enter envía. "Enviar y resolver" responde y resuelve en un paso.
+  **Respuestas rápidas** (en `src/content/support-replies.ts`) con el nombre del cliente.
+  **Nota interna:** solo la ve el equipo (fondo amarillo) y no cambia el estado.
+- **Estados:** abierto → esperando al cliente (al responder) → resuelto (si el cliente escribe,
+  vuelve a abierto) → cerrado (ya no puede escribir: abre otra). Quien responde primero se queda
+  con la consulta; se puede reasignar.
+- **Prioridad y atrasadas:** los pagos entran con prioridad alta. Una consulta se marca
+  **atrasada** si espera al equipo más de 2 h (urgente), 8 h (alta), 24 h (normal) o 48 h (baja).
+- **Datos del cliente:** su Boxie (código, temática, plan, si ya la regaló y el link a la Boxie
+  para reenviar mails o extenderla), sus compras con ese mail, sus consultas anteriores, el
+  dispositivo del error y los tiempos (primera respuesta, calificación 👍/👎).
+
+**Mails:** al cliente le llega la confirmación con su link personal (`/soporte/<token>`, para
+seguir desde cualquier dispositivo) y un aviso por respuesta, como mucho uno cada 10 minutos. Al
+equipo (el mail de soporte de **Configuración**) le llega cada consulta nueva y, cada 30 minutos
+como mucho, las respuestas del cliente. En demo quedan en la bandeja de desarrollo.
+
+Cada cambio de estado, prioridad o asignación queda en **Actividad**.
 
 ## Planes
 
@@ -147,13 +183,18 @@ La lista viva está en **Sistema** (`app/admin/_lib/capabilities.ts`). Resumen:
 La migración es aditiva (columnas con default, tablas nuevas) y está probada sobre Postgres (PGlite)
 en `tests/db/backoffice.test.ts`, RLS incluida.
 
+**Soporte** llega con `20260926120000_support.sql`: `support_tickets`, `support_messages` (no se
+editan), la función `support_post_message()` (mensaje + estado del ticket en una transacción) y su
+RLS (anon no ve nada; el equipo no lee el hash ni la copia cifrada del token). La misma migración
+le cierra a anon las columnas de rentabilidad de `settings`. Probada en `tests/db/support.test.ts`.
+
 Pendiente fuera de la base: subir fotos de temáticas a Storage (hoy se cargan por link) y visitas
 del sitio (Vercel Web Analytics).
 
 ## Conectar Supabase
 
 1. Crear (o liberar) el proyecto y aplicar las migraciones: `npx supabase link --project-ref <ref>`
-   y `npx supabase db push` (son 7; la última es `admin_backoffice`).
+   y `npx supabase db push` (son 8; la última es `support`).
 2. Crear el primer admin con `npm run admin:create -- <mail> <clave> <nombre> owner` (crea el
    usuario en _Authentication_ y le da rol de dueño). O a mano, con el usuario ya registrado:
    ```sql

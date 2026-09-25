@@ -86,7 +86,7 @@ describe('RLS · público (clave anon)', () => {
 
   it('no puede cambiar el precio base', async () => {
     const rows = await asAnon(() =>
-      db.query(`update public.settings set base_price_cents = 1 returning *`),
+      db.query(`update public.settings set base_price_cents = 1 returning base_price_cents`),
     )
     expect(rows).toEqual([])
   })

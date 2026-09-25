@@ -19,6 +19,7 @@ import type {
 } from '@/domain/admin/types'
 import { couponDiscount } from '@/domain/coupons'
 import type { Plan } from '@/domain/plans'
+import type { SupportMessage, SupportTicket } from '@/domain/support'
 import { parseThemeConfig } from '@/slides/config'
 import { generateTheme } from '@/slides/generator/generate'
 import { planContents, withDefaultPlans } from '@/slides/plans'
@@ -78,6 +79,18 @@ export interface DemoDb {
   team: AdminUser[]
   audit: AuditEntry[]
   tasks: AdminTask[]
+  /**
+   * Soporte (tickets y mensajes). Opcional: se siembra la primera vez que se
+   * usa (`support/demo-repo.ts`), así una base de demo guardada de antes no
+   * tiene que volver a sembrarse.
+   */
+  support?: DemoSupport
+}
+
+export interface DemoSupport {
+  tickets: (SupportTicket & { accessTokenHash: string; accessTokenEnc: string | null })[]
+  messages: SupportMessage[]
+  nextNumber: number
 }
 
 // ── Azar reproducible ───────────────────────────────────────────────────────

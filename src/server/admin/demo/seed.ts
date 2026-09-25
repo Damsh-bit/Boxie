@@ -35,7 +35,7 @@ import { DEFAULT_DEMO_EMAIL } from '../token'
  * Ningún dato es de una persona real: los mails son @ejemplo.com.
  */
 
-export const DEMO_DB_VERSION = 3
+export const DEMO_DB_VERSION = 5
 
 export interface DemoThemeVersion {
   id: string
@@ -286,7 +286,7 @@ function seedPlans(): Plan[] {
       priceCents: 499_000,
       compareAtCents: 899_000,
       rank: 2,
-      features: ['Clave opcional para abrirla', 'Juegos y cuponera', 'Online 60 días'],
+      features: ['Trivia, tragamonedas y cuponera', 'Tapa de revista y anécdota'],
       limits: { giftLifetimeDays: 60, maxPhotos: 15, allowPassword: true },
       highlighted: true,
     },
@@ -300,7 +300,10 @@ function seedPlans(): Plan[] {
       compareAtCents: 1_299_000,
       rank: 3,
       color: '#C893D7',
-      features: ['Todas las pantallas', 'Online 120 días', 'Soporte prioritario por WhatsApp'],
+      features: [
+        'Todas las pantallas: playlists, streaming y reflexiones',
+        'Soporte prioritario por WhatsApp',
+      ],
       limits: { giftLifetimeDays: 120, maxPhotos: 30, allowPassword: true },
       highlighted: false,
     },
@@ -1031,10 +1034,10 @@ export function seedDemoDb(now = new Date(), seed = 20260924): DemoDb {
         } while (codes.has(code))
         codes.add(code)
 
-        const edited = rng.chance(0.93)
-        const lastEditedAt = edited
-          ? new Date(paidAt.getTime() + rng.int(3, 60 * 36) * 60_000)
-          : null
+        const editAt = new Date(paidAt.getTime() + rng.int(3, 60 * 36) * 60_000)
+        // Editada = el comprador ya guardó algo (y eso pasó antes de "ahora").
+        const edited = rng.chance(0.93) && editAt <= now
+        const lastEditedAt = edited ? editAt : null
         const locked = edited && rng.chance(0.82)
         let lockedAt =
           locked && lastEditedAt
@@ -1065,7 +1068,7 @@ export function seedDemoDb(now = new Date(), seed = 20260924): DemoDb {
           giftEmailSentAt: lockedAt ? ISO(new Date(lockedAt.getTime() + 30_000)) : null,
           firstOpenedAt: firstOpenedAt ? ISO(firstOpenedAt) : null,
           openCount: firstOpenedAt ? rng.int(1, 14) : 0,
-          lastEditedAt: lastEditedAt && lastEditedAt <= now ? ISO(lastEditedAt) : null,
+          lastEditedAt: lastEditedAt ? ISO(lastEditedAt) : null,
           modulesDone: done,
           modulesTotal: total,
           photos: edited ? rng.int(1, Math.min(plan.limits.maxPhotos, 6)) : 0,

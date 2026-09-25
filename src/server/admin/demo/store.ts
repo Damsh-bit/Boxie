@@ -51,7 +51,8 @@ function save(db: DemoDb) {
 }
 
 export function demoDb(): DemoDb {
-  globalThis.__boxieDemoDb ??= load()
+  // Si cambió el formato de la semilla (recarga en caliente en desarrollo), se vuelve a sembrar.
+  if (globalThis.__boxieDemoDb?.version !== DEMO_DB_VERSION) globalThis.__boxieDemoDb = load()
   return globalThis.__boxieDemoDb
 }
 

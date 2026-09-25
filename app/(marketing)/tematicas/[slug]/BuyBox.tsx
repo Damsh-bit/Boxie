@@ -37,6 +37,8 @@ interface Props {
   } | null
   /** Planes a la venta (vacío = un solo precio, como antes). */
   plans?: BuyPlan[]
+  /** El plan que viene elegido (de la home o /precios: ?plan=). */
+  initialPlan?: string | null
   /** Lo que va entre el precio y el botón (la lista de características). */
   children?: ReactNode
 }
@@ -49,10 +51,23 @@ interface Props {
  * En el celular, cuando el botón queda fuera de la pantalla, aparece una
  * barra fija abajo para comprar sin volver a subir.
  */
-export function BuyBox({ slug, name, priceCents: basePrice, offer, plans = [], children }: Props) {
+export function BuyBox({
+  slug,
+  name,
+  priceCents: basePrice,
+  offer,
+  plans = [],
+  initialPlan = null,
+  children,
+}: Props) {
   const [showOffer, setShowOffer] = useState(false)
   const [planSlug, setPlanSlug] = useState(
-    () => (plans.find((p) => p.highlighted) ?? plans[Math.floor(plans.length / 2)])?.slug ?? null,
+    () =>
+      (
+        plans.find((p) => p.slug === initialPlan) ??
+        plans.find((p) => p.highlighted) ??
+        plans[Math.floor(plans.length / 2)]
+      )?.slug ?? null,
   )
   const plan = plans.find((p) => p.slug === planSlug) ?? null
   const priceCents = plan ? plan.priceCents : basePrice

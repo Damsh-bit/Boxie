@@ -3,20 +3,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
-import { ease, spring } from '@/ui/motion'
-
-/** El subrayado de "una experiencia.", que se dibuja de izquierda a derecha. */
-export function DrawUnderline() {
-  return (
-    <motion.span
-      aria-hidden
-      className="absolute bottom-1 left-0 -z-10 h-2.5 w-full origin-left rounded bg-brand/20"
-      initial={{ scaleX: 0 }}
-      animate={{ scaleX: 1 }}
-      transition={{ duration: 0.9, ease: ease.inOut, delay: 0.6 }}
-    />
-  )
-}
+import { spring } from '@/ui/motion'
 
 export function TeamPhoto({ src, alt }: { src: string; alt: string }) {
   return (

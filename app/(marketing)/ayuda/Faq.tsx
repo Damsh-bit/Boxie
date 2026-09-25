@@ -2,12 +2,14 @@
 
 import { motion } from 'framer-motion'
 import { Plus } from 'lucide-react'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { cn } from '@/ui/cn'
 import { Collapse, ease, spring } from '@/ui/motion'
 
 export function Faq({ items }: { items: { question: string; answer: string }[] }) {
   const [open, setOpen] = useState<number | null>(null)
+  // Varias listas en la misma página (el centro de ayuda): ids que no se pisan.
+  const base = useId()
   return (
     <motion.div
       className="space-y-3"
@@ -37,7 +39,7 @@ export function Faq({ items }: { items: { question: string; answer: string }[] }
               <button
                 type="button"
                 aria-expanded={expanded}
-                aria-controls={`faq-${i}`}
+                aria-controls={`${base}-${i}`}
                 onClick={() => setOpen(expanded ? null : i)}
                 className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left text-lg font-semibold text-ink"
               >
@@ -55,7 +57,7 @@ export function Faq({ items }: { items: { question: string; answer: string }[] }
                 </motion.span>
               </button>
             </h3>
-            <Collapse open={expanded} id={`faq-${i}`}>
+            <Collapse open={expanded} id={`${base}-${i}`}>
               <p className="px-6 pb-5 leading-relaxed text-neutral-600">{item.answer}</p>
             </Collapse>
           </motion.div>

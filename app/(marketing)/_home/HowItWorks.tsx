@@ -35,10 +35,13 @@ export function HowItWorks({
   price,
   editorHref,
   exampleHref,
+  sample,
 }: {
   price: string
   editorHref: Route
   exampleHref: Route
+  /** La temática de la maqueta del pago (la primera del catálogo). */
+  sample: { name: string; emoji: string }
 }) {
   const ref = useRef<HTMLOListElement>(null)
   const calm = useCalm()
@@ -76,11 +79,14 @@ export function HowItWorks({
         text="Sin instalar nada, ni vos ni quien la recibe. De la compra al regalo en menos de lo que tarda un delivery."
       />
 
-      <ol ref={ref} className="relative mx-auto grid max-w-6xl gap-12 md:grid-cols-4 md:gap-6">
-        {/* La línea: horizontal en escritorio, vertical en el celular. */}
+      <ol
+        ref={ref}
+        className="relative mx-auto grid max-w-3xl gap-12 lg:max-w-6xl lg:grid-cols-4 lg:gap-6"
+      >
+        {/* La línea: horizontal en escritorio, vertical en el celular y la tablet. */}
         <span
           aria-hidden
-          className="absolute top-[10.625rem] left-[12.5%] hidden h-1 w-[75%] rounded-full bg-ink/10 md:block"
+          className="absolute top-[10.625rem] left-[12.5%] hidden h-1 w-[75%] rounded-full bg-ink/10 lg:block"
         >
           <motion.span
             className="block h-full origin-left rounded-full bg-[linear-gradient(90deg,#f44e63,#ff9a9e,#c893d7)]"
@@ -89,7 +95,7 @@ export function HowItWorks({
         </span>
         <span
           aria-hidden
-          className="absolute top-7 bottom-7 left-[1.625rem] w-1 rounded-full bg-ink/10 md:hidden"
+          className="absolute top-7 bottom-7 left-[1.625rem] w-1 rounded-full bg-ink/10 lg:hidden"
         >
           <motion.span
             className="block h-full origin-top rounded-full bg-[linear-gradient(180deg,#f44e63,#ff9a9e,#c893d7)]"
@@ -103,7 +109,7 @@ export function HowItWorks({
           return (
             <li
               key={step.title}
-              className="relative grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-5 gap-y-4 [grid-template-areas:'icon_text'_'._visual'] md:grid-cols-1 md:justify-items-center md:text-center md:[grid-template-areas:'visual'_'icon'_'text']"
+              className="relative grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-5 gap-y-4 [grid-template-areas:'icon_text'_'._visual'] md:grid-cols-[3.5rem_minmax(0,1fr)_minmax(0,16rem)] md:items-center md:[grid-template-areas:'icon_text_visual'] lg:grid-cols-1 lg:items-start lg:justify-items-center lg:text-center lg:[grid-template-areas:'visual'_'icon'_'text']"
             >
               <motion.div
                 className="flex h-32 w-full max-w-[260px] items-center justify-center overflow-hidden rounded-3xl bg-white/70 p-4 shadow-[0_14px_40px_-18px_rgba(42,36,51,0.3)] ring-1 ring-black/5 [grid-area:visual]"
@@ -114,7 +120,7 @@ export function HowItWorks({
                 }}
                 transition={spring.soft}
               >
-                <StepVisual icon={step.icon} active={on} price={price} />
+                <StepVisual icon={step.icon} active={on} price={price} sample={sample} />
               </motion.div>
 
               <motion.span
@@ -188,14 +194,16 @@ function StepVisual({
   icon,
   active,
   price,
+  sample,
 }: {
   icon: HowItWorksIcon
   active: boolean
   price: string
+  sample: { name: string; emoji: string }
 }) {
   switch (icon) {
     case 'bag':
-      return <PayVisual active={active} price={price} />
+      return <PayVisual active={active} price={price} sample={sample} />
     case 'mail':
       return <MailVisual active={active} />
     case 'pen':
@@ -205,7 +213,15 @@ function StepVisual({
   }
 }
 
-function PayVisual({ active, price }: { active: boolean; price: string }) {
+function PayVisual({
+  active,
+  price,
+  sample,
+}: {
+  active: boolean
+  price: string
+  sample: { name: string; emoji: string }
+}) {
   const tick = useTicker(active, 1700)
   const paid = tick % 2 === 1
   return (
@@ -215,10 +231,10 @@ function PayVisual({ active, price }: { active: boolean; price: string }) {
           className="grid size-9 place-items-center rounded-xl bg-brand-soft text-lg"
           aria-hidden
         >
-          💘
+          {sample.emoji}
         </span>
-        <div className="leading-tight">
-          <p className="text-xs font-bold text-ink">Boxie Pareja</p>
+        <div className="min-w-0 leading-tight">
+          <p className="truncate text-xs font-bold text-ink">Boxie {sample.name}</p>
           <p className="text-[0.65rem] text-ink/50">Pago único</p>
         </div>
         <p className="ml-auto font-display text-sm font-bold text-ink">{price}</p>

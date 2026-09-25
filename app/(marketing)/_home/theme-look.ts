@@ -1,4 +1,4 @@
-import { Cake, Gift, Heart, Users, type LucideIcon } from 'lucide-react'
+import { Cake, Heart, Users, type LucideIcon } from 'lucide-react'
 
 /** Lo que la home necesita de cada temática (lo arma la página con el catálogo). */
 export interface HomeTheme {
@@ -10,15 +10,20 @@ export interface HomeTheme {
   tone: 'light' | 'dark'
   images: string[]
   features: string[]
+  /** El emoji de la temática: el de la home, el de su guía en el panel o un regalo. */
+  emoji: string
   /** Precio ya formateado ("$ 4.990"). */
   price: string
+  /** Cómo se anuncia: "Desde $ 3.490" si hay planes, si no el precio. */
+  priceLabel: string
 }
 
 interface ThemeLook {
   emoji: string
   /** Lo que flota en la portada de muestra. */
   particle: string
-  icon: LucideIcon
+  /** El ícono grande de la portada. Sin ícono, va el emoji de la temática. */
+  icon?: LucideIcon
   /** Nombres que van pasando en la portada mientras no escribas uno. */
   names: string[]
 }
@@ -42,12 +47,20 @@ const LOOKS: Record<string, ThemeLook> = {
 const FALLBACK: ThemeLook = {
   emoji: '🎁',
   particle: '✦',
-  icon: Gift,
   names: ['Sofía', 'Mamá', 'Lucas'],
 }
 
-/** Cómo se ve cada temática en la home. Una temática nueva sin entrada usa la de regalo. */
+/**
+ * Cómo se ve cada temática en la home. Las que se crean en el panel (el
+ * generador, una temática nueva) no tienen entrada: usan su emoji y el resto
+ * del look general, así la home las muestra bien sin tocar código.
+ */
 export const lookOf = (slug: string): ThemeLook => LOOKS[slug] ?? FALLBACK
+
+/** El emoji de una temática: el de la home, el de su guía (panel) o un regalo. */
+export function themeEmoji(slug: string, guideEmoji?: string | null): string {
+  return LOOKS[slug]?.emoji ?? (guideEmoji?.trim() || FALLBACK.emoji)
+}
 
 /** El degradé de la portada, a partir del color de la tarjeta. */
 export const themeGradient = (color: string) =>

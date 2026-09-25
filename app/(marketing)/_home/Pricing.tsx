@@ -1,28 +1,31 @@
 'use client'
 
 import { animate, motion, useInView, useMotionValue, useTransform } from 'framer-motion'
-import { ArrowRight, Check, Copy, Gift, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Check, Copy, Gift, PauseCircle, ShieldCheck, Table2 } from 'lucide-react'
+import Link from 'next/link'
+import type { Route } from 'next'
 import { useEffect, useRef, useState } from 'react'
-import { giftComparisons, welcomeCoupon } from '@/content/home'
+import { giftComparisons } from '@/content/home'
 import { formatARS } from '@/domain/money'
 import { ButtonLink, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { Stagger, StaggerItem, Swap, ease, spring, useCalm } from '@/ui/motion'
+import { PlanCards, PlanPromises, type PlanCardData } from '../_plans/PlanCards'
 import { Magnetic, Mark, SectionHeading } from './primitives'
 
 /** Un plan como lo muestra la home (lo que incluye, en la temática más completa). */
-export interface HomePlan {
-  slug: string
-  name: string
-  tagline: string
-  priceCents: number
-  compareAtCents: number | null
-  highlighted: boolean
-  screens: number
-  games: number
-  days: number
-  allowPassword: boolean
-  features: string[]
+export type HomePlan = PlanCardData
+
+/** El cupón de bienvenida, ya validado contra la base. */
+export interface WelcomeCoupon {
+  code: string
+  /** "10% OFF". */
+  discount: string
+}
+
+/** Cada plan lleva a la galería con ese plan elegido (viaja hasta la ficha). */
+export function galleryHrefs(plans: { slug: string }[]): Record<string, Route> {
+  return Object.fromEntries(plans.map((p) => [p.slug, `/galeria?plan=${p.slug}` as Route]))
 }
 
 function includedFor(plan: HomePlan): string[] {
@@ -42,30 +45,92 @@ function includedFor(plan: HomePlan): string[] {
 }
 
 /**
- * Precio: una tarjeta con todo lo que incluye (el precio sale del catálogo, el
- * mismo que cobra el checkout), un comparador contra otros regalos y el cupón
- * de bienvenida para copiar. Si la tienda vende por planes, la tarjeta se
- * puede cambiar de plan y el precio y lo incluido la acompañan.
+ * Precio. Si la tienda vende por planes (se cargan en el panel), cada plan es
+ * una tarjeta con lo que incluye y su botón; si no, una sola tarjeta con todo
+ * lo incluido. Abajo, el comparador contra otros regalos (con el precio del
+ * plan recomendado) y el cupón de bienvenida, solo si está vigente en la base.
  */
 export function Pricing({
   priceCents: basePrice,
   lifetimeDays,
+  maxScreens,
   plans = [],
+  welcome,
+  editorHref,
+  salesPaused = false,
 }: {
   priceCents: number
   lifetimeDays: number
+  maxScreens: number
   plans?: HomePlan[]
+  welcome: WelcomeCoupon | null
+  /** El editor de prueba (gratis). */
+  editorHref: Route
+  salesPaused?: boolean
 }) {
-  const [planSlug, setPlanSlug] = useState(
-    () => (plans.find((p) => p.highlighted) ?? plans[Math.floor(plans.length / 2)])?.slug,
-  )
-  const plan = plans.find((p) => p.slug === planSlug)
-  const priceCents = plan?.priceCents ?? basePrice
+  const recommended = plans.find((p) => p.highlighted) ?? plans[Math.floor(plans.length / 2)]
   const cheapest = plans.length ? Math.min(...plans.map((p) => p.priceCents)) : basePrice
-  const included = plan
-    ? includedFor(plan)
+
+  if (plans.length > 1 && recommended) {
+    return (
+      <section
+        id="precio"
+        aria-labelledby="precio-title"
+        className="relative scroll-mt-24 overflow-hidden rounded-b-[40px] bg-white px-5 py-20 sm:px-8 sm:py-24"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-40 left-1/2 size-[36rem] -translate-x-1/2 rounded-full bg-brand/[0.07] blur-3xl"
+        />
+        <SectionHeading
+          eyebrow="Planes y precios"
+          title={
+            <span id="precio-title">
+              Un regalo original, <Mark>a tu medida</Mark>
+            </span>
+          }
+          text={`Un solo pago, desde ${formatARS(cheapest)}, con Mercado Pago. Cada plan suma pantallas, juegos y días online. Sin suscripciones, sin costo de envío y sin letra chica.`}
+          className="mb-4 sm:mb-6"
+        />
+        {salesPaused && <PausedNote className="mb-2" />}
+
+        <PlanCards plans={plans} hrefs={galleryHrefs(plans)} />
+        <PlanPromises />
+        <p className="mt-5 text-center">
+          <Link
+            href="/precios"
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-brand underline-offset-4 hover:underline"
+          >
+            <Table2 className="size-4" aria-hidden /> Comparar los planes pantalla por pantalla
+          </Link>
+        </p>
+
+        <div className="mx-auto mt-14 grid max-w-5xl items-stretch gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+          <Comparator priceCents={recommended.priceCents} label={`Boxie ${recommended.name}`} />
+          <div className="flex flex-col gap-4 rounded-[32px] bg-paper/50 p-6 ring-1 ring-black/5 sm:p-8">
+            <h3 className="font-display text-2xl font-bold text-ink">¿No sabés cuál elegir?</h3>
+            <p className="text-[0.95rem] leading-relaxed text-ink/70">
+              <strong className="text-ink">{recommended.name}</strong> es la que más se regala: trae{' '}
+              {recommended.screens} pantallas
+              {recommended.games > 0 ? `, ${recommended.games} juegos` : ''} y queda online{' '}
+              {recommended.days} días. Podés probar el editor gratis antes de decidir.
+            </p>
+            <ButtonLink href={editorHref} variant="white" size="md" block>
+              Probar el editor gratis
+            </ButtonLink>
+            {welcome && <CouponTicket welcome={welcome} className="mt-auto" />}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  const single = plans[0]
+  const priceCents = single?.priceCents ?? basePrice
+  const included = single
+    ? includedFor(single)
     : [
-        '20 pantallas interactivas para personalizar',
+        `${maxScreens} pantallas interactivas para personalizar`,
         'Fotos, dedicatoria y su canción',
         'Trivia, tragamonedas, cuponera y más juegos',
         'Link único para mandar por WhatsApp o mail',
@@ -87,20 +152,18 @@ export function Pricing({
             Un regalo original, <Mark>todo incluido</Mark>
           </span>
         }
-        text={
-          plans.length > 1
-            ? `Un solo pago, desde ${formatARS(cheapest)}, con Mercado Pago. Elegí el plan: sin suscripciones, sin costo de envío y sin letra chica.`
-            : `Un solo pago de ${formatARS(priceCents)} con Mercado Pago. Sin suscripciones, sin costo de envío y sin letra chica.`
-        }
+        text={`Un solo pago de ${formatARS(priceCents)} con Mercado Pago. Sin suscripciones, sin costo de envío y sin letra chica.`}
       />
+      {salesPaused && <PausedNote className="mb-8" />}
 
       <div className="mx-auto grid max-w-5xl items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
         <PriceCard
+          title={single ? `Plan ${single.name}` : 'Tu Boxie completa'}
+          tagline={single?.tagline || 'Elegí la temática que más le va: todas traen lo mismo.'}
           priceCents={priceCents}
+          compareAtCents={single?.compareAtCents ?? null}
           included={included}
-          plans={plans}
-          plan={plan}
-          onPlan={setPlanSlug}
+          welcome={welcome}
         />
         <Comparator priceCents={priceCents} />
       </div>
@@ -108,18 +171,35 @@ export function Pricing({
   )
 }
 
+function PausedNote({ className }: { className?: string }) {
+  return (
+    <p
+      role="status"
+      className={cn(
+        'mx-auto flex max-w-xl items-center justify-center gap-2 rounded-2xl bg-amber-50 px-4 py-3 text-center text-sm text-amber-900 ring-1 ring-amber-200',
+        className,
+      )}
+    >
+      <PauseCircle className="size-4 shrink-0" aria-hidden />
+      Pausamos las ventas por un rato. Mientras tanto podés probar el editor gratis.
+    </p>
+  )
+}
+
 function PriceCard({
+  title,
+  tagline,
   priceCents,
+  compareAtCents,
   included,
-  plans,
-  plan,
-  onPlan,
+  welcome,
 }: {
+  title: string
+  tagline: string
   priceCents: number
+  compareAtCents: number | null
   included: string[]
-  plans: HomePlan[]
-  plan: HomePlan | undefined
-  onPlan(slug: string): void
+  welcome: WelcomeCoupon | null
 }) {
   return (
     <motion.div
@@ -138,62 +218,22 @@ function PriceCard({
       <span className="relative inline-flex self-start rounded-full bg-brand px-3 py-1 text-xs font-bold tracking-wide text-white uppercase">
         Pago único
       </span>
-      {plans.length > 1 && (
-        <div
-          role="radiogroup"
-          aria-label="Plan"
-          className="relative mt-5 grid gap-1 rounded-full bg-brand-soft p-1"
-          style={{ gridTemplateColumns: `repeat(${plans.length}, minmax(0, 1fr))` }}
-        >
-          {plans.map((p) => {
-            const selected = p.slug === plan?.slug
-            return (
-              <button
-                key={p.slug}
-                type="button"
-                role="radio"
-                aria-checked={selected}
-                onClick={() => onPlan(p.slug)}
-                className={cn(
-                  'relative rounded-full py-2 text-sm font-bold transition-colors',
-                  selected ? 'text-white' : 'text-brand hover:text-brand-dark',
-                )}
-              >
-                {selected && (
-                  <motion.span
-                    layoutId="home-plan"
-                    className="absolute inset-0 rounded-full bg-brand shadow-[0_6px_16px_rgba(244,78,99,0.35)]"
-                    transition={spring.snappy}
-                  />
-                )}
-                <span className="relative">{p.name}</span>
-              </button>
-            )
-          })}
-        </div>
-      )}
-      <h3 className="relative mt-4 font-display text-2xl font-bold text-ink">
-        <Swap id={plan?.slug ?? 'unica'}>{plan ? `Plan ${plan.name}` : 'Tu Boxie completa'}</Swap>
-      </h3>
-      <p className="relative mt-1 text-sm text-ink/60">
-        {plan?.tagline || 'Cualquier temática: Pareja, Cumpleaños o Amistad.'}
-      </p>
+      <h3 className="relative mt-4 font-display text-2xl font-bold text-ink">{title}</h3>
+      <p className="relative mt-1 text-sm text-ink/60">{tagline}</p>
 
       <p className="relative mt-5 flex flex-wrap items-end gap-x-2">
         <span className="font-display text-6xl leading-none font-bold text-ink sm:text-7xl">
-          <Swap id={priceCents} y={16}>
-            {formatARS(priceCents)}
-          </Swap>
+          {formatARS(priceCents)}
         </span>
         <span className="mb-1.5 text-sm font-semibold text-ink/50">ARS</span>
-        {plan?.compareAtCents && (
+        {compareAtCents && (
           <span className="mb-1.5 text-base text-ink/40 line-through">
-            {formatARS(plan.compareAtCents)}
+            {formatARS(compareAtCents)}
           </span>
         )}
       </p>
 
-      <Stagger key={plan?.slug ?? 'unica'} as="ul" className="relative mt-7 space-y-3" step={0.06}>
+      <Stagger as="ul" className="relative mt-7 space-y-3" step={0.06}>
         {included.map((item) => (
           <StaggerItem
             as="li"
@@ -220,24 +260,24 @@ function PriceCard({
           </ButtonLink>
         </Magnetic>
         <p className="flex items-center justify-center gap-2 text-center text-xs text-ink/55">
-          <ShieldCheck className="size-4 text-green-600" aria-hidden />
+          <ShieldCheck className="size-4 shrink-0 text-green-600" aria-hidden />
           Pagás seguro con Mercado Pago: tarjeta, débito o dinero en cuenta.
         </p>
       </div>
 
-      <CouponTicket />
+      {welcome && <CouponTicket welcome={welcome} className="mt-7" />}
     </motion.div>
   )
 }
 
-function CouponTicket() {
+function CouponTicket({ welcome, className }: { welcome: WelcomeCoupon; className?: string }) {
   const [copied, setCopied] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   useEffect(() => () => clearTimeout(timer.current), [])
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(welcomeCoupon.code)
+      await navigator.clipboard.writeText(welcome.code)
     } catch {
       // Sin permiso para el portapapeles: el código queda a la vista igual.
     }
@@ -247,7 +287,12 @@ function CouponTicket() {
   }
 
   return (
-    <div className="relative mt-7 flex items-center gap-3 rounded-2xl border-2 border-dashed border-brand/35 bg-brand-soft p-3 pl-4">
+    <div
+      className={cn(
+        'relative flex items-center gap-3 rounded-2xl border-2 border-dashed border-brand/35 bg-brand-soft p-3 pl-4',
+        className,
+      )}
+    >
       <motion.span
         aria-hidden
         className="text-2xl"
@@ -257,10 +302,9 @@ function CouponTicket() {
         🎁
       </motion.span>
       <div className="min-w-0 flex-1 leading-tight">
-        <p className="text-sm font-bold text-ink">{welcomeCoupon.label}</p>
+        <p className="text-sm font-bold text-ink">{welcome.discount} en tu primera Boxie</p>
         <p className="text-xs text-ink/60">
-          Usá el código <strong className="font-mono text-brand">{welcomeCoupon.code}</strong> al
-          pagar
+          Usá el código <strong className="font-mono text-brand">{welcome.code}</strong> al pagar
         </p>
       </div>
       <motion.button
@@ -292,7 +336,7 @@ function CouponTicket() {
   )
 }
 
-function Comparator({ priceCents }: { priceCents: number }) {
+function Comparator({ priceCents, label = 'Boxie' }: { priceCents: number; label?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, amount: 0.4 })
   const calm = useCalm()
@@ -387,7 +431,7 @@ function Comparator({ priceCents }: { priceCents: number }) {
           visible={inView}
         />
         <Bar
-          label="🎁 Boxie"
+          label={`🎁 ${label}`}
           value={formatARS(priceCents)}
           width={boxieWidth}
           className="bg-[linear-gradient(90deg,#f44e63,#ff9a9e)]"

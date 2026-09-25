@@ -29,6 +29,12 @@ export function demoSettings() {
     giftLifetimeDays: s.giftLifetimeDays,
     currency: s.currency,
     salesPaused: s.salesPaused,
+    business: {
+      name: s.businessName,
+      supportEmail: s.supportEmail,
+      whatsapp: s.whatsapp,
+      instagram: s.instagram,
+    },
   }
 }
 

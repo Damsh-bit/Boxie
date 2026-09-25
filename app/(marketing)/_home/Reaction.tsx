@@ -23,10 +23,23 @@ const CHAT: Message[] = [
  * entra en pantalla (con "escribiendo…" y los tildes que se ponen azules), al
  * lado de los números de la Boxie, que cuentan al aparecer.
  */
-export function Reaction({ lifetimeDays }: { lifetimeDays: number }) {
+export function Reaction({
+  maxScreens,
+  lifetimeDays,
+}: {
+  /** Pantallas de la Boxie más completa y días online (salen del catálogo y los planes). */
+  maxScreens: number
+  lifetimeDays: { min: number; max: number }
+}) {
+  const byPlan = lifetimeDays.min !== lifetimeDays.max
   const stats = [
-    { value: 20, label: 'sorpresas en cada Boxie' },
-    { value: lifetimeDays, label: 'días online para verla las veces que quiera' },
+    { value: maxScreens, label: 'sorpresas en una Boxie completa' },
+    {
+      value: lifetimeDays.max,
+      label: byPlan
+        ? `días online (desde ${lifetimeDays.min}, según el plan) para verla cuando quiera`
+        : 'días online para verla las veces que quiera',
+    },
     { value: 5, label: 'minutos para crearla', prefix: '~' },
     { value: 0, label: 'apps para instalar' },
   ]

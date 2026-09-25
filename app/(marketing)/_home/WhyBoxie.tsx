@@ -25,51 +25,55 @@ interface Benefit {
   decoration?: string
 }
 
-const BENEFITS: Benefit[] = [
-  {
-    icon: Zap,
-    title: 'Llega al instante',
-    text: 'Sin envíos ni esperas: la personalizás y en minutos se la mandás por WhatsApp o mail. El regalo de último momento que no parece de último momento.',
-    wiggle: { rotate: [0, -18, 14, -8, 0], scale: 1.15 },
-    className: 'md:col-span-2 bg-brand text-white',
-    decoration: '/brand/decoration-1.png',
-  },
-  {
-    icon: Smartphone,
-    title: 'Sin apps ni cuentas',
-    text: 'Se abre desde el celular con un toque. Ni vos ni quien la recibe tienen que instalar nada.',
-    wiggle: { x: [0, -3, 3, -3, 3, 0], rotate: [0, -6, 6, 0] },
-  },
-  {
-    icon: Earth,
-    title: 'Regalo a distancia',
-    text: 'Otra ciudad, otro país: la Boxie llega igual. Ideal para amores y amistades a distancia.',
-    wiggle: { rotate: 360, transition: { duration: 0.9, ease: 'easeInOut' } },
-  },
-  {
-    icon: PencilLine,
-    title: 'Editás hasta el final',
-    text: 'Cambiá textos, fotos y canciones todas las veces que quieras hasta bloquearla para regalar.',
-    wiggle: { x: [0, 4, -2, 5, 0], y: [0, -3, 2, -2, 0], rotate: [0, -12, 6, 0] },
-  },
-  {
-    icon: LockKeyhole,
-    title: 'Privada y segura',
-    text: 'Link único imposible de adivinar y clave opcional: solo la abre quien vos quieras.',
-    wiggle: { y: [0, -5, 0, -2, 0] },
-  },
-  {
-    icon: Heart,
-    title: 'Emociona de verdad',
-    text: 'No es un archivo más: cada Boxie está pensada para despertar sonrisas, lágrimas lindas y ese «ay, qué hermoso».',
-    wiggle: { scale: [1, 1.3, 1, 1.2, 1] },
-    className: 'md:col-span-3 bg-ink text-white',
-    decoration: '/brand/decoration-2.png',
-  },
-]
+function benefits(passwordByPlan: boolean): Benefit[] {
+  return [
+    {
+      icon: Zap,
+      title: 'Llega al instante',
+      text: 'Sin envíos ni esperas: la personalizás y en minutos se la mandás por WhatsApp o mail. El regalo de último momento que no parece de último momento.',
+      wiggle: { rotate: [0, -18, 14, -8, 0], scale: 1.15 },
+      className: 'md:col-span-2 bg-brand text-white',
+      decoration: '/brand/decoration-1.png',
+    },
+    {
+      icon: Smartphone,
+      title: 'Sin apps ni cuentas',
+      text: 'Se abre desde el celular con un toque. Ni vos ni quien la recibe tienen que instalar nada.',
+      wiggle: { x: [0, -3, 3, -3, 3, 0], rotate: [0, -6, 6, 0] },
+    },
+    {
+      icon: Earth,
+      title: 'Regalo a distancia',
+      text: 'Otra ciudad, otro país: la Boxie llega igual. Ideal para amores y amistades a distancia.',
+      wiggle: { rotate: 360, transition: { duration: 0.9, ease: 'easeInOut' } },
+    },
+    {
+      icon: PencilLine,
+      title: 'Editás hasta el final',
+      text: 'Cambiá textos, fotos y canciones todas las veces que quieras hasta bloquearla para regalar.',
+      wiggle: { x: [0, 4, -2, 5, 0], y: [0, -3, 2, -2, 0], rotate: [0, -12, 6, 0] },
+    },
+    {
+      icon: LockKeyhole,
+      title: 'Privada y segura',
+      text: passwordByPlan
+        ? 'Link único imposible de adivinar y, en los planes que la incluyen, clave para abrirla: solo la abre quien vos quieras.'
+        : 'Link único imposible de adivinar y clave opcional: solo la abre quien vos quieras.',
+      wiggle: { y: [0, -5, 0, -2, 0] },
+    },
+    {
+      icon: Heart,
+      title: 'Emociona de verdad',
+      text: 'No es un archivo más: cada Boxie está pensada para despertar sonrisas, lágrimas lindas y ese «ay, qué hermoso».',
+      wiggle: { scale: [1, 1.3, 1, 1.2, 1] },
+      className: 'md:col-span-3 bg-ink text-white',
+      decoration: '/brand/decoration-2.png',
+    },
+  ]
+}
 
 /** Por qué una Boxie: grilla tipo bento. Cada ícono tiene su gesto propio al pasar el mouse. */
-export function WhyBoxie() {
+export function WhyBoxie({ passwordByPlan = false }: { passwordByPlan?: boolean }) {
   return (
     <section
       id="por-que"
@@ -87,7 +91,7 @@ export function WhyBoxie() {
       />
 
       <Stagger className="mx-auto grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-3" step={0.08}>
-        {BENEFITS.map((b) => {
+        {benefits(passwordByPlan).map((b) => {
           const Icon = b.icon
           const colored = Boolean(b.className)
           return (

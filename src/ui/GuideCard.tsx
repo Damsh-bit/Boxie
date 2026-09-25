@@ -44,10 +44,15 @@ export function GuideCard({
       >
         {emoji}
       </motion.span>
-      <h3 className={cn('font-semibold text-black', compact ? 'mb-2 text-xl' : 'mb-4 text-2xl')}>
+      <h3
+        className={cn(
+          'font-display font-bold text-ink',
+          compact ? 'mb-2 text-xl' : 'mb-3 text-2xl',
+        )}
+      >
         {title}
       </h3>
-      <p className="text-[0.95rem] leading-relaxed text-neutral-500">{text}</p>
+      <p className="text-[0.95rem] leading-relaxed text-ink/65">{text}</p>
     </MotionLink>
   )
 }

@@ -44,7 +44,3 @@ export interface CatalogTheme {
   priceCents: number
   listing: ThemeListing
 }
-
-export function categoriesOf(themes: Pick<CatalogTheme, 'category'>[]): string[] {
-  return [...new Set(themes.map((t) => t.category))]
-}

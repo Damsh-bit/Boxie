@@ -9,8 +9,20 @@
  * referencia ficticios, para mostrar la diferencia; se ajustan a mano.
  */
 
-/** Ocasiones que se eligen en "¿A quién querés emocionar hoy?". `theme` es el slug recomendado. */
-export const occasions = [
+/**
+ * Ocasiones que se eligen en "¿A quién querés emocionar hoy?". `theme` es el slug
+ * recomendado. Las temáticas que el panel publica y no están acá suman su
+ * propia ocasión (con el emoji y la bajada de su ficha).
+ */
+export interface Occasion {
+  id: string
+  emoji: string
+  label: string
+  theme: string
+  pitch: string
+}
+
+export const occasions: readonly Occasion[] = [
   {
     id: 'aniversario',
     emoji: '💘',
@@ -23,7 +35,8 @@ export const occasions = [
     emoji: '🌹',
     label: 'San Valentín',
     theme: 'pareja',
-    pitch: 'El regalo romántico que no se marchita: llega al instante y dura 60 días.',
+    pitch:
+      'El regalo romántico que no se marchita: llega al instante y la abre las veces que quiera.',
   },
   {
     id: 'distancia',
@@ -60,9 +73,7 @@ export const occasions = [
     theme: 'amistad',
     pitch: 'Para esa persona que está en todas: decile gracias de una forma que no olvide.',
   },
-] as const
-
-export type Occasion = (typeof occasions)[number]
+]
 
 /** La cinta que corre debajo de la portada. */
 export const marqueeWords = [
@@ -76,10 +87,15 @@ export const marqueeWords = [
   'Regalo de último momento',
 ]
 
-/** Lo que trae una Boxie (las pestañas con demos jugables). */
+/**
+ * Lo que trae una Boxie (las pestañas con demos jugables). `kind` es la
+ * pantalla del regalo que la muestra: con planes, la home dice desde qué plan
+ * viene (las fotos arrancan con la dedicatoria, que va en todos).
+ */
 export const experiences = [
   {
     id: 'dedicatoria',
+    kind: 'story.dedication',
     emoji: '💌',
     label: 'Dedicatoria',
     title: 'Una carta que se abre como un sobre',
@@ -87,6 +103,7 @@ export const experiences = [
   },
   {
     id: 'fotos',
+    kind: 'story.dedication',
     emoji: '📸',
     label: 'Fotos',
     title: 'Sus mejores momentos, en polaroids',
@@ -94,6 +111,7 @@ export const experiences = [
   },
   {
     id: 'cancion',
+    kind: 'media.song',
     emoji: '🎵',
     label: 'Su canción',
     title: 'La canción que es de ustedes',
@@ -101,6 +119,7 @@ export const experiences = [
   },
   {
     id: 'trivia',
+    kind: 'game.trivia',
     emoji: '🧠',
     label: 'Trivia',
     title: '¿Cuánto me conocés?',
@@ -108,6 +127,7 @@ export const experiences = [
   },
   {
     id: 'jackpot',
+    kind: 'game.jackpot',
     emoji: '🎰',
     label: 'Tragamonedas',
     title: 'Un jackpot que siempre gana',
@@ -115,6 +135,7 @@ export const experiences = [
   },
   {
     id: 'cuponera',
+    kind: 'game.coupons',
     emoji: '🎟️',
     label: 'Cuponera',
     title: 'Vales para canjear cuando quiera',
@@ -161,46 +182,66 @@ export const giftComparisons = [
 ] as const
 
 /**
- * Cupón de bienvenida que se muestra en la sección de precio. Tiene que
- * existir y estar activo en la base (lo carga la migración inicial).
+ * Cupón de bienvenida de la sección de precio. El descuento que se muestra
+ * sale del cupón real (`getStorefront`): si en el panel se pausa, vence o se
+ * borra, la home deja de ofrecerlo.
  */
-export const welcomeCoupon = { code: 'BOXIE10', label: '10% OFF en tu primera Boxie' }
+export const welcomeCoupon = { code: 'BOXIE10' } as const
+
+export interface FaqItem {
+  question: string
+  answer: string
+}
+
+/** Lo que las respuestas necesitan saber del catálogo (lo decide el panel). */
+export interface FaqContext {
+  /** "desde $ 3.490" o "$ 4.990". */
+  price: string
+  /** "30 a 120 días" o "60 días". */
+  lifetime: string
+  /** Hay más de un plan a la venta. */
+  plans: boolean
+  /** Algún plan no permite ponerle clave al regalo. */
+  passwordByPlan: boolean
+}
 
 /** Preguntas frecuentes de la home (también van como datos estructurados FAQPage). */
-export const homeFaqs = [
-  {
-    question: '¿Qué es una Boxie?',
-    answer:
-      'Es un regalo digital personalizado: una experiencia tipo historias, con fotos, dedicatoria, su canción y juegos como trivia, tragamonedas y cuponera. La armás en minutos y se la mandás con un link único que se abre desde el celular.',
-  },
-  {
-    question: '¿Cuánto cuesta un regalo digital Boxie?',
-    answer:
-      'Cada Boxie tiene un precio único y todo incluido: todas las pantallas, las fotos, la música y los juegos, sin suscripciones ni costos de envío. Pagás una sola vez con Mercado Pago.',
-  },
-  {
-    question: '¿Cómo se envía? ¿Llega al instante?',
-    answer:
-      'Sí. Apenas se acredita el pago entrás al editor, la personalizás y, cuando está lista, la bloqueás y le mandás el link por WhatsApp, mail o donde quieras. No hay que esperar ningún envío.',
-  },
-  {
-    question: '¿Sirve como regalo a distancia?',
-    answer:
-      'Es ideal para eso: la persona la abre desde su celular esté en otra ciudad o en otro país. Solo necesita el link (y la clave, si le pusiste una).',
-  },
-  {
-    question: '¿Hay que descargar una app o crear una cuenta?',
-    answer:
-      'No. Ni vos ni quien la recibe instalan nada: todo funciona desde el navegador del celular o la computadora.',
-  },
-  {
-    question: '¿Puedo probarla antes de comprar?',
-    answer:
-      'Sí: podés ver una Boxie de ejemplo completa y probar el editor gratis, cargando tus textos y fotos, antes de pagar.',
-  },
-  {
-    question: '¿Puedo editarla después de pagar?',
-    answer:
-      'Todas las veces que quieras hasta que la bloquees para regalar. Desde ese momento queda disponible 60 días para que la abra cuantas veces quiera.',
-  },
-] as const
+export function homeFaqs(ctx: FaqContext): FaqItem[] {
+  const byPlan = ctx.plans && ctx.lifetime.includes(' a ')
+  return [
+    {
+      question: '¿Qué es una Boxie?',
+      answer:
+        'Es un regalo digital personalizado: una experiencia tipo historias, con fotos, dedicatoria, su canción y juegos como trivia, tragamonedas y cuponera. La armás en minutos y se la mandás con un link único que se abre desde el celular.',
+    },
+    {
+      question: '¿Cuánto cuesta un regalo digital Boxie?',
+      answer: ctx.plans
+        ? `Hay planes ${ctx.price}, con pago único: sin suscripciones ni costos de envío. Cada plan suma pantallas, juegos y días online; elegís el que va con tu regalo y pagás una sola vez con Mercado Pago.`
+        : `Cuesta ${ctx.price}, todo incluido: las pantallas, las fotos, la música y los juegos, sin suscripciones ni costos de envío. Pagás una sola vez con Mercado Pago.`,
+    },
+    {
+      question: '¿Cómo se envía? ¿Llega al instante?',
+      answer:
+        'Sí. Apenas se acredita el pago entrás al editor, la personalizás y, cuando está lista, la bloqueás y le mandás el link por WhatsApp, mail o donde quieras. No hay que esperar ningún envío.',
+    },
+    {
+      question: '¿Sirve como regalo a distancia?',
+      answer: `Es ideal para eso: la persona la abre desde su celular esté en otra ciudad o en otro país. Solo necesita el link (y la clave, si le pusiste una${ctx.passwordByPlan ? ': viene en los planes que la incluyen' : ''}).`,
+    },
+    {
+      question: '¿Hay que descargar una app o crear una cuenta?',
+      answer:
+        'No. Ni vos ni quien la recibe instalan nada: todo funciona desde el navegador del celular o la computadora.',
+    },
+    {
+      question: '¿Puedo probarla antes de comprar?',
+      answer:
+        'Sí: podés ver una Boxie de ejemplo completa y probar el editor gratis, cargando tus textos y fotos, antes de pagar.',
+    },
+    {
+      question: '¿Puedo editarla después de pagar?',
+      answer: `Todas las veces que quieras hasta que la bloquees para regalar. Desde ese momento queda disponible ${ctx.lifetime}${byPlan ? ' (según el plan)' : ''} para que la abra cuantas veces quiera.`,
+    },
+  ]
+}

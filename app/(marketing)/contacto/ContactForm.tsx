@@ -1,10 +1,11 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { Send } from 'lucide-react'
+import { MessagesSquare, Send } from 'lucide-react'
 import { useState } from 'react'
 import { contactAreas } from '@/content/site'
 import { Button } from '@/ui/Button'
+import { SupportButton } from '@/ui/SupportButton'
 import { Field, Input, Select, Textarea } from '@/ui/form'
 import { ease, Notice, Spinner, spring } from '@/ui/motion'
 
@@ -19,6 +20,9 @@ export function ContactForm() {
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState('')
   const [sentTo, setSentTo] = useState({ name: '', email: '' })
+  const [area, setArea] = useState('')
+  // Para una Boxie o un problema técnico, el chat de soporte es más rápido (y queda el historial).
+  const chatFirst = area === 'ayuda' || area === 'reclamos'
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -105,7 +109,13 @@ export function ContactForm() {
           </motion.div>
           <motion.div variants={item}>
             <Field label="¿Con qué área querés hablar?" htmlFor="area">
-              <Select id="area" name="area" required defaultValue="">
+              <Select
+                id="area"
+                name="area"
+                required
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+              >
                 <option value="" disabled>
                   Seleccioná el motivo...
                 </option>
@@ -116,6 +126,31 @@ export function ContactForm() {
                 ))}
               </Select>
             </Field>
+            <AnimatePresence initial={false}>
+              {chatFirst && (
+                <Notice.div
+                  className="overflow-hidden"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={spring.soft}
+                >
+                  <div className="mt-3 flex flex-col gap-3 rounded-2xl bg-brand-soft p-4 text-sm text-ink sm:flex-row sm:items-center">
+                    <MessagesSquare className="size-5 shrink-0 text-brand" aria-hidden />
+                    <p className="flex-1">
+                      Para tu Boxie o un error, el <strong>chat de soporte</strong> es más rápido y
+                      queda todo en un mismo lugar.
+                    </p>
+                    <SupportButton
+                      size="sm"
+                      detail={{ topic: area === 'reclamos' ? 'error' : 'boxie' }}
+                    >
+                      Abrir el chat
+                    </SupportButton>
+                  </div>
+                </Notice.div>
+              )}
+            </AnimatePresence>
           </motion.div>
           <motion.div variants={item}>
             <Field label="Mensaje" htmlFor="message">

@@ -38,8 +38,9 @@ const WHY = [
   ['💖', 'Emoción garantizada'],
 ] as const
 
-export default async function ThemePage({ params }: PageProps<'/tematicas/[slug]'>) {
+export default async function ThemePage({ params, searchParams }: PageProps<'/tematicas/[slug]'>) {
   const { slug } = await params
+  const { plan: planParam } = await searchParams
   const [theme, all, offer, plans] = await Promise.all([
     getPublishedTheme(slug),
     listPublishedThemes(),
@@ -97,6 +98,7 @@ export default async function ThemePage({ params }: PageProps<'/tematicas/[slug]
                 name={theme.name}
                 priceCents={theme.priceCents}
                 plans={buyPlans}
+                initialPlan={typeof planParam === 'string' ? planParam : null}
                 offer={
                   offer
                     ? {

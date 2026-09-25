@@ -1,36 +1,54 @@
 'use client'
 
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
-import { ArrowRight, ArrowUpRight, Check } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Route } from 'next'
-import { useRef, useState } from 'react'
-import { occasions, type Occasion } from '@/content/home'
+import { useEffect, useRef, useState } from 'react'
+import type { Occasion } from '@/content/home'
 import { Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { Swap, ease, spring } from '@/ui/motion'
 import { Mark, SectionHeading, useTilt } from './primitives'
-import { lookOf, type HomeTheme } from './theme-look'
+import type { HomeTheme } from './theme-look'
 
 const MotionLink = motion.create(Link)
 
 /**
  * "¿A quién querés emocionar hoy?": elegís la ocasión y se destaca la Boxie
- * que mejor le va (las otras se apagan un poco). En el celular es un carrusel
- * con imán que además se corre solo hasta la recomendada.
+ * que mejor le va (las otras se apagan un poco). Las temáticas son un
+ * carrusel con imán: con el dedo en el celular, con flechas en la
+ * computadora cuando hay más de las que entran (el panel publica las que
+ * quiera). Elegir una ocasión lo corre solo hasta la recomendada.
  */
-export function ThemeShowcase({ themes }: { themes: HomeTheme[] }) {
-  const slugs = new Set(themes.map((t) => t.slug))
-  const available = occasions.filter((o) => slugs.has(o.theme))
+export function ThemeShowcase({
+  themes,
+  occasions,
+  maxScreens,
+}: {
+  themes: HomeTheme[]
+  occasions: Occasion[]
+  maxScreens: number
+}) {
   const [occasion, setOccasion] = useState<Occasion | null>(null)
   const scroller = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
+  const [overflow, setOverflow] = useState(false)
   const { scrollXProgress } = useScroll({ container: scroller })
 
   useMotionValueEvent(scrollXProgress, 'change', (p) => {
     setActive(Math.round(p * Math.max(themes.length - 1, 0)))
   })
+
+  // ¿Entran todas? Sin desborde no hay flechas ni puntos (y el centrado es el normal).
+  useEffect(() => {
+    const el = scroller.current
+    if (!el) return
+    const observer = new ResizeObserver(() => setOverflow(el.scrollWidth > el.clientWidth + 2))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   const goTo = (i: number) => {
     const el = scroller.current
@@ -41,6 +59,9 @@ export function ThemeShowcase({ themes }: { themes: HomeTheme[] }) {
       behavior: 'smooth',
     })
   }
+
+  const step = (delta: number) =>
+    goTo(Math.min(Math.max(active + delta, 0), Math.max(themes.length - 1, 0)))
 
   const choose = (o: Occasion) => {
     const next = occasion?.id === o.id ? null : o
@@ -62,7 +83,7 @@ export function ThemeShowcase({ themes }: { themes: HomeTheme[] }) {
               ¿A quién querés <Mark>emocionar</Mark> hoy?
             </span>
           }
-          text="Elegí la ocasión y te mostramos la Boxie ideal. Cada temática trae 20 sorpresas listas para personalizar con tus fotos y tus palabras."
+          text={`Elegí la ocasión y te mostramos la Boxie ideal. Cada temática trae hasta ${maxScreens} sorpresas listas para personalizar con tus fotos y tus palabras.`}
           className="mb-8 sm:mb-10"
         />
       </div>
@@ -76,7 +97,7 @@ export function ThemeShowcase({ themes }: { themes: HomeTheme[] }) {
         viewport={{ once: true, amount: 0.3 }}
         variants={{ show: { transition: { staggerChildren: 0.05 } } }}
       >
-        {available.map((o) => {
+        {occasions.map((o) => {
           const selected = occasion?.id === o.id
           return (
             <motion.button
@@ -136,36 +157,60 @@ export function ThemeShowcase({ themes }: { themes: HomeTheme[] }) {
         </Swap>
       </p>
 
-      <motion.div
-        ref={scroller}
-        className="flex snap-x snap-mandatory [scrollbar-width:none] gap-5 overflow-x-auto px-6 pt-4 pb-10 md:justify-center [&::-webkit-scrollbar]:hidden"
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={{ show: { transition: { staggerChildren: 0.12 } } }}
-      >
-        {themes.map((theme, i) => (
-          <motion.div
-            key={theme.slug}
-            data-reveal=""
-            className="flex shrink-0 snap-center"
-            variants={{
-              hidden: { opacity: 0, y: 50, rotate: i % 2 ? 2 : -2 },
-              show: { opacity: 1, y: 0, rotate: 0, transition: { duration: 0.8, ease: ease.out } },
-            }}
-          >
-            <ThemeTile
-              theme={theme}
-              priority={i === 0}
-              occasion={occasion}
-              dimmed={occasion !== null && occasion.theme !== theme.slug}
-            />
-          </motion.div>
-        ))}
-      </motion.div>
+      <div className="relative mx-auto max-w-[1400px]">
+        <motion.div
+          ref={scroller}
+          className="flex snap-x snap-mandatory [scrollbar-width:none] justify-center-safe gap-5 overflow-x-auto overscroll-x-contain px-6 pt-4 pb-10 sm:px-10 [&::-webkit-scrollbar]:hidden"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={{ show: { transition: { staggerChildren: 0.12 } } }}
+        >
+          {themes.map((theme, i) => (
+            <motion.div
+              key={theme.slug}
+              data-reveal=""
+              className="flex shrink-0 snap-center"
+              variants={{
+                hidden: { opacity: 0, y: 50, rotate: i % 2 ? 2 : -2 },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  rotate: 0,
+                  transition: { duration: 0.8, ease: ease.out },
+                },
+              }}
+            >
+              <ThemeTile
+                theme={theme}
+                priority={i === 0}
+                occasion={occasion}
+                dimmed={occasion !== null && occasion.theme !== theme.slug}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
 
-      {themes.length > 1 && (
-        <div className="-mt-4 mb-6 flex justify-center gap-2 md:hidden" aria-hidden>
+        {overflow && (
+          <>
+            <CarouselArrow
+              side="left"
+              disabled={active === 0}
+              onClick={() => step(-1)}
+              label="Temática anterior"
+            />
+            <CarouselArrow
+              side="right"
+              disabled={active >= themes.length - 1}
+              onClick={() => step(1)}
+              label="Temática siguiente"
+            />
+          </>
+        )}
+      </div>
+
+      {overflow && themes.length > 1 && (
+        <div className="-mt-4 mb-6 flex justify-center gap-2" aria-hidden>
           {themes.map((theme, i) => (
             <motion.button
               key={theme.slug}
@@ -203,6 +248,38 @@ export function ThemeShowcase({ themes }: { themes: HomeTheme[] }) {
   )
 }
 
+/** Flecha del carrusel (solo con mouse: en el celular se desliza con el dedo). */
+function CarouselArrow({
+  side,
+  disabled,
+  onClick,
+  label,
+}: {
+  side: 'left' | 'right'
+  disabled: boolean
+  onClick(): void
+  label: string
+}) {
+  const Icon = side === 'left' ? ChevronLeft : ChevronRight
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      disabled={disabled}
+      className={cn(
+        'absolute top-[calc(50%-1.25rem)] z-10 hidden size-12 -translate-y-1/2 place-items-center rounded-full bg-white text-ink shadow-[0_12px_30px_rgba(42,36,51,0.18)] ring-1 ring-black/5 transition-[opacity,color] duration-200 hover:text-brand disabled:pointer-events-none disabled:opacity-0 md:grid',
+        side === 'left' ? 'left-3 lg:left-6' : 'right-3 lg:right-6',
+      )}
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.92 }}
+      transition={spring.snappy}
+    >
+      <Icon className="size-6" aria-hidden />
+    </motion.button>
+  )
+}
+
 function ThemeTile({
   theme,
   priority,
@@ -230,8 +307,8 @@ function ThemeTile({
     >
       <MotionLink
         href={`/tematicas/${theme.slug}` as Route}
-        aria-label={`Boxie de ${theme.name}: ${theme.price}`}
-        className="group relative flex w-[292px] flex-col overflow-hidden rounded-[28px] border-2 shadow-[0_10px_30px_rgba(42,36,51,0.12)] transition-shadow duration-300 hover:shadow-[0_32px_70px_rgba(42,36,51,0.25)] sm:w-[312px]"
+        aria-label={`Boxie de ${theme.name}: ${theme.priceLabel}`}
+        className="group relative flex w-[min(292px,calc(100vw-3.5rem))] flex-col overflow-hidden rounded-[28px] border-2 shadow-[0_10px_30px_rgba(42,36,51,0.12)] transition-shadow duration-300 hover:shadow-[0_32px_70px_rgba(42,36,51,0.25)] sm:w-[312px]"
         style={{ backgroundColor: theme.color, borderColor: theme.color, ...tilt.style }}
         {...tilt.handlers}
         initial="rest"
@@ -241,7 +318,7 @@ function ThemeTile({
         variants={{ rest: { y: 0, scale: 1 }, hover: { y: -10 }, tap: { scale: 0.97 } }}
         transition={spring.soft}
       >
-        <div className="relative h-[250px] w-full overflow-hidden">
+        <div className="relative h-[230px] w-full overflow-hidden sm:h-[250px]">
           <motion.div
             className="absolute inset-0"
             variants={{ rest: { scale: 1 }, hover: { scale: 1.08 } }}
@@ -259,7 +336,7 @@ function ThemeTile({
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/35 to-transparent" />
 
           <span className="absolute bottom-3 left-4 rounded-full bg-white px-3 py-1 font-display text-lg font-bold text-ink shadow-md">
-            {theme.price}
+            {theme.priceLabel}
           </span>
 
           <motion.span
@@ -278,13 +355,13 @@ function ThemeTile({
             {recommended && occasion && (
               <motion.span
                 key={occasion.id}
-                className="absolute top-4 left-4 flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-xs font-bold text-white shadow-lg"
+                className="absolute top-4 left-4 flex max-w-[calc(100%-2rem)] items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-xs font-bold text-white shadow-lg"
                 initial={{ opacity: 0, scale: 0.5, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.6 }}
                 transition={spring.bouncy}
               >
-                ✨ Ideal para {occasion.label}
+                <span className="truncate">✨ Ideal para {occasion.label}</span>
               </motion.span>
             )}
           </AnimatePresence>
@@ -296,9 +373,9 @@ function ThemeTile({
           />
         </div>
 
-        <div className="flex flex-1 flex-col p-6 text-left">
-          <h3 className="flex items-center gap-2 font-display text-[30px] leading-tight font-bold text-ink">
-            {theme.name}
+        <div className="flex flex-1 flex-col p-5 text-left sm:p-6">
+          <h3 className="flex items-center gap-2 font-display text-[26px] leading-tight font-bold text-ink sm:text-[30px]">
+            <span className="min-w-0">{theme.name}</span>
             <motion.span
               aria-hidden
               className="text-2xl"
@@ -308,7 +385,7 @@ function ThemeTile({
               }}
               transition={{ duration: 0.5 }}
             >
-              {lookOf(theme.slug).emoji}
+              {theme.emoji}
             </motion.span>
           </h3>
           <p className={cn('mt-1 text-base font-medium', light ? 'text-white' : 'text-ink/85')}>

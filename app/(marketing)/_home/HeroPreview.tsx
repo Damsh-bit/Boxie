@@ -124,7 +124,14 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
                     exit={{ opacity: 0, scale: 0.3, rotate: 30 }}
                     transition={spring.bouncy}
                   >
-                    <Icon className="size-16" strokeWidth={1.5} aria-hidden />
+                    {Icon ? (
+                      <Icon className="size-16" strokeWidth={1.5} aria-hidden />
+                    ) : (
+                      // Las temáticas creadas en el panel llevan su emoji.
+                      <span className="block text-6xl leading-none" aria-hidden>
+                        {theme.emoji}
+                      </span>
+                    )}
                   </motion.span>
                 </AnimatePresence>
               </div>

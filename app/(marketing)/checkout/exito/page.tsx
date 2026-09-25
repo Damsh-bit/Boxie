@@ -1,32 +1,30 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
-import { CheckCircle2 } from 'lucide-react'
+import { MessageCard } from '@/ui/MessageCard'
+import { ResultActions } from '../ResultActions'
 
 export const metadata: Metadata = {
-  title: 'Compra exitosa | Boxie',
+  title: 'Compra exitosa',
   robots: { index: false },
 }
 
-/** Fallback para cuando la Boxie ya fue creada en un proceso anterior (pago idempotente). */
+/**
+ * Cuando la Boxie ya se había creado en un intento anterior (el pago es
+ * idempotente): el acceso está en el mail.
+ */
 export default function ExitoPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f8f9fa] px-4 py-20">
-      <div className="mx-auto w-full max-w-md rounded-3xl bg-white p-10 text-center shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
-        <span className="mb-6 inline-flex size-20 items-center justify-center rounded-full bg-green-50">
-          <CheckCircle2 className="size-10 text-green-500" strokeWidth={1.5} />
-        </span>
-        <h1 className="mb-3 text-2xl font-bold text-ink">¡Compra realizada!</h1>
-        <p className="mb-8 leading-relaxed text-neutral-600">
-          Tu pago fue procesado correctamente. Revisá tu email: ahí encontrás el link para
-          personalizar tu Boxie.
+    <div className="flex justify-center bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] px-5 pt-[130px] pb-24">
+      <MessageCard emoji="🎉" title="¡Compra realizada!">
+        <p className="leading-relaxed text-ink/70">
+          Tu pago se acreditó. En tu mail está el link para personalizar tu Boxie (si no lo ves,
+          revisá spam o promociones).
         </p>
-        <Link
-          href="/"
-          className="inline-flex items-center rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow-[0_4px_14px_rgb(244_78_99/0.35)] transition hover:brightness-110"
-        >
-          Ir al inicio
-        </Link>
-      </div>
+        <ResultActions
+          primary={{ href: '/mi-boxie', label: 'No encuentro el mail' }}
+          secondary={{ href: '/', label: 'Ir al inicio' }}
+          support={{ topic: 'pago', label: '¿Algo no salió bien? Escribinos' }}
+        />
+      </MessageCard>
     </div>
   )
 }

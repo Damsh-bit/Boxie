@@ -1,16 +1,25 @@
 'use client'
 
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, ChevronDown, Play, ShieldCheck, Smartphone, Wand2, Zap } from 'lucide-react'
+import {
+  ArrowRight,
+  ChevronDown,
+  PauseCircle,
+  Play,
+  ShieldCheck,
+  Smartphone,
+  Wand2,
+  Zap,
+} from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import type { Route } from 'next'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ButtonLink, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { Swap, ease, spring, useCalm } from '@/ui/motion'
 import { HeroPreview } from './HeroPreview'
-import { lookOf, type HomeTheme } from './theme-look'
+import type { HomeTheme } from './theme-look'
 
 const TRUST = [
   { icon: ShieldCheck, label: 'Pago seguro con Mercado Pago' },
@@ -33,7 +42,7 @@ const line = {
  * nombre y el celular de al lado lo muestra) y el llamado a comprar con el
  * precio a la vista.
  */
-export function Hero({ themes }: { themes: HomeTheme[] }) {
+export function Hero({ themes, salesPaused }: { themes: HomeTheme[]; salesPaused: boolean }) {
   const ref = useRef<HTMLElement>(null)
   const calm = useCalm()
   const router = useRouter()
@@ -56,11 +65,11 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
     <section
       ref={ref}
       aria-labelledby="hero-title"
-      className="relative isolate overflow-hidden bg-[linear-gradient(12.84deg,#F44E63_-14.02%,rgba(255,255,255,0)_38.2%)] pt-[112px] pb-16 lg:flex lg:min-h-dvh lg:items-center lg:pb-24"
+      className="relative isolate overflow-hidden bg-[linear-gradient(12.84deg,#F44E63_-14.02%,rgba(255,255,255,0)_38.2%)] pt-[104px] pb-16 sm:pt-[112px] lg:flex lg:min-h-dvh lg:items-center lg:pb-24"
     >
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute top-[90px] left-[6%] -z-10 w-[480px] md:top-auto md:right-[-60px] md:bottom-[-80px] md:left-auto md:w-[560px]"
+        className="pointer-events-none absolute top-[90px] left-[6%] -z-10 w-[min(480px,110vw)] md:top-auto md:right-[-60px] md:bottom-[-80px] md:left-auto md:w-[560px]"
         style={{ y: markY, rotate: markRotate }}
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -77,16 +86,17 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
       </motion.div>
 
       <motion.div
-        className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-x-10 gap-y-10 px-5 [grid-template-areas:'copy'_'builder'_'phone'] sm:px-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-y-7 lg:[grid-template-areas:'copy_phone'_'builder_phone']"
+        // grid-cols-1 (minmax(0, 1fr)): nada de adentro puede ensanchar la grilla más que la pantalla.
+        className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-x-10 gap-y-10 px-4 [grid-template-areas:'copy'_'builder'_'phone'] min-[380px]:px-5 sm:px-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-y-7 lg:[grid-template-areas:'copy_phone'_'builder_phone']"
         initial="hidden"
         animate="show"
         variants={{ show: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } } }}
       >
-        <div className="flex flex-col items-center gap-6 text-center [grid-area:copy] lg:items-start lg:self-end lg:text-left">
+        <div className="flex min-w-0 flex-col items-center gap-6 text-center [grid-area:copy] lg:items-start lg:self-end lg:text-left">
           <motion.span
             data-reveal=""
             variants={rise}
-            className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 text-xs font-bold tracking-wide text-ink shadow-[0_6px_20px_rgba(42,36,51,0.08)] ring-1 ring-black/5 backdrop-blur"
+            className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 text-xs font-bold tracking-wide text-ink shadow-[0_6px_20px_rgba(42,36,51,0.08)] ring-1 ring-black/5 backdrop-blur"
           >
             <motion.span
               aria-hidden
@@ -95,12 +105,12 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
             >
               ✨
             </motion.span>
-            Regalo digital personalizado · Hecho en Argentina
+            <span className="truncate">Regalo digital personalizado · Hecho en Argentina</span>
           </motion.span>
 
           <h1
             id="hero-title"
-            className="text-5xl leading-[1.02] font-extrabold tracking-tight text-ink sm:text-6xl md:text-7xl"
+            className="text-[2.6rem] leading-[1.02] font-extrabold tracking-tight text-ink min-[380px]:text-5xl sm:text-6xl md:text-7xl"
           >
             <span className="block overflow-hidden pb-1">
               <motion.span data-reveal="" className="block" variants={line}>
@@ -110,7 +120,7 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
             <span className="block overflow-hidden pb-1">
               <motion.span
                 data-reveal=""
-                className="block font-display text-[64px] leading-[1.05] text-brand sm:text-7xl md:text-8xl"
+                className="block font-display text-[3.4rem] leading-[1.05] text-brand min-[380px]:text-[64px] sm:text-7xl md:text-8xl"
                 variants={line}
               >
                 BOXIE
@@ -119,7 +129,7 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
             <span className="block overflow-hidden pb-1">
               <motion.span
                 data-reveal=""
-                className="block text-2xl font-bold tracking-normal text-ink/85 sm:text-3xl"
+                className="block text-[1.35rem] font-bold tracking-normal text-balance text-ink/85 min-[380px]:text-2xl sm:text-3xl"
                 variants={line}
               >
                 el regalo digital que emociona
@@ -130,7 +140,7 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
           <motion.p
             data-reveal=""
             variants={rise}
-            className="max-w-xl text-lg font-medium text-ink/75 md:text-xl"
+            className="max-w-xl text-base font-medium text-pretty text-ink/75 min-[380px]:text-lg md:text-xl"
           >
             Fotos, dedicatoria, su canción y juegos en una experiencia personalizada que se abre
             desde el celular. La creás en 5 minutos y llega al instante por WhatsApp.
@@ -140,57 +150,22 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
         <motion.div
           data-reveal=""
           variants={rise}
-          className="w-full max-w-xl justify-self-center [grid-area:builder] lg:self-start lg:justify-self-start"
+          className="w-full max-w-xl min-w-0 justify-self-center [grid-area:builder] lg:self-start lg:justify-self-start"
         >
           <form
             id="armador"
-            className="rounded-[28px] bg-white/80 p-4 shadow-[0_24px_60px_-20px_rgba(42,36,51,0.28)] ring-1 ring-black/5 backdrop-blur-md sm:p-5"
+            className="rounded-[28px] bg-white/80 p-3.5 shadow-[0_24px_60px_-20px_rgba(42,36,51,0.28)] ring-1 ring-black/5 backdrop-blur-md min-[380px]:p-4 sm:p-5"
             onSubmit={(e) => {
               e.preventDefault()
               router.push(href)
             }}
           >
             <p className="mb-3 flex items-center justify-center gap-2 text-sm font-bold text-ink lg:justify-start">
-              <Wand2 className="size-4 text-brand" aria-hidden />
+              <Wand2 className="size-4 shrink-0 text-brand" aria-hidden />
               Armala acá mismo y mirá cómo queda
             </p>
 
-            <div
-              role="group"
-              aria-label="Temática"
-              className="flex gap-1 rounded-full bg-paper/80 p-1"
-            >
-              {themes.map((t) => {
-                const selected = t.slug === slug
-                return (
-                  <motion.button
-                    key={t.slug}
-                    type="button"
-                    aria-pressed={selected}
-                    onClick={() => setSlug(t.slug)}
-                    className={cn(
-                      'relative flex-1 rounded-full px-2 py-2.5 text-sm font-semibold transition-colors duration-200 sm:px-3',
-                      selected ? 'text-ink' : 'text-ink/60 hover:text-ink',
-                    )}
-                    whileTap={{ scale: 0.94 }}
-                    transition={spring.snappy}
-                  >
-                    {selected && (
-                      <motion.span
-                        layoutId="hero-theme"
-                        className="absolute inset-0 rounded-full bg-white shadow-[0_4px_14px_rgba(42,36,51,0.12)]"
-                        transition={spring.snappy}
-                        aria-hidden
-                      />
-                    )}
-                    <span className="relative flex items-center justify-center gap-1.5 whitespace-nowrap">
-                      <span aria-hidden>{lookOf(t.slug).emoji}</span>
-                      {t.name}
-                    </span>
-                  </motion.button>
-                )
-              })}
-            </div>
+            <ThemePicker themes={themes} value={theme.slug} onChange={setSlug} />
 
             <label className="group relative mt-3 block">
               <span className="sr-only">¿Para quién es la Boxie?</span>
@@ -220,10 +195,12 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
                 href={href}
                 size="lg"
                 block
-                className="px-6 text-base sm:flex-1 sm:text-lg"
+                className="min-w-0 px-6 text-base sm:flex-1 sm:text-lg"
               >
-                <span className="relative inline-flex">
-                  <Swap id={cta}>{cta}</Swap>
+                <span className="relative inline-flex min-w-0">
+                  <Swap id={cta} className="truncate">
+                    {cta}
+                  </Swap>
                 </span>
                 <Nudge x={4}>
                   <ArrowRight className="size-5" aria-hidden />
@@ -243,12 +220,19 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
               </ButtonLink>
             </div>
 
-            <p className="mt-3 text-center text-sm text-ink/65 lg:text-left">
-              <span className="relative inline-block font-display text-base font-bold text-ink">
-                <Swap id={theme.price}>{theme.price}</Swap>
-              </span>{' '}
-              · pago único · sin suscripciones
-            </p>
+            {salesPaused ? (
+              <p className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-amber-50 px-3 py-2 text-sm text-amber-900 lg:justify-start">
+                <PauseCircle className="size-4 shrink-0" aria-hidden />
+                Pausamos las ventas por un rato: podés armarla y probarla igual.
+              </p>
+            ) : (
+              <p className="mt-3 text-center text-sm text-ink/65 lg:text-left">
+                <span className="relative inline-block font-display text-base font-bold text-ink">
+                  <Swap id={theme.priceLabel}>{theme.priceLabel}</Swap>
+                </span>{' '}
+                · pago único · sin suscripciones
+              </p>
+            )}
           </form>
 
           <ul className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm font-semibold text-ink/70 lg:justify-start">
@@ -261,13 +245,13 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
           </ul>
         </motion.div>
 
-        <motion.div className="[grid-area:phone] lg:py-6" style={{ y: phoneY }}>
+        <motion.div className="min-w-0 [grid-area:phone] lg:py-6" style={{ y: phoneY }}>
           <HeroPreview theme={theme} name={name} />
         </motion.div>
       </motion.div>
 
       <motion.div
-        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 lg:block"
+        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 lg:block lg:[@media(max-height:820px)]:hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4, duration: 0.6 }}
@@ -291,5 +275,103 @@ export function Hero({ themes }: { themes: HomeTheme[] }) {
         </a>
       </motion.div>
     </section>
+  )
+}
+
+/**
+ * Las temáticas del armador. Con pocas, reparten el ancho; con más (el panel
+ * publica las que quiera), son una fila que se desliza con el dedo, con los
+ * bordes difuminados y la elegida siempre a la vista.
+ */
+function ThemePicker({
+  themes,
+  value,
+  onChange,
+}: {
+  themes: HomeTheme[]
+  value: string
+  onChange(slug: string): void
+}) {
+  const scroller = useRef<HTMLDivElement>(null)
+  const many = themes.length > 3
+  const [edges, setEdges] = useState({ start: false, end: many })
+
+  useEffect(() => {
+    const el = scroller.current
+    if (!el || !many) return
+    const update = () =>
+      setEdges({
+        start: el.scrollLeft > 4,
+        end: el.scrollLeft + el.clientWidth < el.scrollWidth - 4,
+      })
+    const observer = new ResizeObserver(update)
+    observer.observe(el)
+    el.addEventListener('scroll', update, { passive: true })
+    return () => {
+      observer.disconnect()
+      el.removeEventListener('scroll', update)
+    }
+  }, [many])
+
+  // La temática elegida (o la que eligió otra sección) queda centrada.
+  useEffect(() => {
+    const el = scroller.current
+    const selected = el?.querySelector<HTMLElement>('[aria-pressed="true"]')
+    if (!el || !selected || el.scrollWidth <= el.clientWidth) return
+    el.scrollTo({
+      left: selected.offsetLeft - (el.clientWidth - selected.offsetWidth) / 2,
+      behavior: 'smooth',
+    })
+  }, [value])
+
+  const fade = 28
+  const mask = many
+    ? `linear-gradient(to right, ${edges.start ? 'transparent' : '#000'} 0, #000 ${fade}px, #000 calc(100% - ${fade}px), ${edges.end ? 'transparent' : '#000'} 100%)`
+    : undefined
+
+  return (
+    <div
+      ref={scroller}
+      role="group"
+      aria-label="Temática"
+      className={cn(
+        'relative flex gap-1 rounded-full bg-paper/80 p-1',
+        many &&
+          'snap-x snap-proximity scroll-px-2 [scrollbar-width:none] overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden',
+      )}
+      style={{ maskImage: mask, WebkitMaskImage: mask }}
+    >
+      {themes.map((t) => {
+        const selected = t.slug === value
+        return (
+          <motion.button
+            key={t.slug}
+            type="button"
+            aria-pressed={selected}
+            onClick={() => onChange(t.slug)}
+            className={cn(
+              'relative rounded-full py-2.5 text-sm font-semibold transition-colors duration-200',
+              many ? 'shrink-0 snap-center px-3.5' : 'min-w-0 flex-1 px-2 sm:px-3',
+              selected ? 'text-ink' : 'text-ink/60 hover:text-ink',
+            )}
+            whileTap={{ scale: 0.94 }}
+            transition={spring.snappy}
+          >
+            {selected && (
+              <motion.span
+                layoutId="hero-theme"
+                className="absolute inset-0 rounded-full bg-white shadow-[0_4px_14px_rgba(42,36,51,0.12)]"
+                transition={spring.snappy}
+                aria-hidden
+              />
+            )}
+            <span className="relative flex items-center justify-center gap-1.5 whitespace-nowrap">
+              <span aria-hidden>{t.emoji}</span>
+              <span className={cn(!many && 'truncate')}>{t.name}</span>
+            </span>
+          </motion.button>
+        )
+      })}
+    </div>
   )
 }

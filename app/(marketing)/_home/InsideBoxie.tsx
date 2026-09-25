@@ -3,7 +3,7 @@
 import { AnimatePresence, animate, motion, useInView, useMotionValue } from 'framer-motion'
 import { Gift, Play } from 'lucide-react'
 import type { Route } from 'next'
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { experiences, type ExperienceId } from '@/content/home'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
@@ -28,7 +28,19 @@ const STEP_SECONDS = 7
  * persona toca una pestaña o juega con una demo; con el mouse encima del
  * celular se frenan, y fuera de pantalla no corren.
  */
-export function InsideBoxie({ photos, exampleHref }: { photos: string[]; exampleHref: Route }) {
+export function InsideBoxie({
+  photos,
+  exampleHref,
+  maxScreens,
+  fromPlan = {},
+}: {
+  photos: string[]
+  exampleHref: Route
+  /** Pantallas de la Boxie más completa (sale del catálogo). */
+  maxScreens: number
+  /** Las sorpresas que no vienen en el plan más simple: desde qué plan están. */
+  fromPlan?: Partial<Record<ExperienceId, string>>
+}) {
   const section = useRef<HTMLElement>(null)
   const tabList = useRef<HTMLDivElement>(null)
   const tabs = useRef<(HTMLButtonElement | null)[]>([])
@@ -121,7 +133,7 @@ export function InsideBoxie({ photos, exampleHref }: { photos: string[]; example
               Mucho más que una <Mark>tarjeta</Mark> digital
             </span>
           }
-          text="20 pantallas para emocionar. Tocá cada sorpresa y probala acá mismo, tal como la va a vivir quien la reciba."
+          text={`Hasta ${maxScreens} pantallas para emocionar. Tocá cada sorpresa y probala acá mismo, tal como la va a vivir quien la reciba.`}
         />
 
         <div className="grid items-center gap-x-16 gap-y-8 [grid-template-areas:'tabs'_'phone'_'info'] lg:grid-cols-[minmax(0,1fr)_auto] lg:[grid-template-areas:'tabs_phone'_'info_phone']">
@@ -173,6 +185,9 @@ export function InsideBoxie({ photos, exampleHref }: { photos: string[]; example
                     <span className="font-display text-base font-bold whitespace-nowrap lg:text-xl">
                       {exp.label}
                     </span>
+                    {fromPlan[exp.id] && (
+                      <PlanTag className="hidden lg:inline-flex">Desde {fromPlan[exp.id]}</PlanTag>
+                    )}
                   </span>
                   <div className="hidden lg:block">
                     <Collapse open={selected}>
@@ -261,10 +276,13 @@ export function InsideBoxie({ photos, exampleHref }: { photos: string[]; example
           </div>
 
           <div className="flex flex-col items-center gap-6 text-center [grid-area:info] lg:items-start lg:self-start lg:text-left">
-            <div className="relative min-h-[7.5rem] max-w-md lg:hidden" aria-live="polite">
+            <div className="relative min-h-[8.5rem] max-w-md lg:hidden" aria-live="polite">
               <Swap id={current.id} className="block">
                 <strong className="block font-display text-xl text-white">{current.title}</strong>
                 <span className="mt-1.5 block text-white/70">{current.text}</span>
+                {fromPlan[current.id] && (
+                  <PlanTag className="mt-2.5">Desde el plan {fromPlan[current.id]}</PlanTag>
+                )}
               </Swap>
             </div>
 
@@ -278,14 +296,31 @@ export function InsideBoxie({ photos, exampleHref }: { photos: string[]; example
                 <Gift className="size-5 text-brand" aria-hidden /> Quiero regalar una
               </ButtonLink>
             </div>
-            <p className="max-w-md text-sm text-white/55">
-              Y 14 sorpresas más: playlists, cine y series, revista, razones, diario, galletita de
-              la fortuna y un cierre con todo lo que vivieron.
-            </p>
+            {maxScreens > experiences.length && (
+              <p className="max-w-md text-sm text-white/55">
+                Y hasta {maxScreens - experiences.length} sorpresas más, como playlists, cine y
+                series, revista, razones, diario, galletita de la fortuna y un cierre con todo lo
+                que vivieron.
+              </p>
+            )}
           </div>
         </div>
       </div>
     </section>
+  )
+}
+
+/** "Desde Clásica": la sorpresa viene en ese plan y en los de arriba. */
+function PlanTag({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center rounded-full bg-brand/20 px-2 py-0.5 text-[10px] font-extrabold tracking-wider whitespace-nowrap text-brand-muted uppercase',
+        className,
+      )}
+    >
+      {children}
+    </span>
   )
 }
 

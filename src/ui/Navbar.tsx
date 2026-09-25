@@ -21,6 +21,7 @@ import { ease, spring } from './motion'
 
 const LINKS: { href: Route; label: string }[] = [
   { href: '/galeria', label: 'Galería' },
+  { href: '/precios', label: 'Precios' },
   { href: '/nosotros', label: 'Nosotros' },
   { href: '/ayuda', label: 'Ayuda' },
   { href: '/contacto', label: 'Contacto' },

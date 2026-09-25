@@ -84,6 +84,11 @@ export function recommendedPlan<T extends Pick<Plan, 'rank' | 'name' | 'active' 
   return active.find((p) => p.highlighted) ?? active[Math.floor(active.length / 2)] ?? null
 }
 
+/** Días online de un rango de planes: "30 a 120 días" · "60 días". */
+export function describeLifetime({ min, max }: { min: number; max: number }): string {
+  return min === max ? `${max} días` : `${min} a ${max} días`
+}
+
 /** Ahorro frente al precio tachado, en porcentaje entero (0 si no hay tachado). */
 export function savingsPercent(plan: Pick<Plan, 'priceCents' | 'compareAtCents'>): number {
   if (!plan.compareAtCents || plan.compareAtCents <= plan.priceCents) return 0

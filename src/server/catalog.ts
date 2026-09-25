@@ -1,5 +1,7 @@
 import 'server-only'
 import { cache } from 'react'
+import { site } from '@/content/site'
+import type { BusinessInfo } from '@/domain/business'
 import { ThemeListingSchema, type CatalogTheme } from '@/domain/catalog'
 import { evaluateCoupon, normalizeCouponCode, type Coupon } from '@/domain/coupons'
 import { listPrice } from '@/domain/pricing'
@@ -30,22 +32,68 @@ export interface PublicSettings {
   currency: string
   /** Ventas pausadas desde el panel: el checkout avisa y no cobra. */
   salesPaused: boolean
+  /** Datos del negocio del panel (Configuración): mail de soporte, WhatsApp, Instagram. */
+  business: BusinessInfo
+}
+
+/** Lo que el sitio muestra si la base no los tiene (antes de la migración del panel). */
+export const DEFAULT_BUSINESS: BusinessInfo = {
+  name: site.name,
+  supportEmail: site.emails.help,
+  whatsapp: '',
+  instagram: site.instagramHandle,
+}
+
+// Solo las columnas públicas: las de rentabilidad (comisiones, meta del mes)
+// no son de la tienda (y la migración de soporte se las cierra a anon).
+const PUBLIC_SETTINGS =
+  'base_price_cents, gift_lifetime_days, currency, sales_paused, business_name, support_email, whatsapp, instagram'
+const BASE_SETTINGS = 'base_price_cents, gift_lifetime_days, currency'
+
+type SettingsRow = {
+  base_price_cents: number
+  gift_lifetime_days: number
+  currency: string
+  sales_paused?: boolean
+  business_name?: string
+  support_email?: string
+  whatsapp?: string
+  instagram?: string
 }
 
 export const getPublicSettings = cache(async (): Promise<PublicSettings> => {
   if (isDemoMode()) return demoSettings()
-  // select('*'): sales_paused llega con la migración del panel; sin ella, no está pausado.
-  const row = unwrap(await publicDb().from('settings').select('*').single(), 'settings') as {
-    base_price_cents: number
-    gift_lifetime_days: number
-    currency: string
-    sales_paused?: boolean
-  }
+  let result = await publicDb().from('settings').select(PUBLIC_SETTINGS).single()
+  // Sin la migración del panel no existen esas columnas: se vende como antes.
+  if (result.error?.code === '42703')
+    result = (await publicDb().from('settings').select(BASE_SETTINGS).single()) as typeof result
+  const row = unwrap(result, 'settings') as SettingsRow
   return {
     basePriceCents: row.base_price_cents,
     giftLifetimeDays: row.gift_lifetime_days,
     currency: row.currency,
     salesPaused: row.sales_paused === true,
+    business: {
+      name: row.business_name ?? DEFAULT_BUSINESS.name,
+      supportEmail: row.support_email || DEFAULT_BUSINESS.supportEmail,
+      whatsapp: row.whatsapp ?? DEFAULT_BUSINESS.whatsapp,
+      instagram: row.instagram ?? DEFAULT_BUSINESS.instagram,
+    },
+  }
+})
+
+/**
+ * Los datos del negocio para el pie y las páginas estáticas: nunca rompen el
+ * render (en el build de CI no hay base; ahí van los de `site`).
+ */
+export const getBusinessInfo = cache(async (): Promise<BusinessInfo> => {
+  try {
+    return (await getPublicSettings()).business
+  } catch (error) {
+    log.warn('Datos del negocio no disponibles: se usan los del sitio', {
+      error: error instanceof Error ? error.message : String(error),
+    })
+    return DEFAULT_BUSINESS
   }
 })
 

@@ -314,7 +314,13 @@ export function CheckoutForm({
         {plans.length > 1 && (
           <div className="mb-5" role="radiogroup" aria-label="Plan">
             <p className="mb-2 text-xs font-bold tracking-wide text-neutral-500 uppercase">Plan</p>
-            <div className="grid grid-cols-3 gap-2">
+            <div
+              className="grid gap-2"
+              // Tantas columnas como planes (hasta 3 por fila): el panel define cuántos hay.
+              style={{
+                gridTemplateColumns: `repeat(${Math.min(plans.length, 3)}, minmax(0, 1fr))`,
+              }}
+            >
               {plans.map((p) => {
                 const selected = quote.plan?.slug === p.slug
                 return (

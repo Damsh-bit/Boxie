@@ -1,46 +1,33 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
-import { XCircle } from 'lucide-react'
+import { MessageCard } from '@/ui/MessageCard'
+import { ResultActions } from '../ResultActions'
 
 export const metadata: Metadata = {
-  title: 'Pago no completado | Boxie',
+  title: 'Pago no completado',
   robots: { index: false },
 }
 
-type Props = { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }
-
-export default async function ErrorPage({ searchParams }: Props) {
+export default async function ErrorPage({ searchParams }: PageProps<'/checkout/error'>) {
   const params = await searchParams
-  const razon = typeof params.razon === 'string' ? params.razon : null
-
-  const mensaje =
-    razon === 'pago-rechazado'
-      ? 'Tu pago fue rechazado por Mercado Pago. Podés intentarlo de nuevo con otra tarjeta o método de pago.'
-      : 'Hubo un problema al procesar tu pago. No se realizó ningún cobro.'
+  const rejected = params.razon === 'pago-rechazado'
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f8f9fa] px-4 py-20">
-      <div className="mx-auto w-full max-w-md rounded-3xl bg-white p-10 text-center shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
-        <span className="mb-6 inline-flex size-20 items-center justify-center rounded-full bg-red-50">
-          <XCircle className="size-10 text-red-500" strokeWidth={1.5} />
-        </span>
-        <h1 className="mb-3 text-2xl font-bold text-ink">Algo salió mal</h1>
-        <p className="mb-8 leading-relaxed text-neutral-600">{mensaje}</p>
-        <div className="flex flex-col gap-3">
-          <Link
-            href="/galeria"
-            className="inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow-[0_4px_14px_rgb(244_78_99/0.35)] transition hover:brightness-110"
-          >
-            Volver a elegir temática
-          </Link>
-          <Link
-            href="/ayuda"
-            className="text-sm text-neutral-500 underline-offset-2 hover:underline"
-          >
-            ¿Necesitás ayuda?
-          </Link>
-        </div>
-      </div>
+    <div className="flex justify-center bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] px-5 pt-[130px] pb-24">
+      <MessageCard emoji={rejected ? '💳' : '😕'} title="El pago no se completó">
+        <p className="leading-relaxed text-ink/70">
+          {rejected
+            ? 'Mercado Pago rechazó el pago. Podés intentarlo de nuevo con otra tarjeta o medio de pago.'
+            : 'Hubo un problema al procesar el pago. No se hizo ningún cobro: podés volver a intentarlo.'}
+        </p>
+        <ResultActions
+          primary={{ href: '/galeria', label: 'Volver a elegir mi Boxie' }}
+          support={{
+            topic: 'pago',
+            label: '¿Te cobraron igual? Escribinos',
+            message: 'Intenté pagar y no se completó.',
+          }}
+        />
+      </MessageCard>
     </div>
   )
 }

@@ -15,7 +15,7 @@ export default async function TeamPage() {
       <PageHeader
         eyebrow={
           <span className="flex items-center gap-2">
-            Equipo {repo.mode === 'demo' && <NeedsDb what="admin_users (+ rol) · Supabase Auth" />}
+            Equipo {repo.mode === 'demo' && <NeedsDb what="users (+ rol) · Supabase Auth" />}
           </span>
         }
         title="Equipo"

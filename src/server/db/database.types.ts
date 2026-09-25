@@ -91,48 +91,6 @@ export type Database = {
         }
         Relationships: []
       }
-      users: {
-        Row: {
-          user_id: string
-          created_at: string
-          email: string | null
-          name: string
-          role: Database["public"]["Enums"]["admin_role"] | null
-          invited_at: string | null
-          last_seen_at: string | null
-          phone: string | null
-          avatar_url: string | null
-          is_active: boolean
-          preferences: Json
-        }
-        Insert: {
-          user_id: string
-          created_at?: string
-          email?: string | null
-          name?: string
-          role?: Database["public"]["Enums"]["admin_role"] | null
-          invited_at?: string | null
-          last_seen_at?: string | null
-          phone?: string | null
-          avatar_url?: string | null
-          is_active?: boolean
-          preferences?: Json
-        }
-        Update: {
-          user_id?: string
-          created_at?: string
-          email?: string | null
-          name?: string
-          role?: Database["public"]["Enums"]["admin_role"] | null
-          invited_at?: string | null
-          last_seen_at?: string | null
-          phone?: string | null
-          avatar_url?: string | null
-          is_active?: boolean
-          preferences?: Json
-        }
-        Relationships: []
-      }
       affiliates: {
         Row: {
           id: string
@@ -786,6 +744,48 @@ export type Database = {
             referencedColumns: ["id", "theme_id"]
           },
         ]
+      }
+      users: {
+        Row: {
+          user_id: string
+          email: string | null
+          name: string
+          role: Database["public"]["Enums"]["admin_role"] | null
+          phone: string | null
+          avatar_url: string | null
+          is_active: boolean
+          preferences: Json
+          invited_at: string | null
+          last_seen_at: string | null
+          created_at: string
+        }
+        Insert: {
+          user_id: string
+          email?: string | null
+          name?: string
+          role?: Database["public"]["Enums"]["admin_role"] | null
+          phone?: string | null
+          avatar_url?: string | null
+          is_active?: boolean
+          preferences?: Json
+          invited_at?: string | null
+          last_seen_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          user_id?: string
+          email?: string | null
+          name?: string
+          role?: Database["public"]["Enums"]["admin_role"] | null
+          phone?: string | null
+          avatar_url?: string | null
+          is_active?: boolean
+          preferences?: Json
+          invited_at?: string | null
+          last_seen_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {

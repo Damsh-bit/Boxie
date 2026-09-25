@@ -15,11 +15,9 @@
 
 -- ── Equipo ──────────────────────────────────────────────────────────────────
 
-create type public.admin_role as enum ('owner', 'admin', 'editor', 'support');
-
--- Nota: la tabla public.users ya tiene todas las columnas del equipo desde
--- la migra core_schema (email, name, role, phone, avatar_url, is_active,
--- preferences, invited_at, last_seen_at). No se necesita ALTER TABLE.
+-- Nota: el tipo public.admin_role y la tabla public.users con todas las
+-- columnas del equipo (email, name, role, phone, avatar_url, is_active,
+-- preferences, invited_at, last_seen_at) vienen de core_schema.
 
 -- El rol del usuario de la sesión (null si no es admin).
 create function public.admin_role()

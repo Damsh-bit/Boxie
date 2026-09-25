@@ -31,18 +31,17 @@ sequenceDiagram
     Navegador->>MP: Redirecciona al Checkout Pro de Mercado Pago
     Comprador->>MP: Paga con tarjeta / saldo
 
-    alt Retorno inmediato del comprador
-        MP->>Navegador: Redirige a back_url (GET /api/checkout/return)
-        Navegador->>Servidor: GET /api/checkout/return?payment_id=...&external_reference=...
-        Servidor->>MP: getPayment(paymentId) para verificar estado real
-        Servidor->>DB: Transición a 'paid' + aprovisiona Boxie + genera tokens
-        Servidor->>Navegador: Redirige a /editor/<token> (setea cookie de sesión y va a /editor)
-    else Aviso asíncrono (Webhook)
-        MP->>Servidor: POST /api/webhooks/mercadopago
-        Servidor->>Servidor: Valida firma HMAC con MP_WEBHOOK_SECRET
-        Servidor->>DB: Idempotente: asegura que la orden esté 'paid' y la Boxie creada
-    end
+    MP->>Navegador: Redirige a back_url (GET /api/checkout/return)
+    Navegador->>Servidor: GET /api/checkout/return?payment_id=...&external_reference=...
+    Servidor->>MP: getPayment(paymentId) para verificar estado real
+    Servidor->>DB: Transición a 'paid' + aprovisiona Boxie + genera tokens
+    Servidor->>Navegador: Redirige a /editor/<token> (setea cookie de sesión y va a /editor)
 ```
+
+> [!NOTE]
+> Todavía no hay webhook de Mercado Pago: el pago se confirma solo cuando el comprador vuelve al
+> sitio (`/api/checkout/return`). Si cierra la pestaña antes de volver, la orden queda `pending`
+> aunque haya pagado. `MP_WEBHOOK_SECRET` se va a usar cuando exista el webhook.
 
 ---
 
@@ -146,7 +145,9 @@ Si querés probar la experiencia de personalización en el editor, subida de fot
    ```env
    PAYMENTS_PROVIDER=fake
    ```
-2. Ejecutá una llamada POST para aprovisionar una Boxie pagada al instante:
+   Con esto, **"Ir a pagar"** en el checkout aprueba la orden sin pasar por Mercado Pago y te lleva
+   directo al editor. En producción `fake` se rechaza.
+2. O, sin pasar por el checkout, ejecutá una llamada POST para aprovisionar una Boxie pagada al instante:
 
    **En PowerShell:**
 
@@ -169,33 +170,23 @@ Si querés probar la experiencia de personalización en el editor, subida de fot
 
 ---
 
-### Método C: Test de Webhooks en Local (Avanzado)
+### Webhooks (pendiente)
 
-Para simular o probar el webhook asíncrono de Mercado Pago en local:
-
-1. Exponé tu puerto local con una herramienta como `ngrok` o `cloudflared`:
-   ```bash
-   ngrok http 3000
-   ```
-2. Configurá la URL generada en Mercado Pago Developers → Tus integraciones → Webhooks:
-   `https://<tu-subdominio>.ngrok-free.app/api/webhooks/mercadopago`
-3. Copiá el **Secreto de firma** de esa integración a tu `.env.local`:
-   ```env
-   MP_WEBHOOK_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-   ```
-4. Al pagar en sandbox, Mercado Pago enviará un POST a ese endpoint con las cabeceras `x-signature` y `x-request-id`, que serán verificadas por `src/server/mercadopago-webhook.ts`.
+Todavía no hay endpoint de webhook (ver la nota del diagrama). Cuando se agregue
+`/api/webhooks/mercadopago`, se configura en Mercado Pago Developers → Tus integraciones → Webhooks
+y el **Secreto de firma** va en `MP_WEBHOOK_SECRET`. Para probarlo en local hay que exponer el puerto
+con `ngrok http 3000` o `cloudflared`.
 
 ---
 
 ## 4. Archivos Clave del Circuito
 
-- [app/(marketing)/checkout/page.tsx](file:///c:/Projects/Boxie/app/%28marketing%29/checkout/page.tsx): Página de checkout y validación de temática.
-- [app/(marketing)/checkout/CheckoutForm.tsx](file:///c:/Projects/Boxie/app/%28marketing%29/checkout/CheckoutForm.tsx): Componente interactivo y envío a la API.
-- [app/api/checkout/preference/route.ts](file:///c:/Projects/Boxie/app/api/checkout/preference/route.ts): Creación de orden y preferencia en Mercado Pago.
-- [app/api/checkout/return/route.ts](file:///c:/Projects/Boxie/app/api/checkout/return/route.ts): Retorno de MP, validación y redirección al editor.
-- [app/api/webhooks/mercadopago/route.ts](file:///c:/Projects/Boxie/app/api/webhooks/mercadopago/route.ts): Recepción del webhook con firma criptográfica.
-- [src/server/mercadopago.ts](file:///c:/Projects/Boxie/src/server/mercadopago.ts): Cliente API de Mercado Pago.
-- [src/server/payments.ts](file:///c:/Projects/Boxie/src/server/payments.ts): Lógica de transición de pagos y aprovisionamiento.
+- [app/(marketing)/checkout/page.tsx](../app/%28marketing%29/checkout/page.tsx): Página de checkout y validación de temática.
+- [app/(marketing)/checkout/CheckoutForm.tsx](../app/%28marketing%29/checkout/CheckoutForm.tsx): Componente interactivo y envío a la API.
+- [app/api/checkout/preference/route.ts](../app/api/checkout/preference/route.ts): Creación de orden y preferencia en Mercado Pago (o aprobación directa con `fake`).
+- [app/api/checkout/return/route.ts](../app/api/checkout/return/route.ts): Retorno de MP, validación y redirección al editor.
+- [src/server/mercadopago.ts](../src/server/mercadopago.ts): Cliente API de Mercado Pago.
+- [src/server/payments.ts](../src/server/payments.ts): Lógica de transición de pagos y aprovisionamiento.
 
 ---
 
@@ -209,9 +200,15 @@ Ocurre si:
 - El valor de `tematica` no existe en la tabla `themes` con estado `published`.
 - El valor contiene caracteres inválidos (solo se admiten letras minúsculas, números y guiones).
 
-### ¿Por qué aparece el cartel "Todavía no cobramos online"?
+### ¿Por qué no aparece el botón "Ir a pagar"?
 
-Ocurre si `PAYMENTS_PROVIDER` está en `fake` o `DEMO_MODE=1`. En esos modos, el botón "Ir a pagar" se oculta y en su lugar se ofrecen links de prueba para explorar el editor.
+En su lugar aparece un cartel con links para probar el editor si:
+
+- `DEMO_MODE=1` ("Versión de demostración").
+- Las ventas están pausadas desde el panel, en **Configuración** ("Las ventas están pausadas por un
+  rato").
+
+Con `PAYMENTS_PROVIDER=fake` el botón sí aparece y aprueba la orden sin pasar por Mercado Pago.
 
 ### Error "No se pudo crear la preferencia de pago" al hacer clic en pagar
 

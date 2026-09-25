@@ -74,7 +74,7 @@ export async function seedBasics(db: TestDb) {
   const [buyerUser] = await db.query<{ id: string }>(
     `insert into auth.users (email) values ('nadie@boxie.test') returning id`,
   )
-  await db.query(`insert into public.admin_users (user_id) values ($1)`, [admin!.id])
+  await db.query(`insert into public.users (user_id, role) values ($1, 'owner')`, [admin!.id])
 
   const [theme] = await db.query<{ id: string }>(
     `insert into public.themes (slug, name, category) values ('test-tema', 'Tema de prueba', 'Amor') returning id`,

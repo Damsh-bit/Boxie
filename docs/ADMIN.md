@@ -13,7 +13,7 @@ base real sin tocar la interfaz (ver [Conectar Supabase](#conectar-supabase)).
 | Entorno              | Cómo se entra                                                                                                      |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | Demo (`DEMO_MODE=1`) | Usuario de muestra: `admin@boxie.demo` / `boxie-admin`. Se cambian con `ADMIN_DEMO_EMAIL` y `ADMIN_DEMO_PASSWORD`. |
-| Con Supabase         | Mail y clave de Supabase Auth; la cuenta tiene que estar en `admin_users` (con su rol).                            |
+| Con Supabase         | Mail y clave de Supabase Auth; la cuenta tiene que estar en `users` con un rol.                                    |
 
 La sesión es una cookie firmada `httpOnly` limitada a `/admin` (12 horas, o 30 días con "mantener la
 sesión"). El proxy (`proxy.ts`) manda al login a quien no tiene sesión, y además **cada página y cada
@@ -57,7 +57,7 @@ Atajo: **Ctrl/⌘ K** abre el buscador (secciones, acciones y búsqueda directa 
 | Soporte       | Resumen, ventas, Boxies (reembolsos, reenvíos), clientes, tareas y actividad. |
 
 El menú muestra solo lo que el rol puede usar, y las acciones lo verifican en el servidor
-(`runAction` con `roles`). En la base, solo el dueño escribe en `admin_users` y siempre queda uno.
+(`runAction` con `roles`). En la base, solo el dueño escribe en `users` y siempre queda uno.
 
 ## Planes
 
@@ -138,11 +138,11 @@ daltonismo (`--color-series-1…6`), tooltip, cursor, leyenda y vista de tabla e
 
 La lista viva está en **Sistema** (`app/admin/_lib/capabilities.ts`). Resumen:
 
-| Ya existe en la base                                                                                                                  | Llega con `20260925120000_admin_backoffice.sql`                                                                            |
-| ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `orders`, `payment_events`, `boxies`, `boxie_content`, `coupons`, `themes`, `theme_versions`, `settings`, `affiliates`, `admin_users` | `plans` (+ `orders.plan_id`), `expenses`, `admin_audit_log` (inmutable), `admin_tasks`                                     |
-| `admin_kpis()`, `admin_sales_by_day()`, `admin_theme_ranking()`, `admin_coupon_ranking()`, `admin_refund_boxie()`, `publish_theme()`  | `admin_plan_ranking()`, `admin_role()`, vista `admin_boxie_stats`, `lock_boxie()` con días del plan                        |
-|                                                                                                                                       | Columnas: rol/nombre/mail del equipo, costos y datos del negocio en `settings`, `themes.origin`, mail y notas de afiliados |
+| Ya existe en la base                                                                                                                      | Llega con `20260925120000_admin_backoffice.sql`                                                     |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `orders`, `payment_events`, `boxies`, `boxie_content`, `coupons`, `themes`, `theme_versions`, `settings`, `affiliates`, `users` (con rol) | `plans` (+ `orders.plan_id`), `expenses`, `admin_audit_log` (inmutable), `admin_tasks`              |
+| `admin_kpis()`, `admin_sales_by_day()`, `admin_theme_ranking()`, `admin_coupon_ranking()`, `admin_refund_boxie()`, `publish_theme()`      | `admin_plan_ranking()`, `admin_role()`, vista `admin_boxie_stats`, `lock_boxie()` con días del plan |
+|                                                                                                                                           | Columnas: costos y datos del negocio en `settings`, `themes.origin`, mail y notas de afiliados      |
 
 La migración es aditiva (columnas con default, tablas nuevas) y está probada sobre Postgres (PGlite)
 en `tests/db/backoffice.test.ts`, RLS incluida.
@@ -154,9 +154,10 @@ del sitio (Vercel Web Analytics).
 
 1. Crear (o liberar) el proyecto y aplicar las migraciones: `npx supabase link --project-ref <ref>`
    y `npx supabase db push` (son 7; la última es `admin_backoffice`).
-2. Crear el primer admin: registrar el usuario en _Authentication_ y darle rol de dueño:
+2. Crear el primer admin con `npm run admin:create -- <mail> <clave> <nombre> owner` (crea el
+   usuario en _Authentication_ y le da rol de dueño). O a mano, con el usuario ya registrado:
    ```sql
-   insert into public.admin_users (user_id, email, name, role)
+   insert into public.users (user_id, email, name, role)
    values ('<uuid del usuario>', 'vos@boxiedigital.com.ar', 'Tu nombre', 'owner');
    ```
 3. En Vercel: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,

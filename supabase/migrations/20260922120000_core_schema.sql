@@ -16,6 +16,8 @@ create type public.coupon_kind  as enum ('percent', 'fixed');
 create type public.order_status as enum ('pending', 'paid', 'refunded', 'cancelled');
 create type public.boxie_status as enum ('active', 'refunded', 'expired');
 create type public.media_owner  as enum ('boxie', 'theme');
+-- Rol del equipo en el panel. Va acá porque public.users lo usa.
+create type public.admin_role   as enum ('owner', 'admin', 'editor', 'support');
 
 -- ── Utilidades ──────────────────────────────────────────────────────────────
 

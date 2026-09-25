@@ -54,7 +54,7 @@ describe('RLS · público (clave anon)', () => {
     'boxie_content',
     'media_assets',
     'affiliates',
-    'admin_users',
+    'users',
   ])('no ve nada de %s', async (table) => {
     expect(await asAnon(() => db.query(`select * from public.${table}`))).toEqual([])
   })
@@ -127,7 +127,9 @@ describe('RLS · usuario autenticado que no es admin', () => {
 
   it('no puede darse de alta como admin', async () => {
     await expect(
-      asUser(() => db.query(`insert into public.admin_users (user_id) values ($1)`, [seed.userId])),
+      asUser(() =>
+        db.query(`insert into public.users (user_id, role) values ($1, 'owner')`, [seed.userId]),
+      ),
     ).rejects.toThrow(/row-level security/)
   })
 })

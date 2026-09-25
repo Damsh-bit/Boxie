@@ -264,7 +264,7 @@ describe('equipo y configuración', () => {
     expect(me?.role).toBe('owner')
     await expect(
       asAdmin(() =>
-        db.query(`update public.admin_users set role = 'admin' where user_id = $1`, [seed.adminId]),
+        db.query(`update public.users set role = 'admin' where user_id = $1`, [seed.adminId]),
       ),
     ).rejects.toThrow(/dueño/)
   })
@@ -272,16 +272,15 @@ describe('equipo y configuración', () => {
   it('solo el dueño suma gente al equipo', async () => {
     await asAdmin(() =>
       db.query(
-        `insert into public.admin_users (user_id, email, name, role) values ($1, 'nadie@boxie.test', 'Nadie', 'support')`,
+        `insert into public.users (user_id, email, name, role) values ($1, 'nadie@boxie.test', 'Nadie', 'support')`,
         [seed.userId],
       ),
     )
     // El que se sumó con rol soporte no puede promoverse.
     const promoted = await asUser(() =>
-      db.query(
-        `update public.admin_users set role = 'owner' where user_id = $1 returning user_id`,
-        [seed.userId],
-      ),
+      db.query(`update public.users set role = 'owner' where user_id = $1 returning user_id`, [
+        seed.userId,
+      ]),
     )
     expect(promoted).toEqual([])
   })

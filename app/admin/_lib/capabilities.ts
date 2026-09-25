@@ -21,7 +21,7 @@ export const CAPABILITIES: Capability[] = [
   {
     section: 'Login del panel',
     href: '/admin/login',
-    uses: 'Supabase Auth · admin_users',
+    uses: 'Supabase Auth · users (con rol)',
     status: 'exists',
     note: 'Crear el primer admin (docs/OPERACION.md).',
   },
@@ -112,7 +112,7 @@ export const CAPABILITIES: Capability[] = [
   {
     section: 'Equipo',
     href: '/admin/equipo',
-    uses: 'admin_users (+ email, nombre, rol) · auth.admin.inviteUserByEmail',
+    uses: 'users (+ email, nombre, rol) · auth.admin.inviteUserByEmail',
     status: 'migration',
     note: 'Invitar necesita la API de administración de Supabase Auth.',
   },
@@ -194,7 +194,7 @@ export function connections(): Connection[] {
         ? 'Se entra con el usuario de muestra (admin@boxie.demo). En un deploy esa clave no sirve: sin ADMIN_DEMO_PASSWORD el panel queda cerrado.'
         : demo
           ? 'Usuario de demo con clave propia (ADMIN_DEMO_PASSWORD).'
-          : 'Supabase Auth + admin_users.',
+          : 'Supabase Auth + users (con rol).',
     },
     {
       id: 'host',

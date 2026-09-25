@@ -157,7 +157,7 @@ export default async function SystemPage() {
             {[
               'Crear (o liberar) el proyecto en Supabase, región São Paulo.',
               'Aplicar las migraciones: npx supabase link y npx supabase db push (incluye admin_backoffice).',
-              'Crear el primer admin en Authentication y sumarlo a admin_users con rol owner.',
+              'Crear el primer admin con npm run admin:create (o en Authentication y sumarlo a users con rol owner).',
               'Cargar en Vercel NEXT_PUBLIC_SUPABASE_URL, la anon key, SUPABASE_SERVICE_ROLE_KEY, SESSION_SECRET y TOKEN_ENCRYPTION_KEY.',
               'Sacar DEMO_MODE: el panel pasa solo a src/server/admin/supabase-repo.ts (ya implementado).',
               'Entrar con el admin real y recorrer el panel una vez (checklist en docs/ADMIN.md).',

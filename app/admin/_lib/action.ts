@@ -13,9 +13,9 @@ import { log } from '@/server/log'
  * errores a mensajes para la persona y revalidan las páginas afectadas.
  */
 
-export type ActionResult<T = null> =
-  | { ok: true; message?: string; data?: T }
-  | { ok: false; error: string; fields?: Record<string, string> }
+import type { ActionResult } from './action-result'
+
+export type { ActionResult }
 
 interface Context {
   session: AdminSession

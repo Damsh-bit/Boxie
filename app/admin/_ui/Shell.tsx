@@ -20,6 +20,7 @@ import { initials } from '@/domain/admin/format'
 import { cn } from '@/ui/cn'
 import { ease, spring } from '@/ui/motion'
 import { CommandPalette } from './CommandPalette'
+import { ConfirmProvider } from './Confirm'
 import { isActive, navFor, type NavGroup } from './nav'
 import { ToastProvider } from './Toast'
 
@@ -93,93 +94,95 @@ export function Shell({ user, demo, alerts, logout, children }: ShellProps) {
 
   return (
     <ToastProvider>
-      <div className="min-h-dvh bg-canvas">
-        {/* Escritorio */}
-        <motion.aside
-          className="fixed inset-y-0 left-0 z-40 hidden flex-col overflow-hidden bg-ink text-white lg:flex"
-          initial={false}
-          animate={{ width }}
-          transition={spring.soft}
-        >
-          <Sidebar
-            groups={groups}
-            pathname={pathname}
-            collapsed={collapsed}
-            user={user}
-            demo={demo}
-            logout={logout}
-            onToggle={() => setCollapsedStored(!collapsed)}
-          />
-        </motion.aside>
+      <ConfirmProvider>
+        <div className="min-h-dvh bg-canvas">
+          {/* Escritorio */}
+          <motion.aside
+            className="fixed inset-y-0 left-0 z-40 hidden flex-col overflow-hidden bg-ink text-white lg:flex"
+            initial={false}
+            animate={{ width }}
+            transition={spring.soft}
+          >
+            <Sidebar
+              groups={groups}
+              pathname={pathname}
+              collapsed={collapsed}
+              user={user}
+              demo={demo}
+              logout={logout}
+              onToggle={() => setCollapsedStored(!collapsed)}
+            />
+          </motion.aside>
 
-        {/* Celular */}
-        <AnimatePresence>
-          {drawer && (
-            <>
-              <motion.div
-                className="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm lg:hidden"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setDrawer(false)}
-              />
-              <motion.aside
-                className="fixed inset-y-0 left-0 z-50 flex w-[min(300px,86vw)] flex-col bg-ink text-white shadow-2xl lg:hidden"
-                initial={{ x: '-100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '-100%', transition: { duration: 0.22, ease: ease.in } }}
-                transition={spring.gentle}
-                aria-label="Menú del panel"
-              >
-                <button
-                  type="button"
+          {/* Celular */}
+          <AnimatePresence>
+            {drawer && (
+              <>
+                <motion.div
+                  className="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm lg:hidden"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   onClick={() => setDrawer(false)}
-                  className="absolute top-4 right-4 grid size-9 place-items-center rounded-full text-white/70 hover:bg-white/10 hover:text-white"
-                  aria-label="Cerrar menú"
-                >
-                  <X className="size-5" aria-hidden />
-                </button>
-                <Sidebar
-                  groups={groups}
-                  pathname={pathname}
-                  collapsed={false}
-                  user={user}
-                  demo={demo}
-                  logout={logout}
-                  mobile
                 />
-              </motion.aside>
-            </>
-          )}
-        </AnimatePresence>
+                <motion.aside
+                  className="fixed inset-y-0 left-0 z-50 flex w-[min(300px,86vw)] flex-col bg-ink text-white shadow-2xl lg:hidden"
+                  initial={{ x: '-100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '-100%', transition: { duration: 0.22, ease: ease.in } }}
+                  transition={spring.gentle}
+                  aria-label="Menú del panel"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setDrawer(false)}
+                    className="absolute top-4 right-4 grid size-9 place-items-center rounded-full text-white/70 hover:bg-white/10 hover:text-white"
+                    aria-label="Cerrar menú"
+                  >
+                    <X className="size-5" aria-hidden />
+                  </button>
+                  <Sidebar
+                    groups={groups}
+                    pathname={pathname}
+                    collapsed={false}
+                    user={user}
+                    demo={demo}
+                    logout={logout}
+                    mobile
+                  />
+                </motion.aside>
+              </>
+            )}
+          </AnimatePresence>
 
-        <motion.div
-          className="flex min-h-dvh flex-col lg:pl-[var(--sidebar)]"
-          initial={false}
-          animate={{ '--sidebar': `${width}px` } as Record<string, string>}
-          transition={spring.soft}
-        >
-          <Topbar
-            user={user}
-            demo={demo}
-            alerts={alerts}
-            onMenu={() => setDrawer(true)}
-            onSearch={() => setPalette(true)}
-          />
-          <main className="mx-auto w-full max-w-[1480px] flex-1 px-4 pt-4 pb-16 sm:px-6 lg:px-10 lg:pt-8">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease: ease.out }}
-            >
-              {children}
-            </motion.div>
-          </main>
-        </motion.div>
+          <motion.div
+            className="flex min-h-dvh flex-col lg:pl-[var(--sidebar)]"
+            initial={false}
+            animate={{ '--sidebar': `${width}px` } as Record<string, string>}
+            transition={spring.soft}
+          >
+            <Topbar
+              user={user}
+              demo={demo}
+              alerts={alerts}
+              onMenu={() => setDrawer(true)}
+              onSearch={() => setPalette(true)}
+            />
+            <main className="mx-auto w-full max-w-[1480px] flex-1 px-4 pt-4 pb-16 sm:px-6 lg:px-10 lg:pt-8">
+              <motion.div
+                key={pathname}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: ease.out }}
+              >
+                {children}
+              </motion.div>
+            </main>
+          </motion.div>
 
-        <CommandPalette open={palette} onOpenChange={setPalette} groups={groups} />
-      </div>
+          <CommandPalette open={palette} onOpenChange={setPalette} groups={groups} />
+        </div>
+      </ConfirmProvider>
     </ToastProvider>
   )
 }

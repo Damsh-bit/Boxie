@@ -9,7 +9,7 @@ import type {
 import { serviceDb, unwrap, unwrapMaybe } from '../db/client'
 import type { Tables, TablesUpdate } from '../db/database.types'
 import { log } from '../log'
-import { SupportError, type SupportRepo } from './repo'
+import { SUPPORT_UNAVAILABLE, SupportError, type SupportRepo } from './repo'
 
 /**
  * El soporte sobre Supabase, con el service role: cada ruta ya validó el
@@ -88,7 +88,21 @@ async function fetchTicket(id: string): Promise<SupportTicket> {
   return toTicket(row)
 }
 
-export const supabaseSupportRepo: SupportRepo = {
+/**
+ * ¿La base todavía no tiene el soporte? (sin la migración 20260926120000_support.sql:
+ * falta la tabla o la función). Se avisa como "no disponible" en vez de un error.
+ */
+function missingSupportSchema(error: unknown): boolean {
+  const code = (error as { code?: string } | null)?.code
+  const message = error instanceof Error ? error.message : String(error)
+  if (code === '42P01' || code === 'PGRST205' || code === 'PGRST202') return true
+  return (
+    /support_(tickets|messages|post_message)/.test(message) &&
+    /(does not exist|schema cache|could not find)/i.test(message)
+  )
+}
+
+const impl: SupportRepo = {
   mode: 'supabase',
 
   async createTicket(record) {
@@ -114,7 +128,7 @@ export const supabaseSupportRepo: SupportRepo = {
         'nuevo ticket',
       ),
     )
-    const { message } = await this.postMessage({
+    const { message } = await impl.postMessage({
       ticketId: ticket.id,
       author: 'customer',
       authorName: record.customerName.split(/\s+/)[0]!,
@@ -294,3 +308,21 @@ export const supabaseSupportRepo: SupportRepo = {
     if (error) log.warn('No se pudo registrar en la bitácora', { error: error.message })
   },
 }
+
+/** El repositorio, con cada operación traduciendo "falta la migración" a un error claro. */
+export const supabaseSupportRepo: SupportRepo = Object.fromEntries(
+  Object.entries(impl).map(([key, value]) => [
+    key,
+    typeof value === 'function'
+      ? async (...args: unknown[]) => {
+          try {
+            return await (value as (...a: unknown[]) => Promise<unknown>)(...args)
+          } catch (error) {
+            if (missingSupportSchema(error))
+              throw new SupportError(SUPPORT_UNAVAILABLE, 'unavailable')
+            throw error
+          }
+        }
+      : value,
+  ]),
+) as unknown as SupportRepo

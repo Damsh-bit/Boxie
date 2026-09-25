@@ -12,7 +12,8 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
 export async function GET(request: Request) {
-  const tickets = await customerTickets(await supportTokens())
+  // Sin consultas (o sin el soporte en la base) no hay nada que escuchar.
+  const tickets = await customerTickets(await supportTokens()).catch(() => [])
   if (tickets.length === 0) return new Response(null, { status: 204 })
   const ids = new Set(tickets.map((t) => t.id))
 

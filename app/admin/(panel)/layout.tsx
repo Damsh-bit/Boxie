@@ -3,7 +3,7 @@ import { adminRepo } from '@/server/admin/repo'
 import { requireAdmin } from '@/server/admin/session'
 import { log } from '@/server/log'
 import { SUPPORT_AGENT_ROLES } from '@/server/support/agent-session'
-import { supportRepo } from '@/server/support/repo'
+import { SupportError, supportRepo } from '@/server/support/repo'
 import { Shell } from '../_ui/Shell'
 import { logout } from './actions'
 
@@ -16,9 +16,10 @@ async function supportWaiting(): Promise<number> {
     return (await repo.listTickets({ status: 'open', limit: 200 })).length
   } catch (error) {
     // Sin la migración de soporte (o sin base), el menú sigue andando.
-    log.warn('No se pudo contar las consultas de soporte', {
-      error: error instanceof Error ? error.message : String(error),
-    })
+    if (!(error instanceof SupportError && error.code === 'unavailable'))
+      log.warn('No se pudo contar las consultas de soporte', {
+        error: error instanceof Error ? error.message : String(error),
+      })
     return 0
   }
 }

@@ -93,6 +93,9 @@ base.
   `/soporte` (sirve en el mismo navegador) en vez del link personal.
 - **Límites:** 10 consultas nuevas por hora por IP, 40 mensajes cada 10 minutos, y la recuperación
   de links por mail tiene tope por IP y por mail.
+- **En la demo de Vercel** las consultas viven en la memoria de cada instancia, como todo lo de la
+  demo: si Vercel atiende con otra instancia, una consulta puede no aparecer. Para probar el chat
+  de punta a punta, en local (`boxie-demo`) o con la base real (migración 8 aplicada).
 
 ## Límites y abuso
 

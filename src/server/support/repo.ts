@@ -101,10 +101,14 @@ export interface SupportRepo {
   audit(entry: SupportAuditEntry): Promise<void>
 }
 
+/** Sin la migración de soporte en la base: el sitio lo dice en vez de fallar. */
+export const SUPPORT_UNAVAILABLE =
+  'El chat de soporte no está disponible en este momento. Escribinos por mail o WhatsApp (están en Contacto) y te respondemos.'
+
 export class SupportError extends Error {
   constructor(
     message: string,
-    readonly code: 'not_found' | 'closed' | 'invalid' | 'forbidden' = 'invalid',
+    readonly code: 'not_found' | 'closed' | 'invalid' | 'forbidden' | 'unavailable' = 'invalid',
   ) {
     super(message)
     this.name = 'SupportError'

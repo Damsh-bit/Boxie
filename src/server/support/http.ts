@@ -58,14 +58,13 @@ export async function handle(
       )
     }
     if (error instanceof SupportError) {
-      const status =
-        error.code === 'not_found'
-          ? 404
-          : error.code === 'forbidden'
-            ? 403
-            : error.code === 'closed'
-              ? 409
-              : 400
+      const status = {
+        not_found: 404,
+        forbidden: 403,
+        closed: 409,
+        unavailable: 503,
+        invalid: 400,
+      }[error.code]
       return json({ error: error.message }, { status })
     }
     log.error('Soporte: falló un pedido', error)

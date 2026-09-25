@@ -6,6 +6,7 @@ import { serviceDb, unwrap } from '@/server/db/client'
 import { env, siteUrl } from '@/server/env'
 import { log } from '@/server/log'
 import { createPreference } from '@/server/mercadopago'
+import { applyPaymentNotice } from '@/server/payments'
 import { clientIp, rateLimit } from '@/server/rate-limit'
 
 const Body = z.object({
@@ -22,7 +23,7 @@ const Body = z.object({
 })
 
 /**
- * Crea una orden en la base y una preferencia en Mercado Pago.
+ * Crea una orden en la base y una preferencia en Mercado Pago (o aprueba directo en modo fake).
  * Devuelve la URL a la que redirigir al comprador.
  */
 export async function POST(request: Request) {
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
     }
 
     const { theme, quote } = result
+    const provider = env().PAYMENTS_PROVIDER
 
     // Buscar coupon_id si hay cupón aplicado (para referencia en la orden).
     let couponId: string | null = null
@@ -83,7 +85,7 @@ export async function POST(request: Request) {
           buyer_name: nombre,
           buyer_email: email,
           buyer_phone: telefono ?? null,
-          payment_provider: 'mercadopago',
+          payment_provider: provider === 'fake' ? 'fake' : 'mercadopago',
           // Solo con planes (la columna llega con la migración del panel).
           ...(result.plan ? { plan_id: result.plan.id } : {}),
         })
@@ -92,8 +94,24 @@ export async function POST(request: Request) {
       'crear orden',
     )
 
+    // Bypass de desarrollo: si PAYMENTS_PROVIDER=fake, aprobamos la orden directo.
+    if (provider === 'fake') {
+      const payment = await applyPaymentNotice({
+        orderId: order.id,
+        provider: 'fake',
+        paymentId: `fake-${Date.now()}`,
+        status: 'approved',
+        amountCents: quote.totalCents,
+        currency: 'ARS',
+        source: 'checkout',
+      })
+      return NextResponse.json({ initPoint: payment.links?.editor || siteUrl('/editor') })
+    }
+
     // Crear la preferencia en Mercado Pago.
     const returnBase = siteUrl('/api/checkout/return')
+    const isHttps = returnBase.startsWith('https://')
+
     const preference = await createPreference({
       items: [
         {
@@ -114,17 +132,20 @@ export async function POST(request: Request) {
         failure: returnBase,
         pending: returnBase,
       },
-      // auto_return: MP redirige automáticamente al success_url cuando el pago se aprueba.
-      auto_return: 'approved',
+      // auto_return: MP solo lo admite cuando back_urls.success es una URL HTTPS pública.
+      ...(isHttps ? { auto_return: 'approved' as const } : {}),
       external_reference: order.id,
     })
 
     // Guardar el preference_id para trazabilidad.
     await serviceDb().from('orders').update({ mp_preference_id: preference.id }).eq('id', order.id)
 
-    // En sandbox usamos sandbox_init_point; en producción, init_point.
-    const isProduction = env().VERCEL_ENV === 'production'
-    const initPoint = isProduction ? preference.init_point : preference.sandbox_init_point
+    // Si el token es de producción (APP_USR-), usamos init_point. En sandbox con TEST-, usamos sandbox_init_point.
+    const isProductionToken = env().MP_ACCESS_TOKEN?.startsWith('APP_USR-')
+    const isProduction = env().VERCEL_ENV === 'production' || isProductionToken
+    const initPoint = isProduction
+      ? preference.init_point
+      : preference.sandbox_init_point || preference.init_point
 
     return NextResponse.json({ initPoint })
   } catch (error) {

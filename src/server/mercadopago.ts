@@ -54,8 +54,8 @@ export interface MpPreferenceInput {
     failure: string
     pending: string
   }
-  /** 'approved' = auto-redirige solo cuando el pago se aprueba. */
-  auto_return: 'approved' | 'all'
+  /** 'approved' = auto-redirige solo cuando el pago se aprueba (requiere HTTPS en back_urls.success). */
+  auto_return?: 'approved' | 'all'
   /** Nuestro UUID de orden: lo devuelve MP en el redirect y en el webhook. */
   external_reference: string
   notification_url?: string

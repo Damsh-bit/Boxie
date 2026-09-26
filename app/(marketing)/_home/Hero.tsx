@@ -1,31 +1,45 @@
 'use client'
 
 import { motion, useScroll, useTransform } from 'framer-motion'
-import {
-  ArrowRight,
-  ChevronDown,
-  PauseCircle,
-  Play,
-  ShieldCheck,
-  Smartphone,
-  Wand2,
-  Zap,
-} from 'lucide-react'
+import { ArrowRight, ChevronDown, PauseCircle, Play, Smartphone, Wand2, Zap } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import type { Route } from 'next'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import type { SocialProof } from '@/domain/social-proof'
 import { ButtonLink, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { MercadoPagoLogo } from '@/ui/MercadoPagoLogo'
 import { Swap, ease, spring, useCalm } from '@/ui/motion'
 import { HeroPreview } from './HeroPreview'
-import type { HomeTheme } from './theme-look'
+import { PurchaseTicker } from './PurchaseTicker'
+import { avatarGradient, type HomeTheme } from './theme-look'
 
-const TRUST = [
-  { icon: ShieldCheck, label: 'Pago seguro con Mercado Pago' },
-  { icon: Zap, label: 'Llega al instante' },
-  { icon: Smartphone, label: 'Sin apps ni cuentas' },
+/** La bandera en SVG: Windows no dibuja los emojis de banderas. */
+function FlagAR({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 18 12" aria-hidden className={className}>
+      <rect width="18" height="12" rx="2.5" fill="#74ACDF" />
+      <rect y="4" width="18" height="4" fill="#fff" />
+      <circle cx="9" cy="6" r="1.3" fill="#F6B40E" />
+    </svg>
+  )
+}
+
+const TRUST: { icon: ReactNode; label: string }[] = [
+  {
+    icon: <MercadoPagoLogo className="size-5 text-[#00B1EA]" />,
+    label: 'Pago seguro con Mercado Pago',
+  },
+  { icon: <Zap className="size-4 text-brand" aria-hidden />, label: 'Llega al instante' },
+  { icon: <Smartphone className="size-4 text-brand" aria-hidden />, label: 'Sin apps ni cuentas' },
+  {
+    icon: <FlagAR className="h-3 w-[18px] shadow-[0_0_0_1px_rgba(42,36,51,0.08)]" />,
+    label: 'Hecho en Argentina',
+  },
 ]
+
+const count = new Intl.NumberFormat('es-AR')
 
 const rise = {
   hidden: { opacity: 0, y: 20 },
@@ -42,7 +56,15 @@ const line = {
  * nombre y el celular de al lado lo muestra) y el llamado a comprar con el
  * precio a la vista.
  */
-export function Hero({ themes, salesPaused }: { themes: HomeTheme[]; salesPaused: boolean }) {
+export function Hero({
+  themes,
+  salesPaused,
+  proof,
+}: {
+  themes: HomeTheme[]
+  salesPaused: boolean
+  proof: SocialProof
+}) {
   const ref = useRef<HTMLElement>(null)
   const calm = useCalm()
   const router = useRouter()
@@ -93,20 +115,30 @@ export function Hero({ themes, salesPaused }: { themes: HomeTheme[]; salesPaused
         variants={{ show: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } } }}
       >
         <div className="flex min-w-0 flex-col items-center gap-6 text-center [grid-area:copy] lg:items-start lg:self-end lg:text-left">
-          <motion.span
-            data-reveal=""
-            variants={rise}
-            className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 text-xs font-bold tracking-wide text-ink shadow-[0_6px_20px_rgba(42,36,51,0.08)] ring-1 ring-black/5 backdrop-blur"
-          >
-            <motion.span
-              aria-hidden
-              animate={calm ? undefined : { rotate: [0, 18, -10, 0], scale: [1, 1.25, 1] }}
-              transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.4 }}
+          {proof.events.length ? (
+            <motion.div
+              data-reveal=""
+              variants={rise}
+              className="flex w-full justify-center lg:justify-start"
             >
-              ✨
+              <PurchaseTicker events={proof.events} themes={themes} />
+            </motion.div>
+          ) : (
+            <motion.span
+              data-reveal=""
+              variants={rise}
+              className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 text-xs font-bold tracking-wide text-ink shadow-[0_6px_20px_rgba(42,36,51,0.08)] ring-1 ring-black/5 backdrop-blur"
+            >
+              <motion.span
+                aria-hidden
+                animate={calm ? undefined : { rotate: [0, 18, -10, 0], scale: [1, 1.25, 1] }}
+                transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.4 }}
+              >
+                ✨
+              </motion.span>
+              <span className="truncate">Regalo digital personalizado · Hecho en Argentina</span>
             </motion.span>
-            <span className="truncate">Regalo digital personalizado · Hecho en Argentina</span>
-          </motion.span>
+          )}
 
           <h1
             id="hero-title"
@@ -145,6 +177,8 @@ export function Hero({ themes, salesPaused }: { themes: HomeTheme[]; salesPaused
             Fotos, dedicatoria, su canción y juegos en una experiencia personalizada que se abre
             desde el celular. La creás en 5 minutos y llega al instante por WhatsApp.
           </motion.p>
+
+          {proof.sold && <SoldCount sold={proof.sold} events={proof.events} themes={themes} />}
         </div>
 
         <motion.div
@@ -236,9 +270,9 @@ export function Hero({ themes, salesPaused }: { themes: HomeTheme[]; salesPaused
           </form>
 
           <ul className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm font-semibold text-ink/70 lg:justify-start">
-            {TRUST.map(({ icon: Icon, label }) => (
+            {TRUST.map(({ icon, label }) => (
               <li key={label} className="flex items-center gap-1.5">
-                <Icon className="size-4 text-brand" aria-hidden />
+                {icon}
                 {label}
               </li>
             ))}
@@ -275,6 +309,53 @@ export function Hero({ themes, salesPaused }: { themes: HomeTheme[]; salesPaused
         </a>
       </motion.div>
     </section>
+  )
+}
+
+/**
+ * "+500 Boxies regaladas" con las iniciales de quienes compraron hace poco.
+ * Solo aparece cuando las ventas reales pasan el mínimo (content/social-proof).
+ */
+function SoldCount({
+  sold,
+  events,
+  themes,
+}: {
+  sold: number
+  events: SocialProof['events']
+  themes: HomeTheme[]
+}) {
+  const faces = events.slice(0, 4)
+  return (
+    <motion.div
+      data-reveal=""
+      variants={rise}
+      className="-mt-1 flex items-center justify-center gap-3 lg:justify-start"
+    >
+      {faces.length > 0 && (
+        <span className="flex -space-x-2.5" aria-hidden>
+          {faces.map((e, i) => {
+            const color = themes.find((t) => t.slug === e.theme)?.color ?? '#F44E63'
+            return (
+              <span
+                key={e.id}
+                className="grid size-8 place-items-center rounded-full font-fun text-sm font-semibold text-white ring-2 ring-white [text-shadow:0_1px_2px_rgba(0,0,0,0.25)]"
+                style={{
+                  background: avatarGradient(color),
+                  zIndex: faces.length - i,
+                }}
+              >
+                {e.name.charAt(0)}
+              </span>
+            )
+          })}
+        </span>
+      )}
+      <p className="text-sm font-medium text-ink/70">
+        <b className="font-display text-lg font-bold text-ink">+{count.format(sold)}</b> Boxies
+        regaladas
+      </p>
+    </motion.div>
   )
 }
 

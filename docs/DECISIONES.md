@@ -141,7 +141,20 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   comparador (flores, desayuno…) son valores de referencia ficticios y lo dicen.
 - **Sin reseñas ni cifras inventadas:** la charla de WhatsApp está rotulada "Recreación de ejemplo"
   y los números son del producto (20 pantallas, días online, 0 apps). Cuando haya reseñas reales,
-  van en esa sección.
+  van en esa sección. La única excepción son los ejemplos de relleno de la cinta de compras (abajo).
+- **Prueba social en la portada:** la cinta "María acaba de comprar una Boxie · con Mercado Pago"
+  (`_home/PurchaseTicker.tsx`) lee las ventas pagadas de los últimos 14 días
+  (`src/server/social-proof.ts`, con la clave de servicio, a lo sumo cada 5 minutos por
+  instancia): del servidor sale solo el nombre de pila, la temática y hace cuánto, nunca apellido,
+  mail ni monto; los nombres que no lo parecen ("test", "asdf") se descartan. Mientras haya menos
+  de 8 ventas recientes, la completan **ejemplos inventados** (`src/content/social-proof.ts`,
+  pedido explícito del dueño) con horarios escalonados y en otro orden en cada visita; con 8 o más
+  dejan de salir solos, `examplesUntil: 0` los apaga y con las ventas pausadas nunca salen. Ojo:
+  compras inventadas pueden leerse como publicidad engañosa (Ley 24.240, DNU 274/2019): apagarlos
+  apenas haya ventas. El contador "+N Boxies regaladas" es solo con ventas reales y aparece desde
+  100 (redondeado para abajo). La cinta se frena con el mouse encima, fuera de pantalla y con la
+  pestaña oculta. La fila de confianza lleva el logo de Mercado Pago y "Hecho en Argentina" (lo que
+  decía la etiqueta que reemplazó la cinta).
 - **SEO:** título y descripción propios, canonical, Open Graph y JSON-LD (Organization, WebSite,
   Product con AggregateOffer y FAQPage). Un solo `h1`; cada sección con su `h2` con palabras que
   se buscan (regalo digital, regalo personalizado, a distancia, cumpleaños, aniversario).

@@ -62,6 +62,14 @@ export function themeEmoji(slug: string, guideEmoji?: string | null): string {
   return LOOKS[slug]?.emoji ?? (guideEmoji?.trim() || FALLBACK.emoji)
 }
 
+/**
+ * El fondo de la inicial de quien compró (la cinta de compras de la portada):
+ * el color de la temática oscurecido, para que la letra blanca se lea aunque
+ * el color sea claro.
+ */
+export const avatarGradient = (color: string) =>
+  `linear-gradient(140deg, color-mix(in srgb, ${color} 88%, #2a2433), color-mix(in srgb, ${color} 58%, #2a2433))`
+
 /** El degradé de la portada, a partir del color de la tarjeta. */
 export const themeGradient = (color: string) =>
   `linear-gradient(160deg, color-mix(in srgb, ${color} 72%, #2a2433) 0%, color-mix(in srgb, ${color} 88%, #2a2433) 50%, color-mix(in srgb, ${color} 70%, #ffffff) 100%)`

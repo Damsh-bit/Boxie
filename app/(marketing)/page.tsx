@@ -5,6 +5,7 @@ import { site, siteUrl } from '@/content/site'
 import { formatARS } from '@/domain/money'
 import { describeLifetime } from '@/domain/plans'
 import type { SlideKind } from '@/slides/schemas'
+import { getSocialProof } from '@/server/social-proof'
 import { getStorefront, type Storefront } from '@/server/storefront'
 import { LiftLink } from '@/ui/LiftLink'
 import { FinalCta } from './_home/FinalCta'
@@ -161,6 +162,7 @@ function structuredData(sf: Storefront, faqs: FaqItem[]) {
 
 export default async function HomePage() {
   const sf = await getStorefront()
+  const proof = await getSocialProof({ themes: sf.themes, salesPaused: sf.salesPaused })
   const byPlans = sf.plans.length > 1
   const price = formatARS(sf.priceFromCents)
   const sample = sf.themes[0]
@@ -205,7 +207,7 @@ export default async function HomePage() {
     <div className="overflow-x-clip bg-paper">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
 
-      <Hero themes={homeThemes} salesPaused={sf.salesPaused} />
+      <Hero themes={homeThemes} salesPaused={sf.salesPaused} proof={proof} />
       <OccasionMarquee />
       <ThemeShowcase
         themes={homeThemes}

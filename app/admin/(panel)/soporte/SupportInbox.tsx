@@ -92,6 +92,22 @@ export function SupportInbox({
 
   const unreadCount = tickets.filter((t) => t.status !== 'closed' && unreadByAgent(t)).length
   const alerts = useInboxAlerts(unreadCount)
+  const overdueCount = tickets.filter((t) => isOverdue(t, new Date())).length
+  const scopeCount = (scope: Scope) =>
+    tickets.filter(
+      (t) =>
+        inTab(t, tab) &&
+        (scope === 'all' || (scope === 'mine' ? t.assignee === me.email : t.assignee === null)),
+    ).length
+
+  // El número de sin leer en la pestaña del navegador, para verlo desde otra pestaña.
+  useEffect(() => {
+    const base = document.title.replace(/^\(\d+\+?\) /, '')
+    document.title = unreadCount ? `(${unreadCount > 99 ? '99+' : unreadCount}) ${base}` : base
+    return () => {
+      document.title = base
+    }
+  }, [unreadCount])
 
   const upsert = useCallback((ticket: SupportTicket) => {
     setTickets((list) => sortTickets([ticket, ...list.filter((t) => t.id !== ticket.id)]))
@@ -277,22 +293,51 @@ export function SupportInbox({
                 ['mine', 'Mías'],
                 ['unassigned', 'Sin asignar'],
               ] as const
-            ).map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setScope(value)}
-                aria-pressed={scope === value}
-                className={cn(
-                  'rounded-full px-2.5 py-1 font-semibold transition-colors',
-                  scope === value
-                    ? 'bg-ink text-white'
-                    : 'text-neutral-500 hover:bg-canvas hover:text-ink',
-                )}
+            ).map(([value, label]) => {
+              const n = scopeCount(value)
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setScope(value)}
+                  aria-pressed={scope === value}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold transition-colors',
+                    scope === value
+                      ? 'bg-ink text-white'
+                      : 'text-neutral-500 hover:bg-canvas hover:text-ink',
+                  )}
+                >
+                  {label}
+                  {n > 0 && (
+                    <span
+                      className={cn(
+                        'min-w-4 rounded-full px-1 text-center text-[10px] leading-4 tabular-nums',
+                        scope === value
+                          ? 'bg-white/20 text-white'
+                          : value === 'unassigned' && tab === 'open'
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-canvas text-neutral-600',
+                      )}
+                    >
+                      {n}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+            {status === 'open' && (
+              <span
+                className="ml-auto inline-flex items-center gap-1.5 self-center text-neutral-400"
+                title="Conectado: los mensajes llegan en vivo"
               >
-                {label}
-              </button>
-            ))}
+                <span className="relative flex size-2">
+                  <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:hidden" />
+                  <span className="relative size-2 rounded-full bg-emerald-500" />
+                </span>
+                En vivo
+              </span>
+            )}
             {status === 'offline' && (
               <span className="ml-auto self-center font-semibold text-amber-700">
                 Reconectando…
@@ -300,6 +345,30 @@ export function SupportInbox({
             )}
           </div>
         </div>
+
+        {(unreadCount > 0 || overdueCount > 0) && (
+          <div className="flex flex-wrap gap-1.5 border-b border-line px-3 py-2 text-xs font-semibold">
+            {unreadCount > 0 && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-2.5 py-1 text-brand">
+                <span className="size-1.5 rounded-full bg-brand" aria-hidden />
+                {unreadCount} sin leer
+              </span>
+            )}
+            {overdueCount > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setTab('open')
+                  setScope('all')
+                }}
+                className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-red-700 transition-colors hover:bg-red-100"
+              >
+                <span className="size-1.5 animate-pulse rounded-full bg-red-500" aria-hidden />
+                {overdueCount} {overdueCount === 1 ? 'atrasada' : 'atrasadas'}
+              </button>
+            )}
+          </div>
+        )}
 
         <ul
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2"
@@ -456,7 +525,7 @@ function TicketListItem({
       aria-current={active ? 'true' : undefined}
       className={cn(
         'relative flex w-full gap-3 rounded-2xl p-3 text-left transition-colors',
-        active ? 'bg-brand-soft' : 'hover:bg-canvas',
+        active ? 'bg-brand-soft' : overdue ? 'bg-red-50/60 hover:bg-red-50' : 'hover:bg-canvas',
       )}
     >
       {active && (
@@ -469,9 +538,22 @@ function TicketListItem({
       )}
       <span
         aria-hidden
-        className="grid size-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand to-lilac text-sm font-bold text-white"
+        className="relative grid size-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand to-lilac text-sm font-bold text-white"
       >
         {ticket.customerName.trim().charAt(0).toUpperCase()}
+        {/* Estado de un vistazo: rojo atrasada, ámbar le toca al equipo, gris esperando al cliente. */}
+        <span
+          className={cn(
+            'absolute -right-0.5 -bottom-0.5 size-3 rounded-full ring-2 ring-white',
+            overdue
+              ? 'bg-red-500'
+              : ticket.status === 'open'
+                ? 'bg-amber-400'
+                : ticket.status === 'pending'
+                  ? 'bg-sky-400'
+                  : 'bg-emerald-500',
+          )}
+        />
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">

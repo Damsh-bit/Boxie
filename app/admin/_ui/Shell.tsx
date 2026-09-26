@@ -19,6 +19,7 @@ import { ADMIN_ROLES, type AdminRole } from '@/domain/admin/types'
 import { initials } from '@/domain/admin/format'
 import { cn } from '@/ui/cn'
 import { ease, spring } from '@/ui/motion'
+import { worstTone, type BadgeTone, type NavBadgeInfo, type NavBadges } from '../_lib/badges'
 import { CommandPalette } from './CommandPalette'
 import { ConfirmProvider } from './Confirm'
 import { isActive, navFor, type NavGroup } from './nav'
@@ -34,8 +35,8 @@ interface ShellProps {
   user: ShellUser
   demo: boolean
   alerts: number
-  /** Contadores junto a una sección del menú (consultas esperando respuesta). */
-  badges?: Partial<Record<string, number>>
+  /** Indicadores de trabajo pendiente junto a cada sección del menú. */
+  badges?: NavBadges
   logout: () => Promise<void>
   children: ReactNode
 }
@@ -169,6 +170,7 @@ export function Shell({ user, demo, alerts, badges = {}, logout, children }: She
               user={user}
               demo={demo}
               alerts={alerts}
+              menuTone={worstTone(Object.values(badges))}
               onMenu={() => setDrawer(true)}
               onSearch={() => setPalette(true)}
             />
@@ -207,7 +209,7 @@ function Sidebar({
   collapsed: boolean
   user: ShellUser
   demo: boolean
-  badges: Partial<Record<string, number>>
+  badges: NavBadges
   logout: () => Promise<void>
   onToggle?: () => void
   mobile?: boolean
@@ -258,12 +260,13 @@ function Sidebar({
               <AnimatePresence initial={false}>
                 {!collapsed && (
                   <motion.p
-                    className="px-3 pb-1.5 text-[11px] font-bold tracking-[0.14em] text-white/35 uppercase"
+                    className="flex items-center gap-2 px-3 pb-1.5 text-[11px] font-bold tracking-[0.14em] text-white/35 uppercase"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
                     {group.label}
+                    <GroupDot tone={worstTone(group.items.map((i) => badges[i.href]))} />
                   </motion.p>
                 )}
               </AnimatePresence>
@@ -276,7 +279,11 @@ function Sidebar({
                       <Link
                         href={item.href}
                         aria-current={active ? 'page' : undefined}
-                        title={collapsed ? item.label : undefined}
+                        title={
+                          collapsed
+                            ? [item.label, badges[item.href]?.label].filter(Boolean).join(' · ')
+                            : badges[item.href]?.label
+                        }
                         className={cn(
                           'group relative flex h-11 items-center gap-3 rounded-xl px-3 text-[15px] font-medium transition-colors',
                           active
@@ -298,11 +305,7 @@ function Sidebar({
                         >
                           <Icon className="size-[19px]" aria-hidden />
                         </motion.span>
-                        <NavBadge
-                          count={badges[item.href] ?? 0}
-                          collapsed={collapsed}
-                          active={active}
-                        />
+                        <NavBadge badge={badges[item.href]} collapsed={collapsed} active={active} />
                         <AnimatePresence initial={false}>
                           {!collapsed && (
                             <motion.span
@@ -389,12 +392,14 @@ function Topbar({
   user,
   demo,
   alerts,
+  menuTone,
   onMenu,
   onSearch,
 }: {
   user: ShellUser
   demo: boolean
   alerts: number
+  menuTone: BadgeTone | null
   onMenu: () => void
   onSearch: () => void
 }) {
@@ -404,10 +409,19 @@ function Topbar({
         <button
           type="button"
           onClick={onMenu}
-          className="grid size-10 place-items-center rounded-full text-ink hover:bg-white lg:hidden"
-          aria-label="Abrir menú"
+          className="relative grid size-10 place-items-center rounded-full text-ink hover:bg-white lg:hidden"
+          aria-label={menuTone ? 'Abrir menú (hay secciones con pendientes)' : 'Abrir menú'}
         >
           <Menu className="size-5" aria-hidden />
+          {menuTone && (
+            <span
+              className={cn(
+                'absolute top-2 right-2 size-2.5 rounded-full ring-2 ring-canvas',
+                TONE_BG[menuTone],
+              )}
+              aria-hidden
+            />
+          )}
         </button>
         <Link href="/admin" className="lg:hidden" aria-label="Boxie, panel">
           <Image src="/brand/boxie-logo.png" alt="Boxie" width={80} height={28} />
@@ -473,16 +487,40 @@ function Topbar({
   )
 }
 
-/** Contador de una sección (a la derecha; con el menú achicado, un punto sobre el ícono). */
+const TONE_BG: Record<BadgeTone, string> = {
+  critical: 'bg-brand',
+  warning: 'bg-amber-400',
+  info: 'bg-sky-400',
+}
+
+const TONE_PILL: Record<BadgeTone, string> = {
+  critical: 'bg-brand text-white',
+  warning: 'bg-amber-400 text-ink',
+  info: 'bg-white/15 text-white',
+}
+
+/** Punto junto al nombre de un grupo: hay algo para hacer adentro. */
+function GroupDot({ tone }: { tone: BadgeTone | null }) {
+  if (!tone) return null
+  return <span className={cn('size-1.5 rounded-full', TONE_BG[tone])} aria-hidden />
+}
+
+/**
+ * Indicador de una sección: a la derecha, el número con el color de la
+ * urgencia (rojo: ya; ámbar: hoy; celeste: sin apuro); con el menú achicado,
+ * un punto sobre el ícono. Lo urgente late para que se vea de reojo.
+ */
 function NavBadge({
-  count,
+  badge,
   collapsed,
   active,
 }: {
-  count: number
+  badge: NavBadgeInfo | undefined
   collapsed: boolean
   active: boolean
 }) {
+  const count = badge?.count ?? 0
+  const tone = badge?.tone ?? 'info'
   return (
     <AnimatePresence>
       {count > 0 && (
@@ -493,15 +531,22 @@ function NavBadge({
             collapsed
               ? 'top-2 left-7 size-2.5 ring-2 ring-ink'
               : 'right-3 min-w-5 px-1.5 text-center text-[11px] leading-5',
-            active ? 'bg-white text-brand' : 'bg-brand text-white',
+            active ? 'bg-white text-brand' : collapsed ? TONE_BG[tone] : TONE_PILL[tone],
           )}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           exit={{ scale: 0 }}
           transition={spring.bouncy}
-          aria-label={`${count} esperando respuesta`}
+          role="status"
+          aria-label={badge?.label}
         >
-          {collapsed ? null : count > 99 ? '99+' : count}
+          {tone === 'critical' && !active && (
+            <span
+              className="absolute inset-0 animate-ping rounded-full bg-brand opacity-40 motion-reduce:hidden"
+              aria-hidden
+            />
+          )}
+          <span className="relative">{collapsed ? null : count > 99 ? '99+' : count}</span>
         </motion.span>
       )}
     </AnimatePresence>

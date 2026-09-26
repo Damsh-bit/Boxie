@@ -12,6 +12,7 @@ alter table public.users add column if not exists password_hash text;
 alter table public.users alter column user_id set default gen_random_uuid();
 
 -- 3. Quitar la restricción obligatoria que forzaba a que user_id existiera en auth.users
+alter table public.users drop constraint if exists admin_users_user_id_fkey;
 alter table public.users drop constraint if exists users_user_id_fkey;
 
 -- 4. Índice único por email en minúsculas para búsquedas de login rápidas y seguras

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { AlertCircle, ArrowLeft } from 'lucide-react'
 import { getInviteDetails } from '@/server/admin/invite'
 import { getAdminSession } from '@/server/admin/session'
@@ -15,8 +14,6 @@ interface PageProps {
 }
 
 export default async function ActivatePage({ searchParams }: PageProps) {
-  if (await getAdminSession()) redirect('/admin')
-
   const { token } = await searchParams
   if (!token) {
     return <InvalidInviteMessage error="No se proporcionó ningún token de activación." />
@@ -27,7 +24,11 @@ export default async function ActivatePage({ searchParams }: PageProps) {
     return <InvalidInviteMessage error={details.error} />
   }
 
-  return <ActivateScreen token={token} user={details.user} />
+  const currentSession = await getAdminSession()
+
+  return (
+    <ActivateScreen token={token} user={details.user} currentUserEmail={currentSession?.email} />
+  )
 }
 
 function InvalidInviteMessage({ error }: { error: string }) {

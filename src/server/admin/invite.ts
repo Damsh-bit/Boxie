@@ -27,6 +27,26 @@ export interface InviteResult {
   createdAt: string
 }
 
+async function getOrCreateAuthUser(db: any, email: string, name: string): Promise<string | null> {
+  try {
+    const { data: created } = await db.auth.admin.createUser({
+      email,
+      email_confirm: true,
+      user_metadata: { name },
+    })
+    if (created?.user?.id) {
+      return created.user.id
+    }
+    // Si ya existía en auth.users, buscamos su ID
+    const { data: list } = await db.auth.admin.listUsers({ page: 1, perPage: 1000 })
+    const existing = list?.users?.find((u: any) => u.email?.toLowerCase() === email)
+    return existing?.id ?? null
+  } catch (err) {
+    log.warn('No se pudo sincronizar usuario con auth.admin', { error: err })
+    return null
+  }
+}
+
 /**
  * Registra o actualiza la invitación de un miembro en public.users
  * y envía el correo con Resend.
@@ -76,7 +96,7 @@ export async function createMemberInvite(
     }
   } else {
     // Insertar nuevo miembro en estado pendiente
-    const { data: inserted, error: insertError } = await db
+    let { data: inserted, error: insertError } = await db
       .from('users')
       .insert({
         email,
@@ -88,6 +108,34 @@ export async function createMemberInvite(
       } as any)
       .select('user_id')
       .single()
+
+    // Si la BD aún conserva la FK hacia auth.users (ej. admin_users_user_id_fkey):
+    if (
+      insertError &&
+      (insertError.code === '23503' ||
+        String(insertError.message).includes('foreign key constraint'))
+    ) {
+      log.warn('Detectada FK hacia auth.users, resolviendo usuario en auth...', { email })
+      const authUserId = await getOrCreateAuthUser(db, email, input.name)
+      if (authUserId) {
+        const retry = await db
+          .from('users')
+          .insert({
+            user_id: authUserId,
+            email,
+            name: input.name,
+            role: input.role,
+            invited_at: nowIso,
+            invite_token_hash: tokenHash,
+            invite_expires_at: expiresAt.toISOString(),
+          } as any)
+          .select('user_id')
+          .single()
+
+        inserted = retry.data
+        insertError = retry.error
+      }
+    }
 
     if (insertError || !inserted) {
       log.error('Error al insertar nuevo miembro de equipo', insertError)
@@ -200,6 +248,13 @@ export async function activateMemberAccount(token: string, password: string) {
   if (error) {
     log.error('Error al activar cuenta de miembro', error)
     return { ok: false as const, error: 'No se pudo guardar la contraseña. Probá de nuevo.' }
+  }
+
+  // Sincronizar también con Supabase Auth si el usuario fue registrado allí
+  try {
+    await db.auth.admin.updateUserById(user.id, { password })
+  } catch {
+    // Si el usuario no existe en auth.users, es normal y esperado
   }
 
   return {

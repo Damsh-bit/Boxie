@@ -12,6 +12,7 @@ import { activateAccount, type ActivateState } from './actions'
 export function ActivateScreen({
   token,
   user,
+  currentUserEmail,
 }: {
   token: string
   user: {
@@ -19,6 +20,7 @@ export function ActivateScreen({
     email: string
     roleLabel: string
   }
+  currentUserEmail?: string
 }) {
   const [state, action, pending] = useActionState<ActivateState, FormData>(activateAccount, {
     error: null,
@@ -54,8 +56,15 @@ export function ActivateScreen({
           <form action={action} className="space-y-4">
             <input type="hidden" name="token" value={token} />
 
+            {currentUserEmail && currentUserEmail.toLowerCase() !== user.email.toLowerCase() && (
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+                Tenés una sesión abierta como <strong>{currentUserEmail}</strong>. Al activar esta
+                cuenta, entrarás automáticamente como <strong>{user.email}</strong>.
+              </div>
+            )}
+
             <div className="rounded-2xl bg-canvas p-3.5 text-xs text-neutral-600">
-              <span className="font-medium text-neutral-500">Cuenta:</span>{' '}
+              <span className="font-medium text-neutral-500">Cuenta a activar:</span>{' '}
               <strong className="text-ink">{user.email}</strong>
             </div>
 

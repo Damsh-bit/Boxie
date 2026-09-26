@@ -25,7 +25,8 @@ export function proxy(request: NextRequest) {
   if (adminHost && host !== adminHost) return new NextResponse(null, { status: 404 })
 
   const headers = new Headers({ 'x-robots-tag': 'noindex, nofollow' })
-  if (pathname === '/admin/login') return NextResponse.next({ headers })
+  if (pathname === '/admin/login' || pathname === '/admin/activar')
+    return NextResponse.next({ headers })
 
   const session = readAdminSession(request.cookies.get(ADMIN_COOKIE)?.value)
   if (!session) {

@@ -16,6 +16,7 @@ import { bucketLabel, previousRange } from '@/domain/admin/range'
 import { EXPENSE_CATEGORIES } from '@/domain/admin/types'
 import { adminRepo } from '@/server/admin/repo'
 import { requireAdmin } from '@/server/admin/session'
+import { expensesWithAdSpend } from '@/server/marketing/finance'
 import { rangeFromParams } from '../../_lib/range'
 import { ColumnChart, Donut, Legend, WithTable } from '../../_ui/charts'
 import { SERIES } from '../../_ui/palette'
@@ -33,9 +34,11 @@ export default async function FinancePage({ searchParams }: PageProps<'/admin/fi
   const { range, picker } = rangeFromParams(await searchParams, 'mtd')
   const s = data.settings
   const now = new Date()
+  // Los gastos cargados más la pauta de las campañas de Marketing (gasto único por día).
+  const expenses = await expensesWithAdSpend(data.expenses)
 
-  const pnl = profitAndLoss(data.orders, data.expenses, s, range)
-  const prev = profitAndLoss(data.orders, data.expenses, s, previousRange(range))
+  const pnl = profitAndLoss(data.orders, expenses, s, range)
+  const prev = profitAndLoss(data.orders, expenses, s, previousRange(range))
   const fixedMonthly = monthlyFixedCents(data.expenses, now)
   const be = breakEven(pnl, fixedMonthly)
   const month = monthProjection(data.orders, s.monthlyGoalCents, now)
@@ -44,7 +47,7 @@ export default async function FinancePage({ searchParams }: PageProps<'/admin/fi
     (o) =>
       (o.status === 'paid' || o.status === 'refunded') && o.paidAt && Date.parse(o.paidAt) >= since,
   ).length
-  const months = monthlyResults(data.orders, data.expenses, s, 12, now)
+  const months = monthlyResults(data.orders, expenses, s, 12, now)
   const themeName = new Map(data.themes.map((t) => [t.id, t.name]))
   const planName = new Map(data.plans.map((p) => [p.id, p.name]))
   const byTheme = profitabilityBy(data.orders, s, range, (o) => o.themeId).map((r) => ({

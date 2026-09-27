@@ -53,6 +53,20 @@ export function RangeContent({ children }: { children: ReactNode }) {
   )
 }
 
+/**
+ * Cambia la URL dentro del alcance de un RangeScope: el contenido queda a
+ * media opacidad mientras el servidor recalcula (lo usan otros selectores,
+ * como el modelo de atribución de Marketing).
+ */
+export function useScopedNavigation() {
+  const ctx = useContext(Pending)
+  const router = useRouter()
+  return {
+    pending: ctx?.pending ?? false,
+    go: (url: string) => (ctx ? ctx.go(url) : router.replace(url as Route, { scroll: false })),
+  }
+}
+
 export function RangePicker({
   preset,
   label,

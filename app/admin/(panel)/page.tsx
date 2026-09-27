@@ -36,6 +36,7 @@ import {
 import { AR_OFFSET_MS, previousRange } from '@/domain/admin/range'
 import { adminRepo } from '@/server/admin/repo'
 import { requireAdmin } from '@/server/admin/session'
+import { expensesWithAdSpend } from '@/server/marketing/finance'
 import { ButtonLink } from '@/ui/Button'
 import { rangeFromParams } from '../_lib/range'
 import { AlertList } from '../_ui/AlertList'
@@ -66,8 +67,10 @@ export default async function DashboardPage({ searchParams }: PageProps<'/admin'
   const { current: k, previous: p } = kpisWithPrevious(data.orders, data.boxies, range)
   const series = salesSeries(data.orders, range, bucket)
   const prevSeries = salesSeries(data.orders, previousRange(range), bucket)
-  const pnl = profitAndLoss(data.orders, data.expenses, data.settings, range)
-  const prevPnl = profitAndLoss(data.orders, data.expenses, data.settings, previousRange(range))
+  // Los gastos incluyen la pauta de las campañas (Marketing).
+  const expenses = await expensesWithAdSpend(data.expenses)
+  const pnl = profitAndLoss(data.orders, expenses, data.settings, range)
+  const prevPnl = profitAndLoss(data.orders, expenses, data.settings, previousRange(range))
   const month = monthProjection(data.orders, data.settings.monthlyGoalCents, now)
   const today = todayVsYesterday(data.orders, now)
 

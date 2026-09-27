@@ -19,6 +19,8 @@ import type {
 } from '@/domain/admin/types'
 import { couponDiscount } from '@/domain/coupons'
 import type { Plan } from '@/domain/plans'
+import type { OrderAttribution } from '@/domain/marketing/attribution'
+import type { Campaign, MarketingSettings, SpendEntry, TrafficRow } from '@/domain/marketing/types'
 import type { SupportMessage, SupportTicket } from '@/domain/support'
 import { parseThemeConfig } from '@/slides/config'
 import { generateTheme } from '@/slides/generator/generate'
@@ -36,7 +38,7 @@ import { DEFAULT_DEMO_EMAIL } from '../token'
  * Ningún dato es de una persona real: los mails son @ejemplo.com.
  */
 
-export const DEMO_DB_VERSION = 5
+export const DEMO_DB_VERSION = 6
 
 export interface DemoThemeVersion {
   id: string
@@ -85,6 +87,16 @@ export interface DemoDb {
    * tiene que volver a sembrarse.
    */
   support?: DemoSupport
+  /** Marketing (campañas, pauta, visitas, origen de las órdenes). Se siembra al usarse. */
+  marketing?: DemoMarketing
+}
+
+export interface DemoMarketing {
+  settings: MarketingSettings
+  campaigns: Campaign[]
+  spend: SpendEntry[]
+  traffic: TrafficRow[]
+  attributions: OrderAttribution[]
 }
 
 export interface DemoSupport {
@@ -106,7 +118,7 @@ function mulberry32(seed: number) {
   }
 }
 
-class Rng {
+export class Rng {
   private next: () => number
   constructor(seed: number) {
     this.next = mulberry32(seed)
@@ -631,8 +643,8 @@ function seedExpenses(): Expense[] {
     e(4, 'infraestructura', 'Dominio boxiedigital.com.ar', 'NIC Argentina', 16_000, '2025-09-01', {
       recurrence: 'once',
     }),
-    e(5, 'marketing', 'Campañas de Instagram y Facebook', 'Meta Ads', 320_000, '2025-09-01'),
-    e(6, 'marketing', 'Búsquedas "regalo digital"', 'Google Ads', 110_000, '2026-02-01'),
+    // La pauta (Meta, Google, TikTok) no va acá: se carga por campaña en Marketing y
+    // Finanzas la suma sola (ver src/server/marketing/finance.ts).
     e(7, 'marketing', 'Contenido para redes (freelance)', 'Diseñadora', 180_000, '2026-01-01'),
     e(8, 'herramientas', 'Diseño y edición', 'Canva Pro', 9_500, '2025-09-01'),
     e(9, 'herramientas', 'Monitoreo de errores', 'Sentry', 0, '2025-09-01', {

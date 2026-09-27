@@ -21,6 +21,7 @@ import { formatARS } from '@/domain/money'
 import { Button, ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { Field, Input } from '@/ui/form'
+import { currentAttribution } from '@/ui/marketing/attribution-client'
 import { ease, Notice, Spinner, spring, Swap } from '@/ui/motion'
 
 export interface Quote {
@@ -117,6 +118,8 @@ export function CheckoutForm({
         nombre: data.get('name'),
         email: data.get('email'),
         telefono: data.get('phone'),
+        // De dónde llegó (anuncio, redes, buscador): para medir qué canal vende.
+        atribucion: currentAttribution(),
       }),
     }).catch(() => null)
     setBusy(false)

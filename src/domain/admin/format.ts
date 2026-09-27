@@ -106,3 +106,9 @@ export function initials(name: string): string {
 /** Centavos ↔ pesos en los formularios (los formularios muestran pesos). */
 export const toPesos = (cents: Cents) => cents / 100
 export const toCents = (pesos: number) => Math.round(pesos * 100)
+
+/** 3.26 → "3,3×" (ROAS, MER, LTV:CAC). null → "—". */
+export function formatMultiple(value: number | null | undefined, digits = 1): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '—'
+  return `${value.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: digits })}×`
+}

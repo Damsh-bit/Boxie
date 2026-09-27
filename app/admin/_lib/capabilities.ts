@@ -103,6 +103,13 @@ export const CAPABILITIES: Capability[] = [
     note: 'Migración 20260926120000_support.sql. En vivo: stream SSE (bus en memoria + lectura de cambios cada 2,5 s).',
   },
   {
+    section: 'Marketing',
+    href: '/admin/marketing',
+    uses: 'marketing_campaigns · marketing_spend · marketing_traffic · order_attribution · marketing_settings · marketing_track()',
+    status: 'migration',
+    note: 'Migración 20260927120000_marketing.sql. Sin ella se ve lo que sale de las ventas; la tienda no mide visitas ni el origen de las compras (y no falla).',
+  },
+  {
     section: 'Tareas',
     href: '/admin/tareas',
     uses: 'admin_tasks',

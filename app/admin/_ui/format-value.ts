@@ -2,12 +2,14 @@ import {
   formatARS,
   formatCompactARS,
   formatCompactNumber,
+  formatMultiple,
   formatNumber,
   formatPercent,
 } from '@/domain/admin/format'
 
 /** Formatos que un Server Component le puede pasar a un gráfico (un string, no una función). */
-export type NumberFormat = 'ars' | 'ars-compact' | 'number' | 'number-compact' | 'percent'
+export type NumberFormat =
+  'ars' | 'ars-compact' | 'number' | 'number-compact' | 'percent' | 'multiple'
 
 export function formatValue(value: number, format: NumberFormat): string {
   switch (format) {
@@ -22,5 +24,7 @@ export function formatValue(value: number, format: NumberFormat): string {
       return formatCompactNumber(Math.round(value))
     case 'percent':
       return formatPercent(value)
+    case 'multiple':
+      return formatMultiple(value)
   }
 }

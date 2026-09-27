@@ -54,6 +54,7 @@ export function Stat({
   className,
   delay = 0,
   compareLabel = 'vs. período anterior',
+  neutral = false,
 }: {
   label: string
   value: number
@@ -67,9 +68,11 @@ export function Stat({
   className?: string
   delay?: number
   compareLabel?: string
+  /** La variación no es ni buena ni mala (la inversión, por ejemplo): va en gris. */
+  neutral?: boolean
 }) {
   const direction = delta === undefined || delta === null ? 0 : Math.sign(Math.round(delta * 100))
-  const good = direction === 0 ? null : direction > 0 === goodWhenUp
+  const good = direction === 0 || neutral ? null : direction > 0 === goodWhenUp
   const Arrow = direction > 0 ? ArrowUpRight : direction < 0 ? ArrowDownRight : Minus
   return (
     <motion.div

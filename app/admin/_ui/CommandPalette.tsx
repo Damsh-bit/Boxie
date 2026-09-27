@@ -2,8 +2,11 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import {
+  Coins,
   CornerDownLeft,
   Gift,
+  Link2,
+  Megaphone,
   Plus,
   Search,
   Users,
@@ -41,6 +44,27 @@ const ACTIONS: Omit<Command, 'group'>[] = [
     hint: 'Cupones',
     icon: Plus,
     href: '/admin/cupones?nuevo=1' as Route,
+  },
+  {
+    id: 'nueva-campana',
+    label: 'Crear una campaña de publicidad',
+    hint: 'Marketing',
+    icon: Megaphone,
+    href: '/admin/marketing/campanas?nueva=1' as Route,
+  },
+  {
+    id: 'link-utm',
+    label: 'Armar un link con UTM',
+    hint: 'Marketing · Herramientas',
+    icon: Link2,
+    href: '/admin/marketing/herramientas' as Route,
+  },
+  {
+    id: 'costo-venta',
+    label: 'Cuánto deja una venta y cuánto pagar por ella',
+    hint: 'Marketing · Rentabilidad',
+    icon: Coins,
+    href: '/admin/marketing/rentabilidad' as Route,
   },
   {
     id: 'nueva-tarea',

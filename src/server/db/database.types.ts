@@ -329,6 +329,179 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_campaigns: {
+        Row: {
+          id: string
+          name: string
+          channel: string
+          objective: string
+          status: string
+          utm_campaign: string
+          starts_on: string
+          ends_on: string | null
+          daily_budget_cents: number
+          theme_id: string | null
+          coupon_id: string | null
+          audience: string
+          notes: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          channel: string
+          objective?: string
+          status?: string
+          utm_campaign: string
+          starts_on: string
+          ends_on?: string | null
+          daily_budget_cents?: number
+          theme_id?: string | null
+          coupon_id?: string | null
+          audience?: string
+          notes?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          channel?: string
+          objective?: string
+          status?: string
+          utm_campaign?: string
+          starts_on?: string
+          ends_on?: string | null
+          daily_budget_cents?: number
+          theme_id?: string | null
+          coupon_id?: string | null
+          audience?: string
+          notes?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_campaigns_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketing_campaigns_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_settings: {
+        Row: {
+          id: boolean
+          monthly_budget_cents: number
+          target_margin_bps: number
+          default_model: string
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          monthly_budget_cents?: number
+          target_margin_bps?: number
+          default_model?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          monthly_budget_cents?: number
+          target_margin_bps?: number
+          default_model?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      marketing_spend: {
+        Row: {
+          id: string
+          campaign_id: string
+          day: string
+          spend_cents: number
+          impressions: number
+          clicks: number
+          platform_conversions: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          campaign_id: string
+          day: string
+          spend_cents?: number
+          impressions?: number
+          clicks?: number
+          platform_conversions?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          campaign_id?: string
+          day?: string
+          spend_cents?: number
+          impressions?: number
+          clicks?: number
+          platform_conversions?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_spend_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketing_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_traffic: {
+        Row: {
+          day: string
+          source: string
+          medium: string
+          campaign: string
+          device: string
+          landing: string
+          sessions: number
+          theme_views: number
+          checkouts: number
+        }
+        Insert: {
+          day: string
+          source: string
+          medium?: string
+          campaign?: string
+          device: string
+          landing: string
+          sessions?: number
+          theme_views?: number
+          checkouts?: number
+        }
+        Update: {
+          day?: string
+          source?: string
+          medium?: string
+          campaign?: string
+          device?: string
+          landing?: string
+          sessions?: number
+          theme_views?: number
+          checkouts?: number
+        }
+        Relationships: []
+      }
       media_assets: {
         Row: {
           id: string
@@ -367,6 +540,74 @@ export type Database = {
           created_at?: string
         }
         Relationships: []
+      }
+      order_attribution: {
+        Row: {
+          order_id: string
+          first_source: string | null
+          first_medium: string | null
+          first_campaign: string | null
+          first_content: string | null
+          first_term: string | null
+          first_landing: string | null
+          first_at: string | null
+          last_source: string | null
+          last_medium: string | null
+          last_campaign: string | null
+          last_content: string | null
+          last_term: string | null
+          last_landing: string | null
+          last_at: string | null
+          device: string | null
+          created_at: string
+        }
+        Insert: {
+          order_id: string
+          first_source?: string | null
+          first_medium?: string | null
+          first_campaign?: string | null
+          first_content?: string | null
+          first_term?: string | null
+          first_landing?: string | null
+          first_at?: string | null
+          last_source?: string | null
+          last_medium?: string | null
+          last_campaign?: string | null
+          last_content?: string | null
+          last_term?: string | null
+          last_landing?: string | null
+          last_at?: string | null
+          device?: string | null
+          created_at?: string
+        }
+        Update: {
+          order_id?: string
+          first_source?: string | null
+          first_medium?: string | null
+          first_campaign?: string | null
+          first_content?: string | null
+          first_term?: string | null
+          first_landing?: string | null
+          first_at?: string | null
+          last_source?: string | null
+          last_medium?: string | null
+          last_campaign?: string | null
+          last_content?: string | null
+          last_term?: string | null
+          last_landing?: string | null
+          last_at?: string | null
+          device?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_attribution_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orders: {
         Row: {
@@ -904,9 +1145,12 @@ export type Database = {
           invited_at: string | null
           last_seen_at: string | null
           created_at: string
+          password_hash: string | null
+          invite_token_hash: string | null
+          invite_expires_at: string | null
         }
         Insert: {
-          user_id: string
+          user_id?: string
           email?: string | null
           name?: string
           role?: Database["public"]["Enums"]["admin_role"] | null
@@ -917,6 +1161,9 @@ export type Database = {
           invited_at?: string | null
           last_seen_at?: string | null
           created_at?: string
+          password_hash?: string | null
+          invite_token_hash?: string | null
+          invite_expires_at?: string | null
         }
         Update: {
           user_id?: string
@@ -930,6 +1177,9 @@ export type Database = {
           invited_at?: string | null
           last_seen_at?: string | null
           created_at?: string
+          password_hash?: string | null
+          invite_token_hash?: string | null
+          invite_expires_at?: string | null
         }
         Relationships: []
       }
@@ -1058,6 +1308,18 @@ export type Database = {
           p_boxie_id: string
         }
         Returns: Database["public"]["Tables"]["boxies"]["Row"]
+      }
+      marketing_track: {
+        Args: {
+          p_day: string
+          p_source: string
+          p_medium: string
+          p_campaign: string
+          p_device: string
+          p_landing: string
+          p_step: string
+        }
+        Returns: undefined
       }
       publish_theme: {
         Args: {

@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { parseAttributionPayload } from '@/domain/marketing/attribution'
 import { getPublicSettings } from '@/server/catalog'
 import { quoteCheckout } from '@/server/checkout'
 import { serviceDb, unwrap } from '@/server/db/client'
 import { env, siteUrl } from '@/server/env'
 import { log } from '@/server/log'
+import { marketingRepo } from '@/server/marketing/repo'
 import { createPreference } from '@/server/mercadopago'
 import { applyPaymentNotice } from '@/server/payments'
 import { clientIp, rateLimit } from '@/server/rate-limit'
@@ -20,7 +22,23 @@ const Body = z.object({
     .regex(/^[a-z0-9-]{1,40}$/)
     .optional()
     .nullable(),
+  // El origen de la visita (se valida aparte: si no sirve, la compra sigue igual).
+  atribucion: z.unknown().optional(),
 })
+
+/** Guarda de dónde vino la orden. Nunca frena el pago. */
+async function saveAttribution(orderId: string, raw: unknown) {
+  const payload = parseAttributionPayload(raw)
+  if (!payload) return
+  try {
+    await (await marketingRepo()).saveAttribution(orderId, payload)
+  } catch (error) {
+    log.warn('No se pudo guardar el origen de la orden', {
+      orderId,
+      error: error instanceof Error ? error.message : String(error),
+    })
+  }
+}
 
 /**
  * Crea una orden en la base y una preferencia en Mercado Pago (o aprueba directo en modo fake).
@@ -41,7 +59,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const { tematica, cupon, nombre, email, telefono, plan } = parsed.data
+  const { tematica, cupon, nombre, email, telefono, plan, atribucion } = parsed.data
 
   try {
     const result = await quoteCheckout(tematica, cupon, plan)
@@ -93,6 +111,7 @@ export async function POST(request: Request) {
         .single(),
       'crear orden',
     )
+    await saveAttribution(order.id, atribucion)
 
     // Bypass de desarrollo: si PAYMENTS_PROVIDER=fake, aprobamos la orden directo.
     if (provider === 'fake') {

@@ -143,6 +143,7 @@ export function LineChart({
   height = 260,
   area = true,
   ariaLabel,
+  references = [],
 }: {
   data: TimePoint[]
   series: { name: string; color?: string }[]
@@ -150,14 +151,16 @@ export function LineChart({
   height?: number
   area?: boolean
   ariaLabel: string
+  /** Umbrales (CPA máximo, objetivo): línea de trazos con su rótulo. */
+  references?: { value: number; label: string }[]
 }) {
   const [ref, width] = useWidth<HTMLDivElement>()
   const [hover, setHover] = useState<number | null>(null)
   const gradientId = useId()
-  const pad = { top: 12, right: 12, bottom: 28, left: 64 }
+  const pad = { top: 12, right: references.length ? 96 : 12, bottom: 28, left: 64 }
   const plotW = Math.max(width - pad.left - pad.right, 10)
   const plotH = height - pad.top - pad.bottom
-  const max = Math.max(...data.flatMap((d) => d.values), 0)
+  const max = Math.max(...data.flatMap((d) => d.values), ...references.map((r) => r.value), 0)
   const ticks = niceTicks(max)
   const top = ticks[ticks.length - 1] || 1
   const xOf = (i: number) =>
@@ -229,6 +232,28 @@ export function LineChart({
                 className="tabular-nums"
               >
                 {formatValue(t, format === 'ars' ? 'ars-compact' : format)}
+              </text>
+            </g>
+          ))}
+          {references.map((r) => (
+            <g key={r.label}>
+              <line
+                x1={pad.left}
+                x2={pad.left + plotW}
+                y1={yOf(r.value)}
+                y2={yOf(r.value)}
+                stroke={MUTED}
+                strokeWidth={1}
+                strokeDasharray="4 4"
+              />
+              <text
+                x={pad.left + plotW + 8}
+                y={yOf(r.value)}
+                dy="0.32em"
+                fontSize={11}
+                fill={MUTED}
+              >
+                {r.label}
               </text>
             </g>
           ))}

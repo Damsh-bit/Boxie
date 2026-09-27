@@ -135,7 +135,7 @@ export function ExpensesTable({ expenses }: { expenses: Expense[] }) {
         <CardHeader
           className="mb-0"
           title="Gastos fijos"
-          description="Hosting, publicidad, herramientas, impuestos fijos. Los mensuales se prorratean por día."
+          description="Hosting, herramientas, contenido, impuestos fijos. Los mensuales se prorratean por día. La pauta de anuncios se carga por campaña en Marketing y se suma sola."
         />
         <Button
           size="sm"
@@ -292,7 +292,7 @@ function ExpenseSheet({ expense, onClose }: { expense: ExpenseInput | null; onCl
             value={draft.description}
             maxLength={120}
             onChange={(e) => set({ description: e.target.value })}
-            placeholder="Campañas de Instagram"
+            placeholder="Contenido para redes"
           />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -302,7 +302,7 @@ function ExpenseSheet({ expense, onClose }: { expense: ExpenseInput | null; onCl
               value={draft.vendor}
               maxLength={80}
               onChange={(e) => set({ vendor: e.target.value })}
-              placeholder="Meta Ads"
+              placeholder="Diseñadora freelance"
             />
           </Field>
           <Field label="Categoría" htmlFor="e-cat">

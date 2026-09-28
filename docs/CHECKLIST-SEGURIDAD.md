@@ -43,9 +43,14 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
     2. Borrar o pasar a privado el repo anterior `Damsh-bit/boxiedigital`.
     3. Pasar el repo actual `Damsh-bit/Boxie` a **Private** (*Settings → Danger Zone → Change visibility*). Vercel seguirá desplegando sin problemas.
 
-- [ ] **P0.5 · Blindar script de creación de administradores**
+- [x] **P0.5 · Blindar script de creación de administradores [COMPLETADO]**
   - **Dónde:** Código fuente (`scripts/create-admin.mjs`).
-  - **Acción:** Quitar los valores por defecto (`admin@boxie.demo` / `boxie-admin`) para obligar a pasar mail y clave explícitos y rechazar contraseñas de demo.
+  - **Acción:**
+    - [x] Argumentos `email` y `password` obligatorios (eliminados los defaults automáticos de demo).
+    - [x] Validación de longitud mínima de contraseña (mínimo 12 caracteres).
+    - [x] Rechazo de contraseñas de demo (`boxie-admin`, `admin`, etc.) y dominios de prueba (`@boxie.demo`).
+    - [x] Validación de formato sintáctico de email.
+    - [x] Ocultamiento de la contraseña en texto plano en la salida de la terminal.
 
 ---
 

@@ -51,17 +51,53 @@ if (!SUPABASE_URL || !SERVICE_KEY) {
   process.exit(1)
 }
 
-// -- Argumentos --
+// -- Argumentos obligatorios --
 const [, , argEmail, argPass, argName, argRole] = process.argv
 
-const EMAIL = (argEmail || 'admin@boxie.demo').toLowerCase().trim()
-const PASSWORD = argPass || 'boxie-admin'
-const NAME = argName || 'Administrador'
-const ROLE = argRole || 'owner'
+if (!argEmail || !argPass) {
+  console.error('\n❌ Error: Debés proporcionar un email y una contraseña explícitamente.')
+  console.error('Uso: node scripts/create-admin.mjs <email> <password> [nombre] [rol]\n')
+  console.error('Ejemplo:')
+  console.error('  npm run admin:create admin@tudominio.com MiClaveSuperSegura123! "Tu Nombre" owner\n')
+  process.exit(1)
+}
+
+const EMAIL = argEmail.toLowerCase().trim()
+const PASSWORD = argPass.trim()
+const NAME = (argName || 'Administrador').trim()
+const ROLE = (argRole || 'owner').trim()
+
+// Validaciones de seguridad
+if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(EMAIL)) {
+  console.error(`\n❌ Error: El email "${EMAIL}" no tiene un formato válido.\n`)
+  process.exit(1)
+}
+
+if (EMAIL.endsWith('@boxie.demo')) {
+  console.error('\n❌ Error de seguridad: No se permite crear administradores con dominio de demo (@boxie.demo).')
+  console.error('Utilizá un correo corporativo o personal real.\n')
+  process.exit(1)
+}
+
+if (PASSWORD.length < 12) {
+  console.error('\n❌ Error de seguridad: La contraseña debe tener al menos 12 caracteres.')
+  console.error('Utilizá una contraseña robusta con letras, números y símbolos.\n')
+  process.exit(1)
+}
+
+if (
+  PASSWORD.toLowerCase().includes('boxie-admin') ||
+  PASSWORD.toLowerCase() === 'admin' ||
+  PASSWORD.toLowerCase() === 'password' ||
+  PASSWORD.toLowerCase() === '12345678'
+) {
+  console.error('\n❌ Error de seguridad: No podés utilizar la clave por defecto de demo ("boxie-admin") ni claves triviales.\n')
+  process.exit(1)
+}
 
 const VALID_ROLES = ['owner', 'admin', 'editor', 'support']
 if (!VALID_ROLES.includes(ROLE)) {
-  console.error(`Rol invalido: "${ROLE}". Debe ser uno de: ${VALID_ROLES.join(', ')}`)
+  console.error(`\n❌ Rol inválido: "${ROLE}". Debe ser uno de: ${VALID_ROLES.join(', ')}\n`)
   process.exit(1)
 }
 
@@ -154,7 +190,7 @@ if (existing) {
 console.log()
 console.log('=== Admin listo en la tabla public.users ===')
 console.log(`  Email : ${EMAIL}`)
-console.log(`  Clave : ${PASSWORD}`)
+console.log('  Clave : [Configurada de forma segura]')
 console.log(`  Rol   : ${ROLE}`)
 console.log(`  UUID  : ${userId}`)
 console.log()

@@ -24,8 +24,8 @@ Variables_; nunca en el repo.
 
 1. Crear el proyecto `boxie` en la organización _Damsh-bit's Org_, región `sa-east-1` (São Paulo).
 2. Aplicar las migraciones: `npx supabase link --project-ref <ref>` y `npx supabase db push`
-   (son 8: esquema, funciones, RLS, storage, catálogo inicial, editor, panel de administración y
-   soporte).
+   (son 10: esquema, funciones, RLS, storage, catálogo inicial, editor, panel de administración,
+   clave de usuarios, soporte y marketing).
 3. Revisar los avisos de seguridad del panel (_Advisors_): tienen que estar en cero.
 4. Crear el primer admin: registrar el usuario en _Authentication_ y agregarlo a `users` con rol
    (después suma al resto del equipo desde el panel, en _Equipo_). O usar `npm run admin:create`:

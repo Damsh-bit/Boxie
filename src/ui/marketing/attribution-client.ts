@@ -156,3 +156,36 @@ export function currentAttribution(): AttributionPayload | null {
   if (!stored) return null
   return { first: stored.first, last: stored.last, device: device() }
 }
+
+// ── Cupón que llega en un link ──────────────────────────────────────────────
+
+const COUPON_KEY = 'bx-cupon'
+/** Un cupón de un link vale una semana (lo que tarda en decidirse quien vio el anuncio). */
+const COUPON_DAYS = 7
+
+/**
+ * Guarda el cupón de un link (?cupon=MAMA15) para aplicarlo solo en el
+ * checkout, aunque la persona entre por la home o por una temática. No es
+ * medición: se guarda aunque el navegador pida no ser rastreado.
+ */
+export function rememberCoupon(search: string) {
+  const code = new URLSearchParams(search).get('cupon')?.trim().toUpperCase()
+  if (!code || !/^[A-Z0-9_-]{3,32}$/.test(code)) return
+  write(COUPON_KEY, { code, at: Date.now() })
+}
+
+/** El cupón de un link reciente, o null. */
+export function pendingCoupon(): string | null {
+  if (typeof window === 'undefined') return null
+  const saved = read<{ code: string; at: number }>(COUPON_KEY)
+  if (!saved || Date.now() - saved.at > COUPON_DAYS * 86_400_000) return null
+  return saved.code
+}
+
+export function forgetCoupon() {
+  try {
+    localStorage.removeItem(COUPON_KEY)
+  } catch {
+    // Sin almacenamiento: no hay nada que borrar.
+  }
+}

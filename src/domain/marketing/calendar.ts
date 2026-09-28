@@ -240,20 +240,27 @@ export function eventLift(orders: readonly AdminOrder[], event: GiftEvent): Even
   const end = addDays(new Date(`${event.date}T00:00:00.000-03:00`), 1)
   const start = addDays(end, -(event.leadDays + 1))
   const baseStart = addDays(start, -28)
+  const afterEnd = addDays(end, 28)
   let sales = 0
   let revenue = 0
-  let base = 0
+  let before = 0
+  let after = 0
+  let first = Infinity
   for (const o of orders) {
     if ((o.status !== 'paid' && o.status !== 'refunded') || !o.paidAt) continue
     const t = Date.parse(o.paidAt)
+    first = Math.min(first, t)
     if (t >= start.getTime() && t < end.getTime()) {
       sales++
       revenue += o.amountCents
-    } else if (t >= baseStart.getTime() && t < start.getTime()) base++
+    } else if (t >= baseStart.getTime() && t < start.getTime()) before++
+    else if (t >= end.getTime() && t < afterEnd.getTime()) after++
   }
   const days = event.leadDays + 1
   const perDay = sales / days
-  const baselinePerDay = base / 28
+  // Sin historial antes de la fecha (la tienda es más nueva), se compara con las 4 semanas de después.
+  // (con una semana de tolerancia: tres semanas de historial alcanzan).
+  const baselinePerDay = first <= addDays(baseStart, 7).getTime() ? before / 28 : after / 28
   return {
     perDay,
     baselinePerDay,

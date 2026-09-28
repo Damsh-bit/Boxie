@@ -21,6 +21,7 @@ import {
   formatNumber,
   formatPercent,
 } from '@/domain/admin/format'
+import { bucketLabel } from '@/domain/admin/range'
 import { channelInfo } from '@/domain/marketing/channels'
 import {
   campaignDaily,
@@ -50,7 +51,7 @@ export default async function CampaignPage({
   const { id } = await params
   await requireAdmin(`/admin/marketing/campanas/${id}`)
   const ctx = await loadMarketing(await searchParams, '90d')
-  const { input, idx, range, model, targets, m, now, data, label } = ctx
+  const { input, idx, range, model, targets, m, now, data } = ctx
   const campaign = m.campaigns.find((c) => c.id === id)
   if (!campaign) notFound()
 
@@ -221,7 +222,7 @@ export default async function CampaignPage({
               caption="Inversión y facturación por día"
               columns={['Día', 'Inversión', 'Facturación', 'Ventas']}
               rows={daily.map((d) => [
-                label(d.key),
+                bucketLabel(d.key, 'day'),
                 formatARS(d.spendCents),
                 formatARS(Math.round(d.revenueCents)),
                 d.sales,
@@ -235,7 +236,7 @@ export default async function CampaignPage({
                     { name: 'Facturación', color: SERIES[0] },
                   ]}
                   data={daily.map((d) => ({
-                    label: label(d.key),
+                    label: bucketLabel(d.key, 'day'),
                     values: [d.spendCents, d.revenueCents],
                   }))}
                 />
@@ -255,7 +256,10 @@ export default async function CampaignPage({
                 series={[{ name: 'CTR', color: SERIES[4] }]}
                 data={daily
                   .filter((d) => d.impressions > 0)
-                  .map((d) => ({ label: label(d.key), values: [d.clicks / d.impressions] }))}
+                  .map((d) => ({
+                    label: bucketLabel(d.key, 'day'),
+                    values: [d.clicks / d.impressions],
+                  }))}
               />
             </div>
           </Card>

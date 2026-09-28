@@ -31,6 +31,7 @@ fallidos de login se limitan por IP y por mail.
 | **Resumen**       | Facturación vs. el período anterior, meta del mes con proyección, KPIs, temáticas y planes que más venden, embudo, alertas, movimientos y cupones.                                                                   |
 | **Finanzas**      | Estado de resultados (cobrado → comisiones → impuestos → contribución → gastos fijos → resultado), mes a mes, rentabilidad por temática y por plan, gastos fijos, punto de equilibrio y simulador "¿qué pasa si…?".  |
 | **Analítica**     | Embudo con lo que se pierde en cada paso, checkouts vs. ventas, mapa de calor por día y hora, conversión por temática, tiempos del regalo, cupones y recompra por cohorte.                                           |
+| **Marketing**     | Pauta, canales y campañas: inversión, CPA, CAC, ROAS, POAS, MER, LTV:CAC, economía de una venta, calendario comercial, planificador de presupuesto y herramientas (links UTM, A/B). Ver [Marketing](#marketing).     |
 | **Soporte**       | Las consultas de los clientes (botón de ayuda del sitio): chat en vivo, notas internas, estados, prioridad, asignación, respuestas rápidas y los datos del cliente (su Boxie, sus compras). Ver [Soporte](#soporte). |
 | **Ventas**        | Todas las órdenes (se paguen o no) con filtros, exportación a CSV y detalle con el historial de pagos, lo que dejó la venta y el reembolso.                                                                          |
 | **Boxies**        | Buscador de soporte (código `K7M2-Q9XD`, mail o destinatario) y detalle: módulos completos, vista previa del regalo, extender, desbloquear, reenviar mails y corregir nombres.                                       |
@@ -94,6 +95,59 @@ equipo (el mail de soporte de **Configuración**) le llega cada consulta nueva y
 como mucho, las respuestas del cliente. En demo quedan en la bandeja de desarrollo.
 
 Cada cambio de estado, prioridad o asignación queda en **Actividad**.
+
+## Marketing
+
+La sección para quien maneja la publicidad (`/admin/marketing`, dueño y administrador). Seis
+pestañas que comparten el período y el **modelo de atribución** (último clic, primer clic o
+repartido; se elige arriba y queda en la URL):
+
+- **Resumen:** inversión en pauta, ventas por pauta y socios, costo por venta (CPA) contra el
+  objetivo y el máximo, ROAS, CAC combinado (todo el marketing ÷ clientes nuevos), MER
+  (facturación ÷ todo el marketing), LTV:CAC y ganancia después de marketing; inversión contra
+  facturación, CPA en el tiempo (promedio de 7 días), salud de la pauta, ritmo de gasto del mes,
+  recomendaciones ("qué hacer ahora"), canales, embudo del sitio y próximas fechas.
+- **Canales:** tabla ordenable con visitas, conversión, ventas, clientes nuevos, CPA, CAC, ROAS,
+  POAS, ganancia y veredicto; quién descubre y quién cierra (primer contra último clic), ventas
+  asistidas, días hasta la compra, dispositivos, páginas de entrada y origen/medio/campaña.
+- **Campañas:** alta y edición (canal, objetivo, `utm_campaign`, fechas, presupuesto diario,
+  temática, cupón), carga de resultados por día e **importación del CSV** de Meta Ads Manager,
+  Google Ads o TikTok (reconoce encabezados en castellano o inglés y números argentinos). Cada
+  campaña tiene CTR (con la flecha de fatiga), CPC, CPM, CPA, ROAS y un veredicto: escalar,
+  mantener, optimizar, pausar o aprendiendo. El detalle trae el día por día y el link con UTM.
+- **Rentabilidad:** anatomía de una venta por plan y por forma de conseguirla (precio de lista →
+  descuentos → Mercado Pago con IVA → impuestos → entrega → afiliados → publicidad → gastos
+  fijos), CPA máximo y objetivo, ROAS de equilibrio y objetivo, LTV por días desde la primera
+  compra y recuperación, cohortes por mes y lo que cuesta un descuento (y lo que permite subir
+  el precio).
+- **Planificador:** calendario comercial argentino (San Valentín, Día del Amigo, Madre, Padre,
+  Navidad, Hot Sale, CyberMonday…) con el alza del año pasado, cuándo prender la pauta y un botón
+  para crear la campaña; simulador "¿cuánto invertir?" con rendimientos decrecientes e inversión
+  óptima; reparto sugerido entre canales.
+- **Herramientas:** constructor de links UTM (con los parámetros para pegar en Meta, Google y
+  TikTok y un cupón que se aplica solo), calculadora de pruebas A/B y de tamaño de muestra,
+  calculadora rápida y el estado de la medición.
+
+**Supuestos** (botón arriba): presupuesto de pauta del mes, ganancia que tiene que dejar cada
+venta después de la publicidad (de ahí salen el CPA y el ROAS objetivo) y el modelo por defecto.
+
+**Cómo se mide.** La tienda guarda en el navegador el primer y el último origen de la persona
+(UTM, `gclid`/`ttclid`/`msclkid`, el sitio que la mandó o directo; sin cookies y respetando "no
+rastrear") y cuenta la visita y los pasos del embudo en `/api/marketing/track` (visitas
+agregadas por día y origen, sin datos personales). El checkout manda el origen con la orden. Una
+venta es de una campaña si llega con su `utm_campaign` o **usa su cupón** (el cupón manda sobre
+el clic). Un `?cupon=` en cualquier link se guarda una semana y el checkout lo aplica solo.
+
+**La pauta en Finanzas.** La inversión de las campañas se suma sola como gasto de "Marketing y
+publicidad" en Finanzas y en el Resumen: no hay que cargarla también como gasto (si parece
+cargada dos veces, Marketing avisa).
+
+**Base.** Llega con `20260927120000_marketing.sql` (`marketing_campaigns`, `marketing_spend`,
+`marketing_traffic` con el contador atómico `marketing_track()`, `order_attribution` y
+`marketing_settings`), probada en `tests/db/marketing.test.ts`. Sin ella, el panel lo avisa y
+muestra lo que sale de las ventas, y la tienda no mide pero tampoco falla. El código vive en
+`src/domain/marketing/` (reglas puras y sus tests), `src/server/marketing/` (repositorio demo y
+Supabase) y `app/admin/(panel)/marketing/`.
 
 ## Planes
 
@@ -194,7 +248,7 @@ del sitio (Vercel Web Analytics).
 ## Conectar Supabase
 
 1. Crear (o liberar) el proyecto y aplicar las migraciones: `npx supabase link --project-ref <ref>`
-   y `npx supabase db push` (son 8; la última es `support`).
+   y `npx supabase db push` (son 10; la última es `marketing`).
 2. Crear el primer admin con `npm run admin:create -- <mail> <clave> <nombre> owner` (crea el
    usuario en _Authentication_ y le da rol de dueño). O a mano, con el usuario ya registrado:
    ```sql

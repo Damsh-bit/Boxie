@@ -65,7 +65,7 @@ const SYNONYMS: Record<Field, string[]> = {
 }
 
 const norm = (s: string) =>
-  s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim()
+  s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim()
 
 /** Parte un CSV respetando comillas ("a, b" es un solo campo). */
 export function splitCsv(text: string, delimiter: string): string[][] {

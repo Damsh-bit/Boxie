@@ -9,7 +9,7 @@ import {
   formatNumber,
   formatPercent,
 } from '@/domain/admin/format'
-import { arDayKey, arStartOfMonth, rangeFromPreset } from '@/domain/admin/range'
+import { addDays, arDayKey, arStartOfMonth, rangeFromPreset } from '@/domain/admin/range'
 import { eventLift, upcomingEvents } from '@/domain/marketing/calendar'
 import { channelLabel } from '@/domain/marketing/channels'
 import { blended, channelPerformance } from '@/domain/marketing/performance'
@@ -47,8 +47,14 @@ export default async function PlannerPage({
     const days = e.leadDays + 1
     const extraSales = lift.lift !== null ? Math.max(lift.lift - 1, 0) * dailySales * days : null
     const theme = e.theme ? data.themes.find((t) => t.slug === e.theme) : undefined
+    // Una campaña de la fecha: termina con ella (las siempre prendidas no cuentan).
     const campaign = m.campaigns.find(
-      (c) => c.status !== 'draft' && c.startsOn <= e.date && (!c.endsOn || c.endsOn >= e.rampStart),
+      (c) =>
+        c.status !== 'draft' &&
+        c.endsOn !== null &&
+        c.endsOn >= e.rampStart &&
+        c.endsOn <= arDayKey(addDays(new Date(`${e.date}T12:00:00-03:00`), 3)) &&
+        c.startsOn <= e.date,
     )
     const year = e.date.slice(0, 4)
     const params = new URLSearchParams({

@@ -120,7 +120,10 @@ export default async function ProfitabilityPage({
 
   // LTV y recuperación.
   const contributionOf = (o: (typeof data.orders)[number]) => orderContribution(o, s, idx)
-  const curve = ltvCurve(data.orders, contributionOf, now, [0, 30, 60, 90, 180, 270, 365])
+  // Solo los puntos con clientes que ya tuvieron esos días (una tienda nueva no llega a 365).
+  const curve = ltvCurve(data.orders, contributionOf, now, [0, 30, 60, 90, 180, 270, 365]).filter(
+    (p, i) => i === 0 || p.customers > 0,
+  )
   const cac = b.blendedCacCents ?? 0
   const payback = paybackDays(curve, cac)
   // El horizonte más largo con clientes suficientes (con menos de un año de ventas, no hay 365 días).

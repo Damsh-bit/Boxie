@@ -173,7 +173,7 @@ export function UtmBuilder({
         <Field
           label="Cupón que se aplica solo"
           htmlFor="u-coupon"
-          hint="Opcional: el checkout lo precarga desde el link"
+          hint="Opcional: se guarda una semana y el checkout lo aplica solo, entre por donde entre"
         >
           <Input
             id="u-coupon"

@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
-import { recordPageView } from './attribution-client'
+import { recordPageView, rememberCoupon } from './attribution-client'
 
 /** Páginas que no son de la tienda: el panel, el editor del comprador y el regalo. */
 const EXCLUDED = /^\/(admin|editor|g|soporte|api)(\/|$)/
@@ -22,6 +22,7 @@ export function AttributionTracker() {
     const firstLoad = first.current
     first.current = false
     if (EXCLUDED.test(pathname)) return
+    rememberCoupon(search)
     recordPageView(pathname, search ? `?${search}` : '', firstLoad)
   }, [pathname, search])
 

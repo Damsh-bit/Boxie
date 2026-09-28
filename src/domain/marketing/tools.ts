@@ -13,12 +13,26 @@ import type { ChannelId } from './channels'
 export function slugify(value: string, max = 60): string {
   return value
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/\p{M}/gu, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, max)
     .replace(/-+$/g, '')
+}
+
+/**
+ * Un valor de UTM normalizado: minúsculas, sin acentos, sin espacios. A
+ * diferencia de slugify, respeta el guion bajo ("paid_social").
+ */
+export function utmValue(value: string, max = 80): string {
+  return value
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9_@.-]+/g, '-')
+    .replace(/^[-_]+|[-_]+$/g, '')
+    .slice(0, max)
 }
 
 export interface UtmParams {
@@ -42,7 +56,7 @@ export function buildUtmUrl(base: string, utm: UtmParams): string | null {
   }
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return null
   const set = (key: string, value: string | undefined) => {
-    const v = value ? slugify(value, 80) : ''
+    const v = value ? utmValue(value) : ''
     if (v) url.searchParams.set(key, v)
     else url.searchParams.delete(key)
   }

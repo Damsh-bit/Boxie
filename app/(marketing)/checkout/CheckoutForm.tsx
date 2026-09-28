@@ -15,14 +15,14 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Route } from 'next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { howItWorks, type HowItWorksIcon } from '@/content/site'
 import { formatARS } from '@/domain/money'
 import { Button, ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { CurrencyToggle, useCurrency } from '@/ui/currency/CurrencyContext'
 import { Field, Input } from '@/ui/form'
-import { currentAttribution } from '@/ui/marketing/attribution-client'
+import { currentAttribution, forgetCoupon, pendingCoupon } from '@/ui/marketing/attribution-client'
 import { ease, Notice, Spinner, spring, Swap } from '@/ui/motion'
 
 export interface Quote {
@@ -86,6 +86,31 @@ export function CheckoutForm({
   const [paymentError, setPaymentError] = useState<string | null>(null)
 
   const giftLifetimeDays = plans.find((p) => p.slug === quote.plan?.slug)?.days ?? baseLifetimeDays
+
+  // Un cupón que vino en el link de un anuncio o de una creadora se aplica solo.
+  useEffect(() => {
+    if (initialQuote.coupon) return
+    const code = pendingCoupon()
+    if (!code) return
+    let cancelled = false
+    void fetch('/api/checkout/quote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tematica: theme.slug, cupon: code, plan: initialQuote.plan?.slug }),
+    })
+      .then((r) => (r.ok ? (r.json() as Promise<Quote>) : null))
+      .then((body) => {
+        if (cancelled) return
+        if (!body?.coupon) return forgetCoupon()
+        setQuote(body)
+        setCouponInput(body.coupon.code)
+        setCouponMessage(`¡Descuento ${body.coupon.label} aplicado! Vino con tu link.`)
+      })
+      .catch(() => undefined)
+    return () => {
+      cancelled = true
+    }
+  }, [initialQuote.coupon, initialQuote.plan?.slug, theme.slug])
 
   async function requote(cupon: string | null, plan: string | null = quote.plan?.slug ?? null) {
     setBusy(true)

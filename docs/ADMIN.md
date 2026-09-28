@@ -4,16 +4,21 @@ El centro de control de Boxie para los dueños y el equipo: ventas, rentabilidad
 planes, cupones, soporte y el trabajo del día a día. Vive en **`/admin`** (o en el subdominio que
 diga `ADMIN_HOST`).
 
-Hoy corre en **modo demo**: todo el panel funciona sobre datos de muestra (un año de ventas
-simuladas) y lo que se cambia se ve en la tienda. Al conectar Supabase, el mismo panel pasa a la
-base real sin tocar la interfaz (ver [Conectar Supabase](#conectar-supabase)).
+En producción corre sobre la base real (proyecto Supabase `Boxie`); los deploys de preview y el
+desarrollo local pueden correr en **modo demo** (`DEMO_MODE=1`), sobre datos de muestra (un año de
+ventas simuladas) donde lo que se cambia se ve en la tienda. Es el mismo panel en los dos casos (ver
+[Conectar Supabase](#conectar-supabase)).
 
 ## Entrar
 
 | Entorno              | Cómo se entra                                                                                                      |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | Demo (`DEMO_MODE=1`) | Usuario de muestra: `admin@boxie.demo` / `boxie-admin`. Se cambian con `ADMIN_DEMO_EMAIL` y `ADMIN_DEMO_PASSWORD`. |
-| Con Supabase         | Mail y clave de Supabase Auth; la cuenta tiene que estar en `users` con un rol.                                    |
+| Con Supabase         | Mail y clave propios del panel (`users.password_hash`, scrypt); la cuenta tiene que tener un rol.                  |
+
+Al equipo se lo suma desde **Equipo**: la invitación llega por mail con un link a `/admin/activar`
+(vence en 48 h) donde cada uno elige su clave; si el mail no sale, el link se copia desde el panel.
+Las cuentas viejas de Supabase Auth siguen entrando: en el primer login se guarda su clave en `users`.
 
 La sesión es una cookie firmada `httpOnly` limitada a `/admin` (12 horas, o 30 días con "mantener la
 sesión"). El proxy (`proxy.ts`) manda al login a quien no tiene sesión, y además **cada página y cada
@@ -45,7 +50,7 @@ fallidos de login se limitan por IP y por mail.
 | **Actividad**     | Bitácora: cada cambio del panel queda registrado con quién y cuándo.                                                                                                                                                 |
 | **Equipo**        | Administradores, roles e invitaciones (solo el dueño).                                                                                                                                                               |
 | **Configuración** | Precio base, vida del regalo, oferta, pausar ventas, costos por venta, meta mensual y datos del negocio.                                                                                                             |
-| **Sistema**       | Qué está conectado, qué falta y qué parte del panel necesita qué tabla de la base.                                                                                                                                   |
+| **Sistema**       | Qué está conectado y qué falta, verificado en vivo: cada tabla y columna que usa cada sección, y las variables del deploy.                                                                                           |
 
 Atajo: **Ctrl/⌘ K** abre el buscador (secciones, acciones y búsqueda directa de Boxies y clientes).
 
@@ -235,7 +240,9 @@ daltonismo (`--color-series-1…6`), tooltip, cursor, leyenda y vista de tabla e
 
 ## Qué necesita la base
 
-La lista viva está en **Sistema** (`app/admin/_lib/capabilities.ts`). Resumen:
+La lista viva está en **Sistema** (`app/admin/_lib/capabilities.ts`). Con la base conectada, Sistema
+la verifica en vivo (selects vacíos, tabla por tabla y columna por columna) y dice qué migración falta
+aplicar; en demo muestra qué migración trae cada cosa. Resumen:
 
 | Ya existe en la base                                                                                                                      | Llega con `20260925120000_admin_backoffice.sql`                                                     |
 | ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -258,20 +265,17 @@ del sitio (Vercel Web Analytics).
 
 1. Crear (o liberar) el proyecto y aplicar las migraciones: `npx supabase link --project-ref <ref>`
    y `npx supabase db push` (son 10; la última es `marketing`).
-2. Crear el primer admin con `npm run admin:create -- <mail> <clave> <nombre> owner` (crea el
-   usuario en _Authentication_ y le da rol de dueño). O a mano, con el usuario ya registrado:
-   ```sql
-   insert into public.users (user_id, email, name, role)
-   values ('<uuid del usuario>', 'vos@boxiedigital.com.ar', 'Tu nombre', 'owner');
-   ```
+2. Crear el primer admin con `npm run admin:create -- <mail> <clave> <nombre> owner` (lo guarda en
+   `users` con su clave y rol de dueño; no hace falta Supabase Auth). El resto del equipo, por
+   invitación desde **Equipo**.
 3. En Vercel: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
    `SESSION_SECRET`, `TOKEN_ENCRYPTION_KEY` (y los de Mercado Pago y Resend, ver OPERACION.md).
 4. Sacar `DEMO_MODE`. El panel pasa solo a `supabase-repo.ts`.
 5. Cargar los planes en **Planes** (sin planes, la tienda cobra el precio base) y los gastos fijos en
    **Finanzas**. Revisar **Configuración** (comisión de Mercado Pago, impuestos, meta).
 
-**Checklist de la primera vez con la base real** (el repositorio real está escrito contra los tipos
-generados y compila, pero no se pudo correr contra un proyecto de verdad):
+**Checklist de la primera vez con la base real** (Sistema verifica solo la base y las variables; esto
+hay que recorrerlo a mano):
 
 - [ ] Login con el admin real; `Equipo` muestra su nombre y rol.
 - [ ] `Resumen`, `Finanzas` y `Analítica` cargan (con pocas órdenes, casi en cero).

@@ -5,22 +5,36 @@
 Todas documentadas en [`.env.example`](../.env.example). En Vercel van en _Settings → Environment
 Variables_; nunca en el repo.
 
-| Variable                                                    | Dónde se consigue                                                      |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API                                      |
-| `SUPABASE_SERVICE_ROLE_KEY`                                 | Idem (secreta: solo servidor)                                          |
-| `SESSION_SECRET`, `TOKEN_ENCRYPTION_KEY`                    | `openssl rand -base64 32` (una distinta por entorno)                   |
-| `MP_ACCESS_TOKEN`                                           | Mercado Pago → Tus integraciones → Credenciales (el **nuevo**, rotado) |
-| `MP_WEBHOOK_SECRET`                                         | Mercado Pago → Tus integraciones → Webhooks                            |
-| `RESEND_API_KEY`                                            | Resend, con el dominio verificado (DKIM)                               |
-| `ADMIN_DEMO_EMAIL`, `ADMIN_DEMO_PASSWORD`                   | Solo en modo demo: el usuario del panel (si no, el de muestra)         |
+| Variable                                                    | Dónde se consigue                                                                                      |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API                                                                      |
+| `SUPABASE_SERVICE_ROLE_KEY`                                 | Idem (secreta: solo servidor)                                                                          |
+| `SESSION_SECRET`, `TOKEN_ENCRYPTION_KEY`                    | `openssl rand -base64 32` (una distinta por entorno)                                                   |
+| `MP_ACCESS_TOKEN`                                           | Mercado Pago → Tus integraciones → Credenciales (el **nuevo**, rotado)                                 |
+| `MP_WEBHOOK_SECRET`                                         | Mercado Pago → Tus integraciones → Webhooks                                                            |
+| `RESEND_API_KEY`                                            | Resend, con el dominio verificado (DKIM)                                                               |
+| `ADMIN_DEMO_EMAIL`, `ADMIN_DEMO_PASSWORD`                   | Solo en modo demo: el usuario del panel (si no, el de muestra)                                         |
+| `NEXT_PUBLIC_SITE_URL`                                      | El dominio con https (`https://www.boxiedigital.com.ar`): sin https, Mercado Pago no devuelve al sitio |
+
+Qué está cargado y qué falta en cada deploy se ve en el panel, en **Sistema**.
 
 ## Supabase: primera vez
 
-> **Estado (23/09/2026):** el proyecto todavía no existe. Al crearlo, Supabase respondió que la
-> cuenta `Damsh-bit` ya tiene los **2 proyectos gratis activos** que permite el plan free (en otras
-> organizaciones). Para crearlo hay que pausar o borrar uno de esos proyectos, o pasar la
-> organización a Pro. Las migraciones están listas y probadas.
+> **Estado (28/09/2026):** el proyecto `Boxie` existe (región `ca-central-1`, Canadá) y tiene
+> aplicado todo lo de las 10 migraciones; producción ya corre contra él. Pero su historial
+> (`supabase_migrations`) no coincide con el repo: no registra `admin_backoffice`,
+> `users_password_hash` ni `marketing`, registra `support` con otra versión (`20260926002926`) y
+> tiene entradas duplicadas con sufijo (`20260922120000_core_schema`…). Como las migraciones crean
+> tablas sin `if not exists`, **un `db push` así falla**. La base tiene además los datos de muestra
+> del seeder (órdenes desde agosto): borrarlos antes de abrir la venta.
+
+Antes del próximo `db push`, comparar el historial y marcar como aplicadas las que ya están (las
+entradas duplicadas y `20260926002926` se marcan `reverted`):
+
+```bash
+npx supabase migration list
+npx supabase migration repair --status applied 20260925120000 20260925130000 20260926120000 20260927120000
+```
 
 1. Crear el proyecto `boxie` en la organización _Damsh-bit's Org_, región `sa-east-1` (São Paulo).
 2. Aplicar las migraciones: `npx supabase link --project-ref <ref>` y `npx supabase db push`
@@ -36,8 +50,10 @@ Variables_; nunca en el repo.
 
 La base cambia solo por migraciones. Nunca desde el panel.
 
-**Región de Vercel:** conviene fijar las funciones en `gru1` (São Paulo), al lado de la base. Cada
-página del editor hace varias consultas: desde `iad1` (el default, EE.UU.) cada una suma ~120 ms.
+**Región de Vercel:** las funciones tienen que estar al lado de la base, porque cada página del
+editor hace varias consultas. Con la base en `ca-central-1`, dejar el default (`iad1`, EE.UU. este);
+**no** pasarlas a `gru1` mientras la base siga en Canadá (cada consulta sumaría ~120 ms). Si algún
+día la base se muda a `sa-east-1` (São Paulo), entonces sí `gru1`.
 
 ## Deploy
 

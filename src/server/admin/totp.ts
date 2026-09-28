@@ -108,7 +108,7 @@ export async function confirmTotpSetup(
     return { ok: false, error: 'Error al procesar la clave de cifrado.' }
   }
 
-  const check = await otp.verify({ token: cleanCode, secret, epochTolerance: 30 })
+  const check = await otp.verify({ token: cleanCode, secret, epochTolerance: 90 })
   if (!check.valid) {
     return { ok: false, error: 'Código inválido. Verificá la hora en tu dispositivo y reintentá.' }
   }
@@ -141,7 +141,7 @@ export async function verifyTotpToken(secretEnc: string, token: string): Promise
 
   try {
     const secret = decryptToken(secretEnc, env().TOKEN_ENCRYPTION_KEY)
-    const check = await otp.verify({ token: clean, secret, epochTolerance: 30 })
+    const check = await otp.verify({ token: clean, secret, epochTolerance: 90 })
     return check.valid === true
   } catch (err) {
     log.error('Error al descifrar o verificar secreto TOTP', err)

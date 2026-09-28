@@ -90,8 +90,12 @@ export function LoginScreen({
 
               <form action={twoFaAction} className="mt-8 space-y-5">
                 <input type="hidden" name="next" value={next} />
-                <input type="hidden" name="email" value={state.email} />
-                <input type="hidden" name="preAuthToken" value={state.preAuthToken ?? ''} />
+                <input type="hidden" name="email" value={twoFaState.email || state.email} />
+                <input
+                  type="hidden"
+                  name="preAuthToken"
+                  value={twoFaState.preAuthToken || state.preAuthToken || ''}
+                />
 
                 <Field label="Código de seguridad" htmlFor="code">
                   <Input

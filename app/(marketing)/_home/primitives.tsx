@@ -232,6 +232,33 @@ export function Magnetic({
 }
 
 /**
+ * Dónde está el mouse en la pantalla, de -1 a 1 en cada eje (0 es el centro),
+ * con un resorte. Sirve para que las capas de una sección se muevan a
+ * distintas profundidades. En pantallas táctiles y con "reducir movimiento"
+ * queda en 0.
+ */
+export function useMouseParallax() {
+  const calm = useCalm()
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const sx = useSpring(x, { stiffness: 60, damping: 18, mass: 0.6 })
+  const sy = useSpring(y, { stiffness: 60, damping: 18, mass: 0.6 })
+
+  useEffect(() => {
+    if (calm) return
+    const onMove = (e: globalThis.PointerEvent) => {
+      if (e.pointerType !== 'mouse') return
+      x.set((e.clientX / window.innerWidth) * 2 - 1)
+      y.set((e.clientY / window.innerHeight) * 2 - 1)
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    return () => window.removeEventListener('pointermove', onMove)
+  }, [calm, x, y])
+
+  return { x: sx, y: sy }
+}
+
+/**
  * Inclinación 3D hacia el mouse, con un brillo que lo sigue. Devuelve el
  * estilo para el elemento que se inclina y los manejadores del puntero.
  */

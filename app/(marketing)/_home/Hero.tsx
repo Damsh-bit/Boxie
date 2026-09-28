@@ -1,11 +1,25 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'framer-motion'
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
 import { ArrowRight, ChevronDown, PauseCircle, Play, Smartphone, Wand2, Zap } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import type { Route } from 'next'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type PointerEvent,
+  type ReactNode,
+} from 'react'
 import type { SocialProof } from '@/domain/social-proof'
 import { ButtonLink, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
@@ -13,6 +27,7 @@ import { rememberRecipient } from '@/ui/recipient'
 import { MercadoPagoLogo } from '@/ui/MercadoPagoLogo'
 import { Swap, ease, spring, useCalm } from '@/ui/motion'
 import { HeroPreview } from './HeroPreview'
+import { Magnetic, useMouseParallax } from './primitives'
 import { PurchaseTicker } from './PurchaseTicker'
 import { avatarGradient, type HomeTheme } from './theme-look'
 
@@ -41,6 +56,23 @@ const TRUST: { icon: ReactNode; label: string }[] = [
 ]
 
 const count = new Intl.NumberFormat('es-AR')
+
+const WIDE = '(min-width: 1024px)'
+
+function subscribeWide(callback: () => void) {
+  const query = window.matchMedia(WIDE)
+  query.addEventListener('change', callback)
+  return () => query.removeEventListener('change', callback)
+}
+
+/** true con la portada en dos columnas (lg; en el servidor, false). */
+function useWide() {
+  return useSyncExternalStore(
+    subscribeWide,
+    () => window.matchMedia(WIDE).matches,
+    () => false,
+  )
+}
 
 const rise = {
   hidden: { opacity: 0, y: 20 },
@@ -76,7 +108,25 @@ export function Hero({
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const markY = useTransform(scrollYProgress, [0, 1], [0, calm ? 0 : 160])
   const markRotate = useTransform(scrollYProgress, [0, 1], [0, calm ? 0 : 12])
-  const phoneY = useTransform(scrollYProgress, [0, 1], [0, calm ? 0 : -70])
+  // En una columna el celular va debajo del armador: si subiera, lo taparía.
+  const wide = useWide()
+  const phoneY = useTransform(scrollYProgress, [0, 1], [0, calm || !wide ? 0 : -70])
+
+  // La marca de fondo se corre al revés que el mouse, y una luz suave lo sigue.
+  const mouse = useMouseParallax()
+  const markMouseX = useTransform(mouse.x, (v) => v * -26)
+  const markMouseY = useTransform(mouse.y, (v) => v * -18)
+  const lightX = useMotionValue(0)
+  const lightY = useMotionValue(0)
+  const lightOn = useSpring(0, { stiffness: 80, damping: 20 })
+  const light = useMotionTemplate`radial-gradient(560px circle at ${lightX}px ${lightY}px, rgba(244,78,99,0.14), transparent 65%)`
+  const followLight = (e: PointerEvent<HTMLElement>) => {
+    if (calm || e.pointerType !== 'mouse') return
+    const r = e.currentTarget.getBoundingClientRect()
+    lightX.set(e.clientX - r.left)
+    lightY.set(e.clientY - r.top)
+    lightOn.set(1)
+  }
 
   if (!theme) return null
 
@@ -90,8 +140,15 @@ export function Hero({
     <section
       ref={ref}
       aria-labelledby="hero-title"
+      onPointerMove={followLight}
+      onPointerLeave={() => lightOn.set(0)}
       className="relative isolate overflow-hidden bg-[linear-gradient(12.84deg,#F44E63_-14.02%,rgba(255,255,255,0)_38.2%)] pt-[104px] pb-16 sm:pt-[112px] lg:flex lg:min-h-dvh lg:items-center lg:pb-24"
     >
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{ background: light, opacity: lightOn }}
+      />
       <motion.div
         aria-hidden
         className="pointer-events-none absolute top-[90px] left-[6%] -z-10 w-[min(480px,110vw)] md:top-auto md:right-[-60px] md:bottom-[-80px] md:left-auto md:w-[560px]"
@@ -100,14 +157,16 @@ export function Hero({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.4, ease: ease.out }}
       >
-        <Image
-          src="/brand/boxie-mark.png"
-          alt=""
-          width={532}
-          height={679}
-          priority
-          className="h-auto w-full opacity-20 md:opacity-45"
-        />
+        <motion.div style={{ x: markMouseX, y: markMouseY }}>
+          <Image
+            src="/brand/boxie-mark.png"
+            alt=""
+            width={532}
+            height={679}
+            priority
+            className="h-auto w-full opacity-20 md:opacity-45"
+          />
+        </motion.div>
       </motion.div>
 
       <motion.div
@@ -158,7 +217,7 @@ export function Hero({
                 className="block font-display text-[3.4rem] leading-[1.05] text-brand min-[380px]:text-[64px] sm:text-7xl md:text-8xl"
                 variants={line}
               >
-                BOXIE
+                <BouncyWord word="BOXIE" />
               </motion.span>
             </span>
             <span className="block overflow-hidden pb-1">
@@ -229,22 +288,24 @@ export function Hero({
             </label>
 
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-              <ButtonLink
-                href={href}
-                onClick={() => rememberRecipient(short)}
-                size="lg"
-                block
-                className="min-w-0 px-6 text-base sm:flex-1 sm:text-lg"
-              >
-                <span className="relative inline-flex min-w-0">
-                  <Swap id={cta} className="truncate">
-                    {cta}
-                  </Swap>
-                </span>
-                <Nudge x={4}>
-                  <ArrowRight className="size-5" aria-hidden />
-                </Nudge>
-              </ButtonLink>
+              <Magnetic strength={0.18} className="min-w-0 sm:flex-1">
+                <ButtonLink
+                  href={href}
+                  onClick={() => rememberRecipient(short)}
+                  size="lg"
+                  block
+                  className="min-w-0 px-6 text-base sm:text-lg"
+                >
+                  <span className="relative inline-flex min-w-0">
+                    <Swap id={cta} className="truncate">
+                      {cta}
+                    </Swap>
+                  </span>
+                  <Nudge x={4}>
+                    <ArrowRight className="size-5" aria-hidden />
+                  </Nudge>
+                </ButtonLink>
+              </Magnetic>
               <ButtonLink
                 href={
                   `/ejemplo/${theme.slug}${short ? `?para=${encodeURIComponent(short)}` : ''}` as Route
@@ -279,10 +340,20 @@ export function Hero({
 
           <ul className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm font-semibold text-ink/70 lg:justify-start">
             {TRUST.map(({ icon, label }) => (
-              <li key={label} className="flex items-center gap-1.5">
-                {icon}
+              <motion.li
+                key={label}
+                className="flex cursor-default items-center gap-1.5 transition-colors hover:text-ink"
+                whileHover="hover"
+              >
+                <motion.span
+                  className="flex"
+                  variants={{ hover: { rotate: [0, -14, 10, 0], scale: [1, 1.25, 1.1] } }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {icon}
+                </motion.span>
                 {label}
-              </li>
+              </motion.li>
             ))}
           </ul>
         </motion.div>
@@ -317,6 +388,33 @@ export function Hero({
         </a>
       </motion.div>
     </section>
+  )
+}
+
+/**
+ * Una palabra del título cuyas letras saltan cuando les pasa el mouse por
+ * encima. Los lectores de pantalla la leen entera.
+ */
+function BouncyWord({ word }: { word: string }) {
+  // Con "reducir movimiento" las letras quedan quietas (misma estructura: el
+  // servidor no sabe la preferencia y la hidratación tiene que coincidir).
+  const calm = useCalm()
+  return (
+    <>
+      <span className="sr-only">{word}</span>
+      <span aria-hidden>
+        {Array.from(word).map((ch, i) => (
+          <motion.span
+            key={i}
+            className="inline-block cursor-default"
+            whileHover={calm ? undefined : { y: -12, rotate: i % 2 ? 7 : -7, scale: 1.08 }}
+            transition={spring.bouncy}
+          >
+            {ch}
+          </motion.span>
+        ))}
+      </span>
+    </>
   )
 }
 
@@ -443,6 +541,7 @@ function ThemePicker({
               many ? 'shrink-0 snap-center px-3.5' : 'min-w-0 flex-1 px-2 sm:px-3',
               selected ? 'text-ink' : 'text-ink/60 hover:text-ink',
             )}
+            whileHover="hover"
             whileTap={{ scale: 0.94 }}
             transition={spring.snappy}
           >
@@ -455,7 +554,14 @@ function ThemePicker({
               />
             )}
             <span className="relative flex items-center justify-center gap-1.5 whitespace-nowrap">
-              <span aria-hidden>{t.emoji}</span>
+              <motion.span
+                aria-hidden
+                className="inline-block"
+                variants={{ hover: { rotate: [0, -16, 12, 0], scale: [1, 1.3, 1.15] } }}
+                transition={{ duration: 0.5 }}
+              >
+                {t.emoji}
+              </motion.span>
               <span className={cn(!many && 'truncate')}>{t.name}</span>
             </span>
           </motion.button>

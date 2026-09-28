@@ -133,6 +133,13 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   comparador → beneficios → preguntas → cierre. Barra de compra fija en el celular entre la
   portada y el cierre. Los componentes viven en `app/(marketing)/_home/` y los textos en
   `src/content/home.ts`.
+- **El celular de la portada es una Boxie de muestra que se abre sola** (`HeroPreview` +
+  `hero-scenes.tsx`): portada con el nombre → fotos → dedicatoria → canción → trivia → regalo
+  final, como historias. Se toca (izquierda vuelve, derecha sigue, mantener apretado pausa) y los
+  juegos se juegan de verdad; si nadie toca, la trivia y la caja se juegan solas con un dedo
+  fantasma. Cambiar la temática o el nombre en el armador vuelve a la portada. Son maquetas
+  livianas (no el player) para no cargar el motor en la primera pantalla; el contenido de cada
+  temática está en `theme-look.ts` (las del panel usan el general).
 - **Referencias de la competencia:** vista previa en vivo antes de pagar y selector de ocasiones
   (Digital Love Story, MiYo Gift, iLoveYou.gift), precio visible y "pago único, sin suscripción"
   (Love4U, QLovy), demo navegable (Tiempo Juntos) y navegación por ocasión (Bigbox).

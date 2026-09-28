@@ -26,7 +26,7 @@ export interface DemoProps {
 }
 
 /** Timers que se limpian solos al desmontar. */
-function useTimers() {
+export function useTimers() {
   const timers = useRef<ReturnType<typeof setTimeout>[]>([])
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
   return {

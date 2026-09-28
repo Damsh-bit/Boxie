@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { cleanRecipient } from '@/domain/recipient'
 import { getPublicSettings, listPublishedThemes } from '@/server/catalog'
 import { paymentsEnabled, quoteCheckout } from '@/server/checkout'
 import { isDemoMode } from '@/server/demo'
@@ -14,6 +15,7 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
   const slug = typeof params.tematica === 'string' ? params.tematica : null
   const coupon = typeof params.cupon === 'string' ? params.cupon : null
   const plan = typeof params.plan === 'string' ? params.plan : null
+  const recipient = cleanRecipient(params.para)
 
   // Sin temática no hay qué cobrar: el prototipo perdía la temática elegida
   // en este paso (hallazgo F10).
@@ -57,6 +59,7 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
         paymentsEnabled={payments}
         salesPaused={settings.salesPaused}
         demo={isDemoMode()}
+        recipient={recipient}
       />
     </div>
   )

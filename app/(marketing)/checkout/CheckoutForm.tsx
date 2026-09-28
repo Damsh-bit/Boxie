@@ -50,6 +50,8 @@ interface Props {
   paymentsEnabled: boolean
   salesPaused: boolean
   demo: boolean
+  /** Para quién es (lo escribieron en la home). */
+  recipient?: string
 }
 
 const STEP_ICONS: Record<HowItWorksIcon, LucideIcon> = {
@@ -72,6 +74,7 @@ export function CheckoutForm({
   paymentsEnabled,
   salesPaused,
   demo,
+  recipient = '',
 }: Props) {
   const { currency, formatPrice } = useCurrency()
   const [quote, setQuote] = useState(initialQuote)
@@ -82,6 +85,8 @@ export function CheckoutForm({
       : initialQuote.couponError,
   )
   const [terms, setTerms] = useState(false)
+  const [termsMissing, setTermsMissing] = useState(false)
+  const [howOpen, setHowOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
 
@@ -131,6 +136,12 @@ export function CheckoutForm({
 
   async function handlePay(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    // El botón no se deshabilita por los términos (no se entiende por qué no anda): se avisa acá.
+    if (!terms) {
+      setTermsMissing(true)
+      document.getElementById('terms')?.focus()
+      return
+    }
     setPaymentError(null)
     setBusy(true)
     const form = e.currentTarget
@@ -177,9 +188,21 @@ export function CheckoutForm({
         <h1 className="mb-5 text-2xl font-bold text-ink">Finalizar Compra</h1>
 
         <div className="mb-8 rounded-2xl border border-brand-muted bg-brand-soft p-5">
-          <h2 className="mb-4 font-bold text-brand">¿Cómo funciona?</h2>
+          <h2 className="font-bold text-brand lg:mb-4">
+            <button
+              type="button"
+              onClick={() => setHowOpen((o) => !o)}
+              aria-expanded={howOpen}
+              className="flex w-full items-center justify-between gap-3 text-left lg:pointer-events-none"
+            >
+              ¿Cómo funciona?
+              <span className="text-xs font-semibold text-brand/80 lg:hidden">
+                {howOpen ? 'Ocultar' : '4 pasos · ver'}
+              </span>
+            </button>
+          </h2>
           <motion.ol
-            className="space-y-3.5"
+            className={cn('mt-4 space-y-3.5 lg:mt-0 lg:block', !howOpen && 'hidden')}
             initial="hidden"
             animate="show"
             variants={{ show: { transition: { staggerChildren: 0.08, delayChildren: 0.25 } } }}
@@ -218,15 +241,29 @@ export function CheckoutForm({
           <Field label="Email (ahí te llega el acceso)" htmlFor="email">
             <Input id="email" name="email" type="email" required autoComplete="email" />
           </Field>
-          <Field label="Teléfono (WhatsApp)" htmlFor="phone">
-            <Input id="phone" name="phone" type="tel" required autoComplete="tel" maxLength={40} />
+          <Field label="WhatsApp (opcional)" htmlFor="phone">
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              inputMode="tel"
+              maxLength={40}
+              placeholder="Para avisarte si algo falla con el pago"
+            />
           </Field>
 
           <label className="group flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-neutral-600">
             <input
+              id="terms"
               type="checkbox"
               checked={terms}
-              onChange={(e) => setTerms(e.target.checked)}
+              onChange={(e) => {
+                setTerms(e.target.checked)
+                if (e.target.checked) setTermsMissing(false)
+              }}
+              aria-invalid={termsMissing || undefined}
+              aria-describedby={termsMissing ? 'terms-missing' : undefined}
               className="peer sr-only"
             />
             <motion.span
@@ -235,8 +272,11 @@ export function CheckoutForm({
                 'mt-0.5 grid size-6 shrink-0 place-items-center rounded-lg border-2 transition-colors duration-200 peer-focus-visible:ring-4 peer-focus-visible:ring-brand/20',
                 terms
                   ? 'border-brand bg-brand text-white'
-                  : 'border-neutral-300 bg-white group-hover:border-brand',
+                  : termsMissing
+                    ? 'border-red-500 bg-red-50'
+                    : 'border-neutral-300 bg-white group-hover:border-brand',
               )}
+              animate={termsMissing ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
               whileTap={{ scale: 0.85 }}
               transition={spring.snappy}
             >
@@ -275,6 +315,11 @@ export function CheckoutForm({
               que el regalo queda disponible {giftLifetimeDays} días desde ese momento.
             </span>
           </label>
+          {termsMissing && (
+            <p id="terms-missing" role="alert" className="-mt-2 text-sm font-medium text-red-600">
+              Marcá que aceptás los términos para seguir.
+            </p>
+          )}
 
           {paymentsEnabled ? (
             <div className="space-y-3">
@@ -283,13 +328,9 @@ export function CheckoutForm({
                   {paymentError}
                 </p>
               )}
-              <Button type="submit" block size="lg" disabled={!terms || busy}>
+              <Button type="submit" block size="lg" disabled={busy}>
                 <Lock className="size-4" aria-hidden />{' '}
-                {busy
-                  ? 'Redirigiendo...'
-                  : currency === 'USD'
-                    ? `Pagar ${formatARS(quote.totalCents)}`
-                    : 'Ir a pagar'}
+                {busy ? 'Redirigiendo...' : `Pagar ${formatARS(quote.totalCents)}`}
               </Button>
               {currency === 'USD' && (
                 <p className="text-center text-xs text-neutral-500">
@@ -332,7 +373,7 @@ export function CheckoutForm({
       {/* Resumen */}
       <motion.aside
         variants={item}
-        className="h-fit rounded-3xl bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.06)] lg:sticky lg:top-28"
+        className="order-first h-fit rounded-3xl bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.06)] lg:sticky lg:top-28 lg:order-none"
       >
         <div className="mb-5 flex items-center justify-between gap-3">
           <h2 className="font-bold text-ink">Resumen del pedido</h2>
@@ -347,6 +388,11 @@ export function CheckoutForm({
               Boxie {theme.name}
               {quote.plan && <span className="text-brand"> · {quote.plan.name}</span>}
             </h3>
+            {recipient && (
+              <p className="mb-1 truncate text-sm font-semibold text-brand-dark">
+                💖 Para {recipient}
+              </p>
+            )}
             <ul className="text-xs leading-relaxed text-neutral-500">
               <li>✅ Experiencia 100% digital</li>
               <li>✏️ Editable hasta que la bloqueás</li>

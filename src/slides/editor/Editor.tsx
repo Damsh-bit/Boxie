@@ -3,11 +3,12 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Check, CloudOff, Eye, Gift, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { z } from 'zod'
 import { formatBoxieCode } from '@/domain/boxie'
 import { Button, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { rememberedRecipient } from '@/ui/recipient'
 import { Input, Label } from '@/ui/form'
 import { Modal } from '@/ui/Modal'
 import { ease, Notice, Spinner, spring, Swap, useCalm } from '@/ui/motion'
@@ -83,7 +84,13 @@ export function Editor({
     () => editorModules(config, { password: allowPassword }),
     [config, allowPassword],
   )
-  const [draft, setDraft] = useState(initialDraft)
+  // El nombre que escribieron en la home ("¿Para quién es?") ya viene cargado.
+  const [prefilled] = useState(() => {
+    if (initialLocked || initialDraft.recipientName.trim()) return null
+    const name = rememberedRecipient()
+    return name ? { ...initialDraft, recipientName: name } : null
+  })
+  const [draft, setDraft] = useState(prefilled ?? initialDraft)
   const [media, setMedia] = useState(initialMedia)
   const [hasPassword, setHasPassword] = useState(initialHasPassword)
   const [locked, setLocked] = useState(initialLocked)
@@ -120,6 +127,11 @@ export function Editor({
     setDraft(next)
     schedule(next)
   }
+
+  // Lo precargado se guarda como cualquier cambio (si no, se perdería al recargar).
+  useEffect(() => {
+    if (prefilled) schedule(prefilled)
+  }, [prefilled, schedule])
 
   const mediaAdapter: MediaAdapter = {
     async upload(image, onProgress) {

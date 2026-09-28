@@ -9,6 +9,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { SocialProof } from '@/domain/social-proof'
 import { ButtonLink, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { rememberRecipient } from '@/ui/recipient'
 import { MercadoPagoLogo } from '@/ui/MercadoPagoLogo'
 import { Swap, ease, spring, useCalm } from '@/ui/motion'
 import { HeroPreview } from './HeroPreview'
@@ -79,8 +80,10 @@ export function Hero({
 
   if (!theme) return null
 
-  const href = `/tematicas/${theme.slug}` as Route
   const short = name.trim()
+  // El nombre viaja a la ficha, al checkout y al editor: no se vuelve a pedir.
+  const href =
+    `/tematicas/${theme.slug}${short ? `?para=${encodeURIComponent(short)}` : ''}` as Route
   const cta = short && short.length <= 10 ? `Crear la Boxie de ${short}` : 'Crear su Boxie'
 
   return (
@@ -191,6 +194,7 @@ export function Hero({
             className="rounded-[28px] bg-white/80 p-3.5 shadow-[0_24px_60px_-20px_rgba(42,36,51,0.28)] ring-1 ring-black/5 backdrop-blur-md min-[380px]:p-4 sm:p-5"
             onSubmit={(e) => {
               e.preventDefault()
+              rememberRecipient(short)
               router.push(href)
             }}
           >
@@ -227,6 +231,7 @@ export function Hero({
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">
               <ButtonLink
                 href={href}
+                onClick={() => rememberRecipient(short)}
                 size="lg"
                 block
                 className="min-w-0 px-6 text-base sm:flex-1 sm:text-lg"

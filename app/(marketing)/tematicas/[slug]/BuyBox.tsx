@@ -6,6 +6,7 @@ import type { Route } from 'next'
 import Link from 'next/link'
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { couponDiscount } from '@/domain/coupons'
+import { shortRecipient } from '@/domain/recipient'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { useCurrency } from '@/ui/currency/CurrencyContext'
@@ -40,6 +41,8 @@ interface Props {
   plans?: BuyPlan[]
   /** El plan que viene elegido (de la home o /precios: ?plan=). */
   initialPlan?: string | null
+  /** Para quién es (lo escribieron en la home): viaja al checkout. */
+  recipient?: string
   /** Lo que va entre el precio y el botón (la lista de características). */
   children?: ReactNode
 }
@@ -59,6 +62,7 @@ export function BuyBox({
   offer,
   plans = [],
   initialPlan = null,
+  recipient = '',
   children,
 }: Props) {
   const [showOffer, setShowOffer] = useState(false)
@@ -88,8 +92,13 @@ export function BuyBox({
 
   const active = showOffer && offer
   const href =
-    `/checkout?tematica=${slug}${plan ? `&plan=${plan.slug}` : ''}${active ? `&cupon=${offer.code}` : ''}` as Route
-  const label = active ? 'Quiero mi Boxie con descuento' : 'Quiero mi Boxie'
+    `/checkout?tematica=${slug}${plan ? `&plan=${plan.slug}` : ''}${active ? `&cupon=${offer.code}` : ''}${recipient ? `&para=${encodeURIComponent(recipient)}` : ''}` as Route
+  const short = shortRecipient(recipient)
+  const label = active
+    ? `Quiero ${short ? `la Boxie de ${short}` : 'mi Boxie'} con descuento`
+    : short
+      ? `Quiero la Boxie de ${short}`
+      : 'Quiero mi Boxie'
   const offerPrice = offer ? priceCents - couponDiscount(offer, priceCents) : priceCents
   const price = active ? offerPrice : priceCents
 
@@ -182,7 +191,7 @@ export function BuyBox({
           <ButtonLink
             href={href}
             block
-            className="h-auto rounded-2xl py-4 font-display text-base tracking-wider uppercase"
+            className="h-auto rounded-2xl py-4 text-center font-display text-base leading-tight tracking-wider text-balance whitespace-normal uppercase"
           >
             <Gift className="size-5" aria-hidden /> {label}
           </ButtonLink>

@@ -4,6 +4,7 @@ import type { Route } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { describePlanContents, planContents } from '@/slides/plans'
+import { cleanRecipient } from '@/domain/recipient'
 import {
   getPublishedTheme,
   getThemeVersionConfig,
@@ -40,7 +41,9 @@ const WHY = [
 
 export default async function ThemePage({ params, searchParams }: PageProps<'/tematicas/[slug]'>) {
   const { slug } = await params
-  const { plan: planParam } = await searchParams
+  const { plan: planParam, para } = await searchParams
+  // El nombre que escribieron en la home ("¿Para quién es?").
+  const recipient = cleanRecipient(para)
   const [theme, all, offer, plans] = await Promise.all([
     getPublishedTheme(slug),
     listPublishedThemes(),
@@ -89,6 +92,12 @@ export default async function ThemePage({ params, searchParams }: PageProps<'/te
               {theme.listing.subtitle && (
                 <p className="text-[0.95rem] text-neutral-500">{theme.listing.subtitle}</p>
               )}
+              {recipient && (
+                <p className="mt-3 inline-flex max-w-full items-center gap-2 rounded-full bg-brand-soft px-3.5 py-1.5 text-sm font-semibold text-brand-dark">
+                  <span aria-hidden>💖</span>
+                  <span className="truncate">La Boxie de {recipient}</span>
+                </p>
+              )}
             </StaggerItem>
 
             <StaggerItem y={14}>
@@ -99,6 +108,7 @@ export default async function ThemePage({ params, searchParams }: PageProps<'/te
                 priceCents={theme.priceCents}
                 plans={buyPlans}
                 initialPlan={typeof planParam === 'string' ? planParam : null}
+                recipient={recipient}
                 offer={
                   offer
                     ? {

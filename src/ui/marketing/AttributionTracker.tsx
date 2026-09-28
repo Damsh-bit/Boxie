@@ -2,6 +2,7 @@
 
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
+import { rememberRecipient } from '../recipient'
 import { recordPageView, rememberCoupon } from './attribution-client'
 
 /** Páginas que no son de la tienda: el panel, el editor del comprador y el regalo. */
@@ -23,6 +24,7 @@ export function AttributionTracker() {
     first.current = false
     if (EXCLUDED.test(pathname)) return
     rememberCoupon(search)
+    rememberRecipient(new URLSearchParams(search).get('para'))
     recordPageView(pathname, search ? `?${search}` : '', firstLoad)
   }, [pathname, search])
 

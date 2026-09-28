@@ -23,6 +23,7 @@ import { cn } from '@/ui/cn'
 import { CurrencyToggle, useCurrency } from '@/ui/currency/CurrencyContext'
 import { Field, Input } from '@/ui/form'
 import { currentAttribution, forgetCoupon, pendingCoupon } from '@/ui/marketing/attribution-client'
+import { metaTrack } from '@/ui/marketing/meta-pixel'
 import { ease, Notice, Spinner, spring, Swap } from '@/ui/motion'
 
 export interface Quote {
@@ -167,6 +168,13 @@ export function CheckoutForm({
       return
     }
     const { initPoint } = (await response.json()) as { initPoint: string }
+    metaTrack('InitiateCheckout', {
+      value: quote.totalCents / 100,
+      currency: 'ARS',
+      content_ids: [theme.slug],
+      content_type: 'product',
+      num_items: 1,
+    })
     window.location.href = initPoint
   }
 

@@ -29,6 +29,8 @@ export default async function ToolsPage({
     .filter((c) => c.status !== 'draft')
     .map((c) => ({ utm: c.utmCampaign, name: c.name }))
 
+  const pixel = Boolean(process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim())
+  const capi = pixel && Boolean(process.env.META_CAPI_TOKEN?.trim())
   const tracked = m.traffic.length > 0
   const withOrigin = m.attributions.length > 0
   const checks: { ok: boolean; title: string; detail: string }[] = [
@@ -60,16 +62,24 @@ export default async function ToolsPage({
         : 'Todavía no hay órdenes con origen (las anteriores a la medición quedan "sin datos").',
     },
     {
-      ok: false,
-      title: 'Píxel de Meta y API de conversiones',
-      detail:
-        'Para que Meta optimice por compras (y no por clics) necesita recibir la compra. Es el próximo paso: se conecta con el ID del píxel y un token de la API de conversiones.',
+      ok: pixel,
+      title: 'Píxel de Meta',
+      detail: pixel
+        ? 'Activo: cuenta visitas, fichas vistas e inicios de pago (respeta "no rastrear").'
+        : 'Se activa con NEXT_PUBLIC_META_PIXEL_ID. Antes, actualizar la Política de Privacidad: hoy dice que no se comparten datos con terceros para publicidad.',
+    },
+    {
+      ok: capi,
+      title: 'API de conversiones de Meta',
+      detail: capi
+        ? 'Activa: cada compra acreditada le llega a Meta desde el servidor (mail y teléfono cifrados), para que optimice por ventas.'
+        : 'Se activa con META_CAPI_TOKEN (y el ID del píxel). Es lo que le permite a Meta optimizar por compras y no por clics.',
     },
     {
       ok: false,
       title: 'Conversión de Google Ads',
       detail:
-        'Igual que Meta: con la etiqueta de conversión (o importando las compras) Google puja por ventas.',
+        'Pendiente: con la etiqueta de conversión (o importando las compras) Google puja por ventas.',
     },
   ]
 

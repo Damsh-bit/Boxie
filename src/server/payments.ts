@@ -5,6 +5,7 @@ import { env, siteUrl } from './env'
 import { log } from './log'
 import { sendMail } from './mail/send'
 import { editorAccessEmail } from './mail/templates'
+import { reportPurchaseToMeta } from './marketing/meta-capi'
 import { issueBoxieTokens } from './security/tokens'
 
 /**
@@ -70,6 +71,8 @@ export async function applyPaymentNotice(notice: PaymentNotice): Promise<Payment
       boxieId: row.boxie_id,
     }),
   )
+  // La compra, a la API de conversiones de Meta (solo si está configurada; nunca falla hacia afuera).
+  await reportPurchaseToMeta(row.boxie_id)
   return { outcome: row.outcome, boxieId: row.boxie_id, created: true, links }
 }
 

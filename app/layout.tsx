@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Suspense } from 'react'
 import { siteUrl } from '@/content/site'
 import { AttributionTracker } from '@/ui/marketing/AttributionTracker'
+import { MetaPixel } from '@/ui/marketing/MetaPixel'
 import { MotionProvider, NoScriptReveal } from '@/ui/motion'
 import { fontVariables } from './fonts'
 import './globals.css'
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <Suspense fallback={null}>
           <AttributionTracker />
         </Suspense>
+        <MetaPixel />
       </body>
     </html>
   )

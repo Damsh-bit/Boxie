@@ -32,6 +32,10 @@ const schema = z
     MAIL_REPLY_TO: optional,
     ADMIN_HOST: optional,
     CRON_SECRET: optional,
+    // API de conversiones de Meta (opcional: sin token no se manda nada).
+    META_CAPI_TOKEN: optional,
+    META_TEST_EVENT_CODE: optional,
+    NEXT_PUBLIC_META_PIXEL_ID: optional,
     VERCEL_ENV: optional,
     MP_SANDBOX: optional,
   })

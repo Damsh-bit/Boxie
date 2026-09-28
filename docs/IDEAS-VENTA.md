@@ -29,7 +29,7 @@ Lo que encontré en el recorrido:
 | 8   | El botón flotante de ayuda tapa parte de los botones de compra y del total en el celular.                                    | Toda la tienda   | Pendiente (idea 13)     |
 | 9   | El regalo termina y no invita a regalar: quien lo recibe (alguien que acaba de emocionarse) no tiene cómo hacer uno.         | Regalo `/g/…`    | ✅ Tarjeta al final     |
 | 10  | Las compras abandonadas solo se recuperan a mano (Clientes → "abandonaron").                                                 | Post-checkout    | Pendiente (idea 4)      |
-| 11  | Meta y Google no reciben las compras: optimizan por clics, no por ventas.                                                    | Medición         | Pendiente (idea 5)      |
+| 11  | Meta y Google no reciben las compras: optimizan por clics, no por ventas.                                                    | Medición         | ✅ Meta listo, apagado  |
 | 12  | La oferta "Si comprás ya, 25 % OFF" aparece a los 15 segundos a todos: se aprende rápido y enseña a no pagar precio lleno.   | Ficha            | Pendiente (idea 10)     |
 
 ## Las ideas, por prioridad
@@ -68,7 +68,10 @@ bajo._
 hora un mail (y WhatsApp si dejó el número) con el link para retomar y, a las 24 h, un cupón chico.
 Es la automatización con mejor retorno en e-commerce. _Impacto alto · esfuerzo bajo._
 
-**5. Píxel de Meta + API de conversiones y conversión de Google Ads.** Mandar la compra (con valor,
+**5. Píxel de Meta + API de conversiones y conversión de Google Ads.** ✅ _Meta hecho (28/09),
+apagado hasta cargar `NEXT_PUBLIC_META_PIXEL_ID` y `META_CAPI_TOKEN`; antes hay que actualizar la
+Política de Privacidad (hoy dice que no se comparten datos con terceros para publicidad). Falta
+Google Ads._ Mandar la compra (con valor,
 temática y plan) a las plataformas para que optimicen por ventas y para armar públicos de
 remarketing ("vio una temática y no compró", "compró hace 11 meses"). El panel ya tiene el lugar
 en Marketing › Herramientas › Medición. _Impacto alto · esfuerzo bajo-medio._

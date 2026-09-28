@@ -138,6 +138,15 @@ agregadas por día y origen, sin datos personales). El checkout manda el origen 
 venta es de una campaña si llega con su `utm_campaign` o **usa su cupón** (el cupón manda sobre
 el clic). Un `?cupon=` en cualquier link se guarda una semana y el checkout lo aplica solo.
 
+**Píxel de Meta y API de conversiones.** Apagados hasta configurar `NEXT_PUBLIC_META_PIXEL_ID`
+(el píxel cuenta visitas, fichas vistas —`ViewContent`— e inicios de pago —`InitiateCheckout`—
+en la tienda, nunca en el panel, el editor ni el regalo) y `META_CAPI_TOKEN` (el servidor manda
+cada compra acreditada, `Purchase` con `event_id = compra-<código>`, valor, temática y el mail y
+teléfono cifrados con SHA-256). `META_TEST_EVENT_CODE` sirve para probar en el Administrador de
+eventos. ⚠️ **Antes de activarlos, actualizar la Política de Privacidad**
+(`src/content/legal.tsx`, "Uso de la Información"): hoy dice que Boxie no comparte datos con
+terceros para fines publicitarios.
+
 **La pauta en Finanzas.** La inversión de las campañas se suma sola como gasto de "Marketing y
 publicidad" en Finanzas y en el Resumen: no hay que cargarla también como gasto (si parece
 cargada dos veces, Marketing avisa).

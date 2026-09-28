@@ -232,6 +232,21 @@ export const supabaseMarketingRepo: MarketingRepo = {
     }
   },
 
+  async orderOrigin(orderId) {
+    const [attr, campaigns] = await Promise.all([
+      db().from('order_attribution').select('*').eq('order_id', orderId).maybeSingle(),
+      db().from('marketing_campaigns').select('*'),
+    ])
+    if (missingSchema(attr.error) || missingSchema(campaigns.error))
+      return { attribution: null, campaigns: [] }
+    check(attr.error, 'origen de la orden')
+    check(campaigns.error, 'campañas')
+    return {
+      attribution: attr.data ? toAttribution(attr.data) : null,
+      campaigns: (campaigns.data ?? []).map(toCampaign),
+    }
+  },
+
   async saveSettings(patch, actor) {
     const { error } = await db()
       .from('marketing_settings')

@@ -63,6 +63,14 @@ export const demoMarketingRepo: MarketingRepo = {
     }
   },
 
+  async orderOrigin(orderId) {
+    const m = demoDb().marketing ?? withMarketing((x) => x)
+    return {
+      attribution: m.attributions.find((a) => a.orderId === orderId) ?? null,
+      campaigns: m.campaigns,
+    }
+  },
+
   async saveSettings(patch, actor) {
     withMarketing((m, db) => {
       m.settings = { ...m.settings, ...patch, updatedAt: now() }

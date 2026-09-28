@@ -1,5 +1,9 @@
 import 'server-only'
-import type { AttributionPayload, TrafficPayload } from '@/domain/marketing/attribution'
+import type {
+  AttributionPayload,
+  OrderAttribution,
+  TrafficPayload,
+} from '@/domain/marketing/attribution'
 import type {
   CampaignInput,
   ImportInput,
@@ -25,6 +29,10 @@ export interface MarketingRepo {
   readonly mode: 'demo' | 'supabase'
 
   dataset(): Promise<MarketingDataset>
+  /** El origen de una orden y las campañas (para el detalle de una venta); sin la migración, vacío. */
+  orderOrigin(
+    orderId: string,
+  ): Promise<{ attribution: OrderAttribution | null; campaigns: Campaign[] }>
   saveSettings(patch: MarketingSettingsInput, actor: Actor): Promise<void>
 
   saveCampaign(input: CampaignInput, actor: Actor): Promise<Campaign>

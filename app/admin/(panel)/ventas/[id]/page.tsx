@@ -12,6 +12,7 @@ import { Badge, Card, CardHeader, KeyValue, NeedsDb } from '../../../_ui/primiti
 import { BOXIE_STAGE, boxieStage, orderStatus } from '../../../_ui/status'
 import { Timeline, type TimelineItem } from '../../../_ui/Timeline'
 import { OrderActions } from './OrderActions'
+import { OriginCard } from './OriginCard'
 
 export const metadata: Metadata = { title: 'Orden' }
 
@@ -271,6 +272,8 @@ export default async function OrderPage({ params }: PageProps<'/admin/ventas/[id
               </Link>
             </div>
           </Card>
+
+          <OriginCard order={order} settings={settings} />
 
           {boxie ? (
             <Card>

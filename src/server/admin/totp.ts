@@ -2,7 +2,7 @@ import 'server-only'
 import { createHash, randomBytes } from 'node:crypto'
 import { OTP } from 'otplib'
 import QRCode from 'qrcode'
-import { serviceDb, unwrap } from '../db/client'
+import { serviceDb } from '../db/client'
 import { env } from '../env'
 import { log } from '../log'
 import { expiresIn, sign, verify, type SignedPayload } from '../security/signed'
@@ -155,7 +155,13 @@ export async function consumeBackupCode(
   currentHashedCodes: string[] | null | undefined,
   inputCode: string,
 ): Promise<boolean> {
-  const raw = inputCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')
+  // Sin códigos guardados (nunca se generaron o ya se usaron todos) no hay nada que consumir.
+  if (!currentHashedCodes?.length) return false
+
+  const raw = inputCode
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
   const withHyphen =
     raw.length === 8 ? `${raw.slice(0, 4)}-${raw.slice(4)}` : inputCode.trim().toUpperCase()
 
@@ -174,7 +180,7 @@ export async function consumeBackupCode(
   const db = serviceDb()
   const { error } = await db
     .from('users')
-    .update({ totp_backup_codes: updated } as any)
+    .update({ totp_backup_codes: updated })
     .eq('user_id', userId)
 
   if (error) {
@@ -195,7 +201,7 @@ export async function disableTotp(userId: string): Promise<boolean> {
       totp_secret_enc: null,
       totp_enabled: false,
       totp_backup_codes: null,
-    } as any)
+    })
     .eq('user_id', userId)
 
   if (error) {

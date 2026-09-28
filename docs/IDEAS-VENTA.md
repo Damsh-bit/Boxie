@@ -96,7 +96,10 @@ momento en que la persona siente que le falta algo. _Impacto medio · esfuerzo m
 fotos y mensajes a la misma Boxie (Día del Amigo, Día del Maestro, despedidas, egresados). Sube el
 ticket y cada colaborador conoce Boxie (más loop viral). _Impacto alto · esfuerzo alto._
 
-**10. Urgencia honesta en vez de la oferta a los 15 segundos.** Mostrar urgencia real: "Llega a
+**10. Urgencia honesta en vez de la oferta a los 15 segundos.** ✅ _En parte (28/09): la ficha
+muestra la próxima fecha real del calendario ("Día de la Madre en 20 días · llega al instante").
+La oferta a los 15 segundos sigue: sacarla o guardarla para la recuperación es decisión del
+negocio._ Mostrar urgencia real: "Llega a
 tiempo para el Día de la Madre", "Envío instantáneo: si comprás a las 23:50 llega a las 23:51",
 contador hasta la fecha. Guardar el descuento para quien abandona (idea 4) y para campañas. Además
 de convertir igual o mejor, evita problemas con la normativa de defensa del consumidor sobre
@@ -116,7 +119,7 @@ Es la prueba social que más convierte en regalos. _Impacto medio · esfuerzo me
 barra de compra o un total a la vista (ya existe `useBottomBar` para la barra del editor: usarlo
 también en la home, la ficha y el checkout).
 
-**14. El ejemplo con su nombre.** "Ver ejemplo" desde el armador de la home puede abrir el ejemplo
+**14. El ejemplo con su nombre.** ✅ _Hecho (28/09)._ "Ver ejemplo" desde el armador de la home puede abrir el ejemplo
 con el nombre escrito ("Así se vería la Boxie de Sofi"): es la vista previa más convincente.
 
 **15. Landings por búsqueda.** Una página por intención ("regalo para mi novia a distancia",

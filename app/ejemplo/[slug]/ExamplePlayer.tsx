@@ -14,12 +14,16 @@ export function ExamplePlayer({
   data,
   slug,
   name,
+  recipient = '',
 }: {
   config: ParsedThemeConfig
   data: PlayerData
   slug: string
   name: string
+  /** Para quién sería (lo escribieron en la home). */
+  recipient?: string
 }) {
+  const para = recipient ? `&para=${encodeURIComponent(recipient)}` : ''
   const router = useRouter()
   const back = `/tematicas/${slug}` as Route
   return (
@@ -37,7 +41,7 @@ export function ExamplePlayer({
           transition={{ ...spring.gentle, delay: 0.6 }}
         >
           <span className="hidden min-w-0 flex-1 truncate text-neutral-600 sm:inline">
-            Boxie {name} de ejemplo
+            {recipient ? `Así se vería la Boxie de ${recipient}` : `Boxie ${name} de ejemplo`}
           </span>
           <ButtonLink
             href={`/ejemplo/${slug}/personalizar`}
@@ -48,7 +52,7 @@ export function ExamplePlayer({
             <Wand2 className="size-4" aria-hidden /> Personalizar
           </ButtonLink>
           <ButtonLink
-            href={`/checkout?tematica=${slug}`}
+            href={`/checkout?tematica=${slug}${para}` as Route}
             size="sm"
             className="h-10 flex-1 sm:flex-none"
           >

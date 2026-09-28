@@ -83,3 +83,48 @@ test('una temática nueva se publica desde el panel y aparece en la tienda', asy
   await expect(page.getByText('Publicaste la versión 1')).toBeVisible()
   expect((await page.request.get(`/tematicas/prueba-e2e-${stamp}`)).status()).toBe(200)
 })
+
+test('marketing: tablero, canales, campañas y rentabilidad con los datos de muestra', async ({
+  page,
+}) => {
+  await login(page, '/admin/marketing')
+  await expect(page.getByRole('heading', { name: 'Marketing', level: 1 })).toBeVisible()
+  await expect(page.getByText('Costo por venta (CPA)')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Qué hacer ahora' })).toBeVisible()
+
+  // El modelo de atribución viaja en la URL y se mantiene al cambiar de pestaña.
+  await page.getByRole('radio', { name: 'Primer clic' }).click()
+  await expect(page).toHaveURL(/modelo=primer/)
+  const tabs = page.getByRole('navigation', { name: 'Secciones de Marketing' })
+  await tabs.getByRole('link', { name: 'Canales' }).click()
+  await expect(page).toHaveURL(/\/admin\/marketing\/canales\?.*modelo=primer/)
+  await expect(page.getByRole('heading', { name: 'Todos los canales' })).toBeVisible()
+  await expect(page.getByRole('rowheader', { name: /Meta Ads/ }).first()).toBeVisible()
+
+  await tabs.getByRole('link', { name: 'Campañas' }).click()
+  await expect(page.getByRole('heading', { name: 'Campañas', level: 1 })).toBeVisible()
+  await page.getByRole('link', { name: 'Meta · Prospección siempre prendida' }).click()
+  await expect(
+    page.getByRole('heading', { name: 'Meta · Prospección siempre prendida', level: 1 }),
+  ).toBeVisible()
+  await expect(page.getByText('Link para los anuncios')).toBeVisible()
+
+  await page.goto('/admin/marketing/rentabilidad')
+  await expect(page.getByRole('heading', { name: 'Anatomía de una venta' })).toBeVisible()
+  await expect(page.getByText('Margen de contribución').first()).toBeVisible()
+})
+
+test('marketing: una campaña nueva se crea y aparece en la lista', async ({ page }) => {
+  const stamp = Date.now().toString(36)
+  await login(page, '/admin/marketing/campanas')
+  await page.getByRole('button', { name: 'Nueva campaña' }).first().click()
+  await page.getByLabel('Nombre', { exact: true }).fill(`Prueba E2E ${stamp}`)
+  await expect(page.getByLabel('Nombre para los links (utm_campaign)')).toHaveValue(
+    `prueba-e2e-${stamp}`,
+  )
+  await page.getByRole('button', { name: 'Guardar' }).click()
+  // Al crearla, abre su detalle.
+  await expect(page.getByRole('heading', { name: `Prueba E2E ${stamp}`, level: 1 })).toBeVisible({
+    timeout: 15_000,
+  })
+})

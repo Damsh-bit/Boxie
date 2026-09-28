@@ -246,7 +246,10 @@ export function Hero({
                 </Nudge>
               </ButtonLink>
               <ButtonLink
-                href={`/ejemplo/${theme.slug}`}
+                href={
+                  `/ejemplo/${theme.slug}${short ? `?para=${encodeURIComponent(short)}` : ''}` as Route
+                }
+                onClick={() => rememberRecipient(short)}
                 variant="white"
                 size="lg"
                 block

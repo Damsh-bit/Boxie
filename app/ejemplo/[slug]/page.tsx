@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { cleanRecipient } from '@/domain/recipient'
 import { configForPlan } from '@/slides/plans'
 import { getPublishedTheme, getThemeVersionConfig, listPublicPlans } from '@/server/catalog'
 import { sampleGift } from '@/server/sample-gift'
@@ -32,8 +33,16 @@ export default async function ExamplePage({ params, searchParams }: PageProps<'/
   // ?plan=clasica muestra solo lo que incluye ese plan (desde la ficha: "Ver qué incluye").
   const plan = plans.find((p) => p.slug === query.plan)
   const config = plan ? configForPlan(full, plan, plans) : full
+  // Desde el armador de la home: el ejemplo con el nombre que escribieron ("Así se vería la de Sofi").
+  const recipient = cleanRecipient(query.para)
 
   return (
-    <ExamplePlayer config={config} data={sampleGift(config)} slug={theme.slug} name={theme.name} />
+    <ExamplePlayer
+      config={config}
+      data={sampleGift(config, recipient ? { recipientName: recipient } : {})}
+      slug={theme.slug}
+      name={theme.name}
+      recipient={recipient}
+    />
   )
 }

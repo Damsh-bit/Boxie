@@ -4,6 +4,7 @@ import type { Route } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { describePlanContents, planContents } from '@/slides/plans'
+import { upcomingEvents } from '@/domain/marketing/calendar'
 import { cleanRecipient } from '@/domain/recipient'
 import {
   getPublishedTheme,
@@ -71,6 +72,13 @@ export default async function ThemePage({ params, searchParams }: PageProps<'/te
 
   const others = all.filter((t) => t.id !== theme.id)
 
+  // Urgencia real: la fecha de esta temática si se viene, o la próxima fecha fuerte en temporada.
+  const upcoming = upcomingEvents(new Date(), 45)
+  const event =
+    upcoming.find((e) => e.theme === theme.slug && e.daysUntil <= e.leadDays + 7) ??
+    upcoming.find((e) => e.importance >= 2 && e.daysUntil <= e.leadDays)
+  const occasion = event ? { name: event.name, daysUntil: event.daysUntil } : null
+
   return (
     <div className="bg-[#f8f9fa]">
       <Marquee />
@@ -109,6 +117,7 @@ export default async function ThemePage({ params, searchParams }: PageProps<'/te
                 plans={buyPlans}
                 initialPlan={typeof planParam === 'string' ? planParam : null}
                 recipient={recipient}
+                occasion={occasion}
                 offer={
                   offer
                     ? {

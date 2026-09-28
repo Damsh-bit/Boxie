@@ -43,6 +43,8 @@ interface Props {
   initialPlan?: string | null
   /** Para quién es (lo escribieron en la home): viaja al checkout. */
   recipient?: string
+  /** La próxima fecha de regalo que se viene (urgencia real, del calendario comercial). */
+  occasion?: { name: string; daysUntil: number } | null
   /** Lo que va entre el precio y el botón (la lista de características). */
   children?: ReactNode
 }
@@ -63,6 +65,7 @@ export function BuyBox({
   plans = [],
   initialPlan = null,
   recipient = '',
+  occasion = null,
   children,
 }: Props) {
   const [showOffer, setShowOffer] = useState(false)
@@ -141,6 +144,22 @@ export function BuyBox({
       </div>
 
       {children}
+
+      {occasion && (
+        <p className="mb-3 flex items-start gap-2 rounded-2xl bg-canvas px-3.5 py-2.5 text-sm text-neutral-700">
+          <span aria-hidden>🗓️</span>
+          <span>
+            <b className="text-ink">
+              {occasion.daysUntil === 0
+                ? `Hoy es ${occasion.name}`
+                : occasion.daysUntil === 1
+                  ? `${occasion.name} es mañana`
+                  : `${occasion.name} en ${occasion.daysUntil} días`}
+            </b>{' '}
+            · se manda al instante: llega a tiempo aunque la armes el mismo día.
+          </span>
+        </p>
+      )}
 
       <div className="w-full" ref={cta}>
         <AnimatePresence initial={false}>

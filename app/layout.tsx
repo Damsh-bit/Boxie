@@ -4,6 +4,7 @@ import { siteUrl } from '@/content/site'
 import { AttributionTracker } from '@/ui/marketing/AttributionTracker'
 import { MetaPixel } from '@/ui/marketing/MetaPixel'
 import { MotionProvider, NoScriptReveal } from '@/ui/motion'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { fontVariables } from './fonts'
 import './globals.css'
 
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           <AttributionTracker />
         </Suspense>
         <MetaPixel />
+        <SpeedInsights />
       </body>
     </html>
   )

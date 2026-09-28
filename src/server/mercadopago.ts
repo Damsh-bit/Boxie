@@ -1,4 +1,5 @@
 import 'server-only'
+import crypto from 'node:crypto'
 import { env } from './env'
 
 // ─── Base fetch ──────────────────────────────────────────────────────────────
@@ -84,4 +85,47 @@ export interface MpPayment {
 /** Consulta el estado real de un pago. Siempre verificar en vez de confiar en query-params. */
 export function getPayment(paymentId: string | number): Promise<MpPayment> {
   return mpFetch<MpPayment>(`/v1/payments/${paymentId}`)
+}
+
+// ─── Verificación de Webhooks ────────────────────────────────────────────────
+
+export interface VerifySignatureParams {
+  xSignature?: string | null
+  xRequestId?: string | null
+  dataId?: string | number | null
+  secret: string
+}
+
+/**
+ * Valida la firma HMAC-SHA256 del encabezado x-signature enviado por Mercado Pago.
+ * Formato x-signature: "ts=1700000000,v1=hash_hexadecimal"
+ * Manifest template: "id:<data.id>;request-id:<x-request-id>;ts:<ts>;"
+ */
+export function verifyMpWebhookSignature({
+  xSignature,
+  xRequestId,
+  dataId,
+  secret,
+}: VerifySignatureParams): boolean {
+  if (!xSignature || !secret || dataId == null) return false
+
+  let ts: string | undefined
+  let hash: string | undefined
+
+  for (const part of xSignature.split(',')) {
+    const [k, v] = part.split('=')
+    if (k?.trim() === 'ts') ts = v?.trim()
+    if (k?.trim() === 'v1') hash = v?.trim()
+  }
+
+  if (!ts || !hash) return false
+
+  const manifest = `id:${dataId};request-id:${xRequestId ?? ''};ts:${ts};`
+  const computed = crypto.createHmac('sha256', secret).update(manifest).digest('hex')
+
+  const computedBuf = Buffer.from(computed)
+  const hashBuf = Buffer.from(hash)
+
+  if (computedBuf.length !== hashBuf.length) return false
+  return crypto.timingSafeEqual(computedBuf, hashBuf)
 }

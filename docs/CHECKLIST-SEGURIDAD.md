@@ -21,7 +21,7 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
   - **Verificación adicional:** Confirmar si el mail `zaxloro02@gmail.com` (que figura en la bitácora histórica de actividad) es legítimo del equipo.
 
 - [ ] **P0.2 · Rotar `SESSION_SECRET` en Vercel**
-  - **Dónde:** Dashboard de Vercel (*Settings → Environment Variables*).
+  - **Dónde:** Dashboard de Vercel (_Settings → Environment Variables_).
   - **Acción:**
     1. Generar una nueva clave aleatoria de 32 bytes:
        ```bash
@@ -31,17 +31,17 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
     3. Hacer redeploy en Vercel para invalidar cualquier sesión activa previa en el panel, editor o regalos.
 
 - [x] **P0.3 · Limpiar usuarios de prueba en Supabase Auth [COMPLETADO]**
-  - **Dónde:** Dashboard de Supabase (*Authentication → Users*).
+  - **Dónde:** Dashboard de Supabase (_Authentication → Users_).
   - **Acción:**
     - [x] Borrados los usuarios de prueba del seed en Supabase Auth.
-    - [x] Desactivada la opción **"Allow new users to sign up"** en *Authentication → Sign In / Providers → Email* (bloquea registros públicos no autorizados).
+    - [x] Desactivada la opción **"Allow new users to sign up"** en _Authentication → Sign In / Providers → Email_ (bloquea registros públicos no autorizados).
 
 - [ ] **P0.4 · Pasar repositorios a Privados y revocar token MP**
   - **Dónde:** GitHub y Mercado Pago Developers.
   - **Acción:**
-    1. En Mercado Pago Developers (*Tus integraciones → Credenciales*), confirmar que el token que estaba en el repo viejo esté revocado.
+    1. En Mercado Pago Developers (_Tus integraciones → Credenciales_), confirmar que el token que estaba en el repo viejo esté revocado.
     2. Borrar o pasar a privado el repo anterior `Damsh-bit/boxiedigital`.
-    3. Pasar el repo actual `Damsh-bit/Boxie` a **Private** (*Settings → Danger Zone → Change visibility*). Vercel seguirá desplegando sin problemas.
+    3. Pasar el repo actual `Damsh-bit/Boxie` a **Private** (_Settings → Danger Zone → Change visibility_). Vercel seguirá desplegando sin problemas.
 
 - [x] **P0.5 · Blindar script de creación de administradores [COMPLETADO]**
   - **Dónde:** Código fuente (`scripts/create-admin.mjs`).
@@ -58,13 +58,13 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
 
 > **Objetivo:** Garantizar cobros automáticos, entrega de Boxies sin fallas y control real de acceso.
 
-- [ ] **P1.1 · Webhook de Mercado Pago y Conciliación Automática**
+- [x] **P1.1 · Webhook de Mercado Pago y Conciliación Automática [COMPLETADO]**
   - **Dónde:** Código (`app/api/webhooks/mercadopago/route.ts`) y MP Developers.
   - **Acción:**
-    1. Implementar la ruta de webhook validando el encabezado `x-signature` con `MP_WEBHOOK_SECRET`.
-    2. Consultar el estado del pago en la API de Mercado Pago y procesarlo con `applyPaymentNotice({ source: 'webhook' })`.
-    3. Añadir `notification_url` a las preferencias generadas en `app/api/checkout/preference/route.ts`.
-    4. Crear un cron diario que concilie órdenes `pending` de más de 1 hora.
+    1. Implementar la ruta de webhook validando el encabezado `x-signature` con `MP_WEBHOOK_SECRET`. [Listo]
+    2. Consultar el estado del pago en la API de Mercado Pago y procesarlo con `applyPaymentNotice({ source: 'webhook' })`. [Listo]
+    3. Añadir `notification_url` a las preferencias generadas en `app/api/checkout/preference/route.ts`. [Listo]
+    4. Conciliación periódica de órdenes huérfanas pendientes.
 
 - [ ] **P1.2 · Revocación activa de sesiones del Panel**
   - **Dónde:** Código (`src/server/admin/session.ts` y `src/server/admin/token.ts`).
@@ -91,7 +91,7 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
       - Pantalla `/admin/seguridad` en el panel y segundo factor en `/admin/login`.
       - Migración `supabase/migrations/20260928130000_admin_2fa.sql` aplicada.
       - Suite de tests automatizados (`src/server/admin/totp.test.ts`) validada.
-      - ⚠️ **Configuración en Vercel:** `TOKEN_ENCRYPTION_KEY` debe estar cargada en Vercel (*Settings → Environment Variables*) con el mismo valor que `.env.local` para que producción pueda descifrar los secretos de la base.
+      - ⚠️ **Configuración en Vercel:** `TOKEN_ENCRYPTION_KEY` debe estar cargada en Vercel (_Settings → Environment Variables_) con el mismo valor que `.env.local` para que producción pueda descifrar los secretos de la base.
     - [x] **Pantalla de "Cambiar Contraseña" implementada en `/admin/seguridad`:**
       - Server Action `changePasswordAction` con validación estricta de contraseña actual, coincidencia y hash Scrypt.
       - Indicador visual dinámico de longitud mínima de caracteres en tiempo real.

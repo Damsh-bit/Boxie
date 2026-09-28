@@ -156,6 +156,7 @@ export async function POST(request: Request) {
               pending: returnBase,
             },
             auto_return: 'approved' as const,
+            notification_url: siteUrl('/api/webhooks/mercadopago'),
           }
         : {}),
       external_reference: order.id,

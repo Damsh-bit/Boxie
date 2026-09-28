@@ -39,9 +39,9 @@ sequenceDiagram
 ```
 
 > [!NOTE]
-> Todavía no hay webhook de Mercado Pago: el pago se confirma solo cuando el comprador vuelve al
-> sitio (`/api/checkout/return`). Si cierra la pestaña antes de volver, la orden queda `pending`
-> aunque haya pagado. `MP_WEBHOOK_SECRET` se va a usar cuando exista el webhook.
+> La confirmación de pago opera por doble vía: por retorno inmediato del comprador (`/api/checkout/return`)
+> y asincrónicamente por Webhook de Mercado Pago (`/api/webhooks/mercadopago`). Si el comprador cierra la
+> pestaña antes de volver, el webhook procesa la orden automáticamente y envía el mail con el acceso.
 
 ---
 
@@ -170,12 +170,11 @@ Si querés probar la experiencia de personalización en el editor, subida de fot
 
 ---
 
-### Webhooks (pendiente)
+### Webhook de Mercado Pago
 
-Todavía no hay endpoint de webhook (ver la nota del diagrama). Cuando se agregue
-`/api/webhooks/mercadopago`, se configura en Mercado Pago Developers → Tus integraciones → Webhooks
-y el **Secreto de firma** va en `MP_WEBHOOK_SECRET`. Para probarlo en local hay que exponer el puerto
-con `ngrok http 3000` o `cloudflared`.
+El endpoint activo está en `/api/webhooks/mercadopago`. Se configura en Mercado Pago Developers → Tus integraciones → Webhooks
+con la URL completa del sitio (ej. `https://boxiedigital.com.ar/api/webhooks/mercadopago`) y el **Secreto de firma** va en la variable `MP_WEBHOOK_SECRET`.
+Cada notificación valida la firma HMAC-SHA256 (`x-signature`), consulta el estado del pago con la API de Mercado Pago y aplica la orden con idempotencia mediante `applyPaymentNotice({ source: 'webhook' })`.
 
 ---
 

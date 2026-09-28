@@ -30,11 +30,11 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
     2. Actualizar el valor de `SESSION_SECRET` en producción.
     3. Hacer redeploy en Vercel para invalidar cualquier sesión activa previa en el panel, editor o regalos.
 
-- [ ] **P0.3 · Limpiar usuarios de prueba en Supabase Auth**
+- [x] **P0.3 · Limpiar usuarios de prueba en Supabase Auth [COMPLETADO]**
   - **Dónde:** Dashboard de Supabase (*Authentication → Users*).
   - **Acción:**
-    1. Borrar los 6 usuarios de prueba del seed (`admin@boxie.demo`, `socio@boxie.demo`, etc.). *Nota: `public.users` no depende de estas cuentas.*
-    2. En *Authentication → Sign In / Providers → Email*, desactivar la opción **"Allow new users to sign up"**.
+    - [x] Borrados los usuarios de prueba del seed en Supabase Auth.
+    - [x] Desactivada la opción **"Allow new users to sign up"** en *Authentication → Sign In / Providers → Email* (bloquea registros públicos no autorizados).
 
 - [ ] **P0.4 · Pasar repositorios a Privados y revocar token MP**
   - **Dónde:** GitHub y Mercado Pago Developers.

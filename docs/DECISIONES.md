@@ -268,6 +268,37 @@ Detalle de uso en [ADMIN.md](ADMIN.md#soporte). Lo que se decidió:
   primero se queda con la consulta.
 - **"Escribiendo…"** viaja solo por el bus (es efímero): entre instancias puede no verse.
 
+## Marketing y medición
+
+- **Una sección para quien maneja la pauta** (`/admin/marketing`, dueño y administrador), con las
+  métricas que usa un equipo de performance: inversión, CPA, CAC, ROAS, POAS (contribución por peso
+  invertido), MER, LTV:CAC, ritmo de gasto y veredicto por campaña. Referencias: los tableros de
+  Triple Whale / Northbeam (MER, atribución por modelo, ventas asistidas), el administrador de
+  anuncios de Meta (CTR, CPC, CPM, fatiga) y las calculadoras de economía unitaria de e-commerce.
+- **Se decide contra la contribución, no contra la facturación:** el CPA máximo es lo que deja una
+  venta después de Mercado Pago (con IVA), impuestos, entrega y afiliados; el objetivo deja además
+  el margen de "Supuestos". El veredicto de una campaña compara su POAS con el objetivo y no opina
+  con menos de 3 ventas o poca inversión ("aprendiendo").
+- **Atribución propia, sin cookies:** el navegador guarda en `localStorage` el primer y el último
+  origen (último clic no directo, primer toque que vence a los 90 días) y la visita se cuenta
+  agregada por día y origen (`marketing_traffic`, sin una fila por persona). Se respeta "no
+  rastrear" / Global Privacy Control. `fbclid` solo no cuenta como anuncio (Meta lo agrega a todo):
+  las campañas llevan UTM. Un cupón de campaña manda sobre el clic. Modelos: último clic, primer
+  clic y repartido 50/50.
+- **La pauta es un gasto de Finanzas sin cargarla dos veces:** la inversión por campaña se suma
+  como gasto único de "Marketing y publicidad" por día y canal (`src/server/marketing/finance.ts`).
+  En la demo se sacaron Meta y Google de los gastos fijos (`DEMO_DB_VERSION` 6) y Marketing avisa
+  si parece cargada dos veces.
+- **La medición nunca rompe la tienda:** sin la migración `marketing`, el panel lo avisa y muestra
+  lo que sale de las ventas; la ruta de visitas y el origen de la orden no hacen nada y el checkout
+  sigue.
+- **Píxel de Meta y API de conversiones, apagados:** están hechos pero se activan solo con sus
+  variables. La Política de Privacidad hoy dice que Boxie no comparte datos con terceros para
+  publicidad: activarlos sin cambiarla la contradice. La decisión es del dueño.
+- **El nombre de quien recibe viaja** (`?para=`) de la home a la ficha, el checkout y el editor, y
+  lo armado en el editor de prueba se puede traer a la Boxie comprada: no se pide dos veces lo que
+  la persona ya hizo. Ideas priorizadas en `docs/IDEAS-VENTA.md`.
+
 ## Modo demo
 
 `DEMO_MODE=1` levanta el sitio sin Supabase ni Mercado Pago, con el catálogo de `supabase/seed`.

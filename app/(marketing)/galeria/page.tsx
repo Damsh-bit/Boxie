@@ -1,118 +1,152 @@
-import { Layers } from 'lucide-react'
-import type { Metadata, Route } from 'next'
-import Link from 'next/link'
-import { formatARS } from '@/domain/money'
+import type { Metadata } from 'next'
+import { searchHints } from '@/content/gallery'
+import { occasions } from '@/content/home'
+import { screenName } from '@/content/screens'
+import { foldText, galleryCategories, readGalleryParams } from '@/domain/gallery'
+import { upcomingEvents } from '@/domain/marketing/calendar'
+import type { Plan } from '@/domain/plans'
+import { getThemeVersionConfig, listPublicPlans } from '@/server/catalog'
 import { getStorefront } from '@/server/storefront'
-import { GuideCard } from '@/ui/GuideCard'
-import { Stagger, StaggerItem } from '@/ui/motion'
-import { PageIntro } from '../_components/PageIntro'
-import { Mark, SectionHeading } from '../_home/primitives'
+import type { ParsedSlide, ParsedThemeConfig } from '@/slides/config'
+import { isStructural, planContents } from '@/slides/plans'
+import { slideDefinitions } from '@/slides/schemas'
 import { themeEmoji } from '../_home/theme-look'
-import { GalleryGrid, type GalleryTheme } from './GalleryGrid'
+import { Gallery } from './Gallery'
+import type { GalleryContents, GalleryPlan, GallerySeason, GalleryTheme } from './types'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Galería de Boxies',
   description:
-    'Elegí la temática perfecta para emocionar: pareja, cumpleaños, amistad y más. Regalos digitales personalizados que llegan al instante.',
+    'Elegí la temática perfecta para emocionar: pareja, cumpleaños, amistad, mamá y más. Buscá por ocasión, compará qué trae cada plan y mirá un ejemplo antes de comprar.',
   alternates: { canonical: '/galeria' },
 }
 
-export default async function GalleryPage({ searchParams }: PageProps<'/galeria'>) {
-  const sf = await getStorefront()
-  const { plan: planParam } = await searchParams
-  // El plan elegido en la home o en /precios viaja a la ficha (solo si existe).
-  const plan = sf.plans.find((p) => p.slug === planParam) ?? null
-  const byPlans = sf.plans.length > 1
-  const price = formatARS(sf.priceFromCents)
+/** Las pantallas que se venden de una lista de slides, sin repetir tipo. */
+function contentsOf(slides: ParsedSlide[]): GalleryContents {
+  const seen = new Set<string>()
+  const items = slides.flatMap((s) => {
+    if (isStructural(s.kind) || seen.has(s.kind)) return []
+    seen.add(s.kind)
+    const def = slideDefinitions[s.kind]
+    const name = screenName(s.kind, def.label)
+    return [
+      {
+        kind: s.kind,
+        emoji: name.emoji,
+        label: name.label,
+        game: def.category === 'game' && s.kind !== 'connector.gamer',
+      },
+    ]
+  })
+  return { screens: slides.length, games: items.filter((i) => i.game).length, items }
+}
 
-  const themes: GalleryTheme[] = sf.themes.map((t) => ({
-    id: t.id,
-    slug: t.slug,
-    name: t.name,
-    category: t.category,
-    description: t.listing.cardDescription || t.description,
-    image: t.listing.images[1] ?? t.listing.images[0]!,
-    emoji: themeEmoji(t.slug, t.listing.guide?.emoji),
-    priceCents: plan ? plan.priceCents : byPlans ? sf.priceFromCents : t.priceCents,
-    isPlanPrice: !!plan || !byPlans,
-    priceLabel: plan
-      ? formatARS(plan.priceCents)
-      : byPlans
-        ? `Desde ${price}`
-        : formatARS(t.priceCents),
+/** Qué trae la temática en cada plan (o entera, si no hay planes). */
+function contentsByPlan(config: ParsedThemeConfig | null, plans: Plan[]) {
+  if (!config) return {}
+  if (plans.length === 0) return { '': contentsOf(config.slides) }
+  return Object.fromEntries(
+    planContents(config, plans).map((c) => [c.planSlug, contentsOf(c.slides)]),
+  )
+}
+
+export default async function GalleryPage({ searchParams }: PageProps<'/galeria'>) {
+  const [sf, rawPlans, params] = await Promise.all([
+    getStorefront(),
+    listPublicPlans(),
+    searchParams,
+  ])
+  const configs = await Promise.all(sf.themes.map((t) => getThemeVersionConfig(t.versionId)))
+
+  // Las fechas fuertes del año que viene, con la temática que le va a cada una.
+  const events = upcomingEvents(new Date(), 366)
+
+  const themes: GalleryTheme[] = sf.themes.map((t, i) => {
+    const ownEvents = events.filter((e) => e.theme === t.slug)
+    const next = ownEvents[0]
+    const ownOccasions = occasions.filter((o) => o.theme === t.slug)
+    const occasionLabels = [
+      ...new Set([...ownOccasions.map((o) => o.label), ...ownEvents.map((e) => e.name)]),
+    ]
+    const guide = t.listing.guide
+    return {
+      id: t.id,
+      slug: t.slug,
+      name: t.name,
+      category: t.category,
+      order: i,
+      description: t.listing.cardDescription || t.description,
+      subtitle: t.listing.subtitle,
+      images: t.listing.images.slice(0, 4),
+      color: t.listing.cardColor,
+      tone: t.listing.cardTone,
+      emoji: themeEmoji(t.slug, guide?.emoji),
+      features: t.listing.features,
+      guide,
+      occasions: occasionLabels,
+      priceCents: t.priceCents,
+      contents: contentsByPlan(configs[i] ?? null, rawPlans),
+      daysUntil: next?.daysUntil ?? null,
+      next: next
+        ? {
+            name: next.name,
+            date: next.date,
+            daysUntil: next.daysUntil,
+            hot: next.daysUntil <= next.leadDays + 7,
+          }
+        : null,
+      search: foldText(
+        [
+          t.name,
+          t.category,
+          t.description,
+          t.listing.highlight,
+          t.listing.subtitle,
+          t.listing.cardDescription,
+          ...t.listing.features,
+          guide?.title,
+          guide?.text,
+          ...occasionLabels,
+          ...ownOccasions.map((o) => o.pitch),
+          searchHints[t.slug],
+        ]
+          .filter(Boolean)
+          .join(' '),
+      ),
+    }
+  })
+
+  const plans: GalleryPlan[] = sf.plans.map((p) => ({
+    slug: p.slug,
+    name: p.name,
+    tagline: p.tagline,
+    priceCents: p.priceCents,
+    compareAtCents: p.compareAtCents,
+    highlighted: p.highlighted,
   }))
-  const guides = sf.themes.filter((t) => t.listing.guide)
+
+  // Arriba se destaca la fecha que ya se está buscando (la más cercana).
+  const season: GallerySeason | null =
+    themes
+      .flatMap((t) => (t.next?.hot ? [{ ...t.next, slug: t.slug }] : []))
+      .sort((a, b) => a.daysUntil - b.daysUntil)[0] ?? null
+
+  const initial = readGalleryParams(params, {
+    categories: galleryCategories(themes).map((c) => c.name),
+    plans: plans.map((p) => p.slug),
+  })
 
   return (
-    <div className="overflow-x-clip bg-white pb-8">
-      <PageIntro
-        eyebrow="Galería de temáticas"
-        title={
-          <>
-            Elegí la Boxie <Mark>perfecta</Mark>
-          </>
-        }
-        text={`${themes.length} temáticas listas para personalizar con tus fotos, tu dedicatoria y su canción. Cada una trae hasta ${sf.maxScreens} sorpresas.`}
-      >
-        {plan ? (
-          <p className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full bg-brand-soft px-4 py-2 text-sm text-ink">
-            <Layers className="size-4 text-brand" aria-hidden />
-            Elegiste el plan <strong>{plan.name}</strong> ({formatARS(plan.priceCents)})
-            <Link
-              href="/precios"
-              className="font-bold text-brand underline-offset-4 hover:underline"
-            >
-              Cambiar
-            </Link>
-          </p>
-        ) : byPlans ? (
-          <p className="text-sm text-ink/60">
-            Todas traen lo mismo en cada plan ·{' '}
-            <Link
-              href="/precios"
-              className="font-bold text-brand underline-offset-4 hover:underline"
-            >
-              Ver planes y precios
-            </Link>
-          </p>
-        ) : null}
-      </PageIntro>
-
-      <GalleryGrid themes={themes} plan={plan?.slug ?? null} />
-
-      {guides.length > 0 && (
-        <section
-          aria-labelledby="elegir-title"
-          className="mt-6 rounded-t-[40px] bg-paper/60 px-5 pt-20 pb-16 sm:px-8"
-        >
-          <SectionHeading
-            eyebrow="¿Dudás entre dos?"
-            title={
-              <span id="elegir-title">
-                ¿Qué Boxie <Mark>elegir</Mark>?
-              </span>
-            }
-            text="Cada momento tiene su magia. Encontrá la tuya."
-          />
-          <Stagger
-            className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3"
-            step={0.1}
-          >
-            {guides.map((t) => (
-              <StaggerItem key={t.id} className="h-full" y={36}>
-                <GuideCard
-                  href={`/tematicas/${t.slug}${plan ? `?plan=${plan.slug}` : ''}` as Route}
-                  emoji={t.listing.guide!.emoji}
-                  title={t.listing.guide!.title}
-                  text={t.listing.guide!.text}
-                />
-              </StaggerItem>
-            ))}
-          </Stagger>
-        </section>
-      )}
-    </div>
+    <Gallery
+      themes={themes}
+      plans={plans}
+      recommendedPlan={sf.recommended?.slug ?? null}
+      priceFromCents={sf.priceFromCents}
+      maxScreens={sf.maxScreens}
+      season={season}
+      initial={initial}
+    />
   )
 }

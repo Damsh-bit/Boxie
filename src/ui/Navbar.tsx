@@ -4,7 +4,6 @@ import {
   animate,
   AnimatePresence,
   motion,
-  useMotionValue,
   useMotionValueEvent,
   useScroll,
   useTransform,
@@ -19,6 +18,7 @@ import { ButtonLink } from './Button'
 import { cn } from './cn'
 import { CurrencyToggle } from './currency/CurrencyContext'
 import { ease, spring } from './motion'
+import { navbarOffset } from './navbar-offset'
 
 const LINKS: { href: Route; label: string }[] = [
   { href: '/galeria', label: 'Galería' },
@@ -50,8 +50,11 @@ export function Navbar() {
   const surface = useTransform(scrollY, [0, 56], [0, 1])
   const height = useTransform(scrollY, [0, 120], [90, 72])
   const logoScale = useTransform(scrollY, [0, 120], [1, 0.86])
-  const offset = useMotionValue(0)
+  // Compartido con las barras pegajosas de las páginas (ver navbar-offset).
+  const offset = navbarOffset
   const hidden = useRef(false)
+  // Si la barra vuelve a montarse (al volver de una página sin ella), arranca a la vista.
+  useEffect(() => offset.set(0), [offset])
 
   useMotionValueEvent(scrollY, 'change', (y) => {
     const previous = scrollY.getPrevious() ?? y

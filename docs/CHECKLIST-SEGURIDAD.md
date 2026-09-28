@@ -74,18 +74,28 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
     4. Registrar en la bitácora el mail real obtenido de la base de datos y no el tipeado.
 
 - [ ] **P1.4 · Gestión de Claves y 2FA (TOTP)**
-  - **Dónde:** Código y base de datos Supabase.
+  - **Dónde:** Código, base de datos Supabase y Vercel.
   - **Acción:**
-    - [x] **2FA (TOTP) Implementado:** Módulo `src/server/admin/totp.ts`, tokens de setup temporales, cifrado AES-256-GCM en base de datos (`totp_secret_enc`, `totp_enabled`, `totp_backup_codes`), códigos de respaldo descargables e imprimibles, pantalla `/admin/seguridad` y verificación en dos pasos en el login `/admin/login`. Migración en `supabase/migrations/20260928130000_admin_2fa.sql`.
+    - [x] **2FA (TOTP) Implementado y Blindado:**
+      - Módulo `src/server/admin/totp.ts` y tokens efímeros firmados (`admin_2fa_pending`, 5 min).
+      - Cifrado en reposo AES-256-GCM (`totp_secret_enc`, `totp_enabled`, `totp_backup_codes`) con `TOKEN_ENCRYPTION_KEY`.
+      - 8 códigos de respaldo de un solo uso hasheados con SHA-256 (burn-on-use).
+      - Tolerancia temporal ampliada a ±90s (`epochTolerance: 90`) para evitar rechazos por diferencias de reloj entre celulares y servidores.
+      - Retención de `preAuthToken` en reintentos fallidos en `LoginScreen.tsx`.
+      - Pantalla `/admin/seguridad` en el panel y segundo factor en `/admin/login`.
+      - Migración `supabase/migrations/20260928130000_admin_2fa.sql` aplicada.
+      - Suite de tests automatizados (`src/server/admin/totp.test.ts`) validada.
+      - ⚠️ **Configuración en Vercel:** `TOKEN_ENCRYPTION_KEY` debe estar cargada en Vercel (*Settings → Environment Variables*) con el mismo valor que `.env.local` para que producción pueda descifrar los secretos de la base.
     - [ ] Agregar pantalla para "Cambiar Contraseña" en `/admin/seguridad`.
     - [ ] Exigir contraseñas de mínimo 12 caracteres.
 
 - [ ] **P1.5 · Configurar envío de Mails en Producción (Resend)**
   - **Dónde:** Vercel y Proveedor DNS del dominio.
   - **Acción:**
-    1. Cargar `RESEND_API_KEY` en las variables de entorno de Vercel.
-    2. Configurar en el DNS los registros **SPF, DKIM y DMARC** (`p=quarantine`) para `boxiedigital.com.ar`.
-    3. Validar `MAIL_FROM` y `MAIL_REPLY_TO`.
+    - [x] `RESEND_API_KEY` configurada en `.env.local` y Vercel.
+    - [x] Verificado dominio temporal de envío: `cabrown.com.ar` (remitente activo: `MAIL_FROM="Boxie <hola@cabrown.com.ar>"`).
+    - [ ] Configurar en el DNS de `boxiedigital.com.ar` los registros **SPF, DKIM y DMARC** (`p=quarantine`) para poder enviar desde `@boxiedigital.com.ar`.
+    - [ ] Validar `MAIL_FROM` definitivo a `Boxie <hola@boxiedigital.com.ar>` y `MAIL_REPLY_TO`.
 
 - [ ] **P1.6 · Limpiar datos de muestra y regenerar cupones comerciales**
   - **Dónde:** Base de datos de producción (Supabase).

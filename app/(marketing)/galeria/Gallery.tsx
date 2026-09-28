@@ -25,12 +25,14 @@ import {
   type GalleryState,
   type GalleryView,
 } from '@/domain/gallery'
+import type { PublicSponsor } from '@/domain/sponsors'
 import { Button, ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { Modal } from '@/ui/Modal'
 import { Reveal, Swap, spring, useCalm } from '@/ui/motion'
 import { NAVBAR_COMPACT_HEIGHT, navbarOffset } from '@/ui/navbar-offset'
+import { SponsorTile } from '@/ui/sponsors/SponsorUnits'
 import { openSupport, supportPageHref } from '@/ui/support-bridge'
 import { GalleryCard } from './GalleryCard'
 import { GalleryHeader } from './GalleryHeader'
@@ -53,6 +55,7 @@ export function Gallery({
   maxScreens,
   season,
   initial,
+  sponsor,
 }: {
   themes: GalleryTheme[]
   plans: GalleryPlan[]
@@ -61,6 +64,8 @@ export function Gallery({
   maxScreens: number
   season: GallerySeason | null
   initial: GalleryState
+  /** El aliado de la galería hoy; null: la invitación a sumarse. */
+  sponsor: PublicSponsor | null
 }) {
   const [state, setState] = useState(initial)
   const [quick, setQuick] = useState<string | null>(null)
@@ -111,6 +116,26 @@ export function Gallery({
   const clearAll = () =>
     choose({ query: '', category: null, sort: DEFAULT_GALLERY_STATE.sort, plan: null })
   const filtered = state.query.trim() !== '' || state.category !== null
+  // El espacio del aliado va después de la tercera temática (o al final), solo sin filtros:
+  // no se mezcla con lo que alguien buscó. Con menos de tres, al final (índice fuera de rango).
+  const sponsorAt = filtered ? -1 : Math.min(3, visible.length)
+  const sponsorCard = (i: number) => (
+    <motion.li
+      key="aliado"
+      layout="position"
+      className="list-none"
+      initial={{ opacity: 0, y: 32, scale: 0.97 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: { ...spring.soft, delay: (firstLoad ? 0.35 : 0.03) + Math.min(i, 8) * 0.06 },
+      }}
+      exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.18 } }}
+    >
+      <SponsorTile sponsor={sponsor} compact={state.view === 'compacta'} />
+    </motion.li>
+  )
   const tiered = isTiered(plans)
   const chosenPlan = plans.find((p) => p.slug === state.plan)
 
@@ -226,7 +251,8 @@ export function Gallery({
             )}
           >
             <AnimatePresence mode="popLayout">
-              {visible.map((theme, i) => (
+              {visible.flatMap((theme, i) => [
+                ...(i === sponsorAt ? [sponsorCard(i)] : []),
                 <GalleryCard
                   key={theme.id}
                   theme={theme}
@@ -237,8 +263,9 @@ export function Gallery({
                   priority={i < 3}
                   delay={(firstLoad ? 0.35 : 0.03) + Math.min(i, 8) * 0.06}
                   onQuickView={setQuick}
-                />
-              ))}
+                />,
+              ])}
+              {sponsorAt === visible.length && visible.length > 0 && sponsorCard(visible.length)}
             </AnimatePresence>
           </motion.ul>
 

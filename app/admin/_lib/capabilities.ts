@@ -153,6 +153,19 @@ export const CAPABILITIES: Capability[] = [
     note: 'Sin estas tablas se ve lo que sale de las ventas; la tienda no mide visitas ni el origen de las compras (y no falla).',
   },
   {
+    section: 'Sponsors',
+    href: '/admin/sponsors',
+    uses: 'sponsors',
+    migration: '20260928120000_sponsors',
+    needs: [
+      {
+        table: 'sponsors',
+        columns: ['stage', 'placements', 'starts_on', 'ends_on', 'contact_email', 'source'],
+      },
+    ],
+    note: 'Sin la tabla, el sitio muestra la invitación a sumarse en cada espacio y los pedidos de /marcas llegan solo por mail.',
+  },
+  {
     section: 'Tareas',
     href: '/admin/tareas',
     uses: 'admin_tasks',

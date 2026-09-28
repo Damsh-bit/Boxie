@@ -6,6 +6,8 @@ import { foldText, galleryCategories, readGalleryParams } from '@/domain/gallery
 import { upcomingEvents } from '@/domain/marketing/calendar'
 import type { Plan } from '@/domain/plans'
 import { getThemeVersionConfig, listPublicPlans } from '@/server/catalog'
+import { sponsorFor } from '@/domain/sponsors'
+import { getLiveSponsors } from '@/server/sponsors/repo'
 import { getStorefront } from '@/server/storefront'
 import type { ParsedSlide, ParsedThemeConfig } from '@/slides/config'
 import { isStructural, planContents } from '@/slides/plans'
@@ -53,10 +55,11 @@ function contentsByPlan(config: ParsedThemeConfig | null, plans: Plan[]) {
 }
 
 export default async function GalleryPage({ searchParams }: PageProps<'/galeria'>) {
-  const [sf, rawPlans, params] = await Promise.all([
+  const [sf, rawPlans, params, sponsors] = await Promise.all([
     getStorefront(),
     listPublicPlans(),
     searchParams,
+    getLiveSponsors(),
   ])
   const configs = await Promise.all(sf.themes.map((t) => getThemeVersionConfig(t.versionId)))
 
@@ -147,6 +150,7 @@ export default async function GalleryPage({ searchParams }: PageProps<'/galeria'
       maxScreens={sf.maxScreens}
       season={season}
       initial={initial}
+      sponsor={sponsorFor(sponsors, 'galeria')}
     />
   )
 }

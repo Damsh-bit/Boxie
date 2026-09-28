@@ -892,6 +892,90 @@ export type Database = {
           },
         ]
       }
+      sponsors: {
+        Row: {
+          id: string
+          name: string
+          kind: string
+          stage: string
+          tagline: string
+          offer: string
+          description: string
+          emoji: string
+          logo_url: string | null
+          color: string
+          url: string | null
+          city: string
+          coupon_code: string | null
+          placements: string[]
+          starts_on: string | null
+          ends_on: string | null
+          sort_order: number
+          contact_name: string
+          contact_email: string
+          contact_phone: string
+          interests: string[]
+          notes: string
+          source: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          kind?: string
+          stage?: string
+          tagline?: string
+          offer?: string
+          description?: string
+          emoji?: string
+          logo_url?: string | null
+          color?: string
+          url?: string | null
+          city?: string
+          coupon_code?: string | null
+          placements?: string[]
+          starts_on?: string | null
+          ends_on?: string | null
+          sort_order?: number
+          contact_name?: string
+          contact_email?: string
+          contact_phone?: string
+          interests?: string[]
+          notes?: string
+          source?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          kind?: string
+          stage?: string
+          tagline?: string
+          offer?: string
+          description?: string
+          emoji?: string
+          logo_url?: string | null
+          color?: string
+          url?: string | null
+          city?: string
+          coupon_code?: string | null
+          placements?: string[]
+          starts_on?: string | null
+          ends_on?: string | null
+          sort_order?: number
+          contact_name?: string
+          contact_email?: string
+          contact_phone?: string
+          interests?: string[]
+          notes?: string
+          source?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_messages: {
         Row: {
           id: string

@@ -4,10 +4,14 @@ import { experiences, homeFaqs, occasions, type FaqItem, type Occasion } from '@
 import { site, siteUrl } from '@/content/site'
 import { formatARS } from '@/domain/money'
 import { describeLifetime } from '@/domain/plans'
+import { sponsorFor } from '@/domain/sponsors'
 import type { SlideKind } from '@/slides/schemas'
 import { getSocialProof } from '@/server/social-proof'
+import { getLiveSponsors } from '@/server/sponsors/repo'
 import { getStorefront, type Storefront } from '@/server/storefront'
 import { LiftLink } from '@/ui/LiftLink'
+import { Reveal } from '@/ui/motion'
+import { SponsorBand } from '@/ui/sponsors/SponsorUnits'
 import { FinalCta } from './_home/FinalCta'
 import { Hero } from './_home/Hero'
 import { HowItWorks } from './_home/HowItWorks'
@@ -162,7 +166,10 @@ function structuredData(sf: Storefront, faqs: FaqItem[]) {
 
 export default async function HomePage() {
   const sf = await getStorefront()
-  const proof = await getSocialProof({ themes: sf.themes, salesPaused: sf.salesPaused })
+  const [proof, sponsors] = await Promise.all([
+    getSocialProof({ themes: sf.themes, salesPaused: sf.salesPaused }),
+    getLiveSponsors(),
+  ])
   const byPlans = sf.plans.length > 1
   const price = formatARS(sf.priceFromCents)
   const sample = sf.themes[0]
@@ -237,6 +244,12 @@ export default async function HomePage() {
         salesPaused={sf.salesPaused}
       />
       <WhyBoxie passwordByPlan={sf.plans.some((p) => !p.allowPassword)} />
+
+      <section aria-label="Aliados de Boxie" className="px-4 pb-16 sm:px-8 sm:pb-20">
+        <Reveal>
+          <SponsorBand sponsor={sponsorFor(sponsors, 'home')} />
+        </Reveal>
+      </section>
 
       <section
         id="preguntas"

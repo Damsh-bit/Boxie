@@ -14,6 +14,7 @@ const EXPLORE: { href: Route; label: string }[] = [
   { href: '/precios', label: 'Planes y precios' },
   // El prototipo linkeaba /about, que no existía.
   { href: '/nosotros', label: 'Nuestra historia' },
+  { href: '/marcas', label: 'Boxie para marcas' },
   { href: '/mi-boxie', label: 'Ya compré: entrar a mi Boxie' },
 ]
 

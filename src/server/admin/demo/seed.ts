@@ -22,6 +22,7 @@ import type { Plan } from '@/domain/plans'
 import type { OrderAttribution } from '@/domain/marketing/attribution'
 import type { Campaign, MarketingSettings, SpendEntry, TrafficRow } from '@/domain/marketing/types'
 import type { SupportMessage, SupportTicket } from '@/domain/support'
+import type { Sponsor } from '@/domain/sponsors'
 import { parseThemeConfig } from '@/slides/config'
 import { generateTheme } from '@/slides/generator/generate'
 import { planContents, withDefaultPlans } from '@/slides/plans'
@@ -89,6 +90,8 @@ export interface DemoDb {
   support?: DemoSupport
   /** Marketing (campañas, pauta, visitas, origen de las órdenes). Se siembra al usarse. */
   marketing?: DemoMarketing
+  /** Sponsors (marcas y comercios aliados). Se siembra al usarse (`sponsors/demo-repo.ts`). */
+  sponsors?: Sponsor[]
 }
 
 export interface DemoMarketing {

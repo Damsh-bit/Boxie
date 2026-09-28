@@ -1,17 +1,26 @@
 import { Gift, Wand2 } from 'lucide-react'
 import type { Metadata, Route } from 'next'
+import { OTHER_GROUP, moduleBlurbs, moduleGroups } from '@/content/pricing'
 import { screenName } from '@/content/screens'
 import { formatARS } from '@/domain/money'
 import { describeLifetime } from '@/domain/plans'
+import { sponsorFor } from '@/domain/sponsors'
+import { getThemeVersionConfig, listPublicPlans } from '@/server/catalog'
+import { getLiveSponsors } from '@/server/sponsors/repo'
+import { isStructural, planContents } from '@/slides/plans'
 import { slideDefinitions } from '@/slides/schemas'
 import { getStorefront, type Storefront } from '@/server/storefront'
 import { ButtonLink } from '@/ui/Button'
 import { Reveal } from '@/ui/motion'
+import { SponsorBand } from '@/ui/sponsors/SponsorUnits'
 import { PageIntro } from '../_components/PageIntro'
 import { Mark, SectionHeading } from '../_home/primitives'
-import { PlanCards, PlanPromises } from '../_plans/PlanCards'
+import { themeEmoji } from '../_home/theme-look'
+import { PlanPromises } from '../_plans/PlanCards'
 import { PlanComparison, type ComparisonGroup } from '../_plans/PlanComparison'
 import { Faq } from '../ayuda/Faq'
+import type { QuotePlan, QuoteTheme } from './builder-types'
+import { QuoteBuilder } from './QuoteBuilder'
 
 export const dynamic = 'force-dynamic'
 
@@ -121,11 +130,97 @@ function faqsOf(sf: Storefront) {
   ]
 }
 
-export default async function PricingPage() {
-  const sf = await getStorefront()
+export default async function PricingPage({ searchParams }: PageProps<'/precios'>) {
+  const [sf, rawPlans, params, sponsors] = await Promise.all([
+    getStorefront(),
+    listPublicPlans(),
+    searchParams,
+    getLiveSponsors(),
+  ])
+  const tiered = sf.plans.length > 1
+  const configs = await Promise.all(sf.themes.map((t) => getThemeVersionConfig(t.versionId)))
+
+  // Sin planes, un plan "de la casa" con el precio y los límites de siempre.
+  const plans: QuotePlan[] = sf.plans.length
+    ? sf.plans.map((p) => ({
+        slug: p.slug,
+        name: p.name,
+        tagline: p.tagline,
+        color: p.color,
+        highlighted: p.highlighted,
+        priceCents: p.priceCents,
+        compareAtCents: p.compareAtCents,
+        days: p.days,
+        maxPhotos: p.maxPhotos,
+        allowPassword: p.allowPassword,
+      }))
+    : [
+        {
+          slug: '',
+          name: 'Boxie',
+          tagline: '',
+          color: '#F44E63',
+          highlighted: true,
+          priceCents: sf.priceFromCents,
+          compareAtCents: null,
+          days: sf.lifetimeDays.max,
+          maxPhotos: sf.maxPhotos,
+          allowPassword: true,
+        },
+      ]
+
+  const themes: QuoteTheme[] = sf.themes.flatMap((t, i) => {
+    const config = configs[i]
+    if (!config) return []
+    // Qué trae la temática en cada plan (o entera, sin planes).
+    const byPlan = rawPlans.length
+      ? planContents(config, rawPlans).map((c) => c.slides)
+      : [config.slides]
+    const seen = new Set<string>()
+    const modules = byPlan.flatMap((slides, from) =>
+      slides.flatMap((s) => {
+        if (isStructural(s.kind) || s.kind.startsWith('connector.') || seen.has(s.kind)) return []
+        seen.add(s.kind)
+        const name = screenName(s.kind, slideDefinitions[s.kind].label)
+        return [
+          {
+            kind: s.kind,
+            from,
+            emoji: name.emoji,
+            label: name.label,
+            blurb: moduleBlurbs[s.kind] ?? '',
+            group: moduleGroups.find((g) => g.kinds.includes(s.kind))?.id ?? OTHER_GROUP.id,
+          },
+        ]
+      }),
+    )
+    return [
+      {
+        slug: t.slug,
+        name: t.name,
+        emoji: themeEmoji(t.slug, t.listing.guide?.emoji),
+        color: t.listing.cardColor,
+        image: t.listing.images[0] ?? '',
+        priceCents: t.priceCents,
+        modules,
+        screens: byPlan.map((slides) => slides.length),
+        games: byPlan.map(
+          (slides) =>
+            slides.filter(
+              (s) => slideDefinitions[s.kind].category === 'game' && s.kind !== 'connector.gamer',
+            ).length,
+        ),
+      },
+    ]
+  })
+
+  const recommendedIndex = Math.max(
+    0,
+    plans.findIndex((p) => p.slug === sf.recommended?.slug),
+  )
   const sample = sf.themes[0]?.slug ?? 'pareja'
   const editorHref = `/ejemplo/${sample}/personalizar` as Route
-  const byPlans = sf.plans.length > 1
+  const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? null
 
   return (
     <div className="overflow-x-clip bg-paper pb-24">
@@ -133,49 +228,40 @@ export default async function PricingPage() {
         eyebrow="Planes y precios"
         title={
           <>
-            Elegí cómo <Mark>emocionar</Mark>
+            Armá tu Boxie, <Mark>mirá el precio</Mark>
           </>
         }
         text={
-          byPlans
-            ? `Un solo pago, desde ${formatARS(sf.priceFromCents)}. Todas las temáticas traen lo mismo en cada plan: elegí cuánto querés que traiga tu regalo.`
+          tiered
+            ? `Elegí la temática y lo que querés que traiga: te decimos en qué plan entra y cuánto sale. Un solo pago, desde ${formatARS(sf.priceFromCents)}.`
             : `Un solo pago de ${formatARS(sf.priceFromCents)}, todo incluido, en cualquier temática.`
         }
       />
 
-      {sf.salesPaused && (
-        <p
-          role="status"
-          className="mx-auto mb-6 max-w-xl rounded-2xl bg-amber-50 px-4 py-3 text-center text-sm text-amber-900 ring-1 ring-amber-200"
-        >
-          Pausamos las ventas por un rato. Mientras tanto podés probar el editor gratis.
-        </p>
-      )}
-
-      {byPlans ? (
-        <section aria-label="Planes" className="px-5 sm:px-8">
-          <PlanCards
-            plans={sf.plans}
-            hrefs={Object.fromEntries(
-              sf.plans.map((p) => [p.slug, `/galeria?plan=${p.slug}` as Route]),
-            )}
+      {themes.length > 0 ? (
+        <section aria-label="Cotizador" className="px-4 sm:px-8">
+          <QuoteBuilder
+            themes={themes}
+            plans={plans}
+            groups={[...moduleGroups, OTHER_GROUP]}
+            tiered={tiered}
+            recommendedIndex={recommendedIndex}
+            initialTheme={one(params.tematica)}
+            initialPlan={one(params.plan)}
+            welcome={sf.welcome}
+            salesPaused={sf.salesPaused}
           />
-          <PlanPromises />
         </section>
       ) : (
-        <Reveal className="mx-auto max-w-md rounded-[30px] bg-white p-8 text-center shadow-[0_30px_70px_-30px_rgba(244,78,99,0.45)] ring-2 ring-brand">
-          <p className="font-display text-6xl font-bold text-ink">{formatARS(sf.priceFromCents)}</p>
-          <p className="mt-2 text-ink/60">
-            {sf.maxScreens} pantallas, fotos, su canción y juegos. Online{' '}
-            {describeLifetime(sf.lifetimeDays)}.
-          </p>
+        <Reveal className="mx-auto max-w-md rounded-[30px] bg-white p-8 text-center ring-1 ring-black/5">
+          <p className="font-display text-5xl font-bold text-ink">{formatARS(sf.priceFromCents)}</p>
           <ButtonLink href="/galeria" size="lg" block className="mt-6">
             <Gift className="size-5" aria-hidden /> Elegir mi Boxie
           </ButtonLink>
         </Reveal>
       )}
 
-      {byPlans && sf.screens.length > 0 && (
+      {tiered && sf.screens.length > 0 && (
         <section aria-labelledby="comparar-title" className="px-4 pt-20 sm:px-8 sm:pt-24">
           <SectionHeading
             eyebrow="Pantalla por pantalla"
@@ -191,8 +277,15 @@ export default async function PricingPage() {
             groups={comparisonOf(sf)}
             caption="Comparación de los planes de Boxie: pantallas, fotos, clave y días online"
           />
+          <PlanPromises />
         </section>
       )}
+
+      <section aria-label="Boxie para marcas" className="px-4 pt-20 sm:px-8 sm:pt-24">
+        <Reveal>
+          <SponsorBand sponsor={sponsorFor(sponsors, 'precios')} />
+        </Reveal>
+      </section>
 
       <section
         aria-labelledby="precios-preguntas"

@@ -192,20 +192,38 @@ export const supabaseMarketingRepo: MarketingRepo = {
               .from('marketing_campaigns')
               .select('*')
               .order('starts_on', { ascending: false })
+              .order('id')
               .range(a, b),
           'campañas',
         ),
         all(
-          (a, b) => db().from('marketing_spend').select('*').order('day').range(a, b),
+          (a, b) => db().from('marketing_spend').select('*').order('day').order('id').range(a, b),
           'inversión',
         ),
         all(
           (a, b) =>
-            db().from('marketing_traffic').select('*').gte('day', since).order('day').range(a, b),
+            // Paginar necesita un orden único: la clave completa de la fila.
+            db()
+              .from('marketing_traffic')
+              .select('*')
+              .gte('day', since)
+              .order('day')
+              .order('source')
+              .order('medium')
+              .order('campaign')
+              .order('device')
+              .order('landing')
+              .range(a, b),
           'visitas',
         ),
         all(
-          (a, b) => db().from('order_attribution').select('*').order('created_at').range(a, b),
+          (a, b) =>
+            db()
+              .from('order_attribution')
+              .select('*')
+              .order('created_at')
+              .order('order_id')
+              .range(a, b),
           'origen de las órdenes',
         ),
       ])
@@ -235,9 +253,13 @@ export const supabaseMarketingRepo: MarketingRepo = {
   async adSpend() {
     try {
       const [campaigns, spend] = await Promise.all([
-        all((a, b) => db().from('marketing_campaigns').select('*').range(a, b), 'campañas'),
         all(
-          (a, b) => db().from('marketing_spend').select('*').gt('spend_cents', 0).range(a, b),
+          (a, b) => db().from('marketing_campaigns').select('*').order('id').range(a, b),
+          'campañas',
+        ),
+        all(
+          (a, b) =>
+            db().from('marketing_spend').select('*').gt('spend_cents', 0).order('id').range(a, b),
           'inversión',
         ),
       ])
@@ -368,7 +390,7 @@ export const supabaseMarketingRepo: MarketingRepo = {
 
   async importSpend(input, actor) {
     const existing = await all(
-      (a, b) => db().from('marketing_campaigns').select('*').range(a, b),
+      (a, b) => db().from('marketing_campaigns').select('*').order('id').range(a, b),
       'campañas',
     )
     const byName = new Map(existing.map((c) => [c.name.toLowerCase(), c]))

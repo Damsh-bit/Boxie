@@ -1232,6 +1232,9 @@ export type Database = {
           password_hash: string | null
           invite_token_hash: string | null
           invite_expires_at: string | null
+          totp_secret_enc: string | null
+          totp_enabled: boolean
+          totp_backup_codes: string[] | null
         }
         Insert: {
           user_id?: string
@@ -1248,6 +1251,9 @@ export type Database = {
           password_hash?: string | null
           invite_token_hash?: string | null
           invite_expires_at?: string | null
+          totp_secret_enc?: string | null
+          totp_enabled?: boolean
+          totp_backup_codes?: string[] | null
         }
         Update: {
           user_id?: string
@@ -1264,6 +1270,9 @@ export type Database = {
           password_hash?: string | null
           invite_token_hash?: string | null
           invite_expires_at?: string | null
+          totp_secret_enc?: string | null
+          totp_enabled?: boolean
+          totp_backup_codes?: string[] | null
         }
         Relationships: []
       }

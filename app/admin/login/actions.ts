@@ -3,7 +3,7 @@
 import type { Route } from 'next'
 import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { authenticateAdmin } from '@/server/admin/auth'
+import { authenticateAdmin, verify2FALogin } from '@/server/admin/auth'
 import { adminRepo } from '@/server/admin/repo'
 import { ADMIN_COOKIE, adminCookieOptions, issueAdminSession } from '@/server/admin/session'
 import { isDemoMode } from '@/server/demo'
@@ -13,6 +13,8 @@ import { clientIp, isRateLimited, rateLimit } from '@/server/rate-limit'
 export interface LoginState {
   error: string | null
   email: string
+  requires2FA?: boolean
+  preAuthToken?: string
 }
 
 /** Solo rutas del panel: un `next` armado a mano no puede sacar a otro sitio. */
@@ -40,7 +42,7 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
     return { error: 'Demasiados intentos. Esperá unos minutos y probá de nuevo.', email }
   }
 
-  const result = await authenticateAdmin(email, password)
+  const result = await authenticateAdmin(email, password, remember)
   if (!result.ok) {
     rateLimit(byIp, { limit: 10, ...span })
     rateLimit(byEmail, { limit: 5, ...span })
@@ -48,10 +50,64 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
     return { error: result.error, email }
   }
 
+  if (result.requires2FA) {
+    return {
+      error: null,
+      email,
+      requires2FA: true,
+      preAuthToken: result.preAuthToken,
+    }
+  }
+
   const { value, maxAge } = issueAdminSession(result.identity, remember, isDemoMode())
   const store = await cookies()
   store.set(ADMIN_COOKIE, value, adminCookieOptions(maxAge))
   await (await adminRepo()).touchMember(result.identity.email).catch(() => {})
   log.info('Login del panel', { email: result.identity.email })
+  redirect(safeNext(form.get('next')) as Route)
+}
+
+export async function submit2FA(_prev: LoginState, form: FormData): Promise<LoginState> {
+  const preAuthToken = String(form.get('preAuthToken') ?? '')
+  const code = String(form.get('code') ?? '')
+  const email = String(form.get('email') ?? '')
+
+  if (!code) {
+    return {
+      error: 'Ingresá el código de 6 dígitos.',
+      email,
+      requires2FA: true,
+      preAuthToken,
+    }
+  }
+
+  const ip = clientIp(await headers())
+  const byIp = `admin-2fa-fail:${ip}`
+  const span = { windowMs: 15 * 60_000 }
+  if (isRateLimited(byIp, { limit: 8, ...span })) {
+    return {
+      error: 'Demasiados intentos. Esperá unos minutos y probá de nuevo.',
+      email,
+      requires2FA: true,
+      preAuthToken,
+    }
+  }
+
+  const result = await verify2FALogin(preAuthToken, code)
+  if (!result.ok) {
+    rateLimit(byIp, { limit: 8, ...span })
+    return {
+      error: result.error,
+      email,
+      requires2FA: true,
+      preAuthToken,
+    }
+  }
+
+  const { value, maxAge } = issueAdminSession(result.identity, result.remember, false)
+  const store = await cookies()
+  store.set(ADMIN_COOKIE, value, adminCookieOptions(maxAge))
+  await (await adminRepo()).touchMember(result.identity.email).catch(() => {})
+  log.info('Login con 2FA completado', { email: result.identity.email })
   redirect(safeNext(form.get('next')) as Route)
 }

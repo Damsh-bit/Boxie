@@ -10,6 +10,7 @@ import {
   Palette,
   Plug,
   Settings,
+  ShieldCheck,
   ShoppingBag,
   SquareKanban,
   Store,
@@ -197,6 +198,12 @@ export const NAV: NavGroup[] = [
         icon: Settings,
         hint: 'Precio base, comisiones, oferta y datos del negocio',
         roles: MONEY,
+      },
+      {
+        href: '/admin/seguridad',
+        label: 'Seguridad',
+        icon: ShieldCheck,
+        hint: 'Autenticación en dos pasos (2FA) y protección de tu cuenta',
       },
       {
         href: '/admin/sistema',

@@ -28,6 +28,11 @@ export interface AdminSession extends SignedPayload, AdminIdentity {
   demo: boolean
 }
 
+export interface PreAuthSession extends SignedPayload, AdminIdentity {
+  purpose: 'admin_2fa_pending'
+  remember: boolean
+}
+
 export const DEFAULT_DEMO_EMAIL = 'admin@boxie.demo'
 export const DEFAULT_DEMO_PASSWORD = 'boxie-admin'
 
@@ -63,6 +68,27 @@ export function readAdminSession(value: string | undefined | null): AdminSession
     return null
   }
   const session = verify<AdminSession>(value, 'admin', secret)
+  return session && typeof session.uid === 'string' && typeof session.email === 'string'
+    ? session
+    : null
+}
+
+export function issuePreAuthToken(identity: AdminIdentity, remember: boolean): string {
+  return sign<PreAuthSession>(
+    { purpose: 'admin_2fa_pending', ...identity, remember, exp: expiresIn(300) },
+    adminSecret(),
+  )
+}
+
+export function readPreAuthToken(token: string | undefined | null): PreAuthSession | null {
+  if (!token) return null
+  let secret: string
+  try {
+    secret = adminSecret()
+  } catch {
+    return null
+  }
+  const session = verify<PreAuthSession>(token, 'admin_2fa_pending', secret)
   return session && typeof session.uid === 'string' && typeof session.email === 'string'
     ? session
     : null

@@ -2,11 +2,13 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import {
+  ArrowLeft,
   ArrowRight,
   Eye,
   EyeOff,
   Gift,
   LockKeyhole,
+  ShieldCheck,
   Sparkles,
   TrendingUp,
   Wand2,
@@ -17,7 +19,7 @@ import { useActionState, useRef, useState } from 'react'
 import { Button, Nudge } from '@/ui/Button'
 import { Field, Input } from '@/ui/form'
 import { ease, Float, Notice, spring, Spinner, Stagger, StaggerItem } from '@/ui/motion'
-import { login, type LoginState } from './actions'
+import { login, submit2FA, type LoginState } from './actions'
 
 export function LoginScreen({
   next,
@@ -32,6 +34,10 @@ export function LoginScreen({
   locked: string | null
 }) {
   const [state, action, pending] = useActionState<LoginState, FormData>(login, {
+    error: null,
+    email: '',
+  })
+  const [twoFaState, twoFaAction, twoFaPending] = useActionState<LoginState, FormData>(submit2FA, {
     error: null,
     email: '',
   })
@@ -61,97 +67,184 @@ export function LoginScreen({
             <Image src="/brand/boxie-logo.png" alt="Boxie" width={110} height={38} priority />
           </Link>
 
-          <motion.span
-            className="mb-5 grid size-14 place-items-center rounded-2xl bg-brand text-white shadow-[0_12px_30px_rgba(244,78,99,0.35)]"
-            initial={{ scale: 0, rotate: -25 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ ...spring.bouncy, delay: 0.15 }}
-          >
-            <LockKeyhole className="size-6" aria-hidden />
-          </motion.span>
-          <h1 className="font-display text-4xl font-bold text-ink">Entrar al panel</h1>
-          <p className="mt-2 text-neutral-600">
-            El centro de control de Boxie: ventas, temáticas, planes y todo el negocio.
-          </p>
+          {state.requires2FA ? (
+            <motion.div
+              key="2fa-step"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, ease: ease.out }}
+            >
+              <motion.span
+                className="mb-5 grid size-14 place-items-center rounded-2xl bg-brand text-white shadow-[0_12px_30px_rgba(244,78,99,0.35)]"
+                initial={{ scale: 0, rotate: -25 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ ...spring.bouncy, delay: 0.1 }}
+              >
+                <ShieldCheck className="size-6" aria-hidden />
+              </motion.span>
+              <h1 className="font-display text-4xl font-bold text-ink">Verificación 2FA</h1>
+              <p className="mt-2 text-neutral-600">
+                Tu cuenta tiene activada la protección de dos factores. Ingresá el código de tu
+                app de autenticación o un código de respaldo.
+              </p>
 
-          <form action={action} className="mt-8 space-y-5">
-            <input type="hidden" name="next" value={next} />
-            <Field label="Mail" htmlFor="email">
-              <Input
-                ref={emailRef}
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="username"
-                required
-                defaultValue={state.email}
-                placeholder="vos@boxiedigital.com.ar"
-                aria-invalid={state.error ? true : undefined}
-              />
-            </Field>
-            <Field label="Clave" htmlFor="password">
-              <div className="relative">
-                <Input
-                  ref={passwordRef}
-                  id="password"
-                  name="password"
-                  type={show ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  required
-                  className="pr-12"
-                  aria-invalid={state.error ? true : undefined}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShow((s) => !s)}
-                  className="absolute top-1/2 right-2 grid size-9 -translate-y-1/2 place-items-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-ink"
-                  aria-label={show ? 'Ocultar clave' : 'Mostrar clave'}
-                >
-                  {show ? (
-                    <EyeOff className="size-4" aria-hidden />
-                  ) : (
-                    <Eye className="size-4" aria-hidden />
+              <form action={twoFaAction} className="mt-8 space-y-5">
+                <input type="hidden" name="next" value={next} />
+                <input type="hidden" name="email" value={state.email} />
+                <input type="hidden" name="preAuthToken" value={state.preAuthToken ?? ''} />
+
+                <Field label="Código de seguridad" htmlFor="code">
+                  <Input
+                    id="code"
+                    name="code"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    autoFocus
+                    required
+                    placeholder="123456"
+                    className="text-center font-mono text-xl tracking-[0.25em]"
+                    aria-invalid={twoFaState.error ? true : undefined}
+                  />
+                </Field>
+
+                <AnimatePresence initial={false}>
+                  {twoFaState.error && !twoFaPending && (
+                    <Notice.p
+                      key={twoFaState.error}
+                      role="alert"
+                      className="rounded-xl bg-[#fdeaea] px-4 py-3 text-sm font-medium text-[#a52a2a]"
+                      initial={{ opacity: 0, height: 0, y: -6 }}
+                      animate={{ opacity: 1, height: 'auto', y: 0, x: [0, -8, 8, -5, 5, 0] }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.35, x: { duration: 0.4 } }}
+                    >
+                      {twoFaState.error}
+                    </Notice.p>
                   )}
-                </button>
-              </div>
-            </Field>
+                </AnimatePresence>
 
-            <label className="flex cursor-pointer items-center gap-3 text-sm text-neutral-600 select-none">
-              <input type="checkbox" name="remember" className="size-4 rounded accent-brand" />
-              Mantener la sesión abierta 30 días
-            </label>
+                <Button type="submit" size="lg" block disabled={twoFaPending}>
+                  {twoFaPending ? (
+                    <>
+                      <Spinner className="size-5" /> Verificando…
+                    </>
+                  ) : (
+                    <>
+                      Verificar y entrar{' '}
+                      <Nudge x={4}>
+                        <ArrowRight className="size-5" aria-hidden />
+                      </Nudge>
+                    </>
+                  )}
+                </Button>
 
-            <AnimatePresence initial={false}>
-              {state.error && !pending && (
-                <Notice.p
-                  key={state.error}
-                  role="alert"
-                  className="rounded-xl bg-[#fdeaea] px-4 py-3 text-sm font-medium text-[#a52a2a]"
-                  initial={{ opacity: 0, height: 0, y: -6 }}
-                  animate={{ opacity: 1, height: 'auto', y: 0, x: [0, -8, 8, -5, 5, 0] }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.35, x: { duration: 0.4 } }}
-                >
-                  {state.error}
-                </Notice.p>
-              )}
-            </AnimatePresence>
+                <div className="pt-2 text-center">
+                  <button
+                    type="button"
+                    onClick={() => window.location.reload()}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 transition-colors hover:text-ink"
+                  >
+                    <ArrowLeft className="size-3.5" /> Volver al ingreso de usuario y clave
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          ) : (
+            <>
+              <motion.span
+                className="mb-5 grid size-14 place-items-center rounded-2xl bg-brand text-white shadow-[0_12px_30px_rgba(244,78,99,0.35)]"
+                initial={{ scale: 0, rotate: -25 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ ...spring.bouncy, delay: 0.15 }}
+              >
+                <LockKeyhole className="size-6" aria-hidden />
+              </motion.span>
+              <h1 className="font-display text-4xl font-bold text-ink">Entrar al panel</h1>
+              <p className="mt-2 text-neutral-600">
+                El centro de control de Boxie: ventas, temáticas, planes y todo el negocio.
+              </p>
 
-            <Button type="submit" size="lg" block disabled={pending}>
-              {pending ? (
-                <>
-                  <Spinner className="size-5" /> Entrando…
-                </>
-              ) : (
-                <>
-                  Entrar{' '}
-                  <Nudge x={4}>
-                    <ArrowRight className="size-5" aria-hidden />
-                  </Nudge>
-                </>
-              )}
-            </Button>
-          </form>
+              <form action={action} className="mt-8 space-y-5">
+                <input type="hidden" name="next" value={next} />
+                <Field label="Mail" htmlFor="email">
+                  <Input
+                    ref={emailRef}
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="username"
+                    required
+                    defaultValue={state.email}
+                    placeholder="vos@boxiedigital.com.ar"
+                    aria-invalid={state.error ? true : undefined}
+                  />
+                </Field>
+                <Field label="Clave" htmlFor="password">
+                  <div className="relative">
+                    <Input
+                      ref={passwordRef}
+                      id="password"
+                      name="password"
+                      type={show ? 'text' : 'password'}
+                      autoComplete="current-password"
+                      required
+                      className="pr-12"
+                      aria-invalid={state.error ? true : undefined}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShow((s) => !s)}
+                      className="absolute top-1/2 right-2 grid size-9 -translate-y-1/2 place-items-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-ink"
+                      aria-label={show ? 'Ocultar clave' : 'Mostrar clave'}
+                    >
+                      {show ? (
+                        <EyeOff className="size-4" aria-hidden />
+                      ) : (
+                        <Eye className="size-4" aria-hidden />
+                      )}
+                    </button>
+                  </div>
+                </Field>
+
+                <label className="flex cursor-pointer items-center gap-3 text-sm text-neutral-600 select-none">
+                  <input type="checkbox" name="remember" className="size-4 rounded accent-brand" />
+                  Mantener la sesión abierta 30 días
+                </label>
+
+                <AnimatePresence initial={false}>
+                  {state.error && !pending && (
+                    <Notice.p
+                      key={state.error}
+                      role="alert"
+                      className="rounded-xl bg-[#fdeaea] px-4 py-3 text-sm font-medium text-[#a52a2a]"
+                      initial={{ opacity: 0, height: 0, y: -6 }}
+                      animate={{ opacity: 1, height: 'auto', y: 0, x: [0, -8, 8, -5, 5, 0] }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.35, x: { duration: 0.4 } }}
+                    >
+                      {state.error}
+                    </Notice.p>
+                  )}
+                </AnimatePresence>
+
+                <Button type="submit" size="lg" block disabled={pending}>
+                  {pending ? (
+                    <>
+                      <Spinner className="size-5" /> Entrando…
+                    </>
+                  ) : (
+                    <>
+                      Entrar{' '}
+                      <Nudge x={4}>
+                        <ArrowRight className="size-5" aria-hidden />
+                      </Nudge>
+                    </>
+                  )}
+                </Button>
+              </form>
+            </>
+          )}
 
           {demo && (
             <motion.div

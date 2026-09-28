@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 import { formatLongDate } from '@/slides/editor/share'
 import { isDemoMode } from '@/server/demo'
 import { findGift, giftContent, giftCookieName, hasGiftAccess, type Gift } from '@/server/gift'
+import { welcomeOffer } from '@/server/storefront'
 import { MessageCard } from '@/ui/MessageCard'
 import { Reveal } from '@/ui/motion'
 import { GiftPlayer } from './GiftPlayer'
@@ -48,8 +49,16 @@ export default async function GiftPage({ params }: PageProps<'/g/[token]'>) {
     return <PasswordGate token={token} recipientName={found.recipientName} />
   }
 
-  const { config, data } = await giftContent(found)
-  return <GiftPlayer token={token} config={config} data={data} intro={!found.passwordHash} />
+  const [{ config, data }, offer] = await Promise.all([giftContent(found), welcomeOffer()])
+  return (
+    <GiftPlayer
+      token={token}
+      config={config}
+      data={data}
+      intro={!found.passwordHash}
+      offer={offer}
+    />
+  )
 }
 
 function GiftMessage({ gift }: { gift: Gift }) {

@@ -125,7 +125,7 @@ export function GiftReady({
         </motion.h1>
         <motion.p variants={item} className="mx-auto mt-3 max-w-sm text-neutral-600">
           {sandbox
-            ? `Cuando la comprás, en este paso te damos un link único para mandarle a ${name} por WhatsApp.`
+            ? `Comprala desde acá y todo lo que armaste pasa a tu Boxie: en este paso te damos el link único para mandarle a ${name} por WhatsApp.`
             : `Ya podés mandársela a ${name}. Se abre desde el celular, sin instalar nada.`}
         </motion.p>
 
@@ -191,8 +191,13 @@ export function GiftReady({
             <Button type="button" size="lg" block onClick={onViewGift}>
               <Eye className="size-5" aria-hidden /> Ver el regalo como {name}
             </Button>
-            <ButtonLink href={`/checkout?tematica=${theme.slug}`} variant="dark" size="lg" block>
-              Quiero regalar una Boxie {theme.name}
+            <ButtonLink
+              href={`/checkout?tematica=${theme.slug}${recipientName.trim() ? `&para=${encodeURIComponent(recipientName.trim())}` : ''}`}
+              variant="dark"
+              size="lg"
+              block
+            >
+              Comprarla y guardar lo que armé
             </ButtonLink>
             <Button type="button" variant="ghost" onClick={onKeepEditing}>
               <PencilLine className="size-4" aria-hidden /> Seguir editando la prueba

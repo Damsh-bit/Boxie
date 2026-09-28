@@ -5,7 +5,9 @@ import type { BuyerContent, ParsedThemeConfig } from '@/slides/config'
 import { uploadWithProgress, type EditorBackend, type UploadResult } from '@/slides/editor/backend'
 import { initialDraft } from '@/slides/editor/draft'
 import { Editor } from '@/slides/editor/Editor'
+import { isUntouched } from '@/slides/editor/import-sandbox'
 import { lockBoxieAction, saveDraftAction, setGiftPasswordAction } from './actions'
+import { ImportSandbox } from './ImportSandbox'
 
 export interface LiveEditorProps {
   code: string
@@ -47,22 +49,46 @@ export function LiveEditor(props: LiveEditorProps) {
       }
     },
   }))
-  const [draft] = useState(() => initialDraft(props.config, props.content))
+  const [state, setState] = useState(() => ({
+    draft: initialDraft(props.config, props.content),
+    media: props.media,
+    session: 0,
+  }))
+  // Recién comprada y sin tocar: se ofrece traer lo que armaron en el editor de prueba.
+  const [fresh] = useState(() => !props.locked && isUntouched(props.content))
 
   return (
-    <Editor
-      mode="live"
-      config={props.config}
-      theme={props.theme}
-      code={props.code}
-      editableUntil={props.locked ? null : props.editableUntil}
-      lifetimeDays={props.lifetimeDays}
-      initialDraft={draft}
-      initialMedia={props.media}
-      initialHasPassword={props.hasPassword}
-      allowPassword={props.allowPassword}
-      initialLocked={props.locked ? { ...props.locked, emailedTo: null } : null}
-      backend={backend}
-    />
+    <>
+      {fresh && (
+        <ImportSandbox
+          code={props.code}
+          slug={props.theme.slug}
+          config={props.config}
+          backend={backend}
+          onImported={(result) =>
+            setState((s) => ({
+              draft: result.draft,
+              media: { ...s.media, ...result.media },
+              session: s.session + 1,
+            }))
+          }
+        />
+      )}
+      <Editor
+        key={state.session}
+        mode="live"
+        config={props.config}
+        theme={props.theme}
+        code={props.code}
+        editableUntil={props.locked ? null : props.editableUntil}
+        lifetimeDays={props.lifetimeDays}
+        initialDraft={state.draft}
+        initialMedia={state.media}
+        initialHasPassword={props.hasPassword}
+        allowPassword={props.allowPassword}
+        initialLocked={props.locked ? { ...props.locked, emailedTo: null } : null}
+        backend={backend}
+      />
+    </>
   )
 }

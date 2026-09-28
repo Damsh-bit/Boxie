@@ -134,6 +134,7 @@ describe('canales', () => {
     expect(classifyChannel({ source: 'sofi', medium: 'affiliate' })).toBe('afiliados')
     expect(classifyChannel({ source: 'newsletter', medium: 'email' })).toBe('email')
     expect(classifyChannel({ source: 'whatsapp', medium: 'social' })).toBe('whatsapp')
+    expect(classifyChannel({ source: 'boxie', medium: 'regalo' })).toBe('regalos')
     expect(classifyChannel({ source: 'instagram', medium: 'bio' })).toBe('social')
     expect(classifyChannel({ source: 'google', medium: 'organic' })).toBe('seo')
     expect(classifyChannel({ source: 'blog.com', medium: 'referral' })).toBe('referral')

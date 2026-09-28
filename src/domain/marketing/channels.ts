@@ -15,6 +15,7 @@ export type ChannelId =
   | 'afiliados'
   | 'email'
   | 'whatsapp'
+  | 'regalos'
   | 'social'
   | 'seo'
   | 'referral'
@@ -70,6 +71,12 @@ export const CHANNELS: ChannelInfo[] = [
     label: 'WhatsApp',
     kind: 'owned',
     hint: 'Difusiones, estados y chats que comparten el link.',
+  },
+  {
+    id: 'regalos',
+    label: 'Regalos recibidos',
+    kind: 'owned',
+    hint: 'Personas que recibieron una Boxie y compraron desde el final del regalo (boca en boca).',
   },
   {
     id: 'social',
@@ -190,6 +197,7 @@ export function classifyChannel({ source, medium }: SourceMedium): ChannelId {
   )
     return 'email'
   if (/whatsapp/.test(s) || /whatsapp/.test(m) || s === 'wa') return 'whatsapp'
+  if (m === 'regalo' || s === 'boxie') return 'regalos'
 
   if (paid) return 'otros'
   if (SOCIAL_SOURCE.test(s) || m === 'social' || m === 'social-network' || m === 'bio')

@@ -148,7 +148,8 @@ export function screenRows(plans: Plan[], configs: ParsedThemeConfig[]): ScreenR
     .map(([kind, plan]) => ({ kind, fromPlan: plan.slug }))
 }
 
-async function welcomeOffer(): Promise<WelcomeOffer | null> {
+/** El cupón de bienvenida, si existe y está vigente (también lo ofrece el final del regalo). */
+export async function welcomeOffer(): Promise<WelcomeOffer | null> {
   try {
     const found = await findCoupon(WELCOME.code)
     const evaluation = evaluateCoupon(found, new Date())

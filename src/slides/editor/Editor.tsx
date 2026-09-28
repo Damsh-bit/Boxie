@@ -273,9 +273,15 @@ export function Editor({
               <div className="border-b border-amber-200 bg-amber-50">
                 <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2.5 text-sm text-amber-900">
                   <p className="flex-1">
-                    🧪 <strong>Modo prueba:</strong> lo que cargues queda solo en este navegador
-                    <span className="hidden sm:inline">; nada se sube a ningún servidor</span>.
+                    🧪 <strong>Modo prueba:</strong> se guarda en este navegador. Si la comprás
+                    desde acá, lo que armes pasa a tu Boxie.
                   </p>
+                  <a
+                    href={`/checkout?tematica=${theme.slug}${draft.recipientName.trim() ? `&para=${encodeURIComponent(draft.recipientName.trim())}` : ''}`}
+                    className="font-semibold text-brand-dark underline-offset-2 hover:underline"
+                  >
+                    Comprarla
+                  </a>
                   <motion.button
                     type="button"
                     className="inline-flex items-center gap-1.5 font-semibold underline-offset-2 hover:underline"

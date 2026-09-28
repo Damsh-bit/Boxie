@@ -125,6 +125,8 @@ describe('responder', () => {
     const id = conversation.ticket.id
     await flush()
     devOutbox().length = 0
+    // "Leído" se compara por hora: que la respuesta no caiga en el mismo milisegundo que la consulta.
+    await new Promise((resolve) => setTimeout(resolve, 2))
 
     const first = await service.agentReply(actor, { ticketId: id, body: '¡Hola! Ya lo vemos.' })
     expect(first.ticket).toMatchObject({ status: 'pending', assignee: actor.email })

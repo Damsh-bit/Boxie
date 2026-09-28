@@ -96,7 +96,9 @@ export function recordPageView(path: string, search: string, firstLoad: boolean)
   const now = new Date()
   const touch = touchFromLanding({
     params: new URLSearchParams(search),
-    referrer: firstLoad ? document.referrer : '',
+    // Después de la carga inicial, el "sitio de origen" es la propia tienda: sin
+    // etiquetas nuevas en la URL, navegar adentro no es un origen nuevo.
+    referrer: firstLoad ? document.referrer : window.location.href,
     path,
     siteHost: window.location.host,
     now,

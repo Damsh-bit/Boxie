@@ -232,6 +232,23 @@ export const supabaseMarketingRepo: MarketingRepo = {
     }
   },
 
+  async adSpend() {
+    try {
+      const [campaigns, spend] = await Promise.all([
+        all((a, b) => db().from('marketing_campaigns').select('*').range(a, b), 'campañas'),
+        all(
+          (a, b) => db().from('marketing_spend').select('*').gt('spend_cents', 0).range(a, b),
+          'inversión',
+        ),
+      ])
+      return { campaigns: campaigns.map(toCampaign), spend: spend.map(toSpend) }
+    } catch (error) {
+      if (error instanceof MarketingError && error.code === 'unavailable')
+        return { campaigns: [], spend: [] }
+      throw error
+    }
+  },
+
   async orderOrigin(orderId) {
     const [attr, campaigns] = await Promise.all([
       db().from('order_attribution').select('*').eq('order_id', orderId).maybeSingle(),

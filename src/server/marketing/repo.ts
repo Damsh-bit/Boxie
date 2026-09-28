@@ -10,7 +10,7 @@ import type {
   MarketingSettingsInput,
   SpendInput,
 } from '@/domain/marketing/inputs'
-import type { Campaign, MarketingDataset } from '@/domain/marketing/types'
+import type { Campaign, MarketingDataset, SpendEntry } from '@/domain/marketing/types'
 import type { Actor } from '../admin/repo'
 import { isDemoMode } from '../demo'
 
@@ -29,6 +29,8 @@ export interface MarketingRepo {
   readonly mode: 'demo' | 'supabase'
 
   dataset(): Promise<MarketingDataset>
+  /** Solo campañas e inversión (lo que Finanzas suma como gasto). */
+  adSpend(): Promise<{ campaigns: Campaign[]; spend: SpendEntry[] }>
   /** El origen de una orden y las campañas (para el detalle de una venta); sin la migración, vacío. */
   orderOrigin(
     orderId: string,

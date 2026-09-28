@@ -43,7 +43,7 @@ export function spendAsExpenses(
 /** Los gastos cargados más la pauta de las campañas (sin romper si marketing no está). */
 export async function expensesWithAdSpend(expenses: readonly Expense[]): Promise<Expense[]> {
   try {
-    const data = await (await marketingRepo()).dataset()
+    const data = await (await marketingRepo()).adSpend()
     return [...expenses, ...spendAsExpenses(data.campaigns, data.spend)]
   } catch (error) {
     log.warn('No se pudo sumar la pauta a los gastos', {

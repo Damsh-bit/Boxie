@@ -63,6 +63,11 @@ export const demoMarketingRepo: MarketingRepo = {
     }
   },
 
+  async adSpend() {
+    const m = demoDb().marketing ?? withMarketing((x) => x)
+    return { campaigns: m.campaigns, spend: m.spend }
+  },
+
   async orderOrigin(orderId) {
     const m = demoDb().marketing ?? withMarketing((x) => x)
     return {

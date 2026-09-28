@@ -18,13 +18,13 @@ describe('password hashing y verificación', () => {
     expect(result.ok).toBe(false)
   })
 
-  it('soporta claves en texto plano y solicita rehash para auto-migración', () => {
+  it('rechaza claves que no tienen formato salt:hash (no admite texto plano)', () => {
     const plaintext = 'clave_en_texto_plano'
     const result = verifyPassword(plaintext, plaintext)
-    expect(result.ok).toBe(true)
-    expect(result.needsRehash).toBe(true)
+    expect(result.ok).toBe(false)
+    expect(result.needsRehash).toBe(false)
 
-    const wrong = verifyPassword('otra_clave', plaintext)
-    expect(wrong.ok).toBe(false)
+    const malformed = verifyPassword('password', 'invalid-hash-without-salt')
+    expect(malformed.ok).toBe(false)
   })
 })

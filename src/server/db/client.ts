@@ -62,3 +62,11 @@ export function unwrapMaybe<T>(result: Result<T>, what: string): T | null {
   if (result.error) throw new DbError(`${what}: ${result.error.message}`, result.error.code)
   return result.data ?? null
 }
+
+/**
+ * Escapa comodines `%`, `_` y `\` para búsquedas literales en PostgREST (`.ilike` o `.like`).
+ * Previene evasión de rate limiting y búsquedas no deseadas con comodines.
+ */
+export function escapeIlike(value: string): string {
+  return value.replace(/[%_\\]/g, '\\$&')
+}

@@ -70,13 +70,14 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
   - **Dónde:** Código (`src/server/admin/session.ts` y `src/server/admin/token.ts`).
   - **Acción:** Releer `role`, `is_active` y la huella del hash de contraseña (`fp`) desde la base de datos en `getAdminSession` para que si se baja o elimina un miembro del equipo, su acceso se corte de inmediato. Reducir la opción "recordarme" a un máximo de 7 días.
 
-- [ ] **P1.3 · Endurecer Login del Panel**
-  - **Dónde:** Código (`src/server/admin/auth.ts`, `invite.ts`, `password.ts`).
+- [x] **P1.3 · Endurecer Login del Panel [COMPLETADO]**
+  - **Dónde:** Código (`src/server/admin/auth.ts`, `invite.ts`, `password.ts`, `src/server/db/client.ts`).
   - **Acción:**
-    1. Evitar comodines SQL en el mail (`%` o `_`) usando `exactIlike()` para impedir el bypass de rate limits por mail.
-    2. Eliminar la comparación de contraseñas en texto plano de `verifyPassword`.
-    3. Quitar el fallback a Supabase Auth en `authenticateUser`.
-    4. Registrar en la bitácora el mail real obtenido de la base de datos y no el tipeado.
+    - [x] Función `escapeIlike()` implementada y aplicada en búsquedas por email en `auth.ts` e `invite.ts` (neutraliza comodines `%` y `_`, cerrando la evasión de rate limiting por email).
+    - [x] Eliminada por completo la comparación de contraseñas en texto plano en `verifyPassword` (solo se admiten hashes válidos scrypt `salt:hash`).
+    - [x] Eliminado el fallback a Supabase Auth en `authenticateUser` (autenticación directa y estricta contra `public.users`).
+    - [x] Registro en bitácora (`log.info`) y en la sesión del email canónico real almacenado en la base de datos y no del texto tipeado en el formulario.
+    - [x] Longitud mínima de contraseña en invitaciones de equipo (`activateMemberAccount`) elevada a 12 caracteres.
 
 - [ ] **P1.4 · Gestión de Claves y 2FA (TOTP)**
   - **Dónde:** Código, base de datos Supabase y Vercel.

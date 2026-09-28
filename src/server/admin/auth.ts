@@ -85,20 +85,23 @@ export async function authenticateAdmin(
  * Autentica contra la columna password_hash de public.users.
  * Con fallback de auto-migración para usuarios antiguos de Supabase Auth.
  */
+/**
+ * Autentica contra la columna password_hash de public.users.
+ */
 async function authenticateUser(
   email: string,
   password: string,
   remember: boolean,
 ): Promise<AuthResult> {
   try {
-    const { serviceDb } = await import('../db/client')
+    const { serviceDb, escapeIlike } = await import('../db/client')
     const { hashPassword, verifyPassword } = await import('./password')
 
     const db = serviceDb()
     const { data: admin, error } = await db
       .from('users')
       .select('*')
-      .ilike('email', email)
+      .ilike('email', escapeIlike(email))
       .not('role', 'is', null)
       .maybeSingle()
 
@@ -106,6 +109,7 @@ async function authenticateUser(
 
     const row = admin as {
       user_id: string
+      email?: string | null
       role?: AdminRole
       name?: string
       password_hash?: string | null
@@ -113,81 +117,47 @@ async function authenticateUser(
       totp_secret_enc?: string | null
     }
 
-    // 1. Si la tabla users ya tiene password_hash:
-    if (row.password_hash) {
-      const { ok, needsRehash } = verifyPassword(password, row.password_hash)
-      if (!ok) return { ok: false, error: INVALID }
-
-      if (needsRehash) {
-        Promise.resolve(
-          db
-            .from('users')
-            .update({ password_hash: hashPassword(password) } as any)
-            .eq('user_id', row.user_id),
-        )
-          .then(() => log.info('Clave de admin migrada a scrypt', { email }))
-          .catch((err: unknown) => log.error('No se pudo rehashear la clave', err))
-      }
-
-      const identity: AdminIdentity = {
-        uid: row.user_id,
-        email,
-        name: row.name || email.split('@')[0]!,
-        role: row.role ?? 'owner',
-      }
-
-      // Si tiene 2FA configurado y activo, requiere el segundo factor
-      if (row.totp_enabled && row.totp_secret_enc) {
-        return {
-          ok: true,
-          requires2FA: true,
-          preAuthToken: issuePreAuthToken(identity, remember),
-        }
-      }
-
-      return {
-        ok: true,
-        requires2FA: false,
-        identity,
-      }
+    if (!row.password_hash) {
+      return { ok: false, error: INVALID }
     }
 
-    // 2. Fallback de migración para usuarios preexistentes en Supabase Auth:
-    try {
-      const { createClient } = await import('@supabase/supabase-js')
-      const { env } = await import('../env')
-      const auth = createClient(
-        env().NEXT_PUBLIC_SUPABASE_URL,
-        env().NEXT_PUBLIC_SUPABASE_ANON_KEY,
-        {
-          auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
-        },
-      )
-      const { data, error: authError } = await auth.auth.signInWithPassword({ email, password })
-      await auth.auth.signOut().catch(() => {})
+    const { ok, needsRehash } = verifyPassword(password, row.password_hash)
+    if (!ok) return { ok: false, error: INVALID }
 
-      if (!authError && data?.user) {
-        // Guardamos el hash en users para los siguientes inicios de sesión
-        await db
+    const canonicalEmail = row.email ? row.email.toLowerCase().trim() : email
+
+    if (needsRehash) {
+      Promise.resolve(
+        db
           .from('users')
           .update({ password_hash: hashPassword(password) } as any)
-          .eq('user_id', row.user_id)
-
-        return {
-          ok: true,
-          identity: {
-            uid: row.user_id,
-            email,
-            name: row.name || email.split('@')[0]!,
-            role: row.role ?? 'owner',
-          },
-        }
-      }
-    } catch {
-      // Ignorar fallback si falla Auth
+          .eq('user_id', row.user_id),
+      )
+        .then(() => log.info('Clave de admin migrada a scrypt', { email: canonicalEmail }))
+        .catch((err: unknown) => log.error('No se pudo rehashear la clave', err))
     }
 
-    return { ok: false, error: INVALID }
+    const identity: AdminIdentity = {
+      uid: row.user_id,
+      email: canonicalEmail,
+      name: row.name || canonicalEmail.split('@')[0]!,
+      role: row.role ?? 'owner',
+    }
+
+    // Si tiene 2FA configurado y activo, requiere el segundo factor
+    if (row.totp_enabled && row.totp_secret_enc) {
+      return {
+        ok: true,
+        requires2FA: true,
+        preAuthToken: issuePreAuthToken(identity, remember),
+      }
+    }
+
+    return {
+      ok: true,
+      requires2FA: false,
+      identity,
+    }
   } catch (error) {
     log.error('Login del panel: falló la validación con la tabla users', error)
     return { ok: false, error: 'No se pudo validar la cuenta. Probá de nuevo en un rato.' }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'server-only'
 import { ADMIN_ROLES, type AdminRole } from '@/domain/admin/types'
-import { serviceDb } from '../db/client'
+import { serviceDb, escapeIlike } from '../db/client'
 import { siteUrl } from '../env'
 import { log } from '../log'
 import { sendMail } from '../mail/send'
@@ -66,7 +66,7 @@ export async function createMemberInvite(
   // 1. Verificar si ya existe en public.users
   const { data: existing } = await (db.from('users') as any)
     .select('user_id, email, password_hash, role')
-    .ilike('email', email)
+    .ilike('email', escapeIlike(email))
     .maybeSingle()
 
   let userId: string
@@ -223,8 +223,8 @@ export async function getInviteDetails(token: string) {
  * Activa la cuenta de un miembro asignándole su contraseña y anulando el token.
  */
 export async function activateMemberAccount(token: string, password: string) {
-  if (!password || password.length < 8) {
-    return { ok: false as const, error: 'La contraseña debe tener al menos 8 caracteres.' }
+  if (!password || password.length < 12) {
+    return { ok: false as const, error: 'La contraseña debe tener al menos 12 caracteres.' }
   }
 
   const check = await getInviteDetails(token)

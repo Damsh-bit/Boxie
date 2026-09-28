@@ -14,27 +14,24 @@ export function hashPassword(password: string): string {
 }
 
 /**
- * Verifica si una contraseña coincide con el valor guardado en public.users.
- * Soporta tanto hashes seguros (`salt:hash`) como texto plano por si se carga
- * a mano en el Table Editor de Supabase (marcando needsRehash: true para actualizarlo).
+ * Verifica si una contraseña coincide con el hash scrypt guardado en public.users.
+ * Solo admite hashes válidos en formato `${salt}:${hashHex}` (no admite texto plano).
  */
 export function verifyPassword(
   password: string,
   stored: string,
 ): { ok: boolean; needsRehash: boolean } {
-  if (!stored) return { ok: false, needsRehash: false }
+  if (!stored || typeof stored !== 'string') return { ok: false, needsRehash: false }
 
   const parts = stored.split(':')
-  // Si no tiene el formato salt:hash (ej. clave escrita a mano directamente en Supabase)
+  // Exige estrictamente formato salt:hash
   if (parts.length !== 2) {
-    const match = password === stored
-    return { ok: match, needsRehash: match }
+    return { ok: false, needsRehash: false }
   }
 
   const [salt, key] = parts
-  if (!salt || !key) {
-    const match = password === stored
-    return { ok: match, needsRehash: match }
+  if (!salt || !key || salt.length !== 32 || key.length !== KEY_LEN * 2) {
+    return { ok: false, needsRehash: false }
   }
 
   try {

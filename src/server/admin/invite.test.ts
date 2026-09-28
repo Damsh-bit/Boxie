@@ -13,11 +13,11 @@ describe('flujo de invitaciones de equipo', () => {
     expect(resEmpty.ok).toBe(false)
   })
 
-  it('exige contraseña de al menos 8 caracteres al activar', async () => {
-    const res = await activateMemberAccount('some_token', '12345')
+  it('exige contraseña de al menos 12 caracteres al activar', async () => {
+    const res = await activateMemberAccount('some_token', '1234567890')
     expect(res.ok).toBe(false)
     if (!res.ok) {
-      expect(res.error).toContain('al menos 8 caracteres')
+      expect(res.error).toContain('al menos 12 caracteres')
     }
   })
 })

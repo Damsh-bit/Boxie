@@ -155,12 +155,17 @@ export async function consumeBackupCode(
   currentHashedCodes: string[] | null | undefined,
   inputCode: string,
 ): Promise<boolean> {
-  if (!currentHashedCodes || currentHashedCodes.length === 0) return false
+  const raw = inputCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')
+  const withHyphen =
+    raw.length === 8 ? `${raw.slice(0, 4)}-${raw.slice(4)}` : inputCode.trim().toUpperCase()
 
-  const clean = inputCode.trim().toUpperCase()
-  const givenHash = createHash('sha256').update(clean).digest('hex')
+  const hashFormatted = createHash('sha256').update(withHyphen).digest('hex')
+  const hashRaw = createHash('sha256').update(inputCode.trim().toUpperCase()).digest('hex')
 
-  const index = currentHashedCodes.indexOf(givenHash)
+  let index = currentHashedCodes.indexOf(hashFormatted)
+  if (index === -1) {
+    index = currentHashedCodes.indexOf(hashRaw)
+  }
   if (index === -1) return false
 
   // Eliminar el código consumido

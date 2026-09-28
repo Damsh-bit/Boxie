@@ -103,3 +103,81 @@ export async function disableTotpAction(
   }
   return { ok: false, error: 'No se pudo desactivar el 2FA.' }
 }
+
+export async function changePasswordAction(
+  _prev: { ok: boolean; error?: string; success?: boolean },
+  formData: FormData,
+): Promise<{ ok: boolean; error?: string; success?: boolean }> {
+  const session = await requireAdminAction()
+  if (isDemoMode()) {
+    return { ok: false, error: 'El cambio de contraseña no está disponible en modo demo.' }
+  }
+
+  const currentPassword = String(formData.get('currentPassword') ?? '').trim()
+  const newPassword = String(formData.get('newPassword') ?? '').trim()
+  const confirmPassword = String(formData.get('confirmPassword') ?? '').trim()
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return { ok: false, error: 'Completá todos los campos.' }
+  }
+
+  if (newPassword.length < 12) {
+    return { ok: false, error: 'La nueva contraseña debe tener al menos 12 caracteres.' }
+  }
+
+  if (newPassword !== confirmPassword) {
+    return { ok: false, error: 'Las contraseñas nuevas no coinciden.' }
+  }
+
+  if (newPassword === currentPassword) {
+    return { ok: false, error: 'La nueva contraseña debe ser diferente a la actual.' }
+  }
+
+  const lower = newPassword.toLowerCase()
+  if (
+    lower.includes('boxie-admin') ||
+    lower === 'password' ||
+    lower === '123456789012' ||
+    lower === 'adminadminadmin'
+  ) {
+    return { ok: false, error: 'La contraseña elegida es demasiado predecible o insegura.' }
+  }
+
+  const { hashPassword, verifyPassword } = await import('@/server/admin/password')
+  const { log } = await import('@/server/log')
+
+  const db = serviceDb()
+  const { data: user, error } = await db
+    .from('users')
+    .select('user_id, password_hash')
+    .eq('user_id', session.uid)
+    .maybeSingle()
+
+  if (error || !user) {
+    return { ok: false, error: 'Usuario no disponible o no encontrado.' }
+  }
+
+  const row = user as { user_id: string; password_hash?: string | null }
+  if (!row.password_hash) {
+    return { ok: false, error: 'La cuenta no tiene una contraseña configurada.' }
+  }
+
+  const { ok: isCurrentValid } = verifyPassword(currentPassword, row.password_hash)
+  if (!isCurrentValid) {
+    return { ok: false, error: 'La contraseña actual ingresada es incorrecta.' }
+  }
+
+  const newHash = hashPassword(newPassword)
+  const { error: updateError } = await db
+    .from('users')
+    .update({ password_hash: newHash })
+    .eq('user_id', session.uid)
+
+  if (updateError) {
+    log.error('Error al actualizar contraseña de administrador', updateError)
+    return { ok: false, error: 'No se pudo guardar la nueva contraseña. Probá de nuevo.' }
+  }
+
+  log.info('Contraseña de administrador actualizada', { userId: session.uid })
+  return { ok: true, success: true }
+}

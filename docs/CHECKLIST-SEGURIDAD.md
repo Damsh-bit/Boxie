@@ -79,7 +79,7 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
     - [x] Registro en bitácora (`log.info`) y en la sesión del email canónico real almacenado en la base de datos y no del texto tipeado en el formulario.
     - [x] Longitud mínima de contraseña en invitaciones de equipo (`activateMemberAccount`) elevada a 12 caracteres.
 
-- [ ] **P1.4 · Gestión de Claves y 2FA (TOTP)**
+- [x] **P1.4 · Gestión de Claves y 2FA (TOTP) [COMPLETADO]**
   - **Dónde:** Código, base de datos Supabase y Vercel.
   - **Acción:**
     - [x] **2FA (TOTP) Implementado y Blindado:**
@@ -92,8 +92,10 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
       - Migración `supabase/migrations/20260928130000_admin_2fa.sql` aplicada.
       - Suite de tests automatizados (`src/server/admin/totp.test.ts`) validada.
       - ⚠️ **Configuración en Vercel:** `TOKEN_ENCRYPTION_KEY` debe estar cargada en Vercel (*Settings → Environment Variables*) con el mismo valor que `.env.local` para que producción pueda descifrar los secretos de la base.
-    - [ ] Agregar pantalla para "Cambiar Contraseña" en `/admin/seguridad`.
-    - [ ] Exigir contraseñas de mínimo 12 caracteres.
+    - [x] **Pantalla de "Cambiar Contraseña" implementada en `/admin/seguridad`:**
+      - Server Action `changePasswordAction` con validación estricta de contraseña actual, coincidencia y hash Scrypt.
+      - Indicador visual dinámico de longitud mínima de caracteres en tiempo real.
+    - [x] **Exigencia de contraseñas de mínimo 12 caracteres:** aplicada de forma global tanto en invitaciones (`invite.ts`), creación por consola (`create-admin.mjs`) y cambio de clave (`actions.ts`).
 
 - [ ] **P1.5 · Configurar envío de Mails en Producción (Resend)**
   - **Dónde:** Vercel y Proveedor DNS del dominio.

@@ -15,11 +15,12 @@ import {
   X,
 } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useActionState, useState } from 'react'
 import { Button } from '@/ui/Button'
 import { Field, Input } from '@/ui/form'
 import { ease, Notice, spring, Spinner } from '@/ui/motion'
 import {
+  changePasswordAction,
   confirmTotpSetupAction,
   disableTotpAction,
   startTotpSetupAction,
@@ -421,6 +422,9 @@ export function SecuritySettings({ initialStatus }: { initialStatus: TotpStatus 
         </AnimatePresence>
       </div>
 
+      {/* Sección Cambiar Contraseña */}
+      <ChangePasswordSection />
+
       {/* Aplicaciones recomendadas */}
       <div className="rounded-2xl border border-line bg-canvas p-6">
         <h3 className="text-sm font-bold text-ink">Aplicaciones recomendadas</h3>
@@ -442,6 +446,127 @@ export function SecuritySettings({ initialStatus }: { initialStatus: TotpStatus 
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function ChangePasswordSection() {
+  const [state, formAction, pending] = useActionState(changePasswordAction, { ok: false })
+  const [newPass, setNewPass] = useState('')
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-line bg-white p-6 shadow-sm sm:p-8">
+      <div className="flex items-start gap-4">
+        <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand/10 text-brand">
+          <KeyRound className="size-6" />
+        </div>
+        <div className="space-y-1">
+          <h2 className="font-display text-xl font-bold text-ink">Cambiar contraseña</h2>
+          <p className="text-sm text-neutral-600">
+            Actualizá tu clave de acceso al panel. Debe tener un mínimo de 12 caracteres.
+          </p>
+        </div>
+      </div>
+
+      <form action={formAction} className="mt-6 max-w-lg space-y-4">
+        <Field label="Contraseña actual" htmlFor="currentPassword">
+          <Input
+            id="currentPassword"
+            name="currentPassword"
+            type="password"
+            required
+            autoComplete="current-password"
+            placeholder="••••••••••••"
+          />
+        </Field>
+
+        <Field
+          label="Nueva contraseña"
+          htmlFor="newPassword"
+          hint="Mínimo 12 caracteres (combiná letras, números y símbolos)"
+        >
+          <Input
+            id="newPassword"
+            name="newPassword"
+            type="password"
+            required
+            minLength={12}
+            autoComplete="new-password"
+            placeholder="••••••••••••"
+            value={newPass}
+            onChange={(e) => setNewPass(e.target.value)}
+          />
+        </Field>
+
+        {newPass && (
+          <div className="flex items-center gap-2 text-xs">
+            <div
+              className={`size-2 rounded-full ${
+                newPass.length >= 12 ? 'bg-emerald-500' : 'bg-amber-500'
+              }`}
+            />
+            <span
+              className={newPass.length >= 12 ? 'font-medium text-emerald-700' : 'text-neutral-500'}
+            >
+              {newPass.length >= 12
+                ? 'Longitud adecuada (12+ caracteres)'
+                : `Faltan ${12 - newPass.length} caracteres para el mínimo`}
+            </span>
+          </div>
+        )}
+
+        <Field label="Confirmar nueva contraseña" htmlFor="confirmPassword">
+          <Input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            required
+            minLength={12}
+            autoComplete="new-password"
+            placeholder="••••••••••••"
+          />
+        </Field>
+
+        <AnimatePresence initial={false}>
+          {state.error && !pending && (
+            <Notice.p
+              key={state.error}
+              role="alert"
+              className="rounded-xl bg-[#fdeaea] px-4 py-3 text-sm font-medium text-[#a52a2a]"
+              initial={{ opacity: 0, height: 0, y: -6 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              {state.error}
+            </Notice.p>
+          )}
+
+          {state.success && !pending && (
+            <motion.p
+              role="status"
+              className="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
+              initial={{ opacity: 0, height: 0, y: -6 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <Check className="size-4 shrink-0 text-emerald-600" />
+              Tu contraseña fue cambiada con éxito.
+            </motion.p>
+          )}
+        </AnimatePresence>
+
+        <div className="pt-2">
+          <Button type="submit" disabled={pending || (newPass.length > 0 && newPass.length < 12)}>
+            {pending ? (
+              <>
+                <Spinner className="size-4" /> Guardando…
+              </>
+            ) : (
+              'Actualizar contraseña'
+            )}
+          </Button>
+        </div>
+      </form>
     </div>
   )
 }

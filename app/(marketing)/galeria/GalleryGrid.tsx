@@ -7,6 +7,7 @@ import Link from 'next/link'
 import type { Route } from 'next'
 import { useDeferredValue, useState } from 'react'
 import { cn } from '@/ui/cn'
+import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { ease, spring } from '@/ui/motion'
 
 /** Una temática como la muestra la galería (la arma la página con el catálogo). */
@@ -18,6 +19,8 @@ export interface GalleryTheme {
   description: string
   image: string
   emoji: string
+  priceCents?: number
+  isPlanPrice?: boolean
   /** "Desde $ 3.490" · "$ 4.990" (el del plan elegido, si vino uno). */
   priceLabel: string
 }
@@ -190,8 +193,16 @@ function GalleryCard({
   priority: boolean
   delay: number
 }) {
+  const { formatPrice } = useCurrency()
   const href = `/tematicas/${theme.slug}${plan ? `?plan=${plan}` : ''}` as Route
   const example = `/ejemplo/${theme.slug}${plan ? `?plan=${plan}` : ''}` as Route
+
+  const displayPrice = theme.priceCents
+    ? theme.isPlanPrice
+      ? formatPrice(theme.priceCents)
+      : `Desde ${formatPrice(theme.priceCents)}`
+    : theme.priceLabel
+
   return (
     <motion.article
       layout
@@ -225,7 +236,7 @@ function GalleryCard({
         </motion.div>
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/30 to-transparent" />
         <span className="absolute bottom-3 left-3 rounded-full bg-white px-3 py-1 font-display text-base font-bold text-ink shadow-md">
-          {theme.priceLabel}
+          {displayPrice}
         </span>
         <motion.span
           className="absolute top-3 right-3 grid size-10 place-items-center rounded-full bg-white/90 text-ink shadow-md backdrop-blur"

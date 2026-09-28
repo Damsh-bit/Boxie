@@ -1,7 +1,9 @@
+'use client'
+
 import { Check, Minus } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { formatARS } from '@/domain/money'
 import { cn } from '@/ui/cn'
+import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { Reveal } from '@/ui/motion'
 import type { PlanCardData } from './PlanCards'
 
@@ -33,6 +35,7 @@ export function PlanComparison({
   groups: ComparisonGroup[]
   caption: string
 }) {
+  const { formatPrice } = useCurrency()
   return (
     <Reveal className="mx-auto max-w-5xl overflow-hidden rounded-[28px] bg-white shadow-[0_24px_60px_-30px_rgba(42,36,51,0.35)] ring-1 ring-black/5">
       <div className="overflow-x-auto overscroll-x-contain">
@@ -63,7 +66,7 @@ export function PlanComparison({
                     {plan.name}
                   </span>
                   <span className="mt-0.5 block text-[11px] font-semibold text-ink/60 tabular-nums sm:text-sm">
-                    {formatARS(plan.priceCents)}
+                    {formatPrice(plan.priceCents)}
                   </span>
                   {plan.highlighted && (
                     <span className="mt-1 hidden rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase sm:inline-block">

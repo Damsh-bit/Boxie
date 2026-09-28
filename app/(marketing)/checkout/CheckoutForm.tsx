@@ -20,6 +20,7 @@ import { howItWorks, type HowItWorksIcon } from '@/content/site'
 import { formatARS } from '@/domain/money'
 import { Button, ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { CurrencyToggle, useCurrency } from '@/ui/currency/CurrencyContext'
 import { Field, Input } from '@/ui/form'
 import { currentAttribution } from '@/ui/marketing/attribution-client'
 import { ease, Notice, Spinner, spring, Swap } from '@/ui/motion'
@@ -72,6 +73,7 @@ export function CheckoutForm({
   salesPaused,
   demo,
 }: Props) {
+  const { currency, formatPrice } = useCurrency()
   const [quote, setQuote] = useState(initialQuote)
   const [couponInput, setCouponInput] = useState(initialQuote.coupon?.code ?? '')
   const [couponMessage, setCouponMessage] = useState<string | null>(
@@ -257,8 +259,19 @@ export function CheckoutForm({
                 </p>
               )}
               <Button type="submit" block size="lg" disabled={!terms || busy}>
-                <Lock className="size-4" aria-hidden /> {busy ? 'Redirigiendo...' : 'Ir a pagar'}
+                <Lock className="size-4" aria-hidden />{' '}
+                {busy
+                  ? 'Redirigiendo...'
+                  : currency === 'USD'
+                    ? `Pagar ${formatARS(quote.totalCents)}`
+                    : 'Ir a pagar'}
               </Button>
+              {currency === 'USD' && (
+                <p className="text-center text-xs text-neutral-500">
+                  El cobro se procesará en Mercado Pago en pesos argentinos (
+                  {formatARS(quote.totalCents)})
+                </p>
+              )}
             </div>
           ) : (
             <div className="space-y-3 rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
@@ -296,7 +309,10 @@ export function CheckoutForm({
         variants={item}
         className="h-fit rounded-3xl bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.06)] lg:sticky lg:top-28"
       >
-        <h2 className="mb-5 font-bold text-ink">Resumen del pedido</h2>
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <h2 className="font-bold text-ink">Resumen del pedido</h2>
+          <CurrencyToggle size="sm" />
+        </div>
         <div className="mb-5 flex items-start gap-4">
           <div className="relative size-[70px] shrink-0 overflow-hidden rounded-xl border border-neutral-100">
             <Image src={theme.image} alt={theme.name} fill sizes="70px" className="object-cover" />
@@ -345,7 +361,7 @@ export function CheckoutForm({
                   >
                     <span className="block text-xs font-bold text-ink">{p.name}</span>
                     <span className="block text-sm font-semibold text-ink tabular-nums">
-                      {formatARS(p.priceCents)}
+                      {formatPrice(p.priceCents)}
                     </span>
                   </motion.button>
                 )
@@ -442,7 +458,7 @@ export function CheckoutForm({
         <motion.dl layout className="mt-5 space-y-2 border-t border-neutral-100 pt-5 text-sm">
           <div className="flex justify-between">
             <dt>Subtotal</dt>
-            <dd>{formatARS(quote.listPriceCents)}</dd>
+            <dd>{formatPrice(quote.listPriceCents)}</dd>
           </div>
           <AnimatePresence initial={false}>
             {quote.discountCents > 0 && (
@@ -454,7 +470,7 @@ export function CheckoutForm({
                 transition={spring.soft}
               >
                 <dt>Descuento ({quote.coupon?.label})</dt>
-                <dd>− {formatARS(quote.discountCents)}</dd>
+                <dd>− {formatPrice(quote.discountCents)}</dd>
               </motion.div>
             )}
           </AnimatePresence>
@@ -464,11 +480,23 @@ export function CheckoutForm({
           >
             <dt>Total</dt>
             <dd className="relative font-display text-2xl text-brand">
-              <Swap id={quote.totalCents} y={14}>
-                {formatARS(quote.totalCents)}
+              <Swap id={`${currency}-${quote.totalCents}`} y={14}>
+                {formatPrice(quote.totalCents)}
               </Swap>
             </dd>
           </motion.div>
+
+          {currency === 'USD' && (
+            <motion.p
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-3 rounded-xl bg-neutral-50 p-2.5 text-center text-xs leading-relaxed text-neutral-500"
+            >
+              Monto en USD de referencia. El cobro final se procesará en Mercado Pago en pesos
+              argentinos (<strong>{formatARS(quote.totalCents)}</strong>).
+            </motion.p>
+          )}
         </motion.dl>
       </motion.aside>
     </motion.div>

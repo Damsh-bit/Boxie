@@ -35,6 +35,8 @@ export default async function GalleryPage({ searchParams }: PageProps<'/galeria'
     description: t.listing.cardDescription || t.description,
     image: t.listing.images[1] ?? t.listing.images[0]!,
     emoji: themeEmoji(t.slug, t.listing.guide?.emoji),
+    priceCents: plan ? plan.priceCents : byPlans ? sf.priceFromCents : t.priceCents,
+    isPlanPrice: !!plan || !byPlans,
     priceLabel: plan
       ? formatARS(plan.priceCents)
       : byPlans

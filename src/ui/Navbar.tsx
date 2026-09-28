@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Route } from 'next'
 import { ButtonLink } from './Button'
 import { cn } from './cn'
+import { CurrencyToggle } from './currency/CurrencyContext'
 import { ease, spring } from './motion'
 
 const LINKS: { href: Route; label: string }[] = [
@@ -113,12 +114,16 @@ export function Navbar() {
           <DesktopLinks pathname={pathname} />
 
           <div className="hidden items-center gap-3 lg:flex">
+            <CurrencyToggle size="sm" />
             <ButtonLink href="/galeria" size="sm" className="h-10 px-5">
               <Gift className="size-4" aria-hidden /> Regalar
             </ButtonLink>
           </div>
 
-          <MenuButton open={open} onToggle={() => setOpen((o) => !o)} />
+          <div className="flex items-center gap-2 lg:hidden">
+            <CurrencyToggle size="sm" className="hidden min-[380px]:inline-flex" />
+            <MenuButton open={open} onToggle={() => setOpen((o) => !o)} />
+          </div>
         </motion.nav>
       </motion.header>
 
@@ -269,7 +274,7 @@ function MobileMenu({
           </motion.ul>
 
           <motion.div
-            className="mt-auto flex flex-col gap-3 pt-10"
+            className="mt-auto flex flex-col gap-3 pt-6"
             initial={{ opacity: 0, y: 24 }}
             animate={{
               opacity: 1,
@@ -278,6 +283,10 @@ function MobileMenu({
             }}
             exit={{ opacity: 0, transition: { duration: 0.15 } }}
           >
+            <div className="mb-2 flex items-center justify-between rounded-2xl bg-neutral-50 px-4 py-3 min-[380px]:hidden">
+              <span className="text-sm font-semibold text-neutral-600">Ver precios en</span>
+              <CurrencyToggle size="sm" />
+            </div>
             <ButtonLink href="/galeria" size="lg" block onClick={onClose}>
               <Gift className="size-5" aria-hidden /> Regalar una Boxie
             </ButtonLink>

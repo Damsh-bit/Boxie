@@ -4,9 +4,9 @@ import { motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { ArrowRight, Check, Crown, Gamepad2, Images, KeyRound, Layers, Timer } from 'lucide-react'
 import type { Route } from 'next'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { formatARS } from '@/domain/money'
 import { ButtonLink, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { ease, spring } from '@/ui/motion'
 
 /**
@@ -164,11 +164,12 @@ function PlanCard({
   cta: string
   delay: number
 }) {
+  const { formatPrice } = useCurrency()
   const facts = planFacts(plan)
   return (
     <motion.article
       data-reveal=""
-      aria-label={`Plan ${plan.name}: ${formatARS(plan.priceCents)}`}
+      aria-label={`Plan ${plan.name}: ${formatPrice(plan.priceCents)}`}
       className={cn(
         'relative flex w-[min(20rem,calc(100vw-4rem))] shrink-0 snap-center flex-col rounded-[30px] bg-white p-6 sm:p-7 lg:w-auto',
         plan.highlighted
@@ -204,11 +205,11 @@ function PlanCard({
 
       <p className="mt-4 flex flex-wrap items-baseline gap-x-2">
         <span className="font-display text-5xl leading-none font-bold text-ink">
-          {formatARS(plan.priceCents)}
+          {formatPrice(plan.priceCents)}
         </span>
         {plan.compareAtCents && (
           <span className="text-base text-ink/40 line-through">
-            {formatARS(plan.compareAtCents)}
+            {formatPrice(plan.compareAtCents)}
           </span>
         )}
       </p>

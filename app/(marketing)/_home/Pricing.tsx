@@ -6,9 +6,9 @@ import Link from 'next/link'
 import type { Route } from 'next'
 import { useEffect, useRef, useState } from 'react'
 import { giftComparisons } from '@/content/home'
-import { formatARS } from '@/domain/money'
 import { ButtonLink, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { Stagger, StaggerItem, Swap, ease, spring, useCalm } from '@/ui/motion'
 import { PlanCards, PlanPromises, type PlanCardData } from '../_plans/PlanCards'
 import { Magnetic, Mark, SectionHeading } from './primitives'
@@ -68,6 +68,7 @@ export function Pricing({
   editorHref: Route
   salesPaused?: boolean
 }) {
+  const { formatPrice } = useCurrency()
   const recommended = plans.find((p) => p.highlighted) ?? plans[Math.floor(plans.length / 2)]
   const cheapest = plans.length ? Math.min(...plans.map((p) => p.priceCents)) : basePrice
 
@@ -89,7 +90,7 @@ export function Pricing({
               Un regalo original, <Mark>a tu medida</Mark>
             </span>
           }
-          text={`Un solo pago, desde ${formatARS(cheapest)}, con Mercado Pago. Cada plan suma pantallas, juegos y días online. Sin suscripciones, sin costo de envío y sin letra chica.`}
+          text={`Un solo pago, desde ${formatPrice(cheapest)}, con Mercado Pago. Cada plan suma pantallas, juegos y días online. Sin suscripciones, sin costo de envío y sin letra chica.`}
           className="mb-4 sm:mb-6"
         />
         {salesPaused && <PausedNote className="mb-2" />}
@@ -152,7 +153,7 @@ export function Pricing({
             Un regalo original, <Mark>todo incluido</Mark>
           </span>
         }
-        text={`Un solo pago de ${formatARS(priceCents)} con Mercado Pago. Sin suscripciones, sin costo de envío y sin letra chica.`}
+        text={`Un solo pago de ${formatPrice(priceCents)} con Mercado Pago. Sin suscripciones, sin costo de envío y sin letra chica.`}
       />
       {salesPaused && <PausedNote className="mb-8" />}
 
@@ -201,6 +202,7 @@ function PriceCard({
   included: string[]
   welcome: WelcomeCoupon | null
 }) {
+  const { formatPrice, currency } = useCurrency()
   return (
     <motion.div
       data-reveal=""
@@ -223,12 +225,12 @@ function PriceCard({
 
       <p className="relative mt-5 flex flex-wrap items-end gap-x-2">
         <span className="font-display text-6xl leading-none font-bold text-ink sm:text-7xl">
-          {formatARS(priceCents)}
+          {formatPrice(priceCents)}
         </span>
-        <span className="mb-1.5 text-sm font-semibold text-ink/50">ARS</span>
+        <span className="mb-1.5 text-sm font-semibold text-ink/50">{currency}</span>
         {compareAtCents && (
           <span className="mb-1.5 text-base text-ink/40 line-through">
-            {formatARS(compareAtCents)}
+            {formatPrice(compareAtCents)}
           </span>
         )}
       </p>
@@ -337,6 +339,7 @@ function CouponTicket({ welcome, className }: { welcome: WelcomeCoupon; classNam
 }
 
 function Comparator({ priceCents, label = 'Boxie' }: { priceCents: number; label?: string }) {
+  const { formatPrice } = useCurrency()
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, amount: 0.4 })
   const calm = useCalm()
@@ -347,7 +350,7 @@ function Comparator({ priceCents, label = 'Boxie' }: { priceCents: number; label
   const boxieWidth = Math.max(6, (priceCents / other.priceCents) * 100)
 
   const savingValue = useMotionValue(saving)
-  const savingText = useTransform(savingValue, (v) => formatARS(Math.round(v / 100) * 100))
+  const savingText = useTransform(savingValue, (v) => formatPrice(Math.round(v / 100) * 100))
 
   useEffect(() => {
     if (calm) {
@@ -424,7 +427,7 @@ function Comparator({ priceCents, label = 'Boxie' }: { priceCents: number; label
       <div className="mt-7 space-y-4">
         <Bar
           label={`${other.emoji} ${other.label}`}
-          value={formatARS(other.priceCents)}
+          value={formatPrice(other.priceCents)}
           width={100}
           className="bg-white/25"
           note={other.note}
@@ -432,7 +435,7 @@ function Comparator({ priceCents, label = 'Boxie' }: { priceCents: number; label
         />
         <Bar
           label={`🎁 ${label}`}
-          value={formatARS(priceCents)}
+          value={formatPrice(priceCents)}
           width={boxieWidth}
           className="bg-[linear-gradient(90deg,#f44e63,#ff9a9e)]"
           note="llega hoy, esté donde esté, y no se marchita"

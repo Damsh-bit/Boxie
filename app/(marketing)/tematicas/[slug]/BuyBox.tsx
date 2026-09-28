@@ -6,9 +6,9 @@ import type { Route } from 'next'
 import Link from 'next/link'
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { couponDiscount } from '@/domain/coupons'
-import { formatARS } from '@/domain/money'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { ease, spring, useCalm } from '@/ui/motion'
 import { useBottomBar } from '@/ui/use-bottom-bar'
 
@@ -77,6 +77,7 @@ export function BuyBox({
   const bar = useRef<HTMLDivElement>(null)
   useBottomBar(bar, ctaHidden)
   const calm = useCalm()
+  const { formatPrice } = useCurrency()
 
   const delay = offer?.delaySeconds
   useEffect(() => {
@@ -106,7 +107,7 @@ export function BuyBox({
           )}
           transition={spring.soft}
         >
-          {formatARS(priceCents)}
+          {formatPrice(priceCents)}
           <motion.span
             aria-hidden
             className="absolute top-1/2 left-0 h-0.5 w-full origin-left rounded-full bg-neutral-400"
@@ -124,7 +125,7 @@ export function BuyBox({
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ ...spring.bouncy, delay: 0.25 }}
             >
-              {formatARS(offerPrice)}
+              {formatPrice(offerPrice)}
             </motion.span>
           )}
         </AnimatePresence>
@@ -205,7 +206,7 @@ export function BuyBox({
                   Boxie {name}
                   {plan ? ` · ${plan.name}` : ''}
                 </p>
-                <p className="font-display text-xl font-bold text-ink">{formatARS(price)}</p>
+                <p className="font-display text-xl font-bold text-ink">{formatPrice(price)}</p>
               </div>
               <ButtonLink href={href} size="md" className="px-5">
                 <Gift className="size-4" aria-hidden /> Quiero la mía
@@ -233,6 +234,7 @@ function PlanPicker({
   onChange(slug: string): void
   slug: string
 }) {
+  const { formatPrice } = useCurrency()
   return (
     <div className="mt-3 mb-4">
       <div role="radiogroup" aria-label="Elegí el plan" className="flex flex-col gap-2">
@@ -283,11 +285,11 @@ function PlanPicker({
               </span>
               <span className="relative shrink-0 text-right">
                 <span className="block font-display text-lg font-bold text-ink">
-                  {formatARS(p.priceCents)}
+                  {formatPrice(p.priceCents)}
                 </span>
                 {p.compareAtCents && (
                   <span className="block text-xs text-neutral-400 line-through">
-                    {formatARS(p.compareAtCents)}
+                    {formatPrice(p.compareAtCents)}
                   </span>
                 )}
               </span>

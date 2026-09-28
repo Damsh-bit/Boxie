@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatARS } from './money'
+import { arsToUsdCents, formatARS, formatMoney, formatUSD } from './money'
 import { listPrice, quote } from './pricing'
 
 const coupon = (kind: 'percent' | 'fixed', value: number) => ({
@@ -69,5 +69,28 @@ describe('formatARS', () => {
   it('formatea como en el sitio', () => {
     expect(formatARS(1_500_000).replace(/\s/g, ' ')).toBe('$ 15.000')
     expect(formatARS(1_499_950).replace(/\s/g, ' ')).toBe('$ 14.999,50')
+  })
+})
+
+describe('formatUSD', () => {
+  it('formatea en dólares correctamente', () => {
+    expect(formatUSD(500).replace(/\s/g, ' ')).toBe('US$ 5')
+    expect(formatUSD(450).replace(/\s/g, ' ')).toBe('US$ 4,50')
+  })
+})
+
+describe('arsToUsdCents', () => {
+  it('convierte montos con tasa de cambio', () => {
+    // 15.000 ARS (1.500.000 centavos) con dólar a 1.500 -> 10 USD (1.000 centavos)
+    expect(arsToUsdCents(1_500_000, 1500)).toBe(1000)
+    // Con tasa inválida devuelve 0
+    expect(arsToUsdCents(1_500_000, 0)).toBe(0)
+  })
+})
+
+describe('formatMoney', () => {
+  it('formatea según moneda elegida', () => {
+    expect(formatMoney(1_500_000, 'ARS').replace(/\s/g, ' ')).toBe('$ 15.000')
+    expect(formatMoney(1_500_000, 'USD', 1500).replace(/\s/g, ' ')).toBe('US$ 10')
   })
 })

@@ -64,7 +64,21 @@ export async function createMemberInvite(
   const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000)
   const nowIso = new Date().toISOString()
 
-  // 1. Verificar si ya existe en public.users
+  // 1. Validar que el correo no pertenezca a un cliente con compras en la tienda
+  const { data: customerOrder } = await db
+    .from('orders')
+    .select('id')
+    .ilike('buyer_email', escapeIlike(email))
+    .limit(1)
+    .maybeSingle()
+
+  if (customerOrder) {
+    throw new Error(
+      'Este correo pertenece a un cliente con compras registradas. Por seguridad, usá un correo corporativo o diferente para el equipo.',
+    )
+  }
+
+  // 2. Verificar si ya existe en public.users
   const { data: existing } = await (db.from('users') as any)
     .select('user_id, email, password_hash, role')
     .ilike('email', escapeIlike(email))
@@ -73,6 +87,13 @@ export async function createMemberInvite(
   let userId: string
 
   if (existing) {
+    // Si existe pero como usuario sin rol administrativo (cliente del portal)
+    if (existing.role === null || existing.role === undefined) {
+      throw new Error(
+        'Este correo ya está registrado como cliente del portal. Por seguridad, usá un correo corporativo o diferente para el equipo.',
+      )
+    }
+
     // Si ya tiene contraseña, ya es un miembro activo
     if (existing.password_hash) {
       throw new Error('Esa persona ya está en el equipo con una cuenta activa.')

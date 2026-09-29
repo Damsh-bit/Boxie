@@ -658,8 +658,14 @@ export const demoRepo: AdminRepo = {
 
   async inviteMember(input, actor) {
     return mutateDemoDb((db) => {
-      if (db.team.some((m) => m.email.toLowerCase() === input.email.toLowerCase()))
+      const emailLower = input.email.toLowerCase()
+      if (db.team.some((m) => m.email.toLowerCase() === emailLower))
         throw new AdminRepoError('Esa persona ya está en el equipo.', 'conflict')
+      if (db.orders.some((o) => o.buyerEmail?.toLowerCase() === emailLower))
+        throw new AdminRepoError(
+          'Este correo pertenece a un cliente con compras registradas. Por seguridad, usá un correo corporativo o diferente para el equipo.',
+          'conflict',
+        )
       const member = {
         id: randomUUID(),
         email: input.email.toLowerCase(),

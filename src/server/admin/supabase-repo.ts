@@ -1165,7 +1165,7 @@ export const supabaseRepo: AdminRepo = {
       return result
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'No se pudo invitar'
-      if (message.includes('ya está en el equipo')) {
+      if (message.includes('ya está en el equipo') || message.includes('cliente')) {
         throw new AdminRepoError(message, 'conflict')
       }
       throw new AdminRepoError(message)

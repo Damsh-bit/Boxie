@@ -20,4 +20,18 @@ describe('flujo de invitaciones de equipo', () => {
       expect(res.error).toContain('al menos 12 caracteres')
     }
   })
+
+  it('rechaza invitar al equipo a un correo que ya pertenece a un cliente comprador', async () => {
+    const actor = { id: 'admin-1', email: 'owner@boxie.ar', name: 'Owner' }
+    const { demoRepo } = await import('./demo/repo')
+    const { demoDb } = await import('./demo/store')
+
+    const buyerEmail = demoDb().orders[0]?.buyerEmail
+    expect(buyerEmail).toBeDefined()
+
+    // Intentar invitar con un email de comprador existente en demoDb
+    await expect(
+      demoRepo.inviteMember({ email: buyerEmail!, name: 'Cliente', role: 'support' }, actor),
+    ).rejects.toThrow(/pertenece a un cliente/)
+  })
 })

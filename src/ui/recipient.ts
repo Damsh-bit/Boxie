@@ -3,7 +3,7 @@
 import { cleanRecipient } from '@/domain/recipient'
 
 /**
- * El nombre de quien recibe la Boxie, tal como lo escribieron en la home
+ * El nombre de quien recibe el regalo (Ribbly), tal como lo escribieron en la home
  * ("¿Para quién es?"). Viaja por la ficha y el checkout (?para=Sofi) y queda
  * guardado en el navegador para que el editor, después de pagar, ya lo tenga
  * cargado: no se vuelve a pedir lo que la persona ya escribió.

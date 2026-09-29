@@ -154,7 +154,7 @@ export function NewTicketForm({
 
       {withCode && (
         <Field
-          label="Código de tu Boxie (opcional)"
+          label="Código de tu Ribbly (opcional)"
           htmlFor={`${id}-code`}
           hint={fields.boxieCode ? undefined : 'Está en el mail de compra. Ej.: K7M2-Q9XD'}
           error={fields.boxieCode}

@@ -36,7 +36,7 @@ describe('login del panel en modo demo', () => {
 
   it('escapeIlike neutraliza comodines SQL (% y _)', async () => {
     const { escapeIlike } = await import('../db/client')
-    expect(escapeIlike('admin%@boxiedigital.com.ar')).toBe('admin\\%@boxiedigital.com.ar')
+    expect(escapeIlike('admin%@ribbly.com.ar')).toBe('admin\\%@ribbly.com.ar')
     expect(escapeIlike('ad_min@test.com')).toBe('ad\\_min@test.com')
     expect(escapeIlike('normal@email.com')).toBe('normal@email.com')
   })

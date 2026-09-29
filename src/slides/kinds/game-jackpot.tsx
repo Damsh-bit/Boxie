@@ -67,7 +67,7 @@ export function GameJackpot({ theme, ctx }: Props<'game.jackpot'>) {
                   animate={{ y: 0, scale: 1 }}
                   transition={spring.pop}
                 >
-                  <img src={ctx.logoUrl} alt="Boxie" />
+                  <img src={ctx.logoUrl} alt="Ribbly" />
                 </motion.div>
               ) : (
                 <motion.div
@@ -178,7 +178,7 @@ export function GameJackpot({ theme, ctx }: Props<'game.jackpot'>) {
               )}
             <motion.img
               src={ctx.logoUrl}
-              alt="Boxie"
+              alt="Ribbly"
               style={{
                 width: 140,
                 filter: 'drop-shadow(0 0 25px var(--bx-primary))',

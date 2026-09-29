@@ -648,7 +648,7 @@ function seedExpenses(): Expense[] {
     e(1, 'infraestructura', 'Hosting y funciones', 'Vercel Pro', 24_000, '2025-09-01'),
     e(2, 'infraestructura', 'Base de datos y storage', 'Supabase Pro', 30_000, '2025-10-01'),
     e(3, 'infraestructura', 'Mails transaccionales', 'Resend', 18_000, '2025-10-01'),
-    e(4, 'infraestructura', 'Dominio boxiedigital.com.ar', 'NIC Argentina', 16_000, '2025-09-01', {
+    e(4, 'infraestructura', 'Dominio ribbly.com.ar', 'NIC Argentina', 16_000, '2025-09-01', {
       recurrence: 'once',
     }),
     // La pauta (Meta, Google, TikTok) no va acá: se carga por campaña en Marketing y
@@ -1147,10 +1147,10 @@ export function seedDemoDb(now = new Date(), seed = 20260924): DemoDb {
     taxBps: 350,
     variableCostCents: 2_500,
     monthlyGoalCents: 250_000_000,
-    businessName: 'Boxie Digital',
-    supportEmail: 'ayuda@boxiedigital.com.ar',
+    businessName: 'Ribbly',
+    supportEmail: 'ayuda@ribbly.com.ar',
     whatsapp: '+54 9 11 0000-0000',
-    instagram: '@boxie.app',
+    instagram: '@ribbly.app',
     salesPaused: false,
     updatedAt: '2026-07-10T15:00:00.000Z',
   }

@@ -28,7 +28,7 @@ const schema = z
     MP_ACCESS_TOKEN: optional,
     MP_WEBHOOK_SECRET: optional,
     RESEND_API_KEY: optional,
-    MAIL_FROM: z.string().default('Boxie <hola@boxiedigital.com.ar>'),
+    MAIL_FROM: z.string().default('Ribbly <hola@ribbly.com.ar>'),
     MAIL_REPLY_TO: optional,
     ADMIN_HOST: optional,
     CRON_SECRET: optional,

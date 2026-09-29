@@ -13,11 +13,11 @@ export default function PendientePage() {
       <MessageCard emoji="⏳" title="Tu pago está pendiente">
         <p className="leading-relaxed text-ink/70">
           Mercado Pago está procesando el pago: según el medio elegido puede tardar unas horas. En
-          cuanto se acredite te llega un mail con el link para personalizar tu Boxie.
+          cuanto se acredite te llega un mail con el link para personalizar tu Ribbly.
         </p>
         <ResultActions
           primary={{ href: '/', label: 'Volver al inicio' }}
-          secondary={{ href: '/mi-boxie', label: 'Ya se acreditó: reenviar el link' }}
+          secondary={{ href: '/mi-ribbly', label: 'Ya se acreditó: reenviar el link' }}
           support={{ topic: 'pago', label: '¿Pasó mucho tiempo? Escribinos' }}
         />
       </MessageCard>

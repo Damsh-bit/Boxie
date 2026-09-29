@@ -49,6 +49,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       // Rutas del prototipo: los links viejos no pueden dar 404.
+      { source: '/mi-boxie', destination: '/mi-ribbly', permanent: true },
       { source: '/producto/:slug', destination: '/tematicas/:slug', permanent: true },
       { source: '/terminos', destination: '/legales/terminos', permanent: true },
       { source: '/privacidad', destination: '/legales/privacidad', permanent: true },

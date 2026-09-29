@@ -67,7 +67,7 @@ describe('connections', () => {
     vi.stubEnv('DEMO_MODE', '')
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://abc.supabase.co')
     vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'service')
-    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://www.boxiedigital.com.ar')
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://www.ribbly.com.ar')
     vi.stubEnv('PAYMENTS_PROVIDER', 'mercadopago')
     vi.stubEnv('MP_ACCESS_TOKEN', 'APP_USR-x')
     vi.stubEnv('RESEND_API_KEY', '')

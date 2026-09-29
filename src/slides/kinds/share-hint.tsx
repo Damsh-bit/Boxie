@@ -7,7 +7,7 @@ import { spring } from './motion'
  */
 export function ShareHint({
   onClose,
-  handle = '@boxie.app',
+  handle = '@ribbly.app',
 }: {
   onClose: () => void
   handle?: string

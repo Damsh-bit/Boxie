@@ -10,12 +10,12 @@ const stamp = () => `${Date.now().toString(36)}${Math.random().toString(36).slic
 
 async function openWidget(page: Page) {
   await page.getByRole('button', { name: /^Ayuda/ }).click()
-  await expect(page.getByRole('dialog', { name: 'Ayuda de Boxie' })).toBeVisible()
+  await expect(page.getByRole('dialog', { name: 'Ayuda de Ribbly' })).toBeVisible()
 }
 
 async function createTicket(page: Page, message: string) {
   await openWidget(page)
-  const dialog = page.getByRole('dialog', { name: 'Ayuda de Boxie' })
+  const dialog = page.getByRole('dialog', { name: 'Ayuda de Ribbly' })
   await dialog.getByRole('button', { name: 'Encontré un error' }).click()
   await dialog.getByLabel('Tu nombre').fill('Prueba E2E')
   await dialog.getByLabel('Tu mail').fill('prueba-e2e@ejemplo.com')
@@ -51,11 +51,11 @@ test('el cliente abre una consulta, la retoma y sigue escribiendo', async ({ pag
 test('un código de Boxie mal escrito se explica antes de enviar', async ({ page }) => {
   await page.goto('/galeria')
   await openWidget(page)
-  const dialog = page.getByRole('dialog', { name: 'Ayuda de Boxie' })
-  await dialog.getByRole('button', { name: 'Tengo un problema con mi Boxie' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Ayuda de Ribbly' })
+  await dialog.getByRole('button', { name: 'Tengo un problema con mi Ribbly' }).click()
   await dialog.getByLabel('Tu nombre').fill('Prueba E2E')
   await dialog.getByLabel('Tu mail').fill('prueba-e2e@ejemplo.com')
-  await dialog.getByLabel('Código de tu Boxie (opcional)').fill('K7M2-Q9X0')
+  await dialog.getByLabel('Código de tu Ribbly (opcional)').fill('K7M2-Q9X0')
   await dialog.getByLabel('Tu mensaje').fill('No puedo entrar al editor')
   await dialog.getByRole('button', { name: 'Enviar consulta' }).click()
   await expect(dialog.getByRole('alert').first()).toContainText('K7M2-Q9XD')

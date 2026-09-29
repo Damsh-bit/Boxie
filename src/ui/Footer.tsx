@@ -15,7 +15,7 @@ const EXPLORE: { href: Route; label: string }[] = [
   // El prototipo linkeaba /about, que no existía.
   { href: '/nosotros', label: 'Nuestra historia' },
   { href: '/marcas', label: 'Ribbly para marcas' },
-  { href: '/mi-boxie', label: 'Ya compré: entrar a mi Ribbly' },
+  { href: '/mi-ribbly', label: 'Ya compré: entrar a mi Ribbly' },
 ]
 
 const HELP: { href: Route; label: string }[] = [

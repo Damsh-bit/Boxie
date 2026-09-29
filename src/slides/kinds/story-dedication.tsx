@@ -60,7 +60,7 @@ export function StoryDedication({ theme, buyer, ctx }: Props<'story.dedication'>
       <Appear active={active} y={-10} style={{ position: 'absolute', top: 30, zIndex: 10 }}>
         <img
           src={ctx.logoUrl}
-          alt="Boxie"
+          alt="Ribbly"
           style={{ height: 30, filter: 'brightness(0) invert(1)', opacity: 0.7 }}
         />
       </Appear>

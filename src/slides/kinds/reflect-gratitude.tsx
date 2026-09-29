@@ -78,7 +78,7 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
         active={ctx.active}
         y={-16}
         src={ctx.logoUrl}
-        alt="Boxie"
+        alt="Ribbly"
         style={{
           position: 'absolute',
           top: 40,

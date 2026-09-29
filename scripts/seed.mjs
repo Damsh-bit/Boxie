@@ -206,10 +206,10 @@ async function runSeed() {
       gateway_fixed_cents: 0,
       tax_bps: 350, // 3,5% IIBB
       variable_cost_cents: 2500, // $25 costo x boxie
-      business_name: 'Boxie Digital',
-      support_email: 'ayuda@boxiedigital.com.ar',
+      business_name: 'Ribbly',
+      support_email: 'ayuda@ribbly.com.ar',
       whatsapp: '+54 9 11 5555-0100',
-      instagram: '@boxie.app',
+      instagram: '@ribbly.app',
       sales_paused: false,
     })
     .eq('id', true)
@@ -517,7 +517,7 @@ async function runSeed() {
     {
       id: 'f1a1e7f4-1c2d-4e5f-8a9b-000000000004',
       category: 'infraestructura',
-      description: 'Dominio boxiedigital.com.ar',
+      description: 'Dominio ribbly.com.ar',
       vendor: 'NIC Argentina',
       amount_cents: 16_000_00,
       recurrence: 'once',

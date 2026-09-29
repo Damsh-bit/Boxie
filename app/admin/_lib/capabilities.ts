@@ -444,7 +444,7 @@ export function connections({
       what: 'Link del editor, soporte e invitaciones del equipo',
       state: has('RESEND_API_KEY') ? 'ok' : demo ? 'demo' : 'missing',
       detail: has('RESEND_API_KEY')
-        ? `Configurado. Sale desde ${process.env.MAIL_FROM?.trim() || 'hola@boxiedigital.com.ar'}: ese dominio tiene que estar verificado en Resend.`
+        ? `Configurado. Sale desde ${process.env.MAIL_FROM?.trim() || 'hola@ribbly.com.ar'}: ese dominio tiene que estar verificado en Resend.`
         : demo
           ? 'En demo los mails quedan en el log.'
           : 'Sin RESEND_API_KEY no sale ningún mail: ni el link del editor, ni las respuestas de soporte, ni las invitaciones del equipo (quedan en el log).',
@@ -474,7 +474,7 @@ export function connections({
     {
       id: 'host',
       name: 'Subdominio del panel',
-      what: 'admin.boxiedigital.com.ar',
+      what: 'admin.ribbly.com.ar',
       state: has('ADMIN_HOST') ? 'ok' : 'warning',
       detail: has('ADMIN_HOST')
         ? `El panel solo responde en ${process.env.ADMIN_HOST}.`

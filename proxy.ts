@@ -5,7 +5,7 @@ import { ADMIN_COOKIE, readAdminSession } from '@/server/admin/token'
  * Proxy (el middleware de Next 16) del panel de administración.
  *
  * 1. Con ADMIN_HOST definido, el panel solo responde en ese host
- *    (admin.boxiedigital.com.ar) y la raíz de ese host lleva a /admin.
+ *    (admin.ribbly.com.ar) y la raíz de ese host lleva a /admin.
  * 2. Sin una sesión válida, cualquier página del panel lleva al login.
  *    Las páginas y las acciones vuelven a verificar la sesión: esto es la
  *    primera barrera, no la única.

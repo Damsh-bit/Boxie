@@ -84,7 +84,7 @@ export function StoryEditorial({ theme, ctx }: Props<'story.editorial'>) {
           >
             <img
               src={ctx.logoUrl}
-              alt="Boxie"
+              alt="Ribbly"
               style={{
                 width: 70,
                 height: 'auto',

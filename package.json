@@ -1,9 +1,9 @@
 {
-  "name": "boxie",
+  "name": "ribbly",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Boxie Digital — regalos digitales interactivos",
+  "description": "Ribbly — regalos digitales interactivos",
   "engines": {
     "node": ">=22.12.0"
   },

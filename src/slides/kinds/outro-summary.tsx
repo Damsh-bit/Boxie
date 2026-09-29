@@ -336,7 +336,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
             >
               <motion.img
                 src={ctx.logoUrl}
-                alt="Boxie"
+                alt="Ribbly"
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ ...spring.pop, delay: 0.3 }}

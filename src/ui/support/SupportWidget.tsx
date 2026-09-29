@@ -189,7 +189,7 @@ export function SupportWidget({
             id={panelId}
             role="dialog"
             aria-modal={!desktop}
-            aria-label="Ayuda de Boxie"
+            aria-label="Ayuda de Ribbly"
             tabIndex={-1}
             className={cn(
               'fixed z-[70] flex flex-col overflow-hidden bg-canvas shadow-[0_30px_80px_-20px_rgba(42,36,51,0.45)] outline-none',
@@ -445,7 +445,7 @@ function Header({
         )}
         <div className="min-w-0 flex-1 pl-1">
           {home ? (
-            <p className="font-display text-lg leading-tight font-bold">Ayuda de Boxie</p>
+            <p className="font-display text-lg leading-tight font-bold">Ayuda de Ribbly</p>
           ) : (
             <>
               <p className="truncate font-display text-base leading-tight font-bold">{title}</p>

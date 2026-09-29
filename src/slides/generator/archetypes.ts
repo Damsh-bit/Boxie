@@ -117,7 +117,7 @@ export const BASE_COPY: Archetype['copy'] = {
     'Deseo Cumplido',
     'Comodín',
   ],
-  triviaTitle: '¡Desafío Boxie!',
+  triviaTitle: '¡Desafío Ribbly!',
   trivia: [
     {
       question: '¿Cuál es el regalo que más se recuerda?',
@@ -126,7 +126,7 @@ export const BASE_COPY: Archetype['copy'] = {
       hint: 'No se mide en plata 💝',
     },
     {
-      question: '¿Cuántas veces podés abrir esta Boxie?',
+      question: '¿Cuántas veces podés abrir este Ribbly?',
       options: ['Una sola vez', 'Dos veces', 'Todas las que quieras', 'Ninguna'],
       correct: 3,
       hint: 'Es tuya para siempre (bueno, casi) 😉',
@@ -151,7 +151,7 @@ export const BASE_COPY: Archetype['copy'] = {
 }
 
 const ROSE: ArchetypePalette = {
-  name: 'Coral Boxie',
+  name: 'Coral Ribbly',
   primary: '#F44E63',
   ink: '#2A2433',
   accent: '#FFD700',
@@ -210,7 +210,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
       '1516589178581-6cd7833ae3b2',
     ],
     listing: {
-      title: 'Boxie para',
+      title: 'Ribbly para',
       subtitle: 'El regalo digital perfecto para celebrar su amor.',
       card: 'Un regalo lleno de amor para celebrar su historia juntos.',
       guideTitle: 'Para Enamorar',
@@ -308,7 +308,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
       '1511285560929-80b456fea0bc',
     ],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Para celebrar el "sí" más importante.',
       card: 'Un recuerdo digital para el día en que empezó el para siempre.',
       guideTitle: 'Para el Gran Día',
@@ -389,7 +389,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1488646953014-85cb44e25828', '1516589178581-6cd7833ae3b2'],
     listing: {
-      title: 'Boxie para',
+      title: 'Ribbly para',
       subtitle: 'Para acortar los kilómetros con un abrazo digital.',
       card: 'Porque la distancia no se nota cuando alguien piensa en vos.',
       guideTitle: 'Para Acercar',
@@ -472,7 +472,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1529156069898-49953e39b3ac', '1522673607200-164d1b6ce486'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Para esa persona que es familia elegida.',
       card: 'Celebrá la amistad con recuerdos, juegos y risas.',
       guideTitle: 'Para Celebrar',
@@ -568,7 +568,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1530103862676-de8c9debad1d', '1558636508-e0db3814bd1d', '1513151233558-d860c5398176'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: '¡Hacé que su día sea inolvidable, estés donde estés!',
       card: '¡Celebrá su día de manera especial con un detalle inolvidable!',
       guideTitle: 'Para Festejar',
@@ -657,7 +657,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1476703993599-0035a21b17a9', '1490750967868-88aa4486c946'],
     listing: {
-      title: 'Boxie para',
+      title: 'Ribbly para',
       subtitle: 'Para decirle gracias a la persona que te dio todo.',
       card: 'Un homenaje a mamá con recuerdos, fotos y mucho amor.',
       guideTitle: 'Para Mamá',
@@ -745,7 +745,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1511895426328-dc8714191300', '1543342384-1f1350e27861'],
     listing: {
-      title: 'Boxie para',
+      title: 'Ribbly para',
       subtitle: 'Para el que siempre estuvo, aunque no lo diga.',
       card: 'Un regalo para papá con recuerdos, juegos y un gracias enorme.',
       guideTitle: 'Para Papá',
@@ -830,7 +830,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1447005497901-b3e9ee359928', '1511895426328-dc8714191300'],
     listing: {
-      title: 'Boxie para',
+      title: 'Ribbly para',
       subtitle: 'Para los abuelos que llenan la casa de historias.',
       card: 'Fotos, recuerdos y cariño para los abuelos, fácil de abrir.',
       guideTitle: 'Para los Abuelos',
@@ -905,7 +905,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1566004100631-35d015d6a491', '1519689680058-324335c77eba', '1543342384-1f1350e27861'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Para darle la bienvenida al miembro más chiquito.',
       card: 'Un recuerdo digital para celebrar una nueva vida.',
       guideTitle: 'Para Dar la Bienvenida',
@@ -965,7 +965,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1503454537195-1dcabb73ffb9', '1502086223501-7ea6ecd79368'],
     listing: {
-      title: 'Boxie para',
+      title: 'Ribbly para',
       subtitle: 'Una aventura digital llena de juegos para los más chicos.',
       card: 'Juegos, sorpresas y colores para el Día del Niño.',
       guideTitle: 'Para Jugar',
@@ -1065,7 +1065,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1627556704302-624286467c65', '1513151233558-d860c5398176'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Para celebrar el esfuerzo de todos estos años.',
       card: 'Celebrá su título, su egreso o ese logro que tanto costó.',
       guideTitle: 'Para Celebrar Logros',
@@ -1148,7 +1148,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1507525428034-b723cf961d3e', '1476514525535-07fb3b4ae5f1'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Para celebrar una carrera y todo lo que viene.',
       card: 'Un homenaje a años de trabajo y un brindis por la nueva etapa.',
       guideTitle: 'Para la Nueva Etapa',
@@ -1223,7 +1223,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1482517967863-00e15c9b44be', '1512389142860-9c449e58a543', '1543589077-47d81606c1bf'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'El regalo que llega a tiempo, sin colas ni envíos.',
       card: 'Un regalo navideño que llega al instante, esté donde esté.',
       guideTitle: 'Para las Fiestas',
@@ -1306,7 +1306,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1509557965875-b88c97052f0e', '1513151233558-d860c5398176'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Un regalo terroríficamente divertido.',
       card: 'Sustos, dulces y juegos para una noche de Halloween distinta.',
       guideTitle: 'Para Asustar (con Amor)',
@@ -1361,7 +1361,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1543466835-00a7907e9de1', '1514888286974-6c03e2ca1dba', '1517849845537-4d257902454a'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Para los que aman a sus peludos tanto como vos.',
       card: 'Un regalo para amantes de las mascotas, con su foto y mucho amor.',
       guideTitle: 'Para Amantes de Mascotas',
@@ -1459,7 +1459,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1488646953014-85cb44e25828', '1476514525535-07fb3b4ae5f1'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Para despedir a quien se va a vivir una aventura.',
       card: 'Un regalo para llevarse de viaje: recuerdos, música y buenos deseos.',
       guideTitle: 'Para Viajeros',
@@ -1542,7 +1542,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1542751371-adc38448a05e', '1511512578047-dfb367046420'],
     listing: {
-      title: 'Boxie',
+      title: 'Ribbly',
       subtitle: 'Para el jugador o la jugadora que tenés al lado.',
       card: 'Level up: un regalo con trivia, jackpot y logros desbloqueados.',
       guideTitle: 'Para Gamers',
@@ -1657,7 +1657,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1574629810360-7efbbe195018', '1579952363873-27f3bade9f55'],
     listing: {
-      title: 'Boxie',
+      title: 'Ribbly',
       subtitle: 'Para el que vive cada partido como una final.',
       card: 'Un regalo con trivia futbolera, cábalas y mucho aguante.',
       guideTitle: 'Para Hinchas',
@@ -1755,7 +1755,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
       '1493225255756-d9584f8606e9',
     ],
     listing: {
-      title: 'Boxie',
+      title: 'Ribbly',
       subtitle: 'Para quien vive con los auriculares puestos.',
       card: 'Canciones, playlists y recuerdos para melómanos.',
       guideTitle: 'Para Melómanos',
@@ -1831,7 +1831,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1503676260728-1c00da094a0b', '1580582932707-520aed937b7b'],
     listing: {
-      title: 'Boxie para',
+      title: 'Ribbly para',
       subtitle: 'Para agradecer a quien enseña con el corazón.',
       card: 'Un gracias colectivo para la seño, el profe o la maestra.',
       guideTitle: 'Para Docentes',
@@ -1903,7 +1903,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1522071820081-009f0129c71c', '1495474472287-4d71bcdd2085'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Para decir gracias de una forma que se recuerda.',
       card: 'Un gracias distinto para un compañero, un jefe o un cliente.',
       guideTitle: 'Para Agradecer',
@@ -1972,7 +1972,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1470509037663-253afd7f0f51', '1490750967868-88aa4486c946'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Un abrazo digital para los días difíciles.',
       card: 'Para acompañar, dar fuerza y sacar una sonrisa.',
       guideTitle: 'Para Dar Fuerza',
@@ -2040,7 +2040,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     ],
     photos: ['1518895949257-7621c3c786d7', '1516589178581-6cd7833ae3b2'],
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       subtitle: 'Para cuando un "perdón" necesita algo más.',
       card: 'Para pedir perdón con el corazón y volver a empezar.',
       guideTitle: 'Para Reconciliar',
@@ -2094,7 +2094,7 @@ export const GENERAL_SPEC: ArchetypeSpec = {
   palettes: [
     ROSE,
     {
-      name: 'Violeta Boxie',
+      name: 'Violeta Ribbly',
       primary: '#8E6FE0',
       ink: '#231C38',
       accent: '#FFD166',
@@ -2130,7 +2130,7 @@ export function resolveArchetype(spec: ArchetypeSpec): Archetype {
   return {
     ...spec,
     listing: {
-      title: 'Boxie de',
+      title: 'Ribbly de',
       features: [],
       guideTitle: `Para ${spec.label}`,
       guideText: spec.listing.card,

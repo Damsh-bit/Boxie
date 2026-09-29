@@ -20,7 +20,7 @@ export function RecoverForm() {
     const form = new FormData(event.currentTarget)
     setStatus('sending')
     setError('')
-    const response = await fetch('/api/mi-boxie/acceso', {
+    const response = await fetch('/api/mi-ribbly/acceso', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, website: form.get('website') }),

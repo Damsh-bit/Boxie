@@ -1,9 +1,6 @@
 /**
- * Datos institucionales en un solo lugar. El prototipo mezclaba
- * @boxie.com.ar y boxiedigital.com.ar; el dominio del proyecto es
- * boxiedigital.com.ar (docs/ARQUITECTURA.md §2.1).
- *
- * PENDIENTE (dueño del producto): confirmar casillas, redes y datos fiscales.
+ * Datos institucionales en un solo lugar. El dominio principal del proyecto
+ * es ribbly.com.ar.
  */
 
 export const site = {

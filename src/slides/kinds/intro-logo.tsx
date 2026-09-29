@@ -22,7 +22,7 @@ export function IntroLogo({ theme, ctx }: Props<'intro.logo'>) {
           from={0}
           rotate={-15}
           src={ctx.resolveMedia(theme.logo) ?? ctx.logoUrl}
-          alt="Boxie"
+          alt="Ribbly"
           className="bx-intro-logo"
         />
       </Loop>

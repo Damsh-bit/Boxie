@@ -176,7 +176,7 @@ export function Player({
         tabIndex={0}
         role="region"
         aria-roledescription="presentación"
-        aria-label={`Boxie para ${data.recipientName || 'vos'}`}
+        aria-label={`Ribbly para ${data.recipientName || 'vos'}`}
         initial={animateIn ? { y: 60, scale: 0.94, opacity: 0 } : false}
         animate={{ y: 0, scale: 1, opacity: 1 }}
         exit={

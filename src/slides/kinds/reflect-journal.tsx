@@ -98,7 +98,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
         active={ctx.active}
         y={-16}
         src={ctx.logoUrl}
-        alt="Boxie"
+        alt="Ribbly"
         style={{
           position: 'absolute',
           top: 40,

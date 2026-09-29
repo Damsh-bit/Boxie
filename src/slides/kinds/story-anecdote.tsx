@@ -96,7 +96,7 @@ export function StoryAnecdote({ theme, buyer, ctx }: Props<'story.anecdote'>) {
             from={0.3}
             rotate={-20}
             src={ctx.logoUrl}
-            alt="Boxie"
+            alt="Ribbly"
             style={{
               width: 60,
               height: 'auto',

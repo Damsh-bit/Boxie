@@ -251,7 +251,7 @@ export function Editor({
             <header className="sticky top-0 z-40 border-b border-neutral-200/70 bg-white/85 backdrop-blur-xl">
               <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4">
                 <Link href="/" className="shrink-0" aria-label="Boxie Digital, inicio">
-                  <img src="/brand/boxie-logo.png" alt="Boxie" className="h-7 w-auto" />
+                  <img src="/brand/boxie-logo.png" alt="Ribbly" className="h-7 w-auto" />
                 </Link>
                 <div className="min-w-0 flex-1 border-l border-neutral-200 pl-3">
                   <p className="truncate text-sm font-semibold text-ink">Boxie {theme.name}</p>

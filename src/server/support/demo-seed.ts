@@ -50,7 +50,7 @@ const SCENARIOS: Scenario[] = [
     topic: 'boxie',
     status: 'resolved',
     priority: 'normal',
-    subject: 'No me llegó el mail para editar mi Boxie',
+    subject: 'No me llegó el mail para editar mi Ribbly',
     boxie: 'editing',
     assignee: 'soporte@boxie.demo',
     rating: 'good',
@@ -59,7 +59,7 @@ const SCENARIOS: Scenario[] = [
       {
         ago: 9 * D,
         author: 'customer',
-        body: 'Hola! Compré una Boxie hace un rato y no me llegó el mail para editarla 😕',
+        body: 'Hola! Compré un regalo Ribbly hace un rato y no me llegó el mail para editarlo 😕',
       },
       {
         ago: 9 * D - 25,

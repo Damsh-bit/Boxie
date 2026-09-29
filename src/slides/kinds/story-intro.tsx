@@ -67,7 +67,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
             boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
           }}
         >
-          <img src={ctx.logoUrl} alt="Boxie" style={{ height: 30 }} />
+          <img src={ctx.logoUrl} alt="Ribbly" style={{ height: 30 }} />
         </div>
       </Pop>
 

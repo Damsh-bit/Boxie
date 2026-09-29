@@ -49,7 +49,7 @@ export function GameFortune({ theme, ctx }: Props<'game.fortune'>) {
         active={ctx.active}
         y={-14}
         src={ctx.logoUrl}
-        alt="Boxie"
+        alt="Ribbly"
         style={{
           position: 'absolute',
           top: 30,

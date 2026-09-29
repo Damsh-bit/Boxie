@@ -33,9 +33,9 @@ export const TOPIC_INFO: Record<
   { label: string; emoji: string; prompt: string; placeholder: string }
 > = {
   boxie: {
-    label: 'Mi Boxie',
+    label: 'Mi Ribbly',
     emoji: '🎁',
-    prompt: 'Tengo un problema con mi Boxie',
+    prompt: 'Tengo un problema con mi Ribbly',
     placeholder: 'Contanos qué pasa: por ejemplo, no puedo entrar al editor o el regalo no abre.',
   },
   error: {

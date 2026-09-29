@@ -19,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${url}/nosotros`, changeFrequency: 'yearly', priority: 0.4 },
     { url: `${url}/marcas`, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${url}/contacto`, changeFrequency: 'yearly', priority: 0.4 },
-    { url: `${url}/mi-boxie`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${url}/mi-ribbly`, changeFrequency: 'yearly', priority: 0.3 },
     ...legalDocs.map((d) => ({
       url: `${url}/legales/${d.slug}`,
       lastModified: new Date(`${d.updated}T12:00:00-03:00`),

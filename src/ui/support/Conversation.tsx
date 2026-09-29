@@ -237,7 +237,7 @@ function MessageRow({
           <div className={cn('flex max-w-[82%] flex-col', mine ? 'items-end' : 'items-start')}>
             {!mine && !grouped && (
               <span className="mb-0.5 ml-1 text-[11px] font-semibold text-ink/50">
-                {message.authorName} · Boxie
+                {message.authorName} · Ribbly
               </span>
             )}
             <p

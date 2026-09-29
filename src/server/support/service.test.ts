@@ -67,7 +67,7 @@ describe('abrir una consulta', () => {
     const team = mails.find((m) => m.to === demoDb().settings.supportEmail)!
     expect(customer.subject).toBe(`Recibimos tu consulta #${conversation.ticket.number} 💬`)
     expect(customer.text).toContain(`/soporte/${token}`)
-    expect(team.subject).toContain(`[Soporte #${conversation.ticket.number}] Mi Boxie`)
+    expect(team.subject).toContain(`[Soporte #${conversation.ticket.number}] Mi Ribbly`)
     expect(team.replyTo).toBe('sofi@ejemplo.com')
   })
 

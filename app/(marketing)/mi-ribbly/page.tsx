@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'Entrar a mi regalo',
   description:
     'Recuperá el link para editar tu regalo o el de la entrega: te lo mandamos al mail con el que compraste.',
-  alternates: { canonical: '/mi-boxie' },
+  alternates: { canonical: '/mi-ribbly' },
 }
 
 const STEPS = [

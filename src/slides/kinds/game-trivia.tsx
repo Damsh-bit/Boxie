@@ -193,7 +193,7 @@ export function GameTrivia({ theme, ctx }: Props<'game.trivia'>) {
               >
                 <img
                   src={ctx.logoUrl}
-                  alt="Boxie"
+                  alt="Ribbly"
                   style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                 />
               </Loop>

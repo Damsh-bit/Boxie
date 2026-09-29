@@ -42,9 +42,9 @@ export default async function HelpPage() {
 
   const shortcuts: { href: Route; icon: typeof Gift; title: string; text: string }[] = [
     {
-      href: '/mi-boxie',
+      href: '/mi-ribbly',
       icon: KeyRound,
-      title: 'Entrar a mi Boxie',
+      title: 'Entrar a mi Ribbly',
       text: 'Recuperá tu link para editar',
     },
     {

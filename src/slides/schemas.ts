@@ -20,10 +20,10 @@ const UNSPLASH = (id: string, params = 'q=80&w=1200&auto=format&fit=crop') =>
 
 const introLogo = {
   label: 'Intro · Logo',
-  description: 'El logo de Boxie entra rebotando. Primera pantalla del regalo.',
+  description: 'El logo de Ribbly entra rebotando. Primera pantalla del regalo.',
   category: 'intro',
   themeSchema: z.object({
-    logo: field.image('Logo', { help: 'Vacío = logo de Boxie' }),
+    logo: field.image('Logo', { help: 'Vacío = logo de Ribbly' }),
     tagline: field.text('Frase', { default: 'Una experiencia digital para vos.' }),
     hint: field.text('Indicación para deslizar', { default: 'Desliza para comenzar ➷' }),
   }),
@@ -88,7 +88,7 @@ const coverBirthday = {
 const storyIntro = {
   label: 'Historia · Stickers de bienvenida',
   description:
-    'Tres pantallas de stickers: saludo, "es una nueva experiencia" y el tema de la Boxie.',
+    'Tres pantallas de stickers: saludo, "es una nueva experiencia" y el tema del regalo.',
   category: 'story',
   themeSchema: z.object({
     greeting: field.text('Saludo', { default: '¡HOLA!', max: 30 }),
@@ -307,7 +307,7 @@ const mediaPlaylists = {
   description: 'Lista estilo app de música, con la foto de la dedicatoria de portada.',
   category: 'media',
   themeSchema: z.object({
-    title: field.text('Título', { default: 'Boxie Mix' }),
+    title: field.text('Título', { default: 'Ribbly Mix' }),
     subtitlePrefix: field.text('Subtítulo', { default: 'Creado especialmente para' }),
     photoFromSlide: field.text('Usar la foto de la slide', {
       default: 'dedicatoria',
@@ -568,7 +568,7 @@ const gameTrivia = {
   category: 'game',
   themeSchema: z.object({
     introEmoji: field.text('Emoji de inicio', { default: '🎁', max: 16 }),
-    introTitle: field.text('Título', { default: '¡Desafío Boxie!' }),
+    introTitle: field.text('Título', { default: '¡Desafío Ribbly!' }),
     introText: field.richText('Texto de inicio', {
       default: rich(
         'Demostrá cuánto sabés.',
@@ -608,7 +608,7 @@ const gameTrivia = {
     }),
     prizeTitle: field.richText('Premio · título', { default: rich('¡Jugada', br, 'Maestra!') }),
     prizeText: field.text('Premio · texto', { default: 'Lo lograste. Acá está tu recompensa:' }),
-    prizeBadge: field.text('Premio · insignia', { default: 'BOXIE-GENIO', max: 30 }),
+    prizeBadge: field.text('Premio · insignia', { default: 'RIBBLY-GENIO', max: 30 }),
     prizeDetail: field.text('Premio · detalle', {
       default: 'VALE POR 15% OFF',
       max: 60,
@@ -891,13 +891,13 @@ const reflectJournal = {
 const outroSummary = {
   label: 'Cierre · Repaso',
   description:
-    'Línea de tiempo con todo lo que tuvo la Boxie. Se arma sola con las slides de la temática.',
+    'Línea de tiempo con todo lo que tuvo el regalo. Se arma sola con las slides de la temática.',
   category: 'outro',
   themeSchema: z.object({
     wait: field.text('Primera línea', { default: 'Espera...' }),
     badge1: field.text('Sticker 1', { default: '¡QUÉ VIAJE!' }),
     badge2: field.text('Sticker 2', { default: 'TODO LO QUE VIMOS' }),
-    intro: field.text('Texto', { default: 'Repasemos juntos todo lo que incluía tu Boxie...' }),
+    intro: field.text('Texto', { default: 'Repasemos juntos todo lo que incluía tu regalo...' }),
     timelineTitle: field.text('Título de la línea de tiempo', { default: 'TU EXPERIENCIA' }),
     thanksTitle: field.text('Cierre · título', { default: 'GRACIAS.' }),
     thanksText: field.text('Cierre · texto', {
@@ -911,7 +911,7 @@ const outroSummary = {
         '. ¡Nos ayudás muchísimo a seguir creando momentos así!',
       ),
     }),
-    handle: field.text('Cuenta de Instagram', { default: '@boxie.app' }),
+    handle: field.text('Cuenta de Instagram', { default: '@ribbly.app' }),
     replayLabel: field.text('Repetir repaso', { default: 'Ver repaso de nuevo ↺', advanced: true }),
   }),
   buyerSchema: null,
@@ -921,12 +921,12 @@ const outroSummary = {
 
 const outroThanks = {
   label: 'Cierre · Gracias',
-  description: 'Última pantalla, con botón para ver la Boxie de nuevo.',
+  description: 'Última pantalla, con botón para ver el regalo de nuevo.',
   category: 'outro',
   themeSchema: z.object({
     title: field.text('Título', { default: 'GRACIAS' }),
     text: field.text('Texto', { default: 'Por ser parte de mi vida.' }),
-    replayLabel: field.text('Botón', { default: 'REPETIR BOXIE' }),
+    replayLabel: field.text('Botón', { default: 'REPETIR REGALO' }),
   }),
   buyerSchema: null,
   frame: { background: 'salmon', particles: 'heart' },

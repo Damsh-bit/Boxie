@@ -15,7 +15,7 @@ export async function saveSettings(input: unknown) {
         '/admin/configuracion',
         '/admin/finanzas',
         '/',
-        '/mi-boxie',
+        '/mi-ribbly',
         ...legalDocs.map((d) => `/legales/${d.slug}`),
       ],
     },

@@ -179,7 +179,7 @@ describe('introspección de schemas', () => {
 
 describe('mensaje para mandar el regalo', () => {
   it('lleva el link y, si hay clave, avisa que va aparte', () => {
-    const url = 'https://boxiedigital.com.ar/g/abc'
+    const url = 'https://ribbly.com.ar/g/abc'
     const plain = giftShareMessage({ recipientName: 'Sofía', url, hasPassword: false })
     expect(plain).toContain('¡Hola Sofía! ✨')
     expect(plain).toContain(url)

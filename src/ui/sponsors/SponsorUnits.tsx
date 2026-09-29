@@ -10,7 +10,7 @@ import { Float, spring } from '../motion'
 
 /**
  * Los espacios de sponsor del sitio. Con un aliado activo en ese lugar se ve
- * su propuesta (con la etiqueta "Aliado de Boxie", para que se entienda que
+ * su propuesta (con la etiqueta "Aliado de Ribbly", para que se entienda que
  * es publicidad); sin aliado, la invitación a sumarse (/marcas).
  */
 
@@ -62,7 +62,7 @@ function SponsorLabel({ light = false }: { light?: boolean }) {
         light ? 'bg-white/15 text-white' : 'bg-ink/[0.06] text-ink/60',
       )}
     >
-      <Sparkles className="size-3" aria-hidden /> Aliado de Boxie
+      <Sparkles className="size-3" aria-hidden /> Aliado de Ribbly
     </span>
   )
 }
@@ -347,7 +347,7 @@ function SponsorBandLive({ sponsor, className }: { sponsor: PublicSponsor; class
 function HouseBand({ className }: { className?: string }) {
   return (
     <motion.aside
-      aria-label="Boxie para marcas"
+      aria-label="Ribbly para marcas"
       className={cn(
         'relative isolate mx-auto grid max-w-5xl items-center gap-6 overflow-hidden rounded-[32px] bg-ink p-6 text-white sm:p-9 md:grid-cols-[1fr_auto]',
         className,

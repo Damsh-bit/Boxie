@@ -27,6 +27,24 @@ export function devOutbox(): OutboxEntry[] {
   return globalOutbox.__boxieOutbox
 }
 
+/**
+ * Normaliza el remitente para cumplir con la API de Resend ("Nombre <email@dominio.com>" o "email@dominio.com").
+ * Tolera comillas externas y agrega los signos <> si faltaron en las variables de entorno.
+ */
+function normalizeFrom(raw: string): string {
+  const clean = raw
+    .trim()
+    .replace(/^["']|["']$/g, '')
+    .trim()
+  if (clean.includes('<') && clean.includes('>')) return clean
+  const match = clean.match(/^(.*?)\s+([^\s@]+@[^\s@]+\.[^\s@]+)$/)
+  if (match) {
+    const [, name, email] = match
+    return `${name.trim()} <${email.trim()}>`
+  }
+  return clean
+}
+
 let client: Resend | undefined
 
 export async function sendMail(mail: OutgoingMail): Promise<{ id: string | null }> {
@@ -44,9 +62,10 @@ export async function sendMail(mail: OutgoingMail): Promise<{ id: string | null 
     return { id: null }
   }
 
+  const fromAddress = normalizeFrom(MAIL_FROM)
   client ??= new Resend(RESEND_API_KEY)
   const { data, error } = await client.emails.send({
-    from: MAIL_FROM,
+    from: fromAddress,
     to: mail.to,
     subject: mail.subject,
     html: mail.html,

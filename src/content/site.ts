@@ -13,11 +13,23 @@ export const site = {
   location: 'Buenos Aires, Argentina',
   instagramHandle: '@boxie.app',
   emails: {
-    hello: 'hola@boxiedigital.com.ar',
-    help: 'ayuda@boxiedigital.com.ar',
-    marketing: 'marketing@boxiedigital.com.ar',
-    complaints: 'reclamos@boxiedigital.com.ar',
-    jobs: 'rrhh@boxiedigital.com.ar',
+    /** 🎁 Envíos automáticos: entrega de regalos, links de edición, avisos de apertura y cupones anuales */
+    gifts: 'regalos@ribbly.com.ar',
+
+    /** 💬 Atención al cliente y soporte: dudas con fotos, pagos, consultas de compradores y agasajados */
+    help: 'ayuda@ribbly.com.ar',
+
+    /** ✨ Contacto general e institucional: consultas de marcas, colaboraciones, empresas y prensa */
+    hello: 'hola@ribbly.com.ar',
+
+    /** ⚖️ Defensa del consumidor: obligatorio por ley en Argentina para botón de arrepentimiento y reclamos formales */
+    complaints: 'reclamos@ribbly.com.ar',
+
+    /** 📣 Marketing y creadoras: alianzas comerciales, afiliadas, influencers y sponsors */
+    marketing: 'marketing@ribbly.com.ar',
+
+    /** 💼 Búsquedas laborales y talento del equipo */
+    jobs: 'rrhh@ribbly.com.ar',
   },
   social: {
     instagram: 'https://instagram.com/boxie.app',

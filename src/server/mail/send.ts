@@ -11,6 +11,16 @@ import type { MailContent } from './templates'
 
 export interface OutgoingMail extends MailContent {
   to: string
+  /**
+   * Remitente opcional para segmentar por sector.
+   * Ejemplos recomendados:
+   *  - 🎁 Regalos y compras: "Ribbly Regalos <regalos@ribbly.com.ar>"
+   *  - 💬 Soporte y consultas: "Soporte Ribbly <ayuda@ribbly.com.ar>"
+   *  - ✨ Contacto institucional: "Ribbly <hola@ribbly.com.ar>"
+   *
+   * Si no se especifica, toma automáticamente MAIL_FROM de las variables de entorno.
+   */
+  from?: string
   replyTo?: string
   /** Etiqueta para buscar el envío en el panel de Resend. */
   tag: string
@@ -61,7 +71,7 @@ export async function sendMail(mail: OutgoingMail): Promise<{ id: string | null 
     return { id: null }
   }
 
-  const fromAddress = normalizeFrom(MAIL_FROM)
+  const fromAddress = normalizeFrom(mail.from ?? MAIL_FROM)
   client ??= new Resend(RESEND_API_KEY)
   const { data, error } = await client.emails.send({
     from: fromAddress,

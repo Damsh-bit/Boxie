@@ -66,9 +66,13 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
     3. Añadir `notification_url` a las preferencias generadas en `app/api/checkout/preference/route.ts`. [Listo]
     4. Conciliación periódica de órdenes huérfanas pendientes.
 
-- [ ] **P1.2 · Revocación activa de sesiones del Panel**
+- [x] **P1.2 · Revocación activa de sesiones del Panel [COMPLETADO]**
   - **Dónde:** Código (`src/server/admin/session.ts` y `src/server/admin/token.ts`).
-  - **Acción:** Releer `role`, `is_active` y la huella del hash de contraseña (`fp`) desde la base de datos en `getAdminSession` para que si se baja o elimina un miembro del equipo, su acceso se corte de inmediato. Reducir la opción "recordarme" a un máximo de 7 días.
+  - **Acción:**
+    - [x] **Relectura y revocación activa en `getAdminSession`:** En cada petición al panel, se valida criptográficamente la cookie y se consulta la base de datos para releer `role`, `is_active` y la huella SHA-256 (`fp`) del `password_hash`. Si un usuario es eliminado, desactivado (`is_active: false`), pierde su rol administrativo o cambia su contraseña, su sesión se revoca en el acto.
+    - [x] **Rotación de sesión al cambiar clave:** En `changePasswordAction`, la sesión actual rota inmediatamente a la nueva huella para continuar navegando mientras todas las sesiones abiertas en otros navegadores o dispositivos quedan revocadas.
+    - [x] **Reducción de "Recordarme":** Opción `remember` acotada a un máximo estricto de 7 días (`REMEMBER_DAYS = 7`).
+    - [x] **Cobertura de tests:** Suite completa añadida en `src/server/admin/session.test.ts` cubriendo revocación inmediata por baja, eliminación, cambio de rol y cambio de clave.
 
 - [x] **P1.3 · Endurecer Login del Panel [COMPLETADO]**
   - **Dónde:** Código (`src/server/admin/auth.ts`, `invite.ts`, `password.ts`, `src/server/db/client.ts`).

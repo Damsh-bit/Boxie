@@ -176,6 +176,25 @@ export async function changePasswordAction(
     return { ok: false, error: 'No se pudo guardar la nueva contraseña. Probá de nuevo.' }
   }
 
+  // P1.2: Actualizar la cookie actual con la nueva huella para que esta sesión continúe
+  // activa mientras todas las sesiones en otros navegadores o dispositivos son revocadas al instante.
+  const { cookies } = await import('next/headers')
+  const { ADMIN_COOKIE, adminCookieOptions, adminPasswordFingerprint, issueAdminSession } =
+    await import('@/server/admin/session')
+  const { value, maxAge } = issueAdminSession(
+    {
+      uid: session.uid,
+      email: session.email,
+      name: session.name,
+      role: session.role,
+      fp: adminPasswordFingerprint(newHash),
+    },
+    false,
+    false,
+  )
+  const store = await cookies()
+  store.set(ADMIN_COOKIE, value, adminCookieOptions(maxAge))
+
   log.info('Contraseña de administrador actualizada', { userId: session.uid })
   return { ok: true, success: true }
 }

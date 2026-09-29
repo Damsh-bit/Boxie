@@ -9,6 +9,7 @@ import { teamInviteEmail } from '../mail/templates'
 import { generateToken, hashToken } from '../security/tokens'
 import { hashPassword } from './password'
 import type { Actor } from './repo'
+import { adminPasswordFingerprint } from './token'
 
 export interface MemberInviteInput {
   name: string
@@ -264,6 +265,7 @@ export async function activateMemberAccount(token: string, password: string) {
       email: user.email,
       name: user.name,
       role: user.role,
+      fp: adminPasswordFingerprint(passwordHash),
     },
   }
 }

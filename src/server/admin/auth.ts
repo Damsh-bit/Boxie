@@ -7,6 +7,7 @@ import { log } from '../log'
 import {
   DEFAULT_DEMO_EMAIL,
   DEFAULT_DEMO_PASSWORD,
+  adminPasswordFingerprint,
   issuePreAuthToken,
   readPreAuthToken,
   type AdminIdentity,
@@ -74,6 +75,7 @@ export async function authenticateAdmin(
         email: demo.email,
         name: member?.name ?? 'Administrador',
         role: 'owner',
+        fp: adminPasswordFingerprint(demo.password),
       },
     }
   }
@@ -142,6 +144,7 @@ async function authenticateUser(
       email: canonicalEmail,
       name: row.name || canonicalEmail.split('@')[0]!,
       role: row.role ?? 'owner',
+      fp: row.password_hash ? adminPasswordFingerprint(row.password_hash) : undefined,
     }
 
     // Si tiene 2FA configurado y activo, requiere el segundo factor
@@ -185,7 +188,7 @@ export async function verify2FALogin(
   const { data: user, error } = await db
     .from('users')
     .select(
-      'user_id, email, name, role, totp_enabled, totp_secret_enc, totp_backup_codes, is_active',
+      'user_id, email, name, role, totp_enabled, totp_secret_enc, totp_backup_codes, is_active, password_hash',
     )
     .eq('user_id', session.uid)
     .maybeSingle()
@@ -202,6 +205,7 @@ export async function verify2FALogin(
     totp_enabled: boolean
     totp_secret_enc: string | null
     totp_backup_codes: string[] | null
+    password_hash?: string | null
   }
 
   if (!row.totp_enabled || !row.totp_secret_enc) {
@@ -224,6 +228,7 @@ export async function verify2FALogin(
       email: row.email || session.email,
       name: row.name || session.name,
       role: row.role || session.role,
+      fp: row.password_hash ? adminPasswordFingerprint(row.password_hash) : session.fp,
     },
     remember: session.remember,
   }

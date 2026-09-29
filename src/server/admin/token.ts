@@ -13,13 +13,20 @@ const isDemo = () => process.env.DEMO_MODE === '1'
 
 export const ADMIN_COOKIE = 'bx_admin'
 const SESSION_HOURS = 12
-const REMEMBER_DAYS = 30
+export const REMEMBER_DAYS = 7
+
+/** Huella del hash de contraseña para invalidación inmediata de sesiones activas (P1.2). */
+export function adminPasswordFingerprint(passwordHash: string): string {
+  return createHash('sha256').update(passwordHash).digest('hex').slice(0, 16)
+}
 
 export interface AdminIdentity {
   uid: string
   email: string
   name: string
   role: AdminRole
+  /** Huella del hash de la contraseña para revocar sesiones ante cambios de clave. */
+  fp?: string
 }
 
 export interface AdminSession extends SignedPayload, AdminIdentity {

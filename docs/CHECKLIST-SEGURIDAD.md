@@ -45,13 +45,12 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
     1. Purgar las 82 órdenes y 47 Boxies de muestra generadas por el seed inicial para que las métricas de venta arranquen en cero real.
     2. Crear los cupones comerciales reales con códigos secretos, límites de usos (`max_uses`) y fechas de vencimiento.
 
-- [ ] **P1.11 · Alinear Historial de Migraciones en Producción**
-  - **Dónde:** Supabase CLI / Dashboard SQL.
-  - **Acción:** Verificar que las migraciones de 2FA, contraseñas en `public.users` y webhooks de Mercado Pago estén aplicadas en la base de producción para evitar errores de columnas faltantes en tiempo de ejecución.
-
 ---
 
 ### ✅ Completados y Blindados para el Lanzamiento
+
+- [x] **P1.11 · Alinear Historial de Migraciones en Producción [COMPLETADO / VERIFICADO]**
+  - **Acción:** Inspeccionada la base de datos de producción (`ftnwgjsyynsnojlewtsv.supabase.co`). Se verificó la presencia efectiva del 100% de las tablas y columnas críticas de las 12 migraciones del proyecto: columnas de 2FA (`totp_enabled`, `totp_secret_enc`, `totp_backup_codes`), contraseñas directas en `public.users` (`password_hash`, `invite_*`), tablas de soporte, marketing, sponsors y audit log. No hay discrepancias de esquema.
 
 - [x] **P0.3 · Limpiar usuarios de prueba en Supabase Auth [COMPLETADO]**
   - **Acción:** Borrados los usuarios demo en Supabase Auth y desactivada la opción "Allow new users to sign up" para impedir registros públicos en el backend.

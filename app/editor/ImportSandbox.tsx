@@ -115,7 +115,7 @@ export function ImportSandbox({
               <Sparkles className="size-5" aria-hidden />
             </span>
             <div className="min-w-0 flex-1 pr-8 sm:pr-0">
-              <p className="font-semibold">Tenés una Boxie a medio armar en la prueba</p>
+              <p className="font-semibold">Tenés un regalo a medio armar en la prueba</p>
               <p className="text-sm text-white/70">
                 {draft?.recipientName.trim()
                   ? `La de ${draft.recipientName.trim()}`

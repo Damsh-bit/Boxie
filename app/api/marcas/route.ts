@@ -50,7 +50,7 @@ export async function POST(request: Request) {
         ...contactEmail({
           name: lead.name,
           email: lead.email,
-          area: `Boxie para marcas · ${SPONSOR_KIND_LABELS[lead.kind]}`,
+          area: `Ribbly para marcas · ${SPONSOR_KIND_LABELS[lead.kind]}`,
           message: [
             `Negocio o marca: ${lead.business}`,
             lead.city && `Ciudad: ${lead.city}`,

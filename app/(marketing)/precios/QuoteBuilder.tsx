@@ -426,7 +426,7 @@ export function QuoteBuilder({
             </span>
             <div className="min-w-0">
               <p className="text-[0.65rem] font-extrabold tracking-[0.16em] text-white/70 uppercase">
-                Tu Boxie
+                Tu Ribbly
               </p>
               <p className="truncate font-display text-lg font-bold">
                 <Swap id={theme.slug}>
@@ -939,7 +939,7 @@ function CouponBox({
           onClick={() => onApply(welcome.code)}
           className="mt-2 text-xs text-ink/55 hover:text-brand"
         >
-          ¿Primera Boxie? Usá <strong className="font-mono text-ink">{welcome.code}</strong> (
+          ¿Primera Ribbly? Usá <strong className="font-mono text-ink">{welcome.code}</strong> (
           {welcome.discount})
         </button>
       )}

@@ -11,14 +11,14 @@ import './globals.css'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: 'Boxie Digital · Regalos digitales que emocionan',
-    template: '%s · Boxie Digital',
+    default: 'Ribbly · Regalos digitales que emocionan',
+    template: '%s · Ribbly',
   },
   description:
-    'Regalá una Boxie: una experiencia digital personalizada con fotos, música, juegos y dedicatorias. Llega al instante y se abre desde el celular.',
-  applicationName: 'Boxie Digital',
+    'Regalá una Ribbly: una experiencia digital personalizada con fotos, música, juegos y dedicatorias. Llega al instante y se abre desde el celular.',
+  applicationName: 'Ribbly',
   openGraph: {
-    siteName: 'Boxie Digital',
+    siteName: 'Ribbly',
     locale: 'es_AR',
     type: 'website',
   },

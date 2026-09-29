@@ -19,7 +19,7 @@ import type { GalleryContents, GalleryPlan, GallerySeason, GalleryTheme } from '
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Galería de Boxies',
+  title: 'Galería de temáticas',
   description:
     'Elegí la temática perfecta para emocionar: pareja, cumpleaños, amistad, mamá y más. Buscá por ocasión, compará qué trae cada plan y mirá un ejemplo antes de comprar.',
   alternates: { canonical: '/galeria' },

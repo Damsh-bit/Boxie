@@ -17,10 +17,10 @@ export default function NotFound() {
     <main className="flex-1 bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_55%)]">
       <header className="absolute inset-x-0 top-0 z-10">
         <div className="mx-auto flex h-[90px] w-[90%] max-w-6xl items-center">
-          <Link href="/" aria-label="Boxie, inicio">
+          <Link href="/" aria-label="Ribbly, inicio">
             <Image
               src="/brand/boxie-logo.png"
-              alt="Boxie"
+              alt="Ribbly"
               width={129}
               height={45}
               className="h-[45px] w-auto"

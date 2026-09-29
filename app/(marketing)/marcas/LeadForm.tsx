@@ -226,7 +226,7 @@ export function LeadForm() {
               Quiero ser aliado
             </Button>
             <p className="text-xs text-ink/45">
-              Solo usamos tus datos para responderte sobre Boxie para marcas.
+              Solo usamos tus datos para responderte sobre Ribbly para marcas.
             </p>
           </div>
         </motion.form>

@@ -33,7 +33,7 @@ const TABS = [
   {
     id: 'web',
     icon: Globe,
-    label: 'En Boxie',
+    label: 'En Ribbly',
     title: 'En el sitio, entre las temáticas',
     text: 'Tu tarjeta aparece en la galería, la portada o precios, con tu propuesta, tu cupón y tu link. La ve quien está eligiendo un regalo.',
     soon: false,
@@ -43,14 +43,14 @@ const TABS = [
     icon: Store,
     label: 'En tu local',
     title: 'En el vaso, el ticket o la mesa',
-    text: 'Un QR con tu marca: quien compra arma una Boxie y se la manda a alguien. Cada escaneo cuenta en tu campaña.',
+    text: 'Un QR con tu marca: quien compra arma una Ribbly y se la manda a alguien. Cada escaneo cuenta en tu campaña.',
     soon: false,
   },
   {
     id: 'regalo',
     icon: Smartphone,
     label: 'Dentro del regalo',
-    title: 'En la Boxie que se abre',
+    title: 'En la Ribbly que se abre',
     text: 'Tu logo en la portada y tu mensaje en el cierre, con un cupón para la próxima visita. Lo ve quien recibe el regalo, en el momento más lindo.',
     soon: true,
   },
@@ -192,7 +192,7 @@ function CupMockup() {
               {cafe.brand}
             </p>
             <p className="font-display text-sm leading-tight font-bold">
-              Escaneá y regalá una Boxie ✨
+              Escaneá y regalá una Ribbly ✨
             </p>
           </div>
         </div>
@@ -209,11 +209,11 @@ function CupMockup() {
   )
 }
 
-/** El cierre de una Boxie con la marca que la regaló. */
+/** El cierre de una Ribbly con la marca que la regaló. */
 function GiftClosingMockup() {
   return (
     <div className="mx-auto w-[230px]">
-      <PhoneFrame label={`Cierre de una Boxie regalada por ${cafe.brand}`}>
+      <PhoneFrame label={`Cierre de una Ribbly regalada por ${cafe.brand}`}>
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-ink px-6 text-center text-white">
           <div
             aria-hidden

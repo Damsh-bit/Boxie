@@ -210,12 +210,12 @@ export function homeFaqs(ctx: FaqContext): FaqItem[] {
   const byPlan = ctx.plans && ctx.lifetime.includes(' a ')
   return [
     {
-      question: '¿Qué es una Boxie?',
+      question: '¿Qué es una Ribbly?',
       answer:
         'Es un regalo digital personalizado: una experiencia tipo historias, con fotos, dedicatoria, su canción y juegos como trivia, tragamonedas y cuponera. La armás en minutos y se la mandás con un link único que se abre desde el celular.',
     },
     {
-      question: '¿Cuánto cuesta un regalo digital Boxie?',
+      question: '¿Cuánto cuesta un regalo digital Ribbly?',
       answer: ctx.plans
         ? `Hay planes ${ctx.price}, con pago único: sin suscripciones ni costos de envío. Cada plan suma pantallas, juegos y días online; elegís el que va con tu regalo y pagás una sola vez con Mercado Pago.`
         : `Cuesta ${ctx.price}, todo incluido: las pantallas, las fotos, la música y los juegos, sin suscripciones ni costos de envío. Pagás una sola vez con Mercado Pago.`,
@@ -237,7 +237,7 @@ export function homeFaqs(ctx: FaqContext): FaqItem[] {
     {
       question: '¿Puedo probarla antes de comprar?',
       answer:
-        'Sí: podés ver una Boxie de ejemplo completa y probar el editor gratis, cargando tus textos y fotos, antes de pagar.',
+        'Sí: podés ver un regalo de ejemplo completo y probar el editor gratis, cargando tus textos y fotos, antes de pagar.',
     },
     {
       question: '¿Puedo editarla después de pagar?',

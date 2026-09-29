@@ -95,7 +95,7 @@ describe('recuperar el acceso', () => {
 
     const [mail] = devOutbox()
     expect(mail!.to).toBe('leandro@example.com')
-    expect(mail!.subject).toBe('Tu nuevo link para editar tu Boxie')
+    expect(mail!.subject).toBe('Tu nuevo link para editar tu regalo')
     const token = mail!.text.match(/\/editor\/([A-Za-z0-9_-]{32})/)?.[1]
     expect(token).toBeDefined()
     // Se guardó el hash del token que viajó en el mail (rotación).

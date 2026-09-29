@@ -16,22 +16,22 @@ import { PlacementShowcase } from './PlacementShowcase'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Boxie para marcas',
+  title: 'Ribbly para marcas',
   description:
-    'Sumá tu marca a Boxie: sponsors en la web, una Boxie con tu marca, campañas por fecha y regalos corporativos. Cafeterías, florerías, bares, cines y eventos.',
+    'Sumá tu marca a Ribbly: sponsors en la web, una Ribbly con tu marca, campañas por fecha y regalos corporativos. Cafeterías, florerías, bares, cines y eventos.',
   alternates: { canonical: '/marcas' },
 }
 
-/** Los tipos de Boxie a los que vamos (la cinta grande). */
+/** Los tipos de Ribbly a los que vamos (la cinta grande). */
 const FUTURE = [
-  'Boxie Gamer',
-  'Boxie Cine',
-  'Boxie Eventos',
-  'Boxie Viajes',
-  'Boxie Fútbol',
-  'Boxie Egresados',
-  'Boxie Empresas',
-  'Boxie Casamientos',
+  'Ribbly Gamer',
+  'Ribbly Cine',
+  'Ribbly Eventos',
+  'Ribbly Viajes',
+  'Ribbly Fútbol',
+  'Ribbly Egresados',
+  'Ribbly Empresas',
+  'Ribbly Casamientos',
 ]
 
 export default async function BrandsPage() {
@@ -42,7 +42,7 @@ export default async function BrandsPage() {
     <div className="overflow-x-clip bg-white">
       <BrandsHero />
 
-      {/* Hacia dónde vamos: una Boxie para cada rubro. */}
+      {/* Hacia dónde vamos: una Ribbly para cada rubro. */}
       <FutureMarquee items={FUTURE} />
 
       <section
@@ -57,7 +57,7 @@ export default async function BrandsPage() {
               Cuatro formas de <Mark>sumarte</Mark>
             </span>
           }
-          text={`Boxie es un producto digital: la misma experiencia (${sf.themes.length} temáticas y hasta ${sf.maxScreens} sorpresas por regalo) se adapta a tu marca, tu rubro y tu fecha.`}
+          text={`Ribbly es un producto digital: la misma experiencia (${sf.themes.length} temáticas y hasta ${sf.maxScreens} sorpresas por regalo) se adapta a tu marca, tu rubro y tu fecha.`}
         />
         <Stagger className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4" step={0.08}>
           {partnershipFormats.map((f, i) => (
@@ -96,7 +96,7 @@ export default async function BrandsPage() {
               En la web, en tu local <Mark>y en el regalo</Mark>
             </span>
           }
-          text="La gente te encuentra en Boxie, arma su regalo desde tu local y quien lo recibe sabe que llegó con vos."
+          text="La gente te encuentra en Ribbly, arma su regalo desde tu local y quien lo recibe sabe que llegó con vos."
         />
         <PlacementShowcase />
       </section>
@@ -142,7 +142,7 @@ export default async function BrandsPage() {
             <span id="aliados-title">
               {allies.length > 0 ? (
                 <>
-                  Ya regalan <Mark>Boxies</Mark>
+                  Ya regalan <Mark>Ribbly</Mark>
                 </>
               ) : (
                 <>
@@ -153,7 +153,7 @@ export default async function BrandsPage() {
           }
           text={
             allies.length > 0
-              ? 'Marcas y comercios que ya son parte de Boxie.'
+              ? 'Marcas y comercios que ya son parte de Ribbly.'
               : 'Estamos sumando a los primeros aliados: cafeterías, florerías, bares, cines y eventos que quieran regalar algo distinto. ¿Sos vos?'
           }
         />

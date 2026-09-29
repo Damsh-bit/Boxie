@@ -40,7 +40,7 @@ export function GiftAfterglow({
   const sender = senderName.trim()
   const link = (campaign: string, para?: string) => {
     const params = new URLSearchParams({
-      utm_source: 'boxie',
+      utm_source: 'ribbly',
       utm_medium: 'regalo',
       utm_campaign: campaign,
     })
@@ -66,7 +66,7 @@ export function GiftAfterglow({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 160, opacity: 0 }}
           transition={spring.gentle}
-          aria-label="Regalá una Boxie"
+          aria-label="Regalá con Ribbly"
         >
           <button
             type="button"
@@ -82,18 +82,18 @@ export function GiftAfterglow({
           <p className="mt-1 text-sm text-neutral-600">
             {sender
               ? `Devolvele el gesto a ${sender}, o sorprendé a alguien más.`
-              : 'Sorprendé a alguien con una Boxie hecha por vos.'}
+              : 'Sorprendé a alguien con un regalo digital hecho por vos.'}
             {offer && (
               <>
                 {' '}
-                Tu primera Boxie tiene <b className="text-brand">{offer.discount}</b>.
+                Tu primer regalo tiene <b className="text-brand">{offer.discount}</b>.
               </>
             )}
           </p>
           <div className="mt-4 flex flex-col gap-2">
             {sender && (
               <ButtonLink href={link('respuesta', sender)} block onClick={close}>
-                <Gift className="size-4" aria-hidden /> Responderle con una Boxie
+                <Gift className="size-4" aria-hidden /> Responderle con un regalo
               </ButtonLink>
             )}
             <ButtonLink
@@ -102,7 +102,7 @@ export function GiftAfterglow({
               block
               onClick={close}
             >
-              {sender ? 'Regalar a otra persona' : 'Crear una Boxie'}
+              {sender ? 'Regalar a otra persona' : 'Preparar un regalo'}
             </ButtonLink>
           </div>
         </motion.aside>

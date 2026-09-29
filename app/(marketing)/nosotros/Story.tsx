@@ -48,7 +48,7 @@ export function Story({ chapters }: { chapters: Chapter[] }) {
             className="font-display text-[2.1rem] leading-[1.08] font-bold text-balance text-ink sm:text-5xl"
           >
             <span id="historia-title">
-              De un regalo hecho a mano a <Mark>Boxie</Mark>
+              De un regalo hecho a mano a <Mark>Ribbly</Mark>
             </span>
           </Reveal>
           <Reveal

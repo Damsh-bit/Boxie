@@ -4,8 +4,8 @@ import { requireCustomerSession } from '@/server/customer/session'
 import { CustomerDashboard } from './CustomerDashboard'
 
 export const metadata: Metadata = {
-  title: 'Mis Boxies · Mi Cuenta',
-  description: 'Gestioná tus regalos interactivos de Boxie Digital y enterate de las aperturas.',
+  title: 'Mis Regalos · Mi Cuenta Ribbly',
+  description: 'Gestioná tus regalos interactivos de Ribbly y enterate de las aperturas.',
 }
 
 export default async function CustomerAccountPage() {

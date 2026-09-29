@@ -134,7 +134,7 @@ export async function POST(request: Request) {
     const preference = await createPreference({
       items: [
         {
-          title: `Boxie ${theme.name}${result.plan ? ` · ${result.plan.name}` : ''}`,
+          title: `Ribbly ${theme.name}${result.plan ? ` · ${result.plan.name}` : ''}`,
           quantity: 1,
           // MP trabaja en pesos (no centavos).
           unit_price: quote.totalCents / 100,

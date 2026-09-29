@@ -98,10 +98,10 @@ export function BuyBox({
     `/checkout?tematica=${slug}${plan ? `&plan=${plan.slug}` : ''}${active ? `&cupon=${offer.code}` : ''}${recipient ? `&para=${encodeURIComponent(recipient)}` : ''}` as Route
   const short = shortRecipient(recipient)
   const label = active
-    ? `Quiero ${short ? `la Boxie de ${short}` : 'mi Boxie'} con descuento`
+    ? `Quiero ${short ? `la Ribbly de ${short}` : 'mi Ribbly'} con descuento`
     : short
-      ? `Quiero la Boxie de ${short}`
-      : 'Quiero mi Boxie'
+      ? `Quiero la Ribbly de ${short}`
+      : 'Quiero mi Ribbly'
   const offerPrice = offer ? priceCents - couponDiscount(offer, priceCents) : priceCents
   const price = active ? offerPrice : priceCents
 
@@ -231,7 +231,7 @@ export function BuyBox({
             <div className="mx-auto flex max-w-md items-center gap-3 rounded-[22px] bg-white/95 p-2 pl-4 shadow-[0_18px_50px_rgba(42,36,51,0.22)] ring-1 ring-black/5 backdrop-blur">
               <div className="min-w-0 flex-1 leading-tight">
                 <p className="truncate text-xs font-semibold text-neutral-500">
-                  Boxie {name}
+                  Ribbly {name}
                   {plan ? ` · ${plan.name}` : ''}
                 </p>
                 <p className="font-display text-xl font-bold text-ink">{formatPrice(price)}</p>

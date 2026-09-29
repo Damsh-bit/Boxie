@@ -103,7 +103,7 @@ export default async function ThemePage({ params, searchParams }: PageProps<'/te
               {recipient && (
                 <p className="mt-3 inline-flex max-w-full items-center gap-2 rounded-full bg-brand-soft px-3.5 py-1.5 text-sm font-semibold text-brand-dark">
                   <span aria-hidden>💖</span>
-                  <span className="truncate">La Boxie de {recipient}</span>
+                  <span className="truncate">La Ribbly de {recipient}</span>
                 </p>
               )}
             </StaggerItem>
@@ -157,7 +157,7 @@ export default async function ThemePage({ params, searchParams }: PageProps<'/te
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-white">
                   <Play className="size-3.5 translate-x-px fill-current" aria-hidden />
                 </span>
-                <span>Ver cómo queda una Boxie {theme.name}</span>
+                <span>Ver cómo queda una Ribbly {theme.name}</span>
               </LiftLink>
               <LiftLink
                 href={`/ejemplo/${theme.slug}/personalizar`}
@@ -173,7 +173,7 @@ export default async function ThemePage({ params, searchParams }: PageProps<'/te
 
             <StaggerItem y={14} className="mt-5 border-t border-dashed border-neutral-200 pt-4">
               <h2 className="mb-3 text-center text-xs font-bold tracking-widest text-neutral-500 uppercase">
-                ¿Por qué elegir Boxie?
+                ¿Por qué elegir Ribbly?
               </h2>
               <ul className="grid grid-cols-3 gap-2.5">
                 {WHY.map(([icon, text]) => (

@@ -50,7 +50,7 @@ export function RecoverForm() {
             <MailCheck className="size-5 shrink-0" aria-hidden /> ¡Listo! Revisá tu mail
           </p>
           <p className="mt-1.5 text-sm leading-relaxed">
-            Si hay Boxies compradas con <strong>{email}</strong>, en unos minutos te llega el link
+            Si hay regalos comprados con <strong>{email}</strong>, en unos minutos te llega el link
             (revisá spam y promociones). El link de edición anterior deja de funcionar.
           </p>
           <button

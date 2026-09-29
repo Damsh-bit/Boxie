@@ -7,9 +7,9 @@ import { Mark } from '../_home/primitives'
 import { RecoverForm } from './RecoverForm'
 
 export const metadata: Metadata = {
-  title: 'Entrar a mi Boxie',
+  title: 'Entrar a mi regalo',
   description:
-    'Recuperá el link para editar tu Boxie o el del regalo: te lo mandamos al mail con el que compraste.',
+    'Recuperá el link para editar tu regalo o el de la entrega: te lo mandamos al mail con el que compraste.',
   alternates: { canonical: '/mi-boxie' },
 }
 
@@ -21,7 +21,7 @@ const STEPS = [
   },
   {
     icon: PencilLine,
-    title: 'Tocá "Personalizar mi Boxie"',
+    title: 'Tocá "Personalizar mi regalo"',
     text: 'El link es personal: se abre en cualquier dispositivo, sin usuario ni clave.',
   },
   {
@@ -43,10 +43,10 @@ export default function MyBoxiePage() {
         eyebrow="Ya compré"
         title={
           <>
-            Entrar a mi <Mark>Boxie</Mark>
+            Entrar a mi <Mark>regalo</Mark>
           </>
         }
-        text="Tu Boxie se edita con el link personal que te mandamos por mail. Si lo perdiste, te lo reenviamos."
+        text="Tu regalo se edita con el link personal que te mandamos por mail. Si lo perdiste, te lo reenviamos."
       />
 
       <div className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-8 px-5 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
@@ -78,8 +78,8 @@ export default function MyBoxiePage() {
           >
             <h2 className="font-display text-2xl font-bold text-ink">Pedir el link de nuevo</h2>
             <p className="mt-1 mb-5 text-sm text-ink/60">
-              Te mandamos el acceso de tus Boxies vigentes: el link para editar las que todavía
-              armás y el del regalo de las que ya bloqueaste.
+              Te mandamos el acceso de tus regalos vigentes: el link para editar los que todavía
+              armás y el de los que ya bloqueaste.
             </p>
             <RecoverForm />
           </Reveal>

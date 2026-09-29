@@ -73,7 +73,7 @@ export function HowItWorks({
         eyebrow="Así de simple"
         title={
           <span id="como-funciona-title">
-            Cómo regalar una Boxie en <Mark>4 pasos</Mark>
+            Cómo regalar una Ribbly en <Mark>4 pasos</Mark>
           </span>
         }
         text="Sin instalar nada, ni vos ni quien la recibe. De la compra al regalo en menos de lo que tarda un delivery."
@@ -171,7 +171,7 @@ export function HowItWorks({
           </ButtonLink>
         </Magnetic>
         <ButtonLink href={exampleHref} variant="white" size="lg" block className="sm:w-auto">
-          <Play className="size-4 fill-current text-brand" aria-hidden /> Ver una Boxie de ejemplo
+          <Play className="size-4 fill-current text-brand" aria-hidden /> Ver una Ribbly de ejemplo
         </ButtonLink>
       </Reveal>
     </section>
@@ -234,7 +234,7 @@ function PayVisual({
           {sample.emoji}
         </span>
         <div className="min-w-0 leading-tight">
-          <p className="truncate text-xs font-bold text-ink">Boxie {sample.name}</p>
+          <p className="truncate text-xs font-bold text-ink">Ribbly {sample.name}</p>
           <p className="text-[0.65rem] text-ink/50">Pago único</p>
         </div>
         <p className="ml-auto font-display text-sm font-bold text-ink">{price}</p>
@@ -274,9 +274,9 @@ function MailVisual({ active }: { active: boolean }) {
               <Mail className="size-4" aria-hidden />
             </span>
             <div className="min-w-0 leading-tight">
-              <p className="text-xs font-bold text-ink">Boxie · ahora</p>
+              <p className="text-xs font-bold text-ink">Ribbly · ahora</p>
               <p className="truncate text-[0.7rem] text-ink/60">
-                ¡Tu Boxie está lista para editar! ✨
+                ¡Tu Ribbly está lista para editar! ✨
               </p>
             </div>
           </motion.div>

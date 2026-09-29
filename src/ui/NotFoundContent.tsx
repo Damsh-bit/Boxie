@@ -68,7 +68,7 @@ export function NotFoundContent() {
           <Home className="size-5" aria-hidden /> Ir al inicio
         </ButtonLink>
         <ButtonLink href="/galeria" variant="white" size="lg">
-          <Gift className="size-5 text-brand" aria-hidden /> Ver las Boxies
+          <Gift className="size-5 text-brand" aria-hidden /> Ver los regalos
         </ButtonLink>
         <SupportButton
           variant="ghost"

@@ -329,7 +329,7 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
               <div
                 role="region"
                 aria-roledescription="vista previa"
-                aria-label={`Boxie de muestra para ${typed || example}`}
+                aria-label={`Ribbly de muestra para ${typed || example}`}
                 onKeyDown={onKeyDown}
                 ref={canvas}
                 className="absolute top-0 left-0 w-[286px] origin-top-left select-none [-webkit-touch-callout:none]"
@@ -354,11 +354,11 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
                 <div className="absolute inset-0 flex">
                   {(
                     [
-                      [index === 0 ? 1 : -1, index === 0 ? 'Abrir la Boxie' : 'Pantalla anterior'],
+                      [index === 0 ? 1 : -1, index === 0 ? 'Abrir Ribbly' : 'Pantalla anterior'],
                       [
                         1,
                         index === 0
-                          ? 'Abrir la Boxie'
+                          ? 'Abrir Ribbly'
                           : index === last
                             ? 'Ver de nuevo'
                             : 'Pantalla siguiente',

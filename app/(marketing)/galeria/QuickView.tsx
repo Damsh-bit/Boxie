@@ -483,7 +483,7 @@ function Details({
         </div>
         <div className="flex gap-2">
           <ButtonLink href={themeHref(theme.slug, shownPlan)} size="md" className="flex-1">
-            <Gift className="size-4" aria-hidden /> Elegir esta Boxie
+            <Gift className="size-4" aria-hidden /> Elegir esta Ribbly
           </ButtonLink>
           <ButtonLink href={exampleHref(theme.slug, shownPlan)} variant="secondary" size="md">
             <Play className="size-4 fill-current" aria-hidden />

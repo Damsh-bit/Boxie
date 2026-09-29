@@ -47,14 +47,14 @@ const COPY: Record<EditorMessageKind, { emoji: string; title: string; text: Reac
     title: 'El plazo para editar venció',
     text: (
       <>
-        Esta Boxie ya no se puede editar. Si creés que es un error, escribinos con el código de tu
-        Boxie.
+        Este regalo ya no se puede editar. Si creés que es un error, escribinos con el código de tu
+        regalo.
       </>
     ),
   },
   refunded: {
     emoji: '↩️',
-    title: 'Esta Boxie fue reembolsada',
+    title: 'Este regalo fue reembolsado',
     text: <>Si tenés dudas sobre la devolución, escribinos.</>,
   },
   demo: {
@@ -62,8 +62,8 @@ const COPY: Record<EditorMessageKind, { emoji: string; title: string; text: Reac
     title: 'En la demo, el editor es de prueba',
     text: (
       <>
-        Esta versión de demostración no cobra ni guarda Boxies reales. Elegí una temática y probá el
-        editor completo: lo que cargues queda en tu navegador.
+        Esta versión de demostración no cobra ni guarda regalos reales. Elegí una temática y probá
+        el editor completo: lo que cargues queda en tu navegador.
       </>
     ),
   },
@@ -80,8 +80,8 @@ export function EditorMessage({
   return (
     <div className="flex min-h-dvh flex-col items-center bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] px-5 py-12">
       <Reveal y={-12}>
-        <Link href="/" aria-label="Boxie Digital, inicio">
-          <Image src="/brand/boxie-logo.png" alt="Boxie" width={129} height={45} priority />
+        <Link href="/" aria-label="Ribbly, inicio">
+          <Image src="/brand/boxie-logo.png" alt="Ribbly" width={129} height={45} priority />
         </Link>
       </Reveal>
       <MessageCard emoji={copy.emoji} title={copy.title} className="mt-10">

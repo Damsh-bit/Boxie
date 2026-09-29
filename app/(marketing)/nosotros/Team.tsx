@@ -29,7 +29,7 @@ export function Team({ founders }: { founders: Founder[] }) {
             Somos <Mark>{founders.length === 3 ? 'tres' : founders.length}</Mark>
           </span>
         }
-        text="Tres amigos, tres formas de ver las cosas y un mismo objetivo: que cada Boxie emocione al que la abre."
+        text="Tres amigos, tres formas de ver las cosas y un mismo objetivo: que cada Ribbly emocione al que la abre."
       />
 
       <div className="mx-auto hidden h-[540px] max-w-6xl gap-4 lg:flex">

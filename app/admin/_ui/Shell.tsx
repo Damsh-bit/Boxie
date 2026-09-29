@@ -238,7 +238,7 @@ function Sidebar({
                 transition={{ duration: 0.25, ease: ease.out }}
                 className="flex items-center gap-2.5"
               >
-                <Image src="/brand/boxie-logo.png" alt="Boxie" width={98} height={34} />
+                <Image src="/brand/boxie-logo.png" alt="Ribbly" width={98} height={34} />
                 <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold tracking-widest text-white/70 uppercase">
                   Admin
                 </span>
@@ -409,8 +409,8 @@ function Topbar({
         >
           <Menu className="size-5" aria-hidden />
         </button>
-        <Link href="/admin" className="lg:hidden" aria-label="Boxie, panel">
-          <Image src="/brand/boxie-logo.png" alt="Boxie" width={80} height={28} />
+        <Link href="/admin" className="lg:hidden" aria-label="Ribbly, panel">
+          <Image src="/brand/boxie-logo.png" alt="Ribbly" width={80} height={28} />
         </Link>
 
         <motion.button

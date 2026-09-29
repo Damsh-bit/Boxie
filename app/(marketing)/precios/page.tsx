@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const sf = await getStorefront()
   return {
     title: 'Planes y precios',
-    description: `Los planes de Boxie, desde ${formatARS(sf.priceFromCents)}: pago único, sin suscripción. Compará pantallas, juegos, fotos y días online de cada uno.`,
+    description: `Los planes de Ribbly, desde ${formatARS(sf.priceFromCents)}: pago único, sin suscripción. Compará pantallas, juegos, fotos y días online de cada uno.`,
     alternates: { canonical: '/precios' },
   }
 }
@@ -119,13 +119,13 @@ function faqsOf(sf: Storefront) {
     {
       question: '¿Tienen descuentos?',
       answer: sf.welcome
-        ? `Sí: con el código ${sf.welcome.code} tenés ${sf.welcome.discount} en tu primera Boxie. Lo cargás en el checkout y el descuento se calcula al instante.`
+        ? `Sí: con el código ${sf.welcome.code} tenés ${sf.welcome.discount} en tu primera Ribbly. Lo cargás en el checkout y el descuento se calcula al instante.`
         : 'Cada tanto hay promociones: seguinos en Instagram para enterarte primero.',
     },
     {
       question: '¿Puedo cambiar de plan después de comprar?',
       answer:
-        'El plan se elige al comprar. Si te equivocaste de plan, escribinos por el chat de ayuda antes de bloquear la Boxie y lo vemos juntos.',
+        'El plan se elige al comprar. Si te equivocaste de plan, escribinos por el chat de ayuda antes de bloquear la Ribbly y lo vemos juntos.',
     },
   ]
 }
@@ -228,7 +228,7 @@ export default async function PricingPage({ searchParams }: PageProps<'/precios'
         eyebrow="Planes y precios"
         title={
           <>
-            Armá tu Boxie, <Mark>mirá el precio</Mark>
+            Armá tu Ribbly, <Mark>mirá el precio</Mark>
           </>
         }
         text={
@@ -256,7 +256,7 @@ export default async function PricingPage({ searchParams }: PageProps<'/precios'
         <Reveal className="mx-auto max-w-md rounded-[30px] bg-white p-8 text-center ring-1 ring-black/5">
           <p className="font-display text-5xl font-bold text-ink">{formatARS(sf.priceFromCents)}</p>
           <ButtonLink href="/galeria" size="lg" block className="mt-6">
-            <Gift className="size-5" aria-hidden /> Elegir mi Boxie
+            <Gift className="size-5" aria-hidden /> Elegir mi Ribbly
           </ButtonLink>
         </Reveal>
       )}
@@ -275,13 +275,13 @@ export default async function PricingPage({ searchParams }: PageProps<'/precios'
           <PlanComparison
             plans={sf.plans}
             groups={comparisonOf(sf)}
-            caption="Comparación de los planes de Boxie: pantallas, fotos, clave y días online"
+            caption="Comparación de los planes de Ribbly: pantallas, fotos, clave y días online"
           />
           <PlanPromises />
         </section>
       )}
 
-      <section aria-label="Boxie para marcas" className="px-4 pt-20 sm:px-8 sm:pt-24">
+      <section aria-label="Ribbly para marcas" className="px-4 pt-20 sm:px-8 sm:pt-24">
         <Reveal>
           <SponsorBand sponsor={sponsorFor(sponsors, 'precios')} />
         </Reveal>
@@ -305,7 +305,7 @@ export default async function PricingPage({ searchParams }: PageProps<'/precios'
           />
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
             <ButtonLink href="/galeria" size="lg">
-              <Gift className="size-5" aria-hidden /> Elegir mi Boxie
+              <Gift className="size-5" aria-hidden /> Elegir mi Ribbly
             </ButtonLink>
             <ButtonLink href={editorHref} variant="white" size="lg">
               <Wand2 className="size-5 text-brand" aria-hidden /> Probar gratis

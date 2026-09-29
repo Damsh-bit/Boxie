@@ -6,7 +6,7 @@ import { SupportCenterPage } from './SupportCenterPage'
 
 export const metadata: Metadata = {
   title: 'Soporte',
-  description: 'Tus consultas con el equipo de Boxie: seguí la conversación y abrí una nueva.',
+  description: 'Tus consultas con el equipo de Ribbly: seguí la conversación y abrí una nueva.',
   robots: { index: false, follow: false },
 }
 

@@ -6,8 +6,8 @@ import { requireCustomerSession } from '@/server/customer/session'
 import { Button } from '@/ui/Button'
 
 export const metadata: Metadata = {
-  title: 'Mis Compras · Mi Cuenta Boxie',
-  description: 'Historial de compras y comprobantes de pago de tus Boxies.',
+  title: 'Mis Compras · Mi Cuenta Ribbly',
+  description: 'Historial de compras y comprobantes de pago de tus regalos.',
 }
 
 export default async function CustomerOrdersPage() {
@@ -34,7 +34,7 @@ export default async function CustomerOrdersPage() {
             No encontramos compras registradas
           </h3>
           <p className="mx-auto mt-1 max-w-sm text-xs text-neutral-500">
-            Si compraste una Boxie con otro email, podés iniciar sesión con ese correo para verla.
+            Si compraste un regalo con otro email, podés iniciar sesión con ese correo para verlo.
           </p>
           <div className="mt-6">
             <Link href="/galeria">

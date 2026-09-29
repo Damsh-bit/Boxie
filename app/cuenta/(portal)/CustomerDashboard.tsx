@@ -136,7 +136,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
         <div className="rounded-2xl border border-line bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase">
-              Mis Boxies
+              Mis Regalos
             </span>
             <div className="grid size-8 place-items-center rounded-xl bg-brand/10 text-brand">
               <Gift className="size-4" />
@@ -192,7 +192,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
               <Sparkles className="size-8" />
             </div>
             <h3 className="mt-4 font-display text-lg font-bold text-ink">
-              Todavía no tenés ninguna Boxie
+              Todavía no tenés ningún regalo
             </h3>
             <p className="mx-auto mt-1 max-w-sm text-xs text-neutral-500">
               Cuando compres tu primer regalo interactivo, vas a poder editar fotos, música y ver
@@ -200,7 +200,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
             </p>
             <div className="mt-6">
               <Link href="/galeria">
-                <Button>Elegir una Boxie para regalar</Button>
+                <Button>Elegir un regalo para preparar</Button>
               </Link>
             </div>
           </div>
@@ -351,7 +351,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
             </div>
             <p className="mt-1 text-xs text-neutral-600">
               Guardá cumpleaños y aniversarios. Te avisamos 10 días antes por mail con un cupón de{' '}
-              <strong>15% OFF (RECORDAR15)</strong> para armarles una nueva Boxie con descuento.
+              <strong>15% OFF (RECORDAR15)</strong> para armarles una nueva sorpresa con descuento.
             </p>
           </div>
 

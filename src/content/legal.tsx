@@ -32,7 +32,7 @@ const terms: LegalDoc = {
     <>
       <h3>1. Introducción</h3>
       <p>
-        Bienvenido a Boxie. Al acceder a nuestro sitio web y utilizar nuestros servicios, aceptás
+        Bienvenido a Ribbly. Al acceder a nuestro sitio web y utilizar nuestros servicios, aceptás
         cumplir con estos Términos y Condiciones. Este servicio es operado por{' '}
         <strong>{companyName}</strong>, CUIT <strong>{cuit}</strong>, con domicilio legal en{' '}
         <strong>{address}</strong>.
@@ -40,14 +40,15 @@ const terms: LegalDoc = {
 
       <h3>2. Descripción del Servicio</h3>
       <p>
-        Boxie ofrece una plataforma para la creación de experiencias digitales personalizadas
-        (&quot;Boxies&quot;). El usuario proporciona contenido (fotos, textos, música) que nosotros
-        procesamos y alojamos en una dirección web única para ser compartida como regalo.
+        Ribbly ofrece una plataforma para la creación de experiencias digitales personalizadas
+        (&quot;regalos digitales&quot;). El usuario proporciona contenido (fotos, textos, música)
+        que nosotros procesamos y alojamos en una dirección web única para ser compartida como
+        regalo.
       </p>
 
       <h3>3. Personalización y Bloqueo</h3>
       <p>
-        El usuario entiende que Boxie es un producto <strong>personalizado</strong>. Una vez
+        El usuario entiende que Ribbly es un producto <strong>personalizado</strong>. Una vez
         realizada la compra, el usuario recibe por correo electrónico un link de acceso para editar
         el contenido. Al finalizar la edición y presionar el botón de &quot;Finalizar y
         regalar&quot;, el contenido se considera final y entregado. No se podrán realizar
@@ -73,7 +74,7 @@ const terms: LegalDoc = {
       <p>
         Por lo tanto,{' '}
         <strong>
-          una vez que el usuario ha accedido a la plataforma de edición o ha bloqueado su Boxie, no
+          una vez que el usuario ha accedido a la plataforma de edición o ha bloqueado su regalo, no
           se aceptarán devoluciones ni reembolsos
         </strong>
         , dado que el servicio se considera ejecutado y personalizado.
@@ -81,18 +82,18 @@ const terms: LegalDoc = {
 
       <h3>5. Vigencia del Servicio</h3>
       <p>
-        Cada Boxie permanece disponible online durante{' '}
-        <strong>60 (sesenta) días corridos desde que se bloquea para regalar</strong>. Una Boxie que
+        Cada regalo permanece disponible online durante{' '}
+        <strong>60 (sesenta) días corridos desde que se bloquea para regalar</strong>. Un regalo que
         no se bloquea puede editarse durante 60 días corridos desde la compra. Pasados esos plazos,
-        el regalo deja de estar disponible y Boxie se reserva el derecho de eliminar el contenido de
-        sus servidores para garantizar la privacidad y optimización del espacio.
+        el regalo deja de estar disponible y Ribbly se reserva el derecho de eliminar el contenido
+        de sus servidores para garantizar la privacidad y optimización del espacio.
       </p>
 
       <h3>6. Responsabilidad del Contenido</h3>
       <p>
-        El usuario es el único responsable del contenido (imágenes, textos) que sube a Boxie. Queda
-        prohibido subir contenido ilegal, pornográfico, violento u ofensivo. Boxie se reserva el
-        derecho de dar de baja cualquier Boxie que viole estas normas sin derecho a reembolso.
+        El usuario es el único responsable del contenido (imágenes, textos) que sube a Ribbly. Queda
+        prohibido subir contenido ilegal, pornográfico, violento u ofensivo. Ribbly se reserva el
+        derecho de dar de baja cualquier regalo que viole estas normas sin derecho a reembolso.
       </p>
 
       <h3>7. Ley Aplicable y Jurisdicción</h3>
@@ -114,7 +115,7 @@ const privacy: LegalDoc = {
     <>
       <h3>1. Responsable de los Datos</h3>
       <p>
-        Tus datos personales son tratados por <strong>{companyName}</strong> (&quot;Boxie&quot;) en
+        Tus datos personales son tratados por <strong>{companyName}</strong> (&quot;Ribbly&quot;) en
         cumplimiento de la Ley N° 25.326 de Protección de Datos Personales.
       </p>
 
@@ -122,25 +123,27 @@ const privacy: LegalDoc = {
       <p>
         Recolectamos únicamente los datos necesarios para brindar el servicio: nombre, correo
         electrónico, teléfono y el contenido multimedia que subís voluntariamente para crear tu
-        regalo. Los pagos los procesa Mercado Pago: Boxie no recibe ni almacena datos de tarjetas.
+        regalo. Los pagos los procesa Mercado Pago: Ribbly no recibe ni almacena datos de tarjetas.
       </p>
 
       <h3>3. Uso de la Información</h3>
       <p>Tus datos se utilizan exclusivamente para:</p>
       <ul>
         <li>Procesar tu pedido y enviarte el acceso de edición.</li>
-        <li>Alojar tu Boxie para que pueda ser vista por el destinatario.</li>
+        <li>Alojar tu regalo para que pueda ser visto por el destinatario.</li>
         <li>Enviarte notificaciones relacionadas con el estado de tu servicio.</li>
       </ul>
       <p>
-        <strong>Boxie no vende ni comparte tus datos con terceros para fines publicitarios.</strong>
+        <strong>
+          Ribbly no vende ni comparte tus datos con terceros para fines publicitarios.
+        </strong>
       </p>
 
       <h3>4. Privacidad de las Fotos</h3>
       <p>
-        Entendemos que el contenido de una Boxie es íntimo. Las fotos se guardan en almacenamiento
+        Entendemos que el contenido de un regalo es íntimo. Las fotos se guardan en almacenamiento
         privado y solo se muestran a través del link único del regalo, que no se puede adivinar.
-        Boxie no utiliza tus fotos personales para publicidad sin tu consentimiento expreso.
+        Ribbly no utiliza tus fotos personales para publicidad sin tu consentimiento expreso.
       </p>
 
       <h3>5. Tus Derechos</h3>
@@ -163,7 +166,7 @@ const payments: LegalDoc = {
       <h3>1. Medios de Pago</h3>
       <p>
         Los pagos son procesados de forma segura a través de <strong>Mercado Pago</strong>.
-        Aceptamos tarjetas de crédito, débito y dinero en cuenta de Mercado Pago. Boxie no almacena
+        Aceptamos tarjetas de crédito, débito y dinero en cuenta de Mercado Pago. Ribbly no almacena
         datos de tarjetas de crédito.
       </p>
 
@@ -180,7 +183,7 @@ const payments: LegalDoc = {
       </p>
       <ul>
         <li>
-          Fallas técnicas imputables a Boxie que impidan el uso del servicio y no puedan ser
+          Fallas técnicas imputables a Ribbly que impidan el uso del servicio y no puedan ser
           resueltas en 48 horas.
         </li>
         <li>Compras duplicadas por error del sistema.</li>
@@ -196,22 +199,22 @@ const payments: LegalDoc = {
 const ip: LegalDoc = {
   slug: 'propiedad-intelectual',
   title: 'Propiedad Intelectual',
-  summary: 'Sobre la marca Boxie y el uso de contenidos.',
+  summary: 'Sobre la marca Ribbly y el uso de contenidos.',
   icon: '©️',
   updated: '2026-09-22',
   body: (
     <>
       <h3>1. Marca Registrada</h3>
       <p>
-        El nombre &quot;Boxie&quot;, su logotipo y diseño del sitio web son propiedad intelectual de{' '}
-        <strong>{companyName}</strong>. Queda prohibida su reproducción total o parcial sin
+        El nombre &quot;Ribbly&quot;, su logotipo y diseño del sitio web son propiedad intelectual
+        de <strong>{companyName}</strong>. Queda prohibida su reproducción total o parcial sin
         autorización.
       </p>
 
       <h3>2. Contenido de Terceros</h3>
       <p>
         El usuario garantiza que posee los derechos sobre las imágenes y textos que sube a la
-        plataforma. Boxie actúa como mero intermediario de alojamiento y no se hace responsable por
+        plataforma. Ribbly actúa como mero intermediario de alojamiento y no se hace responsable por
         infracciones de derechos de autor cometidas por los usuarios al subir contenido protegido.
       </p>
     </>

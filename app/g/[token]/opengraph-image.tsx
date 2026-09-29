@@ -10,7 +10,7 @@ import { findGift } from '@/server/gift'
  * se arma en el servidor con el nombre de quien recibe el regalo.
  */
 
-export const alt = 'Un regalo de Boxie'
+export const alt = 'Un regalo de Ribbly'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -52,9 +52,7 @@ export default async function GiftCard({ params }: { params: Promise<{ token: st
         <img src={markSrc} width={150} height={191} alt="" />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 70, color: 'white' }}>
-        <div style={{ fontSize: 34, fontWeight: 600, opacity: 0.9, letterSpacing: 2 }}>
-          BOXIE DIGITAL
-        </div>
+        <div style={{ fontSize: 34, fontWeight: 600, opacity: 0.9, letterSpacing: 2 }}>RIBBLY</div>
         <div style={{ fontSize: 76, fontWeight: 800, lineHeight: 1.05, marginTop: 16 }}>
           {recipient ? `${recipient}, tenés un regalo` : 'Tenés un regalo'}
         </div>

@@ -38,7 +38,7 @@ export default function GlobalError({
           </p>
           <h1 style={{ fontSize: 28, margin: '16px 0 8px' }}>Uy, algo se trabó</h1>
           <p style={{ color: '#6b6272', margin: '0 0 24px' }}>
-            No pudimos cargar Boxie. Probá de nuevo en un momento.
+            No pudimos cargar Ribbly. Probá de nuevo en un momento.
           </p>
           <button
             type="button"

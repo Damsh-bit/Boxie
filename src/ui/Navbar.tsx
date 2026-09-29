@@ -96,7 +96,7 @@ export function Navbar() {
           className="relative mx-auto flex w-[90%] max-w-6xl items-center justify-between"
           style={{ height: open ? 90 : height }}
         >
-          <Link href="/" className="flex h-full items-center" aria-label="Boxie, inicio">
+          <Link href="/" className="flex h-full items-center" aria-label="Ribbly, inicio">
             <motion.span
               className="block origin-left"
               style={{ scale: logoScale }}
@@ -105,7 +105,7 @@ export function Navbar() {
             >
               <Image
                 src="/brand/boxie-logo.png"
-                alt="Boxie"
+                alt="Ribbly"
                 width={129}
                 height={45}
                 priority
@@ -309,7 +309,7 @@ function MobileMenu({
               <User className="size-5" aria-hidden /> Mi Cuenta
             </ButtonLink>
             <ButtonLink href="/galeria" size="lg" block onClick={onClose}>
-              <Gift className="size-5" aria-hidden /> Regalar una Boxie
+              <Gift className="size-5" aria-hidden /> Regalar una Ribbly
             </ButtonLink>
           </motion.div>
         </motion.div>

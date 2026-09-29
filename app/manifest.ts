@@ -3,8 +3,8 @@ import type { MetadataRoute } from 'next'
 /** Manifest web: nombre, colores e ícono al agregar Boxie a la pantalla de inicio. */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Boxie Digital · Regalos digitales que emocionan',
-    short_name: 'Boxie',
+    name: 'Ribbly · Regalos digitales que emocionan',
+    short_name: 'Ribbly',
     description:
       'Regalos digitales personalizados con fotos, música y juegos, que se abren desde el celular.',
     start_url: '/',

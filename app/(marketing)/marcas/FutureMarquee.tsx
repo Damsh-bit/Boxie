@@ -11,7 +11,7 @@ export function FutureMarquee({ items }: { items: string[] }) {
   const calm = useCalm()
   const run = [...items, ...items]
   return (
-    <section aria-label="Una Boxie para cada rubro" className="overflow-hidden bg-ink py-6">
+    <section aria-label="Una Ribbly para cada rubro" className="overflow-hidden bg-ink py-6">
       <p className="sr-only">Hacia dónde vamos: {items.join(', ')}.</p>
       <motion.div
         aria-hidden

@@ -39,7 +39,7 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
       title: 'Comprar',
       items: [
         {
-          question: '¿Qué es exactamente una Boxie?',
+          question: '¿Qué es exactamente una Ribbly?',
           answer:
             'Es un regalo 100% digital: una experiencia tipo historias, única y personalizada, con fotos, dedicatoria, su canción y juegos. La armás en minutos y se la mandás con un link que se abre desde el celular.',
         },
@@ -57,13 +57,13 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
         {
           question: '¿Tienen descuentos?',
           answer: ctx.welcome
-            ? `Sí: con el código ${ctx.welcome.code} tenés ${ctx.welcome.discount} en tu primera Boxie. Lo cargás en el checkout y el descuento se ve al instante.`
+            ? `Sí: con el código ${ctx.welcome.code} tenés ${ctx.welcome.discount} en tu primer regalo. Lo cargás en el checkout y el descuento se ve al instante.`
             : 'Cada tanto hay promociones: seguinos en Instagram para enterarte primero.',
         },
         {
           question: '¿Puedo probarla antes de comprar?',
           answer:
-            'Sí: podés ver una Boxie de ejemplo completa y probar el editor gratis (guarda en tu navegador), cargando tus textos y fotos, antes de pagar.',
+            'Sí: podés ver un regalo de ejemplo completo y probar el editor gratis (guarda en tu navegador), cargando tus textos y fotos, antes de pagar.',
         },
       ],
     },
@@ -75,7 +75,7 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
         {
           question: '¿Cómo recibo el acceso después de pagar?',
           answer:
-            'Apenas se acredita el pago entrás directo al editor, y además te llega un mail con tu link personal de edición. Si lo perdiste, pedilo de nuevo en "Ya compré: entrar a mi Boxie" con el mail que usaste al comprar.',
+            'Apenas se acredita el pago entrás directo al editor, y además te llega un mail con tu link personal de edición. Si lo perdiste, pedilo de nuevo en "Ya compré: entrar a mi Ribbly" con el mail que usaste al comprar.',
         },
         {
           question: '¿Puedo editarla después de pagar?',
@@ -144,19 +144,19 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
       title: 'Problemas',
       items: [
         {
-          question: 'Perdí el link para editar mi Boxie',
+          question: 'Perdí el link para editar mi regalo',
           answer:
-            'Entrá a "Ya compré: entrar a mi Boxie", poné el mail con el que compraste y te mandamos un link nuevo (el anterior deja de funcionar, por seguridad).',
+            'Entrá a "Ya compré: entrar a mi Ribbly", poné el mail con el que compraste y te mandamos un link nuevo (el anterior deja de funcionar, por seguridad).',
         },
         {
           question: 'Pagué pero no me llegó el mail',
           answer:
-            'Revisá spam y promociones. Si en unos minutos no aparece, pedilo de nuevo en "Ya compré: entrar a mi Boxie" o abrí el chat de ayuda con el mail de la compra y lo resolvemos.',
+            'Revisá spam y promociones. Si en unos minutos no aparece, pedilo de nuevo en "Ya compré: entrar a mi Ribbly" o abrí el chat de ayuda con el mail de la compra y lo resolvemos.',
         },
         {
           question: 'El regalo no abre o pide una clave',
           answer:
-            'Fijate que el link esté completo (a veces se corta al copiarlo). Si tiene clave, te la tiene que pasar quien te la regaló. Si sigue sin abrir, escribinos por el chat de ayuda con el código de la Boxie.',
+            'Fijate que el link esté completo (a veces se corta al copiarlo). Si tiene clave, te la tiene que pasar quien te la regaló. Si sigue sin abrir, escribinos por el chat de ayuda con el código de tu regalo.',
         },
         {
           question: 'Encontré un error en el sitio',
@@ -171,14 +171,14 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
       title: 'Privacidad',
       items: [
         {
-          question: '¿Quién puede ver mi Boxie?',
+          question: '¿Quién puede ver mi regalo?',
           answer:
             'Solo quien tenga el link del regalo: es único, larguísimo y no se puede adivinar ni buscar. El link para editar es otro, personal, y nunca se comparte con quien la recibe.',
         },
         {
           question: '¿Qué hacen con mis fotos?',
           answer:
-            'Se guardan en un almacenamiento privado y solo se muestran dentro de tu Boxie, con enlaces temporales. No las usamos para nada más. Todo el detalle está en la Política de Privacidad.',
+            'Se guardan en un almacenamiento privado y solo se muestran dentro de tu regalo, con enlaces temporales. No las usamos para nada más. Todo el detalle está en la Política de Privacidad.',
         },
       ],
     },

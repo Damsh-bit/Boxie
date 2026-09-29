@@ -127,7 +127,7 @@ export function InsideBoxie({
       <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading
           dark
-          eyebrow="Adentro de cada Boxie"
+          eyebrow="Adentro de cada Ribbly"
           title={
             <span id="que-trae-title">
               Mucho más que una <Mark>tarjeta</Mark> digital
@@ -140,7 +140,7 @@ export function InsideBoxie({
           <div
             ref={tabList}
             role="tablist"
-            aria-label="Sorpresas de una Boxie"
+            aria-label="Sorpresas de una Ribbly"
             aria-orientation="vertical"
             onKeyDown={onKeyDown}
             className="-mx-5 flex [scrollbar-width:none] gap-2 overflow-x-auto px-5 py-1 [grid-area:tabs] lg:mx-0 lg:flex-col lg:gap-1.5 lg:self-end lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
@@ -289,7 +289,7 @@ export function InsideBoxie({
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
               <Magnetic className="w-full sm:w-auto">
                 <ButtonLink href={exampleHref} size="lg" block className="sm:w-auto">
-                  <Play className="size-4 fill-current" aria-hidden /> Ver una Boxie completa
+                  <Play className="size-4 fill-current" aria-hidden /> Ver una Ribbly completa
                 </ButtonLink>
               </Magnetic>
               <ButtonLink href="/galeria" variant="white" size="lg" block className="sm:w-auto">

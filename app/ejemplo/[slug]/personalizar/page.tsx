@@ -12,8 +12,8 @@ export async function generateMetadata({
   const theme = await getPublishedTheme((await params).slug)
   return theme
     ? {
-        title: `Probá el editor · Boxie ${theme.name}`,
-        description: `Personalizá una Boxie ${theme.name} de prueba: fotos, dedicatoria, música y más, con la vista previa en vivo.`,
+        title: `Probá el editor · Ribbly ${theme.name}`,
+        description: `Personalizá un regalo ${theme.name} de prueba: fotos, dedicatoria, música y más, con la vista previa en vivo.`,
       }
     : {}
 }

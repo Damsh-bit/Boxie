@@ -12,12 +12,12 @@ export const QUICK_REPLIES = [
   {
     id: 'codigo',
     label: 'Pedir el código',
-    text: '¿Me pasás el código de tu Boxie? Está en el mail de la compra (tiene esta forma: K7M2-Q9XD).',
+    text: '¿Me pasás el código de tu regalo? Está en el mail de la compra (tiene esta forma: K7M2-Q9XD).',
   },
   {
     id: 'link',
     label: 'Reenviamos el link',
-    text: 'Listo {nombre}: te reenviamos el link para editar tu Boxie al mail de la compra. Si no lo ves en unos minutos, revisá spam o promociones. El link anterior deja de funcionar.',
+    text: 'Listo {nombre}: te reenviamos el link para editar tu regalo al mail de la compra. Si no lo ves en unos minutos, revisá spam o promociones. El link anterior deja de funcionar.',
   },
   {
     id: 'pago',

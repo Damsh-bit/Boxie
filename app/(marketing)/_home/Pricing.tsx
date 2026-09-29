@@ -107,7 +107,7 @@ export function Pricing({
         </p>
 
         <div className="mx-auto mt-14 grid max-w-5xl items-stretch gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-          <Comparator priceCents={recommended.priceCents} label={`Boxie ${recommended.name}`} />
+          <Comparator priceCents={recommended.priceCents} label={`Ribbly ${recommended.name}`} />
           <div className="flex flex-col gap-4 rounded-[32px] bg-paper/50 p-6 ring-1 ring-black/5 sm:p-8">
             <h3 className="font-display text-2xl font-bold text-ink">¿No sabés cuál elegir?</h3>
             <p className="text-[0.95rem] leading-relaxed text-ink/70">
@@ -159,7 +159,7 @@ export function Pricing({
 
       <div className="mx-auto grid max-w-5xl items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
         <PriceCard
-          title={single ? `Plan ${single.name}` : 'Tu Boxie completa'}
+          title={single ? `Plan ${single.name}` : 'Tu Ribbly completa'}
           tagline={single?.tagline || 'Elegí la temática que más le va: todas traen lo mismo.'}
           priceCents={priceCents}
           compareAtCents={single?.compareAtCents ?? null}
@@ -255,7 +255,7 @@ function PriceCard({
       <div className="relative mt-8 flex flex-col gap-3">
         <Magnetic className="w-full" strength={0.15}>
           <ButtonLink href="/galeria" size="lg" block>
-            <Gift className="size-5" aria-hidden /> Elegir mi Boxie
+            <Gift className="size-5" aria-hidden /> Elegir mi Ribbly
             <Nudge x={4}>
               <ArrowRight className="size-5" aria-hidden />
             </Nudge>
@@ -304,7 +304,7 @@ function CouponTicket({ welcome, className }: { welcome: WelcomeCoupon; classNam
         🎁
       </motion.span>
       <div className="min-w-0 flex-1 leading-tight">
-        <p className="text-sm font-bold text-ink">{welcome.discount} en tu primera Boxie</p>
+        <p className="text-sm font-bold text-ink">{welcome.discount} en tu primera Ribbly</p>
         <p className="text-xs text-ink/60">
           Usá el código <strong className="font-mono text-brand">{welcome.code}</strong> al pagar
         </p>
@@ -338,7 +338,7 @@ function CouponTicket({ welcome, className }: { welcome: WelcomeCoupon; classNam
   )
 }
 
-function Comparator({ priceCents, label = 'Boxie' }: { priceCents: number; label?: string }) {
+function Comparator({ priceCents, label = 'Ribbly' }: { priceCents: number; label?: string }) {
   const { formatPrice } = useCurrency()
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, amount: 0.4 })
@@ -378,7 +378,7 @@ function Comparator({ priceCents, label = 'Boxie' }: { priceCents: number; label
       transition={{ duration: 0.8, ease: ease.out, delay: 0.1 }}
     >
       <h3 className="font-display text-2xl font-bold">¿Cuánto cuesta sorprender?</h3>
-      <p className="mt-1 text-sm text-white/60">Compará una Boxie con otros regalos clásicos.</p>
+      <p className="mt-1 text-sm text-white/60">Compará una Ribbly con otros regalos clásicos.</p>
 
       <div
         role="group"
@@ -458,7 +458,7 @@ function Comparator({ priceCents, label = 'Boxie' }: { priceCents: number; label
       </ul>
 
       <div className="mt-auto pt-8">
-        <p className="text-sm text-white/60">Con una Boxie ahorrás</p>
+        <p className="text-sm text-white/60">Con una Ribbly ahorrás</p>
         <p className="mt-1 flex flex-wrap items-baseline gap-x-3 font-display font-bold">
           <motion.span className="text-5xl text-brand-muted tabular-nums">{savingText}</motion.span>
           <span className="relative inline-flex text-xl text-white/80">

@@ -54,7 +54,7 @@ export function GalleryHeader({
             as="h1"
             className="font-display text-[2.35rem] leading-[1.06] font-bold text-balance text-ink sm:text-5xl lg:text-[3.6rem]"
           >
-            Elegí la Boxie <Mark>perfecta</Mark>
+            Elegí la Ribbly <Mark>perfecta</Mark>
           </StaggerItem>
           <StaggerItem
             as="p"
@@ -148,7 +148,7 @@ function SeasonSpotlight({
         <Link
           href={href}
           className="relative grid size-10 shrink-0 place-items-center rounded-full bg-white text-ink after:absolute after:-inset-[200%] after:content-['']"
-          aria-label={`Ver la Boxie para ${season.name}`}
+          aria-label={`Ver la Ribbly para ${season.name}`}
         >
           <ArrowRight className="size-5" aria-hidden />
         </Link>
@@ -208,7 +208,7 @@ function SeasonSpotlight({
           </div>
           <div className="mt-7 flex flex-wrap gap-2">
             <ButtonLink href={href} variant="white" size="md">
-              Ver la Boxie <span aria-hidden>{theme.emoji}</span>
+              Ver la Ribbly <span aria-hidden>{theme.emoji}</span>
             </ButtonLink>
             <button
               type="button"

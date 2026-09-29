@@ -16,9 +16,9 @@ export default function GiftNotFound() {
         <Link
           href="/"
           className="mt-8 block opacity-80 transition-opacity hover:opacity-100"
-          aria-label="Boxie Digital"
+          aria-label="Ribbly"
         >
-          <Image src="/brand/boxie-logo.png" alt="Boxie" width={103} height={36} />
+          <Image src="/brand/boxie-logo.png" alt="Ribbly" width={103} height={36} />
         </Link>
       </Reveal>
     </div>

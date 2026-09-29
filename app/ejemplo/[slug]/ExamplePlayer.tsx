@@ -41,7 +41,7 @@ export function ExamplePlayer({
           transition={{ ...spring.gentle, delay: 0.6 }}
         >
           <span className="hidden min-w-0 flex-1 truncate text-neutral-600 sm:inline">
-            {recipient ? `Así se vería la Boxie de ${recipient}` : `Boxie ${name} de ejemplo`}
+            {recipient ? `Así se vería el regalo de ${recipient}` : `Regalo ${name} de ejemplo`}
           </span>
           <ButtonLink
             href={`/ejemplo/${slug}/personalizar`}

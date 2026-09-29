@@ -7,11 +7,11 @@
  */
 
 export const site = {
-  name: 'Boxie Digital',
-  shortName: 'Boxie',
+  name: 'Ribbly',
+  shortName: 'Ribbly',
   tagline: 'Conectando emociones y rompiendo distancias. Regalos digitales con alma.',
   location: 'Buenos Aires, Argentina',
-  instagramHandle: '@boxie.app',
+  instagramHandle: '@ribbly.app',
   emails: {
     /** 🎁 Envíos automáticos: entrega de regalos, links de edición, avisos de apertura y cupones anuales */
     gifts: 'regalos@ribbly.com.ar',
@@ -32,7 +32,7 @@ export const site = {
     jobs: 'rrhh@ribbly.com.ar',
   },
   social: {
-    instagram: 'https://instagram.com/boxie.app',
+    instagram: 'https://instagram.com/ribbly.app',
     tiktok: 'https://tiktok.com',
     youtube: 'https://youtube.com',
     facebook: 'https://facebook.com',
@@ -89,7 +89,7 @@ export type HowItWorksIcon = (typeof howItWorks)[number]['icon']
 export type ContactArea = 'ayuda' | 'marketing' | 'comercial' | 'reclamos' | 'rrhh' | 'general'
 
 export const contactAreas: { value: ContactArea; label: string; email: string }[] = [
-  { value: 'ayuda', label: 'Quiero editar mi Boxie / Ayuda', email: site.emails.help },
+  { value: 'ayuda', label: 'Quiero editar mi regalo / Ayuda', email: site.emails.help },
   { value: 'marketing', label: 'Quiero contactarme con Publicidad', email: site.emails.marketing },
   { value: 'comercial', label: 'Área Comercial / Ventas', email: site.emails.marketing },
   { value: 'reclamos', label: 'Reclamos o Problemas Técnicos', email: site.emails.complaints },

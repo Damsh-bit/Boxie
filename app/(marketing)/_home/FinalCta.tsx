@@ -71,7 +71,7 @@ export function FinalCta({ price, editorHref }: { price: string; editorHref: Rou
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
               <Magnetic className="w-full sm:w-auto">
                 <ButtonLink href="/galeria" size="lg" block className="sm:w-auto">
-                  <Gift className="size-5" aria-hidden /> Regalar una Boxie
+                  <Gift className="size-5" aria-hidden /> Regalar una Ribbly
                 </ButtonLink>
               </Magnetic>
               <ButtonLink href={editorHref} variant="white" size="lg" block className="sm:w-auto">
@@ -193,7 +193,7 @@ function GiftBox({ open, bursts, onToggle }: { open: boolean; bursts: number; on
       </motion.button>
 
       <p className="mt-3 text-sm font-semibold text-white/60" aria-hidden>
-        {open ? '¡Así se siente abrir una Boxie! ✨' : 'Tocá la caja 👆'}
+        {open ? '¡Así se siente abrir una Ribbly! ✨' : 'Tocá la caja 👆'}
       </p>
     </div>
   )

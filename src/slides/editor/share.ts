@@ -10,7 +10,7 @@ export function giftShareMessage(p: {
     '',
     'Te preparé un regalo digital interactivo muy especial con nuestras fotos y recuerdos 🎁❤️',
     '',
-    'Tocá el link para abrir tu Boxie desde el celular:',
+    'Tocá el link para abrir tu regalo desde el celular:',
     p.url,
   ]
   if (p.hasPassword) {

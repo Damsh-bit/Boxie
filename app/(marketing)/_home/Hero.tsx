@@ -134,7 +134,7 @@ export function Hero({
   // El nombre viaja a la ficha, al checkout y al editor: no se vuelve a pedir.
   const href =
     `/tematicas/${theme.slug}${short ? `?para=${encodeURIComponent(short)}` : ''}` as Route
-  const cta = short && short.length <= 10 ? `Crear la Boxie de ${short}` : 'Crear su Boxie'
+  const cta = short && short.length <= 10 ? `Crear la Ribbly de ${short}` : 'Crear su Ribbly'
 
   return (
     <section
@@ -217,7 +217,7 @@ export function Hero({
                 className="block font-display text-[3.4rem] leading-[1.05] text-brand min-[380px]:text-[64px] sm:text-7xl md:text-8xl"
                 variants={line}
               >
-                <BouncyWord word="BOXIE" />
+                <BouncyWord word="RIBBLY" />
               </motion.span>
             </span>
             <span className="block overflow-hidden pb-1">
@@ -265,7 +265,7 @@ export function Hero({
             <ThemePicker themes={themes} value={theme.slug} onChange={setSlug} />
 
             <label className="group relative mt-3 block">
-              <span className="sr-only">¿Para quién es la Boxie?</span>
+              <span className="sr-only">¿Para quién es la Ribbly?</span>
               <input
                 type="text"
                 value={name}
@@ -458,8 +458,8 @@ function SoldCount({
         </span>
       )}
       <p className="text-sm font-medium text-ink/70">
-        <b className="font-display text-lg font-bold text-ink">+{count.format(sold)}</b> Boxies
-        regaladas
+        <b className="font-display text-lg font-bold text-ink">+{count.format(sold)}</b> regalos
+        entregados
       </p>
     </motion.div>
   )

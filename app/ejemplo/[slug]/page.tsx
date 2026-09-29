@@ -14,8 +14,8 @@ export async function generateMetadata({
   const theme = await getPublishedTheme((await params).slug)
   return theme
     ? {
-        title: `Boxie ${theme.name} de ejemplo`,
-        description: `Así se ve una Boxie ${theme.name} por dentro.`,
+        title: `Regalo ${theme.name} de ejemplo`,
+        description: `Así se ve un regalo ${theme.name} por dentro.`,
       }
     : {}
 }

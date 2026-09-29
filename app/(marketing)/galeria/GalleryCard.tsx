@@ -223,7 +223,7 @@ export function GalleryCard({
               </ul>
               <div className="mt-5 flex items-center justify-between gap-3 border-t border-black/[0.06] pt-4">
                 <span className="inline-flex items-center gap-1.5 text-sm font-bold text-brand">
-                  Elegir esta Boxie
+                  Elegir esta Ribbly
                   <motion.span
                     className="inline-flex"
                     variants={{ rest: { x: 0 }, hover: { x: 4 } }}

@@ -81,7 +81,7 @@ export function CustomerLoginScreen({ nextUrl = '/cuenta' }: { nextUrl?: string 
           href="/"
           className="inline-flex items-center gap-2 text-xs font-semibold text-neutral-500 transition-colors hover:text-ink"
         >
-          <ArrowLeft className="size-4" /> Volver a Boxie
+          <ArrowLeft className="size-4" /> Volver a Ribbly
         </Link>
       </div>
 
@@ -97,10 +97,10 @@ export function CustomerLoginScreen({ nextUrl = '/cuenta' }: { nextUrl?: string 
             <Gift className="size-8" />
           </div>
           <h1 className="mt-5 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-            Mi Cuenta Boxie
+            Mi Cuenta Ribbly
           </h1>
           <p className="mt-2 text-sm text-neutral-600">
-            Ingresá para ver tus Boxies compradas, editar tu regalo y saber cuándo lo abrieron.
+            Ingresá para ver tus regalos comprados, editarlos y saber cuándo los abrieron.
           </p>
         </div>
 
@@ -194,7 +194,7 @@ export function CustomerLoginScreen({ nextUrl = '/cuenta' }: { nextUrl?: string 
         {/* Nota de pie */}
         <div className="mt-8 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-400">
           <Sparkles className="size-3.5 text-brand" />
-          <span>Acceso seguro para compradores de Boxie</span>
+          <span>Acceso seguro para compradores de Ribbly</span>
         </div>
       </motion.div>
     </div>

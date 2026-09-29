@@ -44,7 +44,7 @@ function benefits(passwordByPlan: boolean): Benefit[] {
     {
       icon: Earth,
       title: 'Regalo a distancia',
-      text: 'Otra ciudad, otro país: la Boxie llega igual. Ideal para amores y amistades a distancia.',
+      text: 'Otra ciudad, otro país: Ribbly llega igual. Ideal para amores y amistades a distancia.',
       wiggle: { rotate: 360, transition: { duration: 0.9, ease: 'easeInOut' } },
     },
     {
@@ -64,7 +64,7 @@ function benefits(passwordByPlan: boolean): Benefit[] {
     {
       icon: Heart,
       title: 'Emociona de verdad',
-      text: 'No es un archivo más: cada Boxie está pensada para despertar sonrisas, lágrimas lindas y ese «ay, qué hermoso».',
+      text: 'No es un archivo más: cada Ribbly está pensada para despertar sonrisas, lágrimas lindas y ese «ay, qué hermoso».',
       wiggle: { scale: [1, 1.3, 1, 1.2, 1] },
       className: 'md:col-span-3 bg-ink text-white',
       decoration: '/brand/decoration-2.png',
@@ -72,7 +72,7 @@ function benefits(passwordByPlan: boolean): Benefit[] {
   ]
 }
 
-/** Por qué una Boxie: grilla tipo bento. Cada ícono tiene su gesto propio al pasar el mouse. */
+/** Por qué una Ribbly: grilla tipo bento. Cada ícono tiene su gesto propio al pasar el mouse. */
 export function WhyBoxie({ passwordByPlan = false }: { passwordByPlan?: boolean }) {
   return (
     <section
@@ -84,7 +84,7 @@ export function WhyBoxie({ passwordByPlan = false }: { passwordByPlan?: boolean 
         eyebrow="Regalá diferente, regalá con intención"
         title={
           <span id="por-que-title">
-            Por qué una Boxie es el <Mark>regalo perfecto</Mark>
+            Por qué una Ribbly es el <Mark>regalo perfecto</Mark>
           </span>
         }
         text="Un regalo personalizado que no depende del correo, del stock ni de la distancia. Y que queda en su memoria (y en su celular)."

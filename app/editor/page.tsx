@@ -12,7 +12,7 @@ import { LiveEditor } from './LiveEditor'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Editor de tu Boxie',
+  title: 'Editor de tu Ribbly',
   robots: { index: false, follow: false },
 }
 

@@ -28,7 +28,7 @@ import { Faq } from './ayuda/Faq'
 
 export const dynamic = 'force-dynamic'
 
-const TITLE = 'Boxie · Regalo digital personalizado con fotos, música y juegos'
+const TITLE = 'Ribbly · Regalo digital personalizado con fotos, música y juegos'
 
 /** "desde $ 3.490" si hay planes; si no, el precio. */
 function priceText(sf: Storefront) {
@@ -68,7 +68,7 @@ function occasionsOf(themes: Storefront['themes']): Occasion[] {
 
 export async function generateMetadata(): Promise<Metadata> {
   const sf = await getStorefront()
-  const description = `Regalá una Boxie: un regalo digital personalizado con fotos, dedicatoria, su canción y juegos, que se abre desde el celular. Ideal para aniversarios, cumpleaños y regalos a distancia. Llega al instante por WhatsApp, desde ${formatARS(sf.priceFromCents)}.`
+  const description = `Regalá una Ribbly: un regalo digital personalizado con fotos, dedicatoria, su canción y juegos, que se abre desde el celular. Ideal para aniversarios, cumpleaños y regalos a distancia. Llega al instante por WhatsApp, desde ${formatARS(sf.priceFromCents)}.`
   return {
     title: { absolute: TITLE },
     description,
@@ -91,7 +91,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: '/',
       type: 'website',
       images: sf.themes[0]
-        ? [{ url: sf.themes[0].listing.images[0]!, alt: 'Una Boxie de regalo' }]
+        ? [{ url: sf.themes[0].listing.images[0]!, alt: 'Un regalo de Ribbly' }]
         : [],
     },
     twitter: { card: 'summary_large_image', title: TITLE, description },
@@ -135,7 +135,7 @@ function structuredData(sf: Storefront, faqs: FaqItem[]) {
       },
       {
         '@type': 'Product',
-        name: 'Boxie · Regalo digital personalizado',
+        name: 'Ribbly · Regalo digital personalizado',
         description:
           'Experiencia digital personalizada con fotos, dedicatoria, música y juegos, que se regala con un link y se abre desde el celular.',
         brand: { '@type': 'Brand', name: site.shortName },
@@ -245,7 +245,7 @@ export default async function HomePage() {
       />
       <WhyBoxie passwordByPlan={sf.plans.some((p) => !p.allowPassword)} />
 
-      <section aria-label="Aliados de Boxie" className="px-4 pb-16 sm:px-8 sm:pb-20">
+      <section aria-label="Aliados de Ribbly" className="px-4 pb-16 sm:px-8 sm:pb-20">
         <Reveal>
           <SponsorBand sponsor={sponsorFor(sponsors, 'home')} />
         </Reveal>
@@ -266,7 +266,7 @@ export default async function HomePage() {
                   Todo sobre tu <Mark>regalo digital</Mark>
                 </span>
               }
-              text="Lo que más nos preguntan antes de regalar una Boxie."
+              text="Lo que más nos preguntan antes de regalar una Ribbly."
               className="lg:mb-8"
             />
             <LiftLink

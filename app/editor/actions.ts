@@ -60,6 +60,6 @@ export async function lockBoxieAction(): Promise<LockResult> {
     return await lockForGifting(s)
   } catch (error) {
     log.error('No se pudo bloquear la Boxie', error, { boxieId: s.boxieId })
-    return { ok: false, error: 'No pudimos bloquear la Boxie. Probá de nuevo en un rato.' }
+    return { ok: false, error: 'No pudimos bloquear el regalo. Probá de nuevo en un rato.' }
   }
 }

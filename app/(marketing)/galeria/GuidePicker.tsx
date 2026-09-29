@@ -51,7 +51,7 @@ export function GuidePicker({
         eyebrow="¿Dudás entre dos?"
         title={
           <span id="elegir-title">
-            Cada momento tiene <Mark>su Boxie</Mark>
+            Cada momento tiene <Mark>su Ribbly</Mark>
           </span>
         }
         text="Contanos qué querés festejar y te mostramos la que mejor le va."
@@ -113,7 +113,7 @@ export function GuidePicker({
                       selected ? 'text-white/60' : 'text-ink/50',
                     )}
                   >
-                    Boxie {t.name}
+                    Ribbly {t.name}
                   </span>
                 </span>
                 {selected && (

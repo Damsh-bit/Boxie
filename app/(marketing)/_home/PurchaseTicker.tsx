@@ -107,7 +107,7 @@ export function PurchaseTicker({
             <span className="flex items-baseline gap-2 text-[13px] text-ink sm:text-sm">
               <span className="truncate">
                 <b className="font-bold">{event.name}</b> {fresh ? 'acaba de comprar' : 'compró'}{' '}
-                una Boxie <span aria-hidden>{theme?.emoji ?? '🎁'}</span>
+                una Ribbly <span aria-hidden>{theme?.emoji ?? '🎁'}</span>
               </span>
               {!fresh && (
                 <span className="shrink-0 text-[11px] font-medium text-ink/45">

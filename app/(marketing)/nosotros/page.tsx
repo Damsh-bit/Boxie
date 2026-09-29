@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Nosotros',
   description:
-    'Boxie nació para abrazar a la distancia. Somos Agustín, Santiago y Damián: hacemos regalos digitales con fotos, música y recuerdos que llegan al instante.',
+    'Ribbly nació para abrazar a la distancia. Somos Agustín, Santiago y Damián: hacemos regalos digitales con fotos, música y recuerdos que llegan al instante.',
   alternates: { canonical: '/nosotros' },
 }
 
@@ -30,10 +30,10 @@ export default async function AboutPage() {
   // Los números salen del catálogo y de las ventas: no hay nada inventado.
   const stats = [
     { value: sf.themes.length, label: 'temáticas para elegir' },
-    { value: sf.maxScreens, label: 'sorpresas en una sola Boxie' },
+    { value: sf.maxScreens, label: 'sorpresas en una sola Ribbly' },
     { value: sf.lifetimeDays.max, label: 'días online para abrirla las veces que quiera' },
     proof.sold
-      ? { value: proof.sold, prefix: '+', label: 'Boxies regaladas' }
+      ? { value: proof.sold, prefix: '+', label: 'regalos entregados' }
       : { value: founders.length, label: 'fundadores que te responden en el chat' },
   ].filter((s) => s.value > 0)
 
@@ -41,7 +41,7 @@ export default async function AboutPage() {
     <div className="overflow-x-clip bg-white">
       <AboutHero />
 
-      <section aria-label="Boxie en números" className="px-4 sm:px-8">
+      <section aria-label="Ribbly en números" className="px-4 sm:px-8">
         <Stagger
           className="mx-auto grid max-w-5xl grid-cols-2 gap-px overflow-hidden rounded-[32px] bg-black/[0.06] shadow-[0_24px_60px_-35px_rgba(42,36,51,0.35)] ring-1 ring-black/[0.06] lg:grid-cols-4"
           step={0.08}
@@ -93,7 +93,7 @@ export default async function AboutPage() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <ButtonLink href="/galeria" variant="white" size="lg">
-                <Gift className="size-5 text-brand" aria-hidden /> Crear mi Boxie
+                <Gift className="size-5 text-brand" aria-hidden /> Crear mi Ribbly
               </ButtonLink>
               <ButtonLink
                 href={`/ejemplo/${sample}/personalizar` as Route}

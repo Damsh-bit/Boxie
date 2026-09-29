@@ -21,16 +21,16 @@ async function gift(token: string): Promise<Gift | null> {
 export async function generateMetadata({ params }: PageProps<'/g/[token]'>): Promise<Metadata> {
   const found = await gift((await params).token)
   const robots = { index: false, follow: false }
-  if (!found || found.availability !== 'available') return { title: 'Boxie Digital', robots }
+  if (!found || found.availability !== 'available') return { title: 'Ribbly', robots }
   const title = `${found.recipientName ? `${found.recipientName}, tenés` : 'Tenés'} un regalo 🎁`
   const description = found.senderName
-    ? `${found.senderName} te preparó una Boxie. Abrila desde el celular.`
-    : 'Te prepararon una Boxie. Abrila desde el celular.'
+    ? `${found.senderName} te preparó un regalo en Ribbly. Abrilo desde el celular.`
+    : 'Te prepararon un regalo en Ribbly. Abrilo desde el celular.'
   return {
     title: { absolute: title },
     description,
     robots,
-    openGraph: { title, description, type: 'website', siteName: 'Boxie Digital' },
+    openGraph: { title, description, type: 'website', siteName: 'Ribbly' },
   }
 }
 
@@ -71,7 +71,7 @@ function GiftMessage({ gift }: { gift: Gift }) {
     expired: {
       emoji: '⌛',
       title: 'Este regalo ya no está disponible',
-      text: `Las Boxies se pueden abrir durante un tiempo limitado, y este plazo terminó el ${formatLongDate(gift.expiresAt)}.`,
+      text: `Los regalos se pueden abrir durante un tiempo limitado, y este plazo terminó el ${formatLongDate(gift.expiresAt)}.`,
     },
     refunded: {
       emoji: '📭',
@@ -89,9 +89,9 @@ function GiftMessage({ gift }: { gift: Gift }) {
         <Link
           href="/"
           className="mt-8 block opacity-80 transition-opacity hover:opacity-100"
-          aria-label="Boxie Digital"
+          aria-label="Ribbly"
         >
-          <Image src="/brand/boxie-logo.png" alt="Boxie" width={103} height={36} />
+          <Image src="/brand/boxie-logo.png" alt="Ribbly" width={103} height={36} />
         </Link>
       </Reveal>
     </div>

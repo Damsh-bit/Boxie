@@ -36,11 +36,11 @@ export const founders: Founder[] = [
     focus: 'Estrategia y alianzas',
     color: '#F44E63',
     photo: null,
-    bio: 'Pone el rumbo y las ganas. Se pasa el día pensando cómo hacer que un regalo digital se sienta tan real como uno que se abre con las manos, y en quién más tendría que conocer Boxie.',
+    bio: 'Pone el rumbo y las ganas. Se pasa el día pensando cómo hacer que un regalo digital se sienta tan real como uno que se abre con las manos, y en quién más tendría que conocer Ribbly.',
     quote: 'Un buen regalo no se mide en precio: se mide en cuánto tiempo lo seguís recordando.',
     facts: [
-      { label: 'Su Boxie favorita', value: 'Pareja 💘' },
-      { label: 'Si no fuera Boxie', value: 'Armando viajes para amigos' },
+      { label: 'Su Ribbly favorita', value: 'Pareja 💘' },
+      { label: 'Si no fuera Ribbly', value: 'Armando viajes para amigos' },
       { label: 'Nunca le falta', value: 'Una playlist para cada ocasión' },
     ],
   },
@@ -52,10 +52,10 @@ export const founders: Founder[] = [
     focus: 'Producto y experiencia',
     color: '#C893D7',
     photo: null,
-    bio: 'Obsesionado con los detalles: que el sobre se abra justo, que la canción arranque en el momento indicado y que armar una Boxie desde el celular no lleve más de diez minutos.',
+    bio: 'Obsesionado con los detalles: que el sobre se abra justo, que la canción arranque en el momento indicado y que armar una Ribbly desde el celular no lleve más de diez minutos.',
     quote: 'Si hay que explicarlo, todavía no está terminado.',
     facts: [
-      { label: 'Su Boxie favorita', value: 'Cumpleaños 🎂' },
+      { label: 'Su Ribbly favorita', value: 'Cumpleaños 🎂' },
       { label: 'Superpoder', value: 'Probar todo desde el celular' },
       { label: 'Nunca le falta', value: 'El mate al lado del teclado' },
     ],
@@ -69,9 +69,9 @@ export const founders: Founder[] = [
     color: '#73CFEE',
     photo: null,
     bio: 'Construye lo que no se ve: el editor, los pagos y que cada link llegue y funcione en cualquier celular del mundo, a cualquier hora. Si algo falla, es el primero en enterarse.',
-    quote: 'Lo más lindo de hacer Boxie es leer las reacciones cuando la abren.',
+    quote: 'Lo más lindo de hacer Ribbly es leer las reacciones cuando la abren.',
     facts: [
-      { label: 'Su Boxie favorita', value: 'Amistad 🤝' },
+      { label: 'Su Ribbly favorita', value: 'Amistad 🤝' },
       { label: 'Superpoder', value: 'Arreglar cosas a las 3 AM' },
       { label: 'Nunca le falta', value: 'Café, mucho café' },
     ],
@@ -95,9 +95,9 @@ export const chapters = [
     text: 'Armamos a mano una página con fotos de toda la vida, su canción y un mensaje de cada uno. Se la mandamos por WhatsApp y a los cinco minutos llegó la respuesta: un audio que todavía guardamos.',
   },
   {
-    id: 'boxie',
+    id: 'ribbly',
     emoji: '📦',
-    kicker: 'Nace Boxie',
+    kicker: 'Nace Ribbly',
     title: 'Todos tenemos a alguien a quien abrazar',
     text: 'Nos dimos cuenta de que todos tenemos a alguien lejos, o a alguien cerca a quien no le decimos lo suficiente. Le pusimos nombre, diseñamos las primeras temáticas y empezamos a regalarlas a amigos y familia.',
   },
@@ -114,7 +114,7 @@ export const chapters = [
 export const principles = [
   {
     title: 'Un regalo tiene que tener alma.',
-    text: 'Nada de plantillas frías: cada Boxie se arma con fotos, palabras y canciones que solo ustedes entienden.',
+    text: 'Nada de plantillas frías: cada Ribbly se arma con fotos, palabras y canciones que solo ustedes entienden.',
   },
   {
     title: 'La distancia no es excusa.',

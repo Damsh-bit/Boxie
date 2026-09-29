@@ -4,8 +4,8 @@ import { getCustomerSession } from '@/server/customer/session'
 import { CustomerLoginScreen } from './CustomerLoginScreen'
 
 export const metadata: Metadata = {
-  title: 'Iniciar Sesión · Mi Cuenta Boxie',
-  description: 'Ingresá a tu cuenta de Boxie para ver tus regalos comprados y métricas.',
+  title: 'Iniciar Sesión · Mi Cuenta Ribbly',
+  description: 'Ingresá a tu cuenta de Ribbly para ver tus regalos comprados y métricas.',
 }
 
 export default async function CustomerLoginPage(props: {

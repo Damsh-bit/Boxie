@@ -51,7 +51,7 @@ export function BrandsHero() {
             as="span"
             className="mb-5 inline-flex items-center gap-2 rounded-full bg-brand/10 px-3.5 py-1.5 text-[0.7rem] font-extrabold tracking-[0.18em] text-brand uppercase"
           >
-            Boxie para marcas
+            Ribbly para marcas
           </StaggerItem>
           <StaggerItem
             as="h1"
@@ -63,8 +63,8 @@ export function BrandsHero() {
             as="p"
             className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-pretty text-ink/70 sm:text-xl lg:mx-0"
           >
-            Boxie es un regalo digital que se adapta a cualquier rubro. Con tu café, tu ramo o tu
-            entrada, la gente arma una Boxie y se la manda a quien quiere. Tu marca viaja con el
+            Ribbly es un regalo digital que se adapta a cualquier rubro. Con tu café, tu ramo o tu
+            entrada, la gente arma una Ribbly y se la manda a quien quiere. Tu marca viaja con el
             regalo.
           </StaggerItem>
           <StaggerItem className="mt-7 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
@@ -158,7 +158,7 @@ function Mockup({ industry }: { industry: Industry }) {
         transition={{ ...spring.gentle, delay: 0.3 }}
       >
         <Float distance={8} duration={7}>
-          <PhoneFrame label={`Ejemplo de Boxie de ${industry.brand}`}>
+          <PhoneFrame label={`Ejemplo de Ribbly de ${industry.brand}`}>
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.div
                 key={industry.id}
@@ -203,7 +203,7 @@ function Mockup({ industry }: { industry: Industry }) {
                   ))}
                 </ul>
                 <span className="mt-4 rounded-full bg-white py-2.5 text-center text-sm font-bold text-ink">
-                  Abrir mi Boxie ✨
+                  Abrir mi Ribbly ✨
                 </span>
               </motion.div>
             </AnimatePresence>

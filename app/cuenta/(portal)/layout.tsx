@@ -17,7 +17,7 @@ export default async function CustomerPortalLayout({ children }: { children: Rea
                 <Gift className="size-5" />
               </div>
               <span className="font-display text-lg font-bold tracking-tight text-ink">
-                Boxie{' '}
+                Ribbly{' '}
                 <span className="text-xs font-semibold tracking-wider text-brand uppercase">
                   Cliente
                 </span>
@@ -29,7 +29,7 @@ export default async function CustomerPortalLayout({ children }: { children: Rea
                 href="/cuenta"
                 className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold text-ink transition-colors hover:bg-neutral-100"
               >
-                <Gift className="size-4 text-brand" /> Mis Boxies
+                <Gift className="size-4 text-brand" /> Mis Regalos
               </Link>
               <Link
                 href="/cuenta/pedidos"

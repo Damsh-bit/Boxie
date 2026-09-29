@@ -31,7 +31,7 @@ export const industries: Industry[] = [
     label: 'Cafeterías',
     color: '#8B5E3C',
     brand: 'Café de la Esquina',
-    campaign: 'Con tu café, una Boxie para regalarle a quien quieras',
+    campaign: 'Con tu café, una Ribbly para regalarle a quien quieras',
     modules: ['Cuponera con un 2x1', 'Trivia del barrio', 'Su canción del día'],
     channel: 'QR en el vaso para llevar',
   },
@@ -41,7 +41,7 @@ export const industries: Industry[] = [
     label: 'Florerías',
     color: '#C2185B',
     brand: 'Flores del Jardín',
-    campaign: 'Con cada ramo, la dedicatoria llega en una Boxie',
+    campaign: 'Con cada ramo, la dedicatoria llega en una Ribbly',
     modules: ['Carta que se abre como sobre', 'Fotos del ramo', 'Galleta de la fortuna'],
     channel: 'Tarjeta con QR dentro del ramo',
   },
@@ -51,7 +51,7 @@ export const industries: Industry[] = [
     label: 'Gaming',
     color: '#2A78D6',
     brand: 'Level Up Bar',
-    campaign: 'El cumple en el bar de juegos, con su Boxie gamer',
+    campaign: 'El cumple en el bar de juegos, con su Ribbly gamer',
     modules: ['Trivia gamer', 'Tragamonedas con premios del local', 'Pantalla de juego'],
     channel: 'Pantallas del local y reservas',
   },
@@ -71,7 +71,7 @@ export const industries: Industry[] = [
     label: 'Eventos',
     color: '#EDA100',
     brand: 'Salón Aurora',
-    campaign: 'Casamientos, 15 y egresos: los saludos de todos en una Boxie',
+    campaign: 'Casamientos, 15 y egresos: los saludos de todos en una Ribbly',
     modules: ['Saludos de todos', 'Fotos del evento', 'Playlist de la fiesta'],
     channel: 'QR en las mesas',
   },
@@ -81,7 +81,7 @@ export const industries: Industry[] = [
     label: 'Moda y tiendas',
     color: '#7A4FC4',
     brand: 'Tienda Lila',
-    campaign: 'Con tu compra, una Boxie con descuento para quien elijas',
+    campaign: 'Con tu compra, una Ribbly con descuento para quien elijas',
     modules: ['Cupón para la próxima compra', 'Tapa de revista', 'Repaso final'],
     channel: 'En el ticket o el mail de compra',
   },
@@ -92,14 +92,14 @@ export const partnershipFormats = [
   {
     id: 'sponsor',
     emoji: '🌐',
-    title: 'Sponsor en Boxie',
+    title: 'Sponsor en Ribbly',
     text: 'Tu marca en el sitio (la portada, la galería y precios) con tu propuesta, tu cupón y tu link.',
     ideal: 'Comercios que abren o quieren llegar a más gente de su ciudad.',
   },
   {
     id: 'cobranding',
     emoji: '🎁',
-    title: 'Una Boxie con tu marca',
+    title: 'Una Ribbly con tu marca',
     text: 'Una temática con tus colores, tu logo y módulos pensados para tu rubro: una trivia de tu local, una cuponera con tus promos.',
     ideal: 'Marcas con comunidad que quieren un regalo propio.',
   },
@@ -107,19 +107,19 @@ export const partnershipFormats = [
     id: 'campana',
     emoji: '📅',
     title: 'Campañas y fechas',
-    text: 'Día de la Madre, San Valentín o un lanzamiento: un QR o un cupón que regala Boxies con tu producto, con resultados medidos.',
+    text: 'Día de la Madre, San Valentín o un lanzamiento: un QR o un cupón que regala Ribbly con tu producto, con resultados medidos.',
     ideal: 'Picos de venta y fechas fuertes.',
   },
   {
     id: 'corporativo',
     emoji: '💼',
     title: 'Regalos corporativos',
-    text: 'Boxies para tu equipo o tus clientes: fin de año, aniversarios, bienvenidas. Un regalo que no termina en un cajón.',
+    text: 'Ribbly para tu equipo o tus clientes: fin de año, aniversarios, bienvenidas. Un regalo que no termina en un cajón.',
     ideal: 'Empresas y equipos de cualquier tamaño.',
   },
 ] as const
 
-/** Cómo es trabajar con Boxie, de la primera charla a los resultados. */
+/** Cómo es trabajar con Ribbly, de la primera charla a los resultados. */
 export const partnershipSteps = [
   {
     title: 'Charlamos',
@@ -131,22 +131,22 @@ export const partnershipSteps = [
   },
   {
     title: 'Sale a la calle',
-    text: 'QR en tu local, un cupón, tu banner en Boxie: la gente arma su regalo y lo manda por WhatsApp.',
+    text: 'QR en tu local, un cupón, tu banner en Ribbly: la gente arma su regalo y lo manda por WhatsApp.',
   },
   {
     title: 'Medimos juntos',
-    text: 'Visitas, Boxies creadas y cupones usados, con links propios de tu campaña.',
+    text: 'Visitas, regalos creados y cupones usados, con links propios de tu campaña.',
   },
 ]
 
 /** La invitación que ocupa un espacio de sponsor mientras no hay un aliado activo ahí. */
 export const houseAd = {
-  eyebrow: 'Boxie para marcas',
+  eyebrow: 'Ribbly para marcas',
   title: '¿Tenés un café, una florería o una marca?',
-  text: 'Regalá Boxies con tus productos y llegá a las personas que más quieren a tus clientes.',
+  text: 'Regalá Ribbly con tus productos y llegá a las personas que más quieren a tus clientes.',
   cta: 'Sumate como aliado',
   band: {
     title: 'Tu marca, dentro de un regalo que emociona',
-    text: 'Cafeterías, florerías, bares, cines y eventos ya pueden tener su Boxie: con tu logo, tus módulos y una campaña que se regala sola.',
+    text: 'Cafeterías, florerías, bares, cines y eventos ya pueden tener su Ribbly: con tu logo, tus módulos y una campaña que se regala sola.',
   },
 }

@@ -44,8 +44,8 @@ export function AboutHero() {
             as="p"
             className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-pretty text-ink/70 sm:text-xl lg:mx-0"
           >
-            Boxie nació de una pregunta simple: ¿cómo abrazar a alguien que está lejos? Somos tres
-            amigos de Buenos Aires armando la respuesta, una Boxie a la vez.
+            Ribbly nació de una pregunta simple: ¿cómo abrazar a alguien que está lejos? Somos tres
+            amigos de Buenos Aires armando la respuesta, una Ribbly a la vez.
           </StaggerItem>
           <StaggerItem className="mt-7 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
             <ButtonLink href="#equipo" variant="dark" size="lg">
@@ -80,7 +80,7 @@ export function AboutHero() {
                 .join(', ')
                 .replace(/, ([^,]*)$/, ' y $1')}
               <br />
-              <span className="text-ink/45">Fundadores de Boxie</span>
+              <span className="text-ink/45">Fundadores de Ribbly</span>
             </p>
           </StaggerItem>
         </Stagger>
@@ -138,7 +138,7 @@ function BoardingPass() {
       <div
         className="relative overflow-hidden rounded-[32px] bg-ink text-white shadow-[0_50px_90px_-35px_rgba(42,36,51,0.7)]"
         role="img"
-        aria-label={`Una Boxie viaja de ${from.city} a ${to.city}: ${boardingPass.distance} y llega al instante.`}
+        aria-label={`Un regalo viaja de ${from.city} a ${to.city}: ${boardingPass.distance} y llega al instante.`}
       >
         <div
           aria-hidden
@@ -154,7 +154,7 @@ function BoardingPass() {
           <div className="flex items-center justify-between text-[0.65rem] font-extrabold tracking-[0.2em] text-white/50 uppercase">
             <span>Pase de abordar</span>
             <span className="flex items-center gap-1.5 text-brand-muted">
-              <Heart className="size-3 fill-current" aria-hidden /> Boxie
+              <Heart className="size-3 fill-current" aria-hidden /> Ribbly
             </span>
           </div>
 

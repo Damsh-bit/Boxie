@@ -33,7 +33,7 @@ export function Reaction({
 }) {
   const byPlan = lifetimeDays.min !== lifetimeDays.max
   const stats = [
-    { value: maxScreens, label: 'sorpresas en una Boxie completa' },
+    { value: maxScreens, label: 'sorpresas en una Ribbly completa' },
     {
       value: lifetimeDays.max,
       label: byPlan
@@ -60,7 +60,7 @@ export function Reaction({
                 Lo mejor es <Mark>su reacción</Mark>
               </span>
             }
-            text="Le mandás el link por WhatsApp y la Boxie hace el resto: se abre como un regalo, suena su canción y empiezan las sorpresas. Un regalo a distancia que se siente cerca."
+            text="Le mandás el link por WhatsApp y Ribbly hace el resto: se abre como un regalo, suena su canción y empiezan las sorpresas. Un regalo a distancia que se siente cerca."
             className="lg:mb-10"
           />
           <Stagger className="grid grid-cols-2 gap-3 sm:gap-4" step={0.1}>
@@ -181,7 +181,7 @@ function ChatDemo() {
 
         <div
           className="flex h-[430px] flex-col justify-end gap-2 overflow-hidden bg-[radial-gradient(rgba(42,36,51,0.06)_1px,transparent_1px)] [background-size:14px_14px] px-3 py-4"
-          aria-label="Ejemplo de conversación al recibir una Boxie"
+          aria-label="Ejemplo de conversación al recibir una Ribbly"
           role="log"
         >
           <AnimatePresence initial={false}>
@@ -289,11 +289,11 @@ function LinkPreview() {
         </span>
         <span className="block p-2">
           <span className="block text-xs font-bold">Un regalo especial para vos 🎁</span>
-          <span className="block text-[0.65rem] text-ink/50">boxiedigital.com.ar</span>
+          <span className="block text-[0.65rem] text-ink/50">ribbly.com.ar</span>
         </span>
       </span>
       <span className="mt-1 block text-[0.72rem] text-sky-700 underline">
-        boxiedigital.com.ar/g/sofi…
+        ribbly.com.ar/g/sofi…
       </span>
     </span>
   )

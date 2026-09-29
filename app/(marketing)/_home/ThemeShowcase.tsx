@@ -83,7 +83,7 @@ export function ThemeShowcase({
               ¿A quién querés <Mark>emocionar</Mark> hoy?
             </span>
           }
-          text={`Elegí la ocasión y te mostramos la Boxie ideal. Cada temática trae hasta ${maxScreens} sorpresas listas para personalizar con tus fotos y tus palabras.`}
+          text={`Elegí la ocasión y te mostramos la Ribbly ideal. Cada temática trae hasta ${maxScreens} sorpresas listas para personalizar con tus fotos y tus palabras.`}
           className="mb-8 sm:mb-10"
         />
       </div>
@@ -307,7 +307,7 @@ function ThemeTile({
     >
       <MotionLink
         href={`/tematicas/${theme.slug}` as Route}
-        aria-label={`Boxie de ${theme.name}: ${theme.priceLabel}`}
+        aria-label={`Ribbly de ${theme.name}: ${theme.priceLabel}`}
         className="group relative flex w-[min(292px,calc(100vw-3.5rem))] flex-col overflow-hidden rounded-[28px] border-2 shadow-[0_10px_30px_rgba(42,36,51,0.12)] transition-shadow duration-300 hover:shadow-[0_32px_70px_rgba(42,36,51,0.25)] sm:w-[312px]"
         style={{ backgroundColor: theme.color, borderColor: theme.color, ...tilt.style }}
         {...tilt.handlers}
@@ -411,7 +411,7 @@ function ThemeTile({
               light ? 'bg-white text-brand' : 'bg-ink text-white',
             )}
           >
-            Elegir esta Boxie
+            Elegir esta Ribbly
             <Nudge x={4}>
               <ArrowRight className="size-4" aria-hidden />
             </Nudge>

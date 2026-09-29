@@ -63,8 +63,8 @@ export function LoginScreen({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: ease.out }}
         >
-          <Link href="/" className="mb-10 inline-block lg:hidden" aria-label="Boxie">
-            <Image src="/brand/boxie-logo.png" alt="Boxie" width={110} height={38} priority />
+          <Link href="/" className="mb-10 inline-block lg:hidden" aria-label="Ribbly">
+            <Image src="/brand/boxie-logo.png" alt="Ribbly" width={110} height={38} priority />
           </Link>
 
           {state.requires2FA ? (
@@ -180,7 +180,7 @@ export function LoginScreen({
                     autoComplete="username"
                     required
                     defaultValue={state.email}
-                    placeholder="vos@boxiedigital.com.ar"
+                    placeholder="vos@ribbly.com.ar"
                     aria-invalid={state.error ? true : undefined}
                   />
                 </Field>
@@ -316,10 +316,10 @@ function BrandPanel() {
         transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
       />
       <div className="relative flex h-full flex-col justify-between p-12 text-white xl:p-16">
-        <Link href="/" aria-label="Boxie" className="w-fit">
+        <Link href="/" aria-label="Ribbly" className="w-fit">
           <Image
             src="/brand/boxie-logo.png"
-            alt="Boxie"
+            alt="Ribbly"
             width={130}
             height={45}
             priority

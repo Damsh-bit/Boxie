@@ -101,13 +101,13 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
       - Indicador visual dinámico de longitud mínima de caracteres en tiempo real.
     - [x] **Exigencia de contraseñas de mínimo 12 caracteres:** aplicada de forma global tanto en invitaciones (`invite.ts`), creación por consola (`create-admin.mjs`) y cambio de clave (`actions.ts`).
 
-- [ ] **P1.5 · Configurar envío de Mails en Producción (Resend)**
-  - **Dónde:** Vercel y Proveedor DNS del dominio.
+- [x] **P1.5 · Configurar envío de Mails en Producción (Resend) [COMPLETADO / VERIFICADO]**
+  - **Dónde:** Resend, Vercel y `.env.local`.
   - **Acción:**
     - [x] `RESEND_API_KEY` configurada en `.env.local` y Vercel.
-    - [x] Verificado dominio temporal de envío: `cabrown.com.ar` (remitente activo: `MAIL_FROM="Boxie <hola@cabrown.com.ar>"`).
-    - [ ] Configurar en el DNS de `boxiedigital.com.ar` los registros **SPF, DKIM y DMARC** (`p=quarantine`) para poder enviar desde `@boxiedigital.com.ar`.
-    - [ ] Validar `MAIL_FROM` definitivo a `Boxie <hola@boxiedigital.com.ar>` y `MAIL_REPLY_TO`.
+    - [x] Dominio de envío oficial verificado: `boxiedigital.com.ar` configurado con registros DNS (SPF, DKIM, DMARC).
+    - [x] Remitente definitivo validado: `MAIL_FROM="Boxie <hola@boxiedigital.com.ar>"` y `MAIL_REPLY_TO="ayuda@boxiedigital.com.ar"`.
+    - [x] **Prueba de entrega en vivo realizada:** Envío exitoso ejecutado contra la API de Resend hacia `zaxloro02@gmail.com` (Mensaje ID: `01a0ed39-6a12-7759-b22f-510cbe7c4109`).
 
 - [ ] **P1.6 · Limpiar datos de muestra y regenerar cupones comerciales**
   - **Dónde:** Base de datos de producción (Supabase).

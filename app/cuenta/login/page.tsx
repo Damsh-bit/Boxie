@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Route } from 'next'
 import { redirect } from 'next/navigation'
 import { getCustomerSession } from '@/server/customer/session'
 import { CustomerLoginScreen } from './CustomerLoginScreen'
@@ -16,7 +16,7 @@ export default async function CustomerLoginPage(props: {
   const next = typeof searchParams.next === 'string' ? searchParams.next : '/cuenta'
 
   if (session) {
-    redirect(next)
+    redirect((next.startsWith('/') ? next : '/cuenta') as Route)
   }
 
   return <CustomerLoginScreen nextUrl={next} />

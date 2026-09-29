@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import Link from 'next/link'
+import type { Route } from 'next'
 import { useState } from 'react'
 import type { CustomerPortalData } from '@/server/customer/data'
 import { Button } from '@/ui/Button'
@@ -205,7 +206,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
                     </Button>
                   )}
 
-                  <Link href={`/cuenta/boxies/${boxie.id}`}>
+                  <Link href={`/cuenta/boxies/${boxie.id}` as Route}>
                     <Button size="sm" variant="ghost" className="gap-1.5 text-xs text-neutral-600">
                       Ver detalles <ExternalLink className="size-3.5" />
                     </Button>

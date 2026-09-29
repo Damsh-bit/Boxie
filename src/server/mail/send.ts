@@ -38,9 +38,8 @@ function normalizeFrom(raw: string): string {
     .trim()
   if (clean.includes('<') && clean.includes('>')) return clean
   const match = clean.match(/^(.*?)\s+([^\s@]+@[^\s@]+\.[^\s@]+)$/)
-  if (match) {
-    const [, name, email] = match
-    return `${name.trim()} <${email.trim()}>`
+  if (match && match[1] && match[2]) {
+    return `${match[1].trim()} <${match[2].trim()}>`
   }
   return clean
 }

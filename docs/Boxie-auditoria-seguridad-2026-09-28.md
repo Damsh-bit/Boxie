@@ -26,12 +26,12 @@ la única cuenta dueña del panel de producción usa las credenciales de demo, q
 GitHub. Además faltan piezas que bloquean salir a vender: webhook de Mercado Pago, sesiones del panel
 que se puedan revocar, backups, mails y monitoreo.
 
-| Prioridad | Cuándo | Tareas |
-| --- | --- | --- |
-| **P0** | **Hoy** | 4 |
-| **P1** | Antes de abrir la venta | 11 |
-| **P2** | Primeras semanas | 10 |
-| **P3** | Cumplimiento y operación | 4 |
+| Prioridad | Cuándo                   | Tareas |
+| --------- | ------------------------ | ------ |
+| **P0**    | **Hoy**                  | 4      |
+| **P1**    | Antes de abrir la venta  | 11     |
+| **P2**    | Primeras semanas         | 10     |
+| **P3**    | Cumplimiento y operación | 4      |
 
 ---
 
@@ -61,7 +61,7 @@ que se puedan revocar, backups, mails y monitoreo.
 
 ### [ ] P0-2 · Usuarios del seed en Supabase Auth con claves públicas
 
-- **Qué pasa:** en *Authentication → Users* hay 6 cuentas del seed (`admin@`, `socio@`, `soporte@`,
+- **Qué pasa:** en _Authentication → Users_ hay 6 cuentas del seed (`admin@`, `socio@`, `soporte@`,
   `contenido@` de `boxie.demo` y 2 de `ejemplo.com`), todas con las claves de `scripts/seed.mjs`.
   `admin@boxie.demo` comparte el `user_id` con el owner de `public.users`. Con la anon key, alguien
   puede loguearse contra la API de Supabase, conseguir un JWT con `is_admin() = true` y leer o
@@ -69,9 +69,9 @@ que se puedan revocar, backups, mails y monitoreo.
   Hoy la anon key no llega al navegador, lo que hace menos probable el ataque, pero una anon key se
   considera pública.
 - **Qué hacer:**
-  1. Borrar los 6 usuarios en *Authentication → Users*. Verifiqué que `public.users` no tiene FK
+  1. Borrar los 6 usuarios en _Authentication → Users_. Verifiqué que `public.users` no tiene FK
      hacia `auth.users`, así que borrarlos no toca el panel.
-  2. *Authentication → Sign In / Providers → Email:* apagar **Allow new users to sign up**.
+  2. _Authentication → Sign In / Providers → Email:_ apagar **Allow new users to sign up**.
   3. Cuando esté hecho P1-4 (sacar el fallback a Supabase Auth), apagar el proveedor Email completo.
      El panel ya no usa Supabase Auth.
 
@@ -80,7 +80,7 @@ que se puedan revocar, backups, mails y monitoreo.
 - **Qué pasa:** el `.env` sigue en la raíz del repo, con un `MP_ACCESS_TOKEN` (`APP_USR-…`, 75
   caracteres). La checklist de `docs/OPERACION.md` lo marca como revocado, pero el repo sigue público
   y sin purgar. No probé el token contra Mercado Pago.
-- **Qué hacer:** confirmar en Mercado Pago (*Tus integraciones → Credenciales*) que ese token está
+- **Qué hacer:** confirmar en Mercado Pago (_Tus integraciones → Credenciales_) que ese token está
   revocado. Después **borrar el repo** o pasarlo a privado y revisar los movimientos de la cuenta.
 
 ### [ ] P0-4 · Pasar `Damsh-bit/Boxie` a privado
@@ -88,7 +88,7 @@ que se puedan revocar, backups, mails y monitoreo.
 - **Qué pasa:** además de las credenciales del seed, el repo publica los cupones que están activos
   en producción: `INFLUENCER50` (50 %), `LOQUIEROYA25`, `PAREJA20`, `MAMA15`, `SOFI10`, `BOXIE10`.
   También publica todo el funcionamiento interno del cobro y del panel.
-- **Qué hacer:** *GitHub → Settings → Change visibility → Private*. Vercel sigue deployando igual.
+- **Qué hacer:** _GitHub → Settings → Change visibility → Private_. Vercel sigue deployando igual.
 
 ---
 
@@ -135,14 +135,14 @@ Cuatro arreglos, en `src/server/admin/auth.ts`, `src/server/admin/password.ts` e
 `src/server/admin/invite.ts`:
 
 - [ ] **Comodines en el mail:** el login busca con `.ilike('email', email)`, así que `%` y `_` son
-  comodines (`admin%` encuentra la cuenta). Eso permite **evadir el límite de intentos por mail**
-  cambiando el patrón en cada intento, y la sesión guarda el patrón en lugar del mail real.
-  Usar `exactIlike()` (ya existe en `src/server/recovery.ts`) o comparar con `lower(email)`.
-  Lo mismo en `invite.ts`.
+      comodines (`admin%` encuentra la cuenta). Eso permite **evadir el límite de intentos por mail**
+      cambiando el patrón en cada intento, y la sesión guarda el patrón en lugar del mail real.
+      Usar `exactIlike()` (ya existe en `src/server/recovery.ts`) o comparar con `lower(email)`.
+      Lo mismo en `invite.ts`.
 - [ ] **Clave en texto plano:** `verifyPassword` acepta claves en texto plano ("por si se carga a
-  mano en Supabase") y las compara sin tiempo constante. Sacarlo.
+      mano en Supabase") y las compara sin tiempo constante. Sacarlo.
 - [ ] **Fallback a Supabase Auth:** sacar el fallback de `authenticateUser` (líneas 123 a 156) y la
-  sincronización con `auth.admin` de `invite.ts`. Después, apagar el proveedor (P0-2).
+      sincronización con `auth.admin` de `invite.ts`. Después, apagar el proveedor (P0-2).
 - [ ] **Actor en la bitácora:** que el login use el mail de la base, no el que tipeó la persona.
 
 ### [ ] P1-5 · Límites de pedidos que funcionen de verdad
@@ -150,7 +150,7 @@ Cuatro arreglos, en `src/server/admin/auth.ts`, `src/server/admin/password.ts` e
 - **Qué pasa:** todos los límites (login, checkout, cupones, clave del regalo, soporte) viven en la
   memoria de cada instancia de Vercel. Con varias instancias no suman entre sí, y el mapa se vacía
   entero al llegar a 10.000 claves. En Vercel no hay ninguna regla de firewall configurada.
-- **Qué hacer:** reglas de rate limit en *Vercel Firewall* para `/admin/login`, `/admin/activar`,
+- **Qué hacer:** reglas de rate limit en _Vercel Firewall_ para `/admin/login`, `/admin/activar`,
   `/api/*`, `/editor/*`, `/g/*` y `/soporte/*`, o migrar `rate-limit.ts` a Upstash o Vercel KV.
 
 ### [ ] P1-6 · Monitoreo de errores
@@ -253,7 +253,7 @@ Cuatro arreglos, en `src/server/admin/auth.ts`, `src/server/admin/password.ts` e
 
 Tres casos, todos con límites que hoy solo viven en memoria:
 
-- **Soporte:** crear un ticket manda un mail a *cualquier* dirección, así que se puede usar para
+- **Soporte:** crear un ticket manda un mail a _cualquier_ dirección, así que se puede usar para
   mandar spam con nuestra marca.
 - **Contacto:** el mismo riesgo de abuso.
 - **Recuperar acceso** (`/mi-boxie`): cada pedido **rota el link de edición**. Alguien que conoce el
@@ -273,7 +273,7 @@ fue hace menos de 15 minutos.
 
 - Protección de `main`: PR y CI en verde obligatorios. Hoy los dos pushean directo a `main`, que
   deploya a producción.
-- Activar Dependabot, *secret scanning* y *push protection*.
+- Activar Dependabot, _secret scanning_ y _push protection_.
 - Sumar `npm audit --omit=dev` al CI.
 - Fijar las GitHub Actions por SHA y `supabase/setup-cli` a una versión fija (hoy es `latest`).
 

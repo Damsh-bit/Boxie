@@ -84,8 +84,8 @@ export function LoginScreen({
               </motion.span>
               <h1 className="font-display text-4xl font-bold text-ink">Verificación 2FA</h1>
               <p className="mt-2 text-neutral-600">
-                Tu cuenta tiene activada la protección de dos factores. Ingresá el código de tu
-                app de autenticación o un código de respaldo.
+                Tu cuenta tiene activada la protección de dos factores. Ingresá el código de tu app
+                de autenticación o un código de respaldo.
               </p>
 
               <form action={twoFaAction} className="mt-8 space-y-5">

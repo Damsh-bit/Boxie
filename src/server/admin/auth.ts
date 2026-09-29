@@ -170,7 +170,9 @@ async function authenticateUser(
 export async function verify2FALogin(
   preAuthToken: string,
   code: string,
-): Promise<{ ok: true; identity: AdminIdentity; remember: boolean } | { ok: false; error: string }> {
+): Promise<
+  { ok: true; identity: AdminIdentity; remember: boolean } | { ok: false; error: string }
+> {
   const session = readPreAuthToken(preAuthToken)
   if (!session) {
     return { ok: false, error: 'La sesión de verificación expiró. Ingresá nuevamente.' }
@@ -182,7 +184,9 @@ export async function verify2FALogin(
   const db = serviceDb()
   const { data: user, error } = await db
     .from('users')
-    .select('user_id, email, name, role, totp_enabled, totp_secret_enc, totp_backup_codes, is_active')
+    .select(
+      'user_id, email, name, role, totp_enabled, totp_secret_enc, totp_backup_codes, is_active',
+    )
     .eq('user_id', session.uid)
     .maybeSingle()
 
@@ -224,4 +228,3 @@ export async function verify2FALogin(
     remember: session.remember,
   }
 }
-

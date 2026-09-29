@@ -58,7 +58,9 @@ if (!argEmail || !argPass) {
   console.error('\n❌ Error: Debés proporcionar un email y una contraseña explícitamente.')
   console.error('Uso: node scripts/create-admin.mjs <email> <password> [nombre] [rol]\n')
   console.error('Ejemplo:')
-  console.error('  npm run admin:create admin@tudominio.com MiClaveSuperSegura123! "Tu Nombre" owner\n')
+  console.error(
+    '  npm run admin:create admin@tudominio.com MiClaveSuperSegura123! "Tu Nombre" owner\n',
+  )
   process.exit(1)
 }
 
@@ -74,7 +76,9 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(EMAIL)) {
 }
 
 if (EMAIL.endsWith('@boxie.demo')) {
-  console.error('\n❌ Error de seguridad: No se permite crear administradores con dominio de demo (@boxie.demo).')
+  console.error(
+    '\n❌ Error de seguridad: No se permite crear administradores con dominio de demo (@boxie.demo).',
+  )
   console.error('Utilizá un correo corporativo o personal real.\n')
   process.exit(1)
 }
@@ -91,7 +95,9 @@ if (
   PASSWORD.toLowerCase() === 'password' ||
   PASSWORD.toLowerCase() === '12345678'
 ) {
-  console.error('\n❌ Error de seguridad: No podés utilizar la clave por defecto de demo ("boxie-admin") ni claves triviales.\n')
+  console.error(
+    '\n❌ Error de seguridad: No podés utilizar la clave por defecto de demo ("boxie-admin") ni claves triviales.\n',
+  )
   process.exit(1)
 }
 

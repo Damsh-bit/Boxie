@@ -1,11 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createHash } from 'node:crypto'
 import { OTP } from 'otplib'
-import {
-  consumeBackupCode,
-  startTotpSetup,
-  verifyTotpToken,
-} from './totp'
+import { consumeBackupCode, startTotpSetup, verifyTotpToken } from './totp'
 
 process.env.SESSION_SECRET = 'super-secret-key-that-is-at-least-32-chars-long!'
 

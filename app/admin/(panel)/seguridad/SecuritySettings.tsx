@@ -3,22 +3,19 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   AlertTriangle,
-  ArrowRight,
   Check,
   Copy,
   Download,
   KeyRound,
-  QrCode,
   ShieldAlert,
   ShieldCheck,
   Smartphone,
   X,
 } from 'lucide-react'
-import Image from 'next/image'
 import { useActionState, useState } from 'react'
 import { Button } from '@/ui/Button'
 import { Field, Input } from '@/ui/form'
-import { ease, Notice, spring, Spinner } from '@/ui/motion'
+import { ease, Notice, Spinner } from '@/ui/motion'
 import {
   changePasswordAction,
   confirmTotpSetupAction,
@@ -310,8 +307,8 @@ export function SecuritySettings({ initialStatus }: { initialStatus: TotpStatus 
               exit={{ opacity: 0, height: 0 }}
               className="mt-8 border-t border-line pt-8"
             >
-              <div className="flex items-start gap-3 rounded-2xl bg-amber-50 p-4 text-amber-900 border border-amber-200">
-                <AlertTriangle className="size-5 shrink-0 text-amber-600 mt-0.5" />
+              <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+                <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-600" />
                 <div className="text-sm">
                   <p className="font-bold">Guardá tus códigos de respaldo</p>
                   <p className="mt-1 text-xs text-amber-800">
@@ -377,7 +374,10 @@ export function SecuritySettings({ initialStatus }: { initialStatus: TotpStatus 
                   código actual de tu app para confirmar la desactivación.
                 </p>
 
-                <form onSubmit={handleDisable} className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end">
+                <form
+                  onSubmit={handleDisable}
+                  className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end"
+                >
                   <div className="sm:w-64">
                     <Field label="Código de 6 dígitos" htmlFor="disable-code">
                       <Input
@@ -398,7 +398,7 @@ export function SecuritySettings({ initialStatus }: { initialStatus: TotpStatus 
                     <Button
                       type="submit"
                       disabled={loading || disableCode.length !== 6}
-                      className="bg-rose-600 hover:bg-rose-700 text-white"
+                      className="bg-rose-600 text-white hover:bg-rose-700"
                     >
                       {loading ? <Spinner className="size-4" /> : 'Confirmar desactivación'}
                     </Button>
@@ -429,7 +429,8 @@ export function SecuritySettings({ initialStatus }: { initialStatus: TotpStatus 
       <div className="rounded-2xl border border-line bg-canvas p-6">
         <h3 className="text-sm font-bold text-ink">Aplicaciones recomendadas</h3>
         <p className="mt-1 text-xs text-neutral-600">
-          Podés usar cualquier aplicación compatible con el estándar TOTP en tu teléfono o computadora:
+          Podés usar cualquier aplicación compatible con el estándar TOTP en tu teléfono o
+          computadora:
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-neutral-200 bg-white p-3 text-xs">

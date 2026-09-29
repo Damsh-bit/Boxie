@@ -173,10 +173,7 @@ export async function getOrRotateEditorUrl(
   const token = generateToken()
   const tokenHash = hashToken(token)
 
-  await db
-    .from('boxies')
-    .update({ edit_token_hash: tokenHash } as Record<string, unknown>)
-    .eq('id', boxieId)
+  await db.from('boxies').update({ edit_token_hash: tokenHash }).eq('id', boxieId)
 
   return `${base}/editor/${token}`
 }

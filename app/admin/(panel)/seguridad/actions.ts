@@ -70,9 +70,7 @@ export async function confirmTotpSetupAction(
   return result
 }
 
-export async function disableTotpAction(
-  code: string,
-): Promise<{ ok: boolean; error?: string }> {
+export async function disableTotpAction(code: string): Promise<{ ok: boolean; error?: string }> {
   const session = await requireAdminAction()
   if (isDemoMode()) {
     return { ok: false, error: '2FA no disponible en modo demo.' }

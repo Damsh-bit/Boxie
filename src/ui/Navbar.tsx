@@ -8,7 +8,7 @@ import {
   useScroll,
   useTransform,
 } from 'framer-motion'
-import { ArrowRight, Gift } from 'lucide-react'
+import { ArrowRight, Gift, User } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -116,8 +116,16 @@ export function Navbar() {
 
           <DesktopLinks pathname={pathname} />
 
-          <div className="hidden items-center gap-3 lg:flex">
+          <div className="hidden items-center gap-2 lg:flex">
             <CurrencyToggle size="sm" />
+            <ButtonLink
+              href="/cuenta"
+              variant="ghost"
+              size="sm"
+              className="h-10 px-3.5 text-xs font-semibold text-neutral-600 hover:text-ink"
+            >
+              <User className="size-4 text-neutral-500" aria-hidden /> Mi Cuenta
+            </ButtonLink>
             <ButtonLink href="/galeria" size="sm" className="h-10 px-5">
               <Gift className="size-4" aria-hidden /> Regalar
             </ButtonLink>
@@ -290,18 +298,18 @@ function MobileMenu({
               <span className="text-sm font-semibold text-neutral-600">Ver precios en</span>
               <CurrencyToggle size="sm" />
             </div>
-            <ButtonLink href="/galeria" size="lg" block onClick={onClose}>
-              <Gift className="size-5" aria-hidden /> Regalar una Boxie
-            </ButtonLink>
             <ButtonLink
-              href="/mi-boxie"
+              href="/cuenta"
               variant="secondary"
               size="lg"
               block
               onClick={onClose}
               className="text-base"
             >
-              Ya compré: entrar a mi Boxie
+              <User className="size-5" aria-hidden /> Mi Cuenta
+            </ButtonLink>
+            <ButtonLink href="/galeria" size="lg" block onClick={onClose}>
+              <Gift className="size-5" aria-hidden /> Regalar una Boxie
             </ButtonLink>
           </motion.div>
         </motion.div>

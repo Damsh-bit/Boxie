@@ -1,21 +1,21 @@
-/**
- * El mensaje para mandar el regalo. La clave (si la hay) no va en el mismo
- * mensaje: si viajan juntos, la clave no protege nada.
- */
 export function giftShareMessage(p: {
   recipientName: string
   url: string
   hasPassword: boolean
 }): string {
-  const hello = p.recipientName.trim() ? `¡Hola ${p.recipientName.trim()}! ✨` : '¡Hola! ✨'
+  const name = p.recipientName.trim()
+  const greeting = name ? `¡Hola ${name}! ✨` : '¡Hola! ✨'
   const lines = [
-    hello,
+    greeting,
     '',
-    'Te preparé una sorpresa digital en Boxie 🎁',
-    'Abrila desde el celular:',
+    'Te preparé un regalo digital interactivo muy especial con nuestras fotos y recuerdos 🎁❤️',
+    '',
+    'Tocá el link para abrir tu Boxie desde el celular:',
     p.url,
   ]
-  if (p.hasPassword) lines.push('', 'La clave te la paso por acá aparte 😉')
+  if (p.hasPassword) {
+    lines.push('', '🔐 Le puse clave por privacidad. La clave te la paso por acá aparte 😉')
+  }
   return lines.join('\n')
 }
 

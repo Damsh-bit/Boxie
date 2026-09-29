@@ -208,7 +208,21 @@ export async function findCoupon(input: string | null | undefined): Promise<Coup
     await serviceDb().from('coupons').select('*').eq('code', code).maybeSingle(),
     'coupon',
   )
-  return row ? toCoupon(row) : null
+  if (row) return toCoupon(row)
+  if (code === 'RECORDAR15') {
+    const { data: created } = await serviceDb()
+      .from('coupons')
+      .insert({
+        code: 'RECORDAR15',
+        kind: 'percent',
+        value: 15,
+        description: 'Recordatorio anual de fechas especiales (15% OFF)',
+      })
+      .select('*')
+      .maybeSingle()
+    return created ? toCoupon(created) : null
+  }
+  return null
 }
 
 export interface UrgencyOffer {

@@ -284,3 +284,72 @@ Este enlace vence el ${dateAR(p.expiresAt)}.
     text,
   }
 }
+
+/** Avisa al comprador en el momento exacto en que el agasajado abre el regalo por primera vez. */
+export function giftOpenedEmail(p: {
+  recipientName: string
+  themeName?: string
+  accountUrl: string
+}): MailContent {
+  const recipient = p.recipientName.trim() || 'Tu agasajado/a'
+  const subject = `¡${recipient} acaba de abrir tu Boxie! 🎉`
+  const preheader = `${recipient} abrió tu regalo sorpresa en este momento. ¡Qué emoción!`
+
+  const body = `
+<p style="font-size:20px;font-weight:bold;margin:0 0 14px;color:${INK}">¡Llegó el momento más esperado! 🥳</p>
+<p style="font-size:16px;line-height:1.6">Te avisamos que <strong>${esc(recipient)}</strong> acaba de abrir tu <strong>Boxie Digital</strong> en este instante.</p>
+<div style="background:#faf7f8;border:1px solid #ebd9df;border-radius:16px;padding:20px;margin:24px 0">
+  <p style="margin:0 0 8px;font-size:13px;color:#8a8190;text-transform:uppercase;font-weight:600;letter-spacing:0.5px">Detalles del regalo</p>
+  <p style="margin:0;font-weight:700;font-size:17px;color:${INK}">🎁 Para: ${esc(recipient)}</p>
+  ${p.themeName ? `<p style="margin:6px 0 0;font-size:14px;color:#6b6272">Temática: ${esc(p.themeName)}</p>` : ''}
+</div>
+<p style="font-size:15px;line-height:1.6">Ahora mismo está recorriendo la experiencia con las fotos, la música y las palabras que le dedicaste.</p>
+<p style="font-size:15px;line-height:1.6">¿Qué tal si le mandás un mensajito por WhatsApp para ver su reacción? 😉</p>
+${button(p.accountUrl, 'Ver mis Boxies en Mi Cuenta')}
+<p style="font-size:13px;color:#8a8190;margin-top:20px">Podés ver el estado de todas tus compras y regalos entregados desde tu portal de cliente.</p>
+`
+
+  const text = `¡${recipient} acaba de abrir tu Boxie! 🎉\n\nTe avisamos que ${recipient} acaba de abrir tu regalo en este momento.\n\nAhora mismo está viviendo la experiencia con las fotos, la música y las palabras que le dedicaste.\n\nPodés ver tus Boxies en: ${p.accountUrl}\n\n¡Gracias por regalar momentos inolvidables con Boxie!`
+
+  return {
+    subject,
+    html: layout({ preheader, body }),
+    text,
+  }
+}
+
+/** Recordatorio anual de cumpleaños o aniversario para recomprar con descuento. */
+export function specialDateReminderEmail(p: {
+  recipientName: string
+  occasion: string
+  daysUntil: number
+  couponCode: string
+  discountPercent: number
+  storeUrl: string
+}): MailContent {
+  const recipient = p.recipientName.trim()
+  const subject = `Se acerca el ${p.occasion} de ${recipient} 🎂 (tenés ${p.discountPercent}% OFF)`
+  const preheader = `Faltan solo ${p.daysUntil} días para el ${p.occasion} de ${recipient}. Sorprendelo/a con una nueva Boxie.`
+
+  const body = `
+<p style="font-size:20px;font-weight:bold;margin:0 0 14px;color:${INK}">¡No te cuelgues con el regalo! ⏰</p>
+<p style="font-size:16px;line-height:1.6">Faltan solo <strong>${p.daysUntil} días</strong> para el <strong>${esc(p.occasion)} de ${esc(recipient)}</strong>.</p>
+<p style="font-size:15px;line-height:1.6">Como el año pasado le regalaste una Boxie inolvidable, queremos darte un beneficio exclusivo para que vuelvas a sorprender a ${esc(recipient)}:</p>
+<div style="background:#faf7f8;border:2px dashed ${BRAND};border-radius:16px;padding:24px;margin:24px 0;text-align:center">
+  <p style="margin:0 0 6px;font-size:13px;color:#8a8190;text-transform:uppercase;font-weight:600">Cupón de regalo exclusivo</p>
+  <p style="margin:0;font-size:28px;font-weight:900;letter-spacing:2px;color:${BRAND}">${esc(p.couponCode)}</p>
+  <p style="margin:8px 0 0;font-size:14px;font-weight:600;color:${INK}">${p.discountPercent}% de descuento en cualquier temática</p>
+</div>
+<p style="font-size:15px;line-height:1.6">Armarla te lleva solo 10 minutos y te asegurás un regalo original, emotivo e interactivo.</p>
+${button(p.storeUrl, 'Elegir temática y armar Boxie')}
+<p style="font-size:13px;color:#8a8190;margin-top:20px">Cupón válido por los próximos 14 días. Aplicable al finalizar tu compra.</p>
+`
+
+  const text = `Se acerca el ${p.occasion} de ${recipient} 🎂\n\nFaltan solo ${p.daysUntil} días. Te regalamos un cupón de ${p.discountPercent}% OFF:\n\nCUPÓN: ${p.couponCode}\n\nElegí su temática y armá su Boxie acá: ${p.storeUrl}`
+
+  return {
+    subject,
+    html: layout({ preheader, body }),
+    text,
+  }
+}

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function CustomerAccountPage() {
   const session = await requireCustomerSession('/cuenta')
-  const data = await getCustomerPortalData(session.email)
+  const data = await getCustomerPortalData(session.email, session.user)
 
   return <CustomerDashboard name={session.name} data={data} />
 }

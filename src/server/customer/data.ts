@@ -3,6 +3,9 @@ import { serviceDb, escapeIlike } from '../db/client'
 import { env, siteUrl } from '../env'
 import { decryptToken, generateToken, hashToken } from '../security/tokens'
 
+import type { User } from '@supabase/supabase-js'
+import { getCustomerSpecialDates, type CustomerSpecialDate } from './reminders'
+
 export interface CustomerBoxieItem {
   id: string
   code: string
@@ -35,12 +38,17 @@ export interface CustomerPortalData {
   }
   boxies: CustomerBoxieItem[]
   orders: CustomerOrderReceipt[]
+  specialDates: CustomerSpecialDate[]
 }
 
-export async function getCustomerPortalData(customerEmail: string): Promise<CustomerPortalData> {
+export async function getCustomerPortalData(
+  customerEmail: string,
+  user?: User | null,
+): Promise<CustomerPortalData> {
   const email = customerEmail.toLowerCase().trim()
   const db = serviceDb()
   const base = siteUrl()
+  const specialDates = getCustomerSpecialDates(user)
 
   // 1. Obtener órdenes del comprador
   const { data: ordersData, error: ordersError } = await db
@@ -54,6 +62,7 @@ export async function getCustomerPortalData(customerEmail: string): Promise<Cust
       stats: { totalBoxies: 0, openedCount: 0, inDraftCount: 0 },
       boxies: [],
       orders: [],
+      specialDates,
     }
   }
 
@@ -148,6 +157,7 @@ export async function getCustomerPortalData(customerEmail: string): Promise<Cust
     },
     boxies,
     orders: receipts,
+    specialDates,
   }
 }
 

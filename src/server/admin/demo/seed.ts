@@ -580,6 +580,11 @@ function seedCoupons(): (AdminCoupon & { weight: number })[] {
       description: 'Borrador para diciembre.',
       createdAt: '2026-09-22T15:00:00.000Z',
     }),
+    c(10, 'RECORDAR15', 15, {
+      weight: 5,
+      description: 'Recordatorio anual de fechas especiales (15% OFF).',
+      createdAt: '2026-09-29T15:00:00.000Z',
+    }),
   ]
 }
 

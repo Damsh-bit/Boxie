@@ -116,10 +116,55 @@ export async function giftContent(gift: Gift): Promise<GiftContent> {
 }
 
 export async function registerGiftOpen(boxieId: string): Promise<void> {
-  unwrapMaybe(
-    await serviceDb().rpc('register_gift_open', { p_boxie_id: boxieId }),
-    'apertura del regalo',
-  )
+  const db = serviceDb()
+
+  // 1. Consultar estado previo para saber si es la primera apertura
+  const { data: boxie } = await db
+    .from('boxies')
+    .select(
+      'id, first_opened_at, open_count, recipient_name, orders!inner(buyer_email, buyer_name)',
+    )
+    .eq('id', boxieId)
+    .maybeSingle()
+
+  const isFirstOpen =
+    boxie && !boxie.first_opened_at && (boxie.open_count === 0 || boxie.open_count === null)
+
+  // 2. Registrar en la base de datos
+  unwrapMaybe(await db.rpc('register_gift_open', { p_boxie_id: boxieId }), 'apertura del regalo')
+
+  // 3. Si es la primera apertura, notificar al comprador por correo en vivo
+  if (isFirstOpen && boxie) {
+    try {
+      const order = Array.isArray(boxie.orders) ? boxie.orders[0] : boxie.orders
+      const buyerEmail = (order as { buyer_email?: string } | null)?.buyer_email
+
+      if (buyerEmail) {
+        const { sendMail } = await import('./mail/send')
+        const { giftOpenedEmail } = await import('./mail/templates')
+        const base = siteUrl()
+
+        await sendMail({
+          to: buyerEmail,
+          tag: 'gift-opened',
+          ...giftOpenedEmail({
+            recipientName: boxie.recipient_name || 'Tu agasajado/a',
+            accountUrl: `${base}/cuenta`,
+          }),
+        })
+
+        const { log } = await import('./log')
+        log.info('Notificación de regalo abierto enviada al comprador', {
+          boxieId,
+          buyerEmail,
+          recipient: boxie.recipient_name,
+        })
+      }
+    } catch (err) {
+      const { log } = await import('./log')
+      log.error('No se pudo enviar la notificación de apertura al comprador', err)
+    }
+  }
 }
 
 // ── Clave opcional ──────────────────────────────────────────────────────────

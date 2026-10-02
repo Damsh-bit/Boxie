@@ -12,7 +12,7 @@ import type { FrameInput, Palette } from './theme-config'
 
 export type SlideCategory = 'intro' | 'story' | 'media' | 'game' | 'reflect' | 'outro'
 
-/** Ícono de lucide-react por nombre, para el repaso final y el constructor. */
+/** Ícono del repaso final y del editor, por nombre (src/slides/summary-icons.ts). */
 export type SummaryIcon =
   | 'gift'
   | 'heart'

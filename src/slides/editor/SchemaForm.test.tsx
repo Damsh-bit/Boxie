@@ -75,3 +75,25 @@ describe('SchemaForm', () => {
     expect(html).toContain('Las fotos se cargan desde el editor')
   })
 })
+
+describe('SchemaForm · íconos de la temática', () => {
+  function renderTheme(value: unknown) {
+    const schema = slideDefinitions['connector.cinema'].themeSchema as z.ZodType
+    return renderToStaticMarkup(
+      <SchemaForm schema={schema} value={value} onChange={() => {}} idPrefix="t" />,
+    )
+  }
+
+  it('un emoji guardado se muestra con su ícono propio', () => {
+    const html = renderTheme({ emoji: '🍿', secondEmoji: '🎬' })
+    expect(html).toContain('src="/icons/sm/pochoclos.webp"')
+    expect(html).toContain('Pochoclos')
+    expect(html).toContain('src="/icons/sm/claqueta.webp"')
+  })
+
+  it('también acepta el nombre del ícono', () => {
+    const html = renderTheme({ emoji: 'cohete', secondEmoji: '' })
+    expect(html).toContain('src="/icons/sm/cohete.webp"')
+    expect(html).toContain('Sin ícono')
+  })
+})

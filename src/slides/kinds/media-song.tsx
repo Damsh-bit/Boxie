@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
+import { EmojiText } from '@/ui/Icon'
 import { youtubeId } from '../fields'
 import { Appear, ease } from './motion'
 import type { Props } from './shared'
@@ -96,7 +97,7 @@ export function MediaSong({ theme, buyer, ctx }: Props<'media.song'>) {
               color: 'white',
             }}
           >
-            {theme.emptyLabel}
+            <EmojiText text={theme.emptyLabel} />
           </Appear>
         ) : null}
       </div>
@@ -113,7 +114,7 @@ export function MediaSong({ theme, buyer, ctx }: Props<'media.song'>) {
             textShadow: '0 2px 4px rgba(0,0,0,0.5)',
           }}
         >
-          {buyer.songTitle} <Equalizer active={ctx.active && !!id} />
+          <EmojiText text={buyer.songTitle} /> <Equalizer active={ctx.active && !!id} />
         </h3>
         <p
           style={{
@@ -123,7 +124,8 @@ export function MediaSong({ theme, buyer, ctx }: Props<'media.song'>) {
             lineHeight: 1.4,
           }}
         >
-          <strong style={{ color: 'var(--bx-primary)' }}>{ctx.senderName}</strong> {theme.caption}
+          <strong style={{ color: 'var(--bx-primary)' }}>{ctx.senderName}</strong>{' '}
+          <EmojiText text={theme.caption} />
         </p>
       </Appear>
     </div>

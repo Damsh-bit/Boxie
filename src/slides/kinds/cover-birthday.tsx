@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
+import { EmojiText } from '@/ui/Icon'
 import { RichText } from '../RichText'
 import { Appear, Pop } from './motion'
 import type { Props } from './shared'
@@ -132,7 +133,7 @@ export function CoverBirthday({ theme, ctx }: Props<'cover.birthday'>) {
               fontFamily="'Brush Script MT', cursive"
               transform="rotate(-3, 75, 90)"
             >
-              {theme.cakeLine1}
+              <EmojiText text={theme.cakeLine1} />
             </text>
             <text
               x="75"
@@ -143,7 +144,7 @@ export function CoverBirthday({ theme, ctx }: Props<'cover.birthday'>) {
               fontFamily="'Brush Script MT', cursive"
               transform="rotate(-3, 75, 105)"
             >
-              {theme.cakeLine2}
+              <EmojiText text={theme.cakeLine2} />
             </text>
             <g transform="translate(0, -10)">
               {CANDLES.map((c) => (

@@ -6,6 +6,7 @@ import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { z } from 'zod'
 import { cn } from '@/ui/cn'
 import { FieldMessage, Input, Label, Select, Textarea } from '@/ui/form'
+import { IconPicker } from '@/ui/IconPicker'
 import { Collapse, ease, spring } from '@/ui/motion'
 import {
   arrayElement,
@@ -295,6 +296,17 @@ function FieldFor({ schema, path, ctx }: { schema: AnySchema; path: Path; ctx: C
         </div>,
       )
     }
+
+    case 'icon':
+      return shell(
+        <IconPicker
+          id={id}
+          value={typeof value === 'string' ? value : ''}
+          onChange={set}
+          disabled={ctx.disabled}
+          describedBy={meta.help || error ? `${id}-hint` : undefined}
+        />,
+      )
 
     case 'select':
       return shell(

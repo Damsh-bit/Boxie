@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Camera, CircleAlert } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { Emoji, EmojiText, Icon } from '@/ui/Icon'
 import { ConfettiLayer, LogoPattern } from '../player/effects'
 import { RichText } from '../RichText'
 import { ease, frames, Loop, shake, spring } from './motion'
@@ -56,9 +57,11 @@ export function GameTrivia({ theme, ctx }: Props<'game.trivia'>) {
               frames={frames.float(10, 6)}
               style={{ fontSize: '4rem', marginBottom: 10 }}
             >
-              {theme.introEmoji}
+              <Emoji value={theme.introEmoji} size="1.15em" large />
             </Loop>
-            <h2 className="bx-trivia-title">{theme.introTitle}</h2>
+            <h2 className="bx-trivia-title">
+              <EmojiText text={theme.introTitle} />
+            </h2>
             <p className="bx-trivia-text">
               <RichText value={theme.introText} />
             </p>
@@ -71,7 +74,7 @@ export function GameTrivia({ theme, ctx }: Props<'game.trivia'>) {
                 whileTap={{ scale: 0.95 }}
                 transition={spring.snappy}
               >
-                {theme.startLabel}
+                <EmojiText text={theme.startLabel} />
               </motion.button>
             </Loop>
           </motion.div>
@@ -90,9 +93,11 @@ export function GameTrivia({ theme, ctx }: Props<'game.trivia'>) {
                   transition: { ...spring.pop, delay: 0.15 },
                 }}
               >
-                🤔
+                <Icon name="pensar" size="1.15em" large />
               </motion.div>
-              <p className="bx-trivia-question">{question.question}</p>
+              <p className="bx-trivia-question">
+                <EmojiText text={question.question} />
+              </p>
             </div>
             {question.hint && (
               <AnimatePresence mode="wait" initial={false}>
@@ -104,7 +109,7 @@ export function GameTrivia({ theme, ctx }: Props<'game.trivia'>) {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={spring.pop}
                   >
-                    {theme.hintPrefix} {question.hint}
+                    <EmojiText text={theme.hintPrefix} /> <EmojiText text={question.hint} />
                   </motion.div>
                 ) : (
                   <motion.button
@@ -115,7 +120,7 @@ export function GameTrivia({ theme, ctx }: Props<'game.trivia'>) {
                     exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.12 } }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <CircleAlert size={16} /> {theme.hintLabel}
+                    <CircleAlert size={16} /> <EmojiText text={theme.hintLabel} />
                   </motion.button>
                 )}
               </AnimatePresence>
@@ -209,7 +214,9 @@ export function GameTrivia({ theme, ctx }: Props<'game.trivia'>) {
               >
                 <RichText value={theme.prizeTitle} />
               </h2>
-              <p style={{ color: '#666', fontSize: '1rem', marginTop: 10 }}>{theme.prizeText}</p>
+              <p style={{ color: '#666', fontSize: '1rem', marginTop: 10 }}>
+                <EmojiText text={theme.prizeText} />
+              </p>
               <motion.div
                 className="bx-winner-badge"
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -226,7 +233,7 @@ export function GameTrivia({ theme, ctx }: Props<'game.trivia'>) {
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear', repeatDelay: 0 }}
                 />
                 <div style={{ fontSize: '1.4rem', fontWeight: 900, letterSpacing: 2 }}>
-                  {theme.prizeBadge}
+                  <EmojiText text={theme.prizeBadge} />
                 </div>
                 <div
                   style={{
@@ -238,7 +245,7 @@ export function GameTrivia({ theme, ctx }: Props<'game.trivia'>) {
                     width: '80%',
                   }}
                 >
-                  {theme.prizeDetail}
+                  <EmojiText text={theme.prizeDetail} />
                 </div>
               </motion.div>
               <div
@@ -253,7 +260,9 @@ export function GameTrivia({ theme, ctx }: Props<'game.trivia'>) {
                 }}
               >
                 <Camera size={16} />
-                <span>{theme.prizeFootnote}</span>
+                <span>
+                  <EmojiText text={theme.prizeFootnote} />
+                </span>
               </div>
             </motion.div>
           </motion.div>

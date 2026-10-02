@@ -18,6 +18,7 @@ export type Widget =
   | 'video'
   | 'photo'
   | 'color'
+  | 'icon'
   | 'select'
   | 'toggle'
   | 'number'
@@ -113,6 +114,15 @@ export const field = {
       label,
       ...pick(o),
     }).default(null)
+  },
+
+  /**
+   * Ícono propio (src/domain/icons.ts). Guarda su nombre; las temáticas que ya
+   * estaban guardan un emoji y también vale: se dibuja con su ícono equivalente.
+   */
+  icon(label: string, o: Common & { default?: string } = {}) {
+    const s = meta(z.string().max(32), { widget: 'icon', label, ...pick(o) })
+    return s.default(o.default ?? '')
   },
 
   color(label: string, o: Common & { default: string }) {

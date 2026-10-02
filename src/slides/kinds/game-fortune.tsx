@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
+import { Emoji, EmojiText, Icon } from '@/ui/Icon'
 import { ConfettiLayer, GradientDrift } from '../player/effects'
 import { RichText } from '../RichText'
 import { Appear, ease, frames, Loop, spring } from './motion'
@@ -98,7 +99,7 @@ export function GameFortune({ theme, ctx }: Props<'game.fortune'>) {
                     exit={{ opacity: 0, y: -16, filter: 'blur(6px)' }}
                     transition={{ duration: 0.45, ease: ease.out }}
                   >
-                    {lines[intro]}
+                    <EmojiText text={lines[intro]} />
                   </motion.span>
                 ) : (
                   <motion.div
@@ -108,7 +109,7 @@ export function GameFortune({ theme, ctx }: Props<'game.fortune'>) {
                     animate={{ scale: 1, rotate: 0 }}
                     transition={spring.pop}
                   >
-                    {theme.introEmoji}
+                    <Emoji value={theme.introEmoji} size="1.15em" large />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -144,7 +145,7 @@ export function GameFortune({ theme, ctx }: Props<'game.fortune'>) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: ease.out }}
             >
-              {theme.chooseTitle}
+              <EmojiText text={theme.chooseTitle} />
             </motion.h2>
             <motion.p
               style={{
@@ -201,7 +202,7 @@ export function GameFortune({ theme, ctx }: Props<'game.fortune'>) {
                           filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.2))',
                         }}
                       >
-                        🥠
+                        <Icon name="galletita" size="1.15em" large />
                       </div>
                       <div
                         style={{
@@ -214,7 +215,7 @@ export function GameFortune({ theme, ctx }: Props<'game.fortune'>) {
                           fontWeight: 'bold',
                         }}
                       >
-                        {theme.optionLabel} {n}
+                        <EmojiText text={theme.optionLabel} /> {n}
                       </div>
                     </motion.button>
                   </Loop>
@@ -247,7 +248,7 @@ export function GameFortune({ theme, ctx }: Props<'game.fortune'>) {
               }}
               transition={{ duration: 1.4, ease: 'easeIn' }}
             >
-              🥠
+              <Icon name="galletita" size="1.15em" large />
             </motion.div>
           </motion.div>
         )}
@@ -348,7 +349,7 @@ export function GameFortune({ theme, ctx }: Props<'game.fortune'>) {
                     marginTop: 10,
                   }}
                 >
-                  {theme.resultLabel}
+                  <EmojiText text={theme.resultLabel} />
                 </motion.div>
                 <motion.h3
                   variants={reveal}
@@ -361,7 +362,9 @@ export function GameFortune({ theme, ctx }: Props<'game.fortune'>) {
                     marginBottom: 25,
                   }}
                 >
-                  &quot;{message}&quot;
+                  &quot;
+                  <EmojiText text={message} />
+                  &quot;
                 </motion.h3>
                 <motion.div
                   variants={{

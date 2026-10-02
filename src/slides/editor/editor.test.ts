@@ -181,7 +181,7 @@ describe('mensaje para mandar el regalo', () => {
   it('lleva el link y, si hay clave, avisa que va aparte', () => {
     const url = 'https://ribbly.com.ar/g/abc'
     const plain = giftShareMessage({ recipientName: 'Sofía', url, hasPassword: false })
-    expect(plain).toContain('¡Hola Sofía! ✨')
+    expect(plain).toContain('¡Hola Sofía!')
     expect(plain).toContain(url)
     expect(plain).not.toContain('clave')
     expect(giftShareMessage({ recipientName: '', url, hasPassword: true })).toContain(

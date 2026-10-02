@@ -1,15 +1,16 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
+import { Emoji, EmojiText } from '@/ui/Icon'
 import { RichText } from '../RichText'
 import { Appear, ease, frames, Loop, Pop, spring } from './motion'
 import type { Props } from './shared'
 
 const COINS = [
-  { left: '10%', delay: 0, content: '✨', duration: 3 },
+  { left: '10%', delay: 0, content: 'destellos', duration: 3 },
   { left: '30%', delay: 0.5, content: 'logo', duration: 3.4 },
-  { left: '50%', delay: 1, content: '🎁', duration: 2.8 },
-  { left: '70%', delay: 0.3, content: '✨', duration: 3.2 },
-  { left: '88%', delay: 1.4, content: '🎁', duration: 3.6 },
+  { left: '50%', delay: 1, content: 'regalo', duration: 2.8 },
+  { left: '70%', delay: 0.3, content: 'destellos', duration: 3.2 },
+  { left: '88%', delay: 1.4, content: 'regalo', duration: 3.6 },
 ]
 
 export function GameJackpot({ theme, ctx }: Props<'game.jackpot'>) {
@@ -38,7 +39,7 @@ export function GameJackpot({ theme, ctx }: Props<'game.jackpot'>) {
     })
   }
 
-  const symbols = theme.symbols.length ? theme.symbols : ['🎁']
+  const symbols = theme.symbols.length ? theme.symbols : ['regalo']
 
   return (
     <div className="bx-slot">
@@ -84,7 +85,7 @@ export function GameJackpot({ theme, ctx }: Props<'game.jackpot'>) {
                 >
                   {[...symbols, ...symbols].map((symbol, i) => (
                     <div key={i} className="bx-slot-icon">
-                      {symbol}
+                      <Emoji value={symbol} size="1.1em" large />
                     </div>
                   ))}
                 </motion.div>
@@ -116,7 +117,7 @@ export function GameJackpot({ theme, ctx }: Props<'game.jackpot'>) {
             frames={frames.pulse(1.05)}
             style={{ color: 'white', fontWeight: 'bold', fontSize: '1.5rem', zIndex: 10 }}
           >
-            {theme.wonLabel}
+            <EmojiText text={theme.wonLabel} />
           </Loop>
         )}
       </AnimatePresence>
@@ -172,7 +173,7 @@ export function GameJackpot({ theme, ctx }: Props<'game.jackpot'>) {
                       ease: 'linear',
                     }}
                   >
-                    {coin.content}
+                    <Emoji value={coin.content} size="1.15em" />
                   </motion.div>
                 ),
               )}
@@ -194,7 +195,7 @@ export function GameJackpot({ theme, ctx }: Props<'game.jackpot'>) {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ ...spring.pop, delay: 0.3 }}
             >
-              {theme.winTitle}
+              <EmojiText text={theme.winTitle} />
             </motion.h1>
             <motion.p
               style={{ fontSize: '1.4rem', color: 'white', marginBottom: 20 }}
@@ -202,7 +203,7 @@ export function GameJackpot({ theme, ctx }: Props<'game.jackpot'>) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.5, ease: ease.out }}
             >
-              {theme.winText}
+              <EmojiText text={theme.winText} />
             </motion.p>
             <Loop
               active={active}
@@ -211,7 +212,7 @@ export function GameJackpot({ theme, ctx }: Props<'game.jackpot'>) {
               frames={frames.bounce(10)}
               className="bx-win-hint"
             >
-              {theme.scrollHint}
+              <EmojiText text={theme.scrollHint} />
             </Loop>
           </motion.div>
         )}

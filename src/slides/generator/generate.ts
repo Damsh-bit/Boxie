@@ -197,7 +197,7 @@ function buildSlides(a: Archetype, photos: string[], structure: Structure): Slid
             quote: lines(c.friendsQuote ?? '"Hay personas que hacen\nque todo sea mejor."'),
             thanks: c.thanksText,
             emojiTop: a.emoji,
-            emojiBottom: '✨',
+            emojiBottom: 'destellos',
             senderPrefix: 'De:',
           },
         }
@@ -400,8 +400,8 @@ export function generateTheme(input: string, options: GeneratorOptions): Generat
       label: 'Ocasión',
       detail:
         score === 0
-          ? `${a.emoji} Sin coincidencias: celebración general`
-          : `${a.emoji} ${a.label} (por "${matched.join('", "')}")`,
+          ? 'Sin coincidencias: celebración general'
+          : `${a.label} (por "${matched.join('", "')}")`,
     },
     { label: 'Paleta', detail: palette.name },
     { label: 'Portada', detail: COVER_LABEL[a.cover] },

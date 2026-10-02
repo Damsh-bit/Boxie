@@ -66,7 +66,7 @@ export function ReviewDialog({
       open={open}
       onOpenChange={onOpenChange}
       locked={busy}
-      icon={ready ? '🎁' : '🧐'}
+      icon={ready ? 'regalo' : 'pensar'}
       title="Revisión final"
       description={
         ready

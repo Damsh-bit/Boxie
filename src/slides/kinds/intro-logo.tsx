@@ -1,3 +1,4 @@
+import { EmojiText } from '@/ui/Icon'
 import { Appear, frames, Loop, Pop } from './motion'
 import type { Props } from './shared'
 
@@ -27,11 +28,11 @@ export function IntroLogo({ theme, ctx }: Props<'intro.logo'>) {
         />
       </Loop>
       <Appear as="p" active={active} delay={0.5} y={12} className="bx-intro-tagline">
-        {theme.tagline}
+        <EmojiText text={theme.tagline} />
       </Appear>
       <Appear active={active} delay={1.1} y={12} className="bx-swipe-hint">
         <Loop active={active} delay={1.8} duration={1.6} frames={frames.bounce(6)}>
-          {theme.hint}
+          <EmojiText text={theme.hint} />
         </Loop>
       </Appear>
     </div>

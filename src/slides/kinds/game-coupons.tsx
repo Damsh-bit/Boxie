@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
+import { Emoji, EmojiText } from '@/ui/Icon'
 import { LogoPattern } from '../player/effects'
 import { Appear, ease, frames, Loop, spring } from './motion'
 import type { Props } from './shared'
@@ -24,7 +25,7 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
 
   const styles = theme.examples.length
     ? theme.examples
-    : [{ icon: '🎁', title: '', detail: '', color: '#FF9A9E' }]
+    : [{ icon: 'regalo', title: '', detail: '', color: '#FF9A9E' }]
   const own = buyer.coupons.filter((c) => c.title.trim())
   const tickets: Ticket[] = own.length
     ? own.map((c, i) => {
@@ -54,10 +55,10 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
           frames={frames.float(8, -6)}
           style={{ fontSize: '3rem', filter: 'drop-shadow(0 5px 10px rgba(0,0,0,0.1))' }}
         >
-          {theme.emoji}
+          <Emoji value={theme.emoji} size="1.15em" large />
         </Loop>
         <Appear as="h2" active={active} y={14} className="bx-coupons-title">
-          {theme.title}
+          <EmojiText text={theme.title} />
         </Appear>
         <Appear
           as="p"
@@ -66,7 +67,7 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
           y={10}
           style={{ color: '#888', fontSize: '0.9rem' }}
         >
-          {theme.subtitle}
+          <EmojiText text={theme.subtitle} />
         </Appear>
       </div>
       <motion.div
@@ -116,7 +117,7 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
                   fontSize: '2rem',
                 }}
               >
-                {t.icon}
+                <Emoji value={t.icon} size="1.15em" large />
               </div>
               <div className="bx-ticket-divider" />
               <div
@@ -139,7 +140,7 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
                     fontWeight: 'bold',
                   }}
                 >
-                  {t.title}
+                  <EmojiText text={t.title} />
                 </h3>
                 <p
                   style={{
@@ -150,7 +151,7 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
                     letterSpacing: 1,
                   }}
                 >
-                  {theme.ctaLabel}
+                  <EmojiText text={theme.ctaLabel} />
                 </p>
               </div>
               <AnimatePresence>
@@ -175,7 +176,7 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
                         fontSize: '0.9rem',
                       }}
                     >
-                      {theme.readLabel}
+                      <EmojiText text={theme.readLabel} />
                     </motion.div>
                   </motion.div>
                 )}
@@ -213,10 +214,16 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
                 className="bx-coupon-modal-icon"
                 style={{ background: open.color }}
               >
-                {open.icon}
+                <Emoji value={open.icon} size="1.15em" large />
               </Loop>
-              <h3 className="bx-coupon-modal-title">{open.title}</h3>
-              <div className="bx-coupon-modal-desc">&quot;{open.detail}&quot;</div>
+              <h3 className="bx-coupon-modal-title">
+                <EmojiText text={open.title} />
+              </h3>
+              <div className="bx-coupon-modal-desc">
+                &quot;
+                <EmojiText text={open.detail} />
+                &quot;
+              </div>
               <motion.button
                 type="button"
                 className="bx-coupon-claim"
@@ -224,7 +231,7 @@ export function GameCoupons({ theme, buyer, ctx }: Props<'game.coupons'>) {
                 style={{ background: open.color }}
                 whileTap={{ scale: 0.96 }}
               >
-                {theme.claimLabel}
+                <EmojiText text={theme.claimLabel} />
               </motion.button>
             </motion.div>
           </motion.div>

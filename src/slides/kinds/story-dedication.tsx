@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Share2 } from 'lucide-react'
 import { useState } from 'react'
+import { EmojiText } from '@/ui/Icon'
 import { Appear, frames, Loop, spring } from './motion'
 import { shareOrCopy, type Props } from './shared'
 
@@ -14,7 +15,7 @@ export function StoryDedication({ theme, buyer, ctx }: Props<'story.dedication'>
     if (ctx.preview) return setNotice('En el regalo, este botón comparte el link.')
     const result = await shareOrCopy({
       title: 'Una carta especial',
-      text: `Dedicatoria de ${ctx.senderName} para ${ctx.recipientName}. 💌`,
+      text: `Dedicatoria de ${ctx.senderName} para ${ctx.recipientName}.`,
     })
     if (result === 'copied') setNotice('Link copiado.')
   }
@@ -76,7 +77,7 @@ export function StoryDedication({ theme, buyer, ctx }: Props<'story.dedication'>
             marginBottom: 20,
           }}
         >
-          {theme.heading}
+          <EmojiText text={theme.heading} />
         </Appear>
         <Appear
           active={active}
@@ -93,7 +94,9 @@ export function StoryDedication({ theme, buyer, ctx }: Props<'story.dedication'>
             whiteSpace: 'pre-line',
           }}
         >
-          &quot;{text}&quot;
+          &quot;
+          <EmojiText text={text} />
+          &quot;
         </Appear>
         <Appear
           active={active}
@@ -117,7 +120,7 @@ export function StoryDedication({ theme, buyer, ctx }: Props<'story.dedication'>
             whileTap={{ scale: 0.94 }}
             transition={spring.snappy}
           >
-            <Share2 size={20} /> {theme.buttonLabel}
+            <Share2 size={20} /> <EmojiText text={theme.buttonLabel} />
           </motion.button>
         </Loop>
       </Appear>

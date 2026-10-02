@@ -1,41 +1,9 @@
-import {
-  Camera,
-  CircleCheck,
-  Film,
-  Gamepad2,
-  Gift,
-  Headphones,
-  Heart,
-  LockKeyhole,
-  Moon,
-  Music,
-  PartyPopper,
-  PenTool,
-  Smile,
-  Sparkles,
-  Sun,
-  Ticket,
-  UserRound,
-  type LucideIcon,
-} from 'lucide-react'
+import type { IconName } from '@/domain/icons'
+import { SUMMARY_ICONS } from '../summary-icons'
 import type { EditorIcon } from './modules'
 
-export const EDITOR_ICONS: Record<EditorIcon, LucideIcon> = {
-  gift: Gift,
-  heart: Heart,
-  music: Music,
-  headphones: Headphones,
-  smile: Smile,
-  sun: Sun,
-  ticket: Ticket,
-  camera: Camera,
-  'check-circle': CircleCheck,
-  'pen-tool': PenTool,
-  moon: Moon,
-  film: Film,
-  sparkles: Sparkles,
-  gamepad: Gamepad2,
-  party: PartyPopper,
-  user: UserRound,
-  lock: LockKeyhole,
+export const EDITOR_ICONS: Record<EditorIcon, IconName> = {
+  ...SUMMARY_ICONS,
+  user: 'hola',
+  lock: 'candado',
 }

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import type { CSSProperties, ReactNode } from 'react'
+import { EmojiText, Icon } from '@/ui/Icon'
 import { ease, frames, Loop, Pop, spring } from './motion'
 import { useSequence, type Props } from './shared'
 
@@ -94,7 +95,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
                 lineHeight: 1,
               }}
             >
-              {theme.greeting}
+              <EmojiText text={theme.greeting} />
             </Sticker>
             <Sticker
               rot={3}
@@ -151,7 +152,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0, transition: { duration: 0.5, ease: ease.out } }}
             >
-              {theme.line1}
+              <EmojiText text={theme.line1} />
             </motion.div>
             <Sticker
               rot={2}
@@ -162,7 +163,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
                 textTransform: 'uppercase',
               }}
             >
-              {theme.line2}
+              <EmojiText text={theme.line2} />
             </Sticker>
             <Sticker
               rot={-3}
@@ -175,7 +176,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
                 marginTop: -5,
               }}
             >
-              {theme.line3}
+              <EmojiText text={theme.line3} />
             </Sticker>
             <Sticker
               rot={4}
@@ -188,7 +189,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
                 borderRadius: 20,
               }}
             >
-              {theme.line4}
+              <EmojiText text={theme.line4} />
             </Sticker>
           </motion.div>
         )}
@@ -217,7 +218,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
                 marginBottom: 20,
               }}
             >
-              {theme.tag}
+              <EmojiText text={theme.tag} />
             </Sticker>
             <div style={{ marginBottom: 20 }}>
               <motion.span
@@ -232,7 +233,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0, transition: { delay: 0.15, duration: 0.5 } }}
               >
-                {theme.thoughtLabel}
+                <EmojiText text={theme.thoughtLabel} />
               </motion.span>
               <Sticker
                 rot={1}
@@ -246,7 +247,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
                   border: '3px solid white',
                 }}
               >
-                {theme.title}
+                <EmojiText text={theme.title} />
               </Sticker>
             </div>
             <motion.p
@@ -266,7 +267,9 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
                 transition: { delay: 0.5, duration: 0.8, ease: ease.out },
               }}
             >
-              &quot;{theme.message}&quot;
+              &quot;
+              <EmojiText text={theme.message} />
+              &quot;
             </motion.p>
             <motion.div
               style={{ marginTop: 50 }}
@@ -284,7 +287,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
                 frames={frames.bounce(10)}
                 style={{ fontSize: '2rem' }}
               >
-                👇
+                <Icon name="senalar" size="1.15em" style={{ transform: 'rotate(90deg)' }} />
               </Loop>
               <p
                 style={{
@@ -296,7 +299,7 @@ export function StoryIntro({ theme, ctx }: Props<'story.intro'>) {
                   marginTop: 5,
                 }}
               >
-                {theme.cta}
+                <EmojiText text={theme.cta} />
               </p>
             </motion.div>
           </motion.div>

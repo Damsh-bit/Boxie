@@ -5,6 +5,7 @@ import { X } from 'lucide-react'
 import { Dialog } from 'radix-ui'
 import { useSyncExternalStore, type ReactNode } from 'react'
 import { cn } from './cn'
+import { Emoji } from './Icon'
 import { spring } from './motion'
 
 const DESKTOP = '(min-width: 640px)'
@@ -128,7 +129,7 @@ export function Modal({
                       animate={{ scale: 1, rotate: 0 }}
                       transition={{ ...spring.bouncy, delay: 0.12 }}
                     >
-                      {icon}
+                      {typeof icon === 'string' ? <Emoji value={icon} size={52} /> : icon}
                     </motion.div>
                   )}
                   <Dialog.Title className="text-center font-display text-2xl font-bold text-ink">

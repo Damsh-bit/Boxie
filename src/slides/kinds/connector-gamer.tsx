@@ -1,13 +1,14 @@
 import { motion, useReducedMotion } from 'framer-motion'
+import { Emoji, EmojiText } from '@/ui/Icon'
 import { Appear, frames, Loop, Pop } from './motion'
 import type { Props } from './shared'
 
 const SHAPES = [
-  { char: '✖', left: '10%', size: '2rem', delay: 0, duration: 6 },
+  { char: '✕', left: '10%', size: '2rem', delay: 0, duration: 6 },
   { char: '○', left: '80%', size: '3rem', delay: 1, duration: 8 },
   { char: '△', left: '20%', size: '4rem', delay: 2.5, duration: 7, color: '#ff9a9e' },
   { char: '□', left: '70%', size: '2.5rem', delay: 0.5, duration: 9 },
-  { char: '✖', left: '50%', size: '1.5rem', delay: 3, duration: 5 },
+  { char: '✕', left: '50%', size: '1.5rem', delay: 3, duration: 5 },
 ]
 
 export function ConnectorGamer({ theme, ctx }: Props<'connector.gamer'>) {
@@ -70,7 +71,7 @@ export function ConnectorGamer({ theme, ctx }: Props<'connector.gamer'>) {
               filter: 'drop-shadow(0 10px 20px rgba(244, 78, 99, 0.3))',
             }}
           >
-            {theme.emoji}
+            <Emoji value={theme.emoji} size="1.15em" large />
           </Loop>
         </Pop>
         <div>
@@ -87,7 +88,7 @@ export function ConnectorGamer({ theme, ctx }: Props<'connector.gamer'>) {
               letterSpacing: -1,
             }}
           >
-            {theme.title}
+            <EmojiText text={theme.title} />
           </Appear>
           <Appear
             as="p"
@@ -103,7 +104,7 @@ export function ConnectorGamer({ theme, ctx }: Props<'connector.gamer'>) {
               letterSpacing: 2,
             }}
           >
-            {theme.subtitle}
+            <EmojiText text={theme.subtitle} />
           </Appear>
         </div>
         <Appear

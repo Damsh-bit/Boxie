@@ -10,6 +10,7 @@ import { Button, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { rememberedRecipient } from '@/ui/recipient'
 import { Input, Label } from '@/ui/form'
+import { Icon } from '@/ui/Icon'
 import { Modal } from '@/ui/Modal'
 import { ease, Notice, Spinner, spring, Swap, useCalm } from '@/ui/motion'
 import { useBottomBar } from '@/ui/use-bottom-bar'
@@ -273,8 +274,13 @@ export function Editor({
               <div className="border-b border-amber-200 bg-amber-50">
                 <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2.5 text-sm text-amber-900">
                   <p className="flex-1">
-                    🧪 <strong>Modo prueba:</strong> se guarda en este navegador. Si la comprás
-                    desde acá, lo que armes pasa a tu Boxie.
+                    <Icon
+                      name="idea"
+                      size="1.2em"
+                      style={{ verticalAlign: '-0.25em', marginRight: '0.3em' }}
+                    />
+                    <strong>Modo prueba:</strong> se guarda en este navegador. Si la comprás desde
+                    acá, lo que armes pasa a tu Boxie.
                   </p>
                   <a
                     href={`/checkout?tematica=${theme.slug}${draft.recipientName.trim() ? `&para=${encodeURIComponent(draft.recipientName.trim())}` : ''}`}
@@ -515,7 +521,7 @@ export function Editor({
               <Modal
                 open={confirmReset}
                 onOpenChange={setConfirmReset}
-                icon="🧹"
+                icon="atencion"
                 title="¿Empezar de nuevo?"
                 description="Se borra todo lo que cargaste en esta prueba (textos y fotos). No se puede deshacer."
               >

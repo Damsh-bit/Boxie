@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Icon } from '@/ui/Icon'
 import { spring } from './motion'
 
 /**
@@ -35,14 +36,15 @@ export function ShareHint({
           initial={{ scale: 0, rotate: -30 }}
           animate={{ scale: 1, rotate: 0, transition: { ...spring.pop, delay: 0.1 } }}
         >
-          📸
+          <Icon name="camara" size="1.15em" large />
         </motion.div>
         <h3 style={{ color: 'var(--bx-ink)', margin: '0 0 10px 0', fontSize: '1.4rem' }}>
           ¡Presumí tu regalo!
         </h3>
         <p style={{ color: '#666', fontSize: '0.95rem', marginBottom: 20, lineHeight: 1.5 }}>
-          Hacé una <strong>captura de pantalla</strong> de esta tarjeta (ya tiene el logo 😉) y
-          subila a tus Historias.
+          Hacé una <strong>captura de pantalla</strong> de esta tarjeta (ya tiene el logo{' '}
+          <Icon name="guino" size="1.2em" style={{ verticalAlign: '-0.25em' }} />) y subila a tus
+          Historias.
         </p>
         <div
           style={{

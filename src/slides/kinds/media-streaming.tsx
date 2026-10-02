@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown, Play } from 'lucide-react'
 import { useId, useState } from 'react'
+import { EmojiText } from '@/ui/Icon'
 import { Appear, ease, spring } from './motion'
 import type { Props } from './shared'
 
@@ -80,10 +81,16 @@ export function MediaStreaming({ theme, ctx }: Props<'media.streaming'>) {
               exit={{ opacity: 0, y: -16, transition: { duration: 0.2 } }}
               transition={{ duration: 0.5, ease: ease.out, delay: active ? 0.2 : 0 }}
             >
-              <div className="bx-movie-badge">{theme.badge}</div>
-              <h1 className="bx-movie-title">{show.title}</h1>
+              <div className="bx-movie-badge">
+                <EmojiText text={theme.badge} />
+              </div>
+              <h1 className="bx-movie-title">
+                <EmojiText text={show.title} />
+              </h1>
               <div className="bx-movie-tags">
-                <span>{show.tags}</span>
+                <span>
+                  <EmojiText text={show.tags} />
+                </span>
                 <span className="dot">•</span>
                 <span>HD</span>
               </div>
@@ -98,7 +105,7 @@ export function MediaStreaming({ theme, ctx }: Props<'media.streaming'>) {
               whileTap={{ scale: 0.95 }}
               transition={spring.snappy}
             >
-              <Play fill="black" size={20} /> {theme.watchLabel}
+              <Play fill="black" size={20} /> <EmojiText text={theme.watchLabel} />
             </motion.a>
             <motion.button
               type="button"
@@ -107,7 +114,7 @@ export function MediaStreaming({ theme, ctx }: Props<'media.streaming'>) {
               whileTap={{ scale: 0.95 }}
               transition={spring.snappy}
             >
-              <ArrowDown size={20} /> {theme.nextLabel}
+              <ArrowDown size={20} /> <EmojiText text={theme.nextLabel} />
             </motion.button>
           </Appear>
         </div>

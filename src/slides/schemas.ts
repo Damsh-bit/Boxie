@@ -60,8 +60,8 @@ const coverFriends = {
       default: rich('"La vida es mucho más divertida', br, 'cuando estamos juntos."'),
     }),
     thanks: field.text('Agradecimiento', { default: '¡Gracias por estar en todas! ✨' }),
-    emojiTop: field.text('Emoji de arriba', { default: '👯‍♀️', max: 16 }),
-    emojiBottom: field.text('Emoji de abajo', { default: '🥂', max: 16 }),
+    emojiTop: field.icon('Ícono de arriba', { default: '👯‍♀️' }),
+    emojiBottom: field.icon('Ícono de abajo', { default: '🥂' }),
     senderPrefix: field.text('Antes del remitente', { default: 'De:' }),
   }),
   buyerSchema: null,
@@ -518,7 +518,7 @@ const connectorGamer = {
   description: 'Pantalla de transición antes de los juegos.',
   category: 'game',
   themeSchema: z.object({
-    emoji: field.text('Emoji', { default: '🎮', max: 16 }),
+    emoji: field.icon('Ícono', { default: '🎮' }),
     title: field.text('Título', { default: '¿Estás listo?' }),
     subtitle: field.text('Subtítulo', { default: 'GAME START' }),
   }),
@@ -534,8 +534,8 @@ const connectorCinema = {
   themeSchema: z.object({
     title: field.text('Título', { default: 'Prepara los pochoclos...' }),
     subtitle: field.text('Subtítulo', { default: 'La función está por comenzar' }),
-    emoji: field.text('Emoji', { default: '🍿', max: 16 }),
-    secondEmoji: field.text('Emoji del mensaje', { default: '🎬', max: 16 }),
+    emoji: field.icon('Ícono', { default: '🍿' }),
+    secondEmoji: field.icon('Ícono del mensaje', { default: '🎬' }),
     message: field.text('Después del remitente', { default: 'quiere decirte algo...' }),
     quote: field.textarea('Mensaje', {
       default:
@@ -567,7 +567,7 @@ const gameTrivia = {
   description: 'Preguntas con pista; al ganar aparece un premio.',
   category: 'game',
   themeSchema: z.object({
-    introEmoji: field.text('Emoji de inicio', { default: '🎁', max: 16 }),
+    introEmoji: field.icon('Ícono de inicio', { default: '🎁' }),
     introTitle: field.text('Título', { default: '¡Desafío Ribbly!' }),
     introText: field.richText('Texto de inicio', {
       default: rich(
@@ -634,7 +634,7 @@ const gameJackpot = {
       default: 'Has desbloqueado todos los deseos.',
     }),
     scrollHint: field.text('Indicación final', { default: 'Scrollea para ver tus premios ➷' }),
-    symbols: field.list('Símbolos que giran', field.text('Símbolo', { max: 16 }), {
+    symbols: field.list('Símbolos que giran', field.icon('Símbolo'), {
       min: 3,
       max: 10,
       default: ['💎', '🍭', '✨', '🍉', '⭐', '🎁'],
@@ -647,7 +647,7 @@ const gameJackpot = {
 } satisfies SlideDefinition
 
 const couponStyle = field.group('Cupón de ejemplo', {
-  icon: field.text('Emoji', { max: 16 }),
+  icon: field.icon('Ícono'),
   title: field.text('Título', { max: 40 }),
   detail: field.text('Detalle', { max: 120 }),
   color: field.color('Color', { default: '#FF9A9E' }),
@@ -658,7 +658,7 @@ const gameCoupons = {
   description: 'Vales que el destinatario abre y canjea.',
   category: 'game',
   themeSchema: z.object({
-    emoji: field.text('Emoji', { default: '🎫', max: 16 }),
+    emoji: field.icon('Ícono', { default: '🎫' }),
     title: field.text('Título', { default: 'Cuponera' }),
     subtitle: field.text('Subtítulo', { default: 'Tocá para canjear tus regalos.' }),
     ctaLabel: field.text('Rótulo de cada vale', { default: 'Ver Detalle', advanced: true }),
@@ -672,7 +672,7 @@ const gameCoupons = {
       min: 1,
       max: 8,
       itemLabel: 'Vale {n}',
-      help: 'Se muestran si el comprador no cargó los suyos. Sus emojis y colores se reutilizan para los del comprador.',
+      help: 'Se muestran si el comprador no cargó los suyos. Sus íconos y colores se reutilizan para los del comprador.',
       default: [
         {
           icon: '🍔',
@@ -755,7 +755,7 @@ const gameFortune = {
       max: 5,
       default: ['Todo pasa por algo...', 'Tu intuición no falla...', 'El destino llama.'],
     }),
-    introEmoji: field.text('Emoji', { default: '🔮', max: 16 }),
+    introEmoji: field.icon('Ícono', { default: '🔮' }),
     chooseTitle: field.text('Título', { default: 'Tu Destino' }),
     chooseText: field.richText('Texto', {
       default: rich('Elegí con sabiduría.', br, { text: 'Tu elección es la clave.', mark: 'bold' }),
@@ -786,7 +786,7 @@ const gameFortune = {
 // ── Reflexión ───────────────────────────────────────────────────────────────
 
 const gratitudeQuestion = field.group('Pregunta', {
-  icon: field.text('Emoji', { max: 16 }),
+  icon: field.icon('Ícono'),
   label: field.text('Rótulo', { max: 30 }),
   question: field.text('Pregunta', { max: 120 }),
   placeholder: field.text('Ayuda', { max: 80 }),
@@ -797,7 +797,7 @@ const reflectGratitude = {
   description: 'Un ejercicio guiado de tres preguntas.',
   category: 'reflect',
   themeSchema: z.object({
-    introEmoji: field.text('Emoji', { default: '🧘', max: 16 }),
+    introEmoji: field.icon('Ícono', { default: '🧘' }),
     introTitle: field.text('Título', { default: 'Pausa un segundo.' }),
     introText: field.richText('Texto', {
       default: rich(
@@ -835,7 +835,7 @@ const reflectGratitude = {
         },
       ],
     }),
-    outroEmoji: field.text('Emoji final', { default: '❤️', max: 16 }),
+    outroEmoji: field.icon('Ícono final', { default: '❤️' }),
     outroTitle: field.text('Título final', { default: 'Gracias.' }),
     // El prototipo decía "Tus respuestas se han guardado": no se guardaban en ningún lado.
     outroText: field.richText('Texto final', {
@@ -853,7 +853,7 @@ const reflectJournal = {
   description: 'Un espacio para escribir, con una consigna.',
   category: 'reflect',
   themeSchema: z.object({
-    introEmoji: field.text('Emoji', { default: '☁️', max: 16 }),
+    introEmoji: field.icon('Ícono', { default: '☁️' }),
     introTitle: field.text('Título', { default: 'Espacio Libre.' }),
     introText: field.richText('Texto', {
       default: rich(
@@ -872,7 +872,7 @@ const reflectJournal = {
     }),
     placeholder: field.text('Ayuda', { default: 'Deja fluir tus ideas acá...' }),
     saveLabel: field.text('Botón guardar', { default: 'Guardar Pensamiento ✨' }),
-    outroEmoji: field.text('Emoji final', { default: '🦋', max: 16 }),
+    outroEmoji: field.icon('Ícono final', { default: '🦋' }),
     outroTitle: field.text('Título final', { default: 'Claridad.' }),
     outroQuote: field.textarea('Frase final', {
       default: '"Escribir es la forma más pura de escuchar lo que tu mente tiene para decir."',

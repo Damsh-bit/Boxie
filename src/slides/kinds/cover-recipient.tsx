@@ -1,4 +1,4 @@
-import { Gift } from 'lucide-react'
+import { EmojiText, Icon } from '@/ui/Icon'
 import { Appear, frames, Loop, Pop } from './motion'
 import type { Props } from './shared'
 
@@ -70,7 +70,7 @@ export function CoverRecipient({ theme, ctx }: Props<'cover.recipient'>) {
             className="bx-gift-icon"
             style={{ marginBottom: 30 }}
           >
-            <Gift size={80} color="white" strokeWidth={1.5} />
+            <Icon name="regalo" size={96} />
           </Loop>
         </Pop>
       )}
@@ -82,7 +82,7 @@ export function CoverRecipient({ theme, ctx }: Props<'cover.recipient'>) {
         className="bx-cover-label"
         style={{ position: 'relative', zIndex: 2 }}
       >
-        {theme.label}
+        <EmojiText text={theme.label} />
       </Appear>
       <Pop
         as="h1"
@@ -95,7 +95,7 @@ export function CoverRecipient({ theme, ctx }: Props<'cover.recipient'>) {
         {ctx.recipientName || 'Alguien especial'}
       </Pop>
       <Appear active={active} delay={1.5} y={10} className="bx-cover-sender" style={{ zIndex: 2 }}>
-        {theme.senderPrefix} {ctx.senderName}
+        <EmojiText text={theme.senderPrefix} /> {ctx.senderName}
       </Appear>
     </div>
   )

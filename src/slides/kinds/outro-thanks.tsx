@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { RotateCcw } from 'lucide-react'
+import { EmojiText } from '@/ui/Icon'
 import { Appear, Pop, spring } from './motion'
 import type { Props } from './shared'
 
@@ -8,10 +9,10 @@ export function OutroThanks({ theme, ctx }: Props<'outro.thanks'>) {
   return (
     <div>
       <Pop as="h1" active={active} from={0.5} style={{ fontSize: '3rem', color: 'white' }}>
-        {theme.title}
+        <EmojiText text={theme.title} />
       </Pop>
       <Appear as="p" active={active} delay={0.25} style={{ color: 'white' }}>
-        {theme.text}
+        <EmojiText text={theme.text} />
       </Appear>
       <Appear active={active} delay={0.45}>
         <motion.button
@@ -34,7 +35,7 @@ export function OutroThanks({ theme, ctx }: Props<'outro.thanks'>) {
             gap: 8,
           }}
         >
-          <RotateCcw size={16} /> {theme.replayLabel}
+          <RotateCcw size={16} /> <EmojiText text={theme.replayLabel} />
         </motion.button>
       </Appear>
     </div>

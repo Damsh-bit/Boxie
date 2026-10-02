@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useAnimationControls } from 'framer-motion'
 import { Check, ChevronDown, Eye } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { cn } from '@/ui/cn'
+import { Icon } from '@/ui/Icon'
 import { Collapse, ease, spring } from '@/ui/motion'
 import { EDITOR_ICONS } from './icons'
 import type { EditorModule, ModuleProgress, ModuleState } from './modules'
@@ -19,7 +20,6 @@ interface Props {
 }
 
 export function ModuleCard({ module, progress, open, onToggle, onPreview, children }: Props) {
-  const Icon = EDITOR_ICONS[module.icon]
   const panelId = `modulo-${module.id}`
   const complete = progress.state === 'complete'
 
@@ -59,11 +59,11 @@ export function ModuleCard({ module, progress, open, onToggle, onPreview, childr
           <motion.span
             className={cn(
               'relative grid size-11 shrink-0 place-items-center rounded-2xl transition-colors duration-500',
-              complete ? 'bg-green-50 text-green-600' : 'bg-brand-soft text-brand',
+              complete ? 'bg-green-50' : 'bg-brand-soft',
             )}
             animate={tile}
           >
-            <Icon className="size-5" aria-hidden />
+            <Icon name={EDITOR_ICONS[module.icon]} size={28} />
             <AnimatePresence initial={false}>
               {complete && (
                 <motion.span

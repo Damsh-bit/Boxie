@@ -4,17 +4,17 @@ export function giftShareMessage(p: {
   hasPassword: boolean
 }): string {
   const name = p.recipientName.trim()
-  const greeting = name ? `¡Hola ${name}! ✨` : '¡Hola! ✨'
+  const greeting = name ? `¡Hola ${name}!` : '¡Hola!'
   const lines = [
     greeting,
     '',
-    'Te preparé un regalo digital interactivo muy especial con nuestras fotos y recuerdos 🎁❤️',
+    'Te preparé un regalo digital interactivo muy especial con nuestras fotos y recuerdos.',
     '',
     'Tocá el link para abrir tu regalo desde el celular:',
     p.url,
   ]
   if (p.hasPassword) {
-    lines.push('', '🔐 Le puse clave por privacidad. La clave te la paso por acá aparte 😉')
+    lines.push('', 'Le puse clave por privacidad. La clave te la paso por acá aparte.')
   }
   return lines.join('\n')
 }

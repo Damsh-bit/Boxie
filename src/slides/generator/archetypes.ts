@@ -256,7 +256,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
           question: '¿En qué ciudad está el famoso "puente de los candados"?',
           options: ['París', 'Roma', 'Madrid', 'Londres'],
           correct: 1,
-          hint: 'La ciudad del amor 🗼',
+          hint: 'La ciudad del amor',
         },
         {
           question: '¿Qué órgano "se acelera" cuando estás enamorado/a?',
@@ -512,7 +512,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
           question: '¿Qué día se celebra el Día del Amigo en Argentina?',
           options: ['14 de febrero', '20 de julio', '21 de septiembre', '1 de mayo'],
           correct: 2,
-          hint: 'Coincide con la llegada del hombre a la Luna 🌙',
+          hint: 'Coincide con la llegada del hombre a la Luna',
         },
         {
           question: '¿Qué serie tiene la frase "I\'ll be there for you"?',
@@ -610,7 +610,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
           question: '¿De qué país es originaria la canción "Feliz cumpleaños"?',
           options: ['Inglaterra', 'Estados Unidos', 'Francia', 'Argentina'],
           correct: 2,
-          hint: 'La compusieron dos hermanas maestras 🇺🇸',
+          hint: 'La compusieron dos hermanas maestras',
         },
         {
           question: '¿Qué se pide al soplar las velitas?',
@@ -722,7 +722,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     label: 'Día del Padre',
     keywords: ['padre', 'papa', 'papi', 'viejo', 'father', 'dad'],
     category: 'Familia',
-    emoji: '🧔',
+    emoji: 'asado',
     cover: 'recipient',
     particles: 'circle',
     palettes: [
@@ -792,7 +792,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
           question: '¿Cuál es el superpoder de todo papá?',
           options: ['Volar', 'Dormirse viendo tele', 'Leer mentes', 'Ser invisible'],
           correct: 2,
-          hint: 'Aunque dice que estaba mirando 😴',
+          hint: 'Aunque dice que estaba mirando',
         },
         {
           question: '¿Qué frase es 100% de papá?',
@@ -815,7 +815,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     label: 'Abuelos',
     keywords: ['abuel', 'nona', 'nono', 'yaya', '=tata', 'bisabuel'],
     category: 'Familia',
-    emoji: '👵',
+    emoji: 'cafe',
     cover: 'recipient',
     particles: 'circle',
     palettes: [
@@ -882,7 +882,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
       'paternidad',
     ],
     category: 'Familia',
-    emoji: '👶',
+    emoji: 'osito',
     cover: 'recipient',
     particles: 'circle',
     palettes: [
@@ -950,7 +950,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     label: 'Día del Niño',
     keywords: ['nino', 'nina', 'infancia', 'chicos', 'hijo', 'hija', 'sobrin', 'dia del nino'],
     category: 'Familia',
-    emoji: '🧸',
+    emoji: 'globo',
     cover: 'birthday',
     particles: 'bday-fest',
     palettes: [
@@ -1012,13 +1012,13 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
           question: '¿Cuántas patas tiene una araña?',
           options: ['Seis', 'Ocho', 'Diez', 'Cuatro'],
           correct: 2,
-          hint: 'Más que un perro, menos que un ciempiés 🕷️',
+          hint: 'Más que un perro, menos que un ciempiés',
         },
         {
           question: '¿Qué planeta tiene anillos?',
           options: ['Marte', 'Saturno', 'Venus', 'Mercurio'],
           correct: 2,
-          hint: 'Parece que lleva un aro 🪐',
+          hint: 'Parece que lleva un aro',
         },
       ],
       thanksTitle: '¡A SEGUIR JUGANDO!',
@@ -1042,7 +1042,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
       'aprobad',
     ],
     category: 'Logros',
-    emoji: '🎓',
+    emoji: 'estrella',
     cover: 'recipient',
     particles: 'bday-fest',
     palettes: [
@@ -1078,7 +1078,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
       edition: 'GRADUATION EDITION',
       thought: 'ESFUERZO',
       message: 'Lo soñaste, lo trabajaste, lo lograste.',
-      dedicationHeading: '¡Lo lograste! 🎓',
+      dedicationHeading: '¡Lo lograste! 🏆',
       reasonsTitle: '10 Razones',
       reasonsSubtitle: 'Para estar orgullosos de vos...',
       reasons: [
@@ -1109,13 +1109,13 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
           question: '¿Qué se tira al aire al graduarse?',
           options: ['Los apuntes', 'El birrete', 'El título', 'Los zapatos'],
           correct: 2,
-          hint: 'Va en la cabeza 🎓',
+          hint: 'Va en la cabeza',
         },
         {
           question: '¿Cuál es la universidad más antigua de Argentina?',
           options: ['UBA', 'UNLP', 'Universidad de Córdoba', 'UTN'],
           correct: 3,
-          hint: 'Se fundó en 1613 🏛️',
+          hint: 'Se fundó en 1613',
         },
         {
           question: '¿Qué es lo primero que se hace al recibirse?',
@@ -1267,13 +1267,13 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
           question: '¿Qué día llegan los Reyes Magos?',
           options: ['24 de diciembre', '31 de diciembre', '6 de enero', '1 de enero'],
           correct: 3,
-          hint: 'Traen regalos a los chicos que dejan los zapatos 👟',
+          hint: 'Traen regalos a los chicos que dejan los zapatos',
         },
         {
           question: '¿Cuántos renos tiene Papá Noel (sin contar a Rodolfo)?',
           options: ['Cuatro', 'Seis', 'Ocho', 'Diez'],
           correct: 3,
-          hint: 'Rodolfo es el noveno 🦌',
+          hint: 'Rodolfo es el noveno',
         },
         {
           question: '¿Qué plato no puede faltar en una Navidad argentina?',
@@ -1291,7 +1291,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     label: 'Halloween',
     keywords: ['halloween', 'terror', 'miedo', 'bruja', 'fantasma', 'calabaza'],
     category: 'Fechas especiales',
-    emoji: '🎃',
+    emoji: 'bola-de-cristal',
     cover: 'friends',
     particles: 'circle',
     palettes: [
@@ -1330,7 +1330,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
         'Deseo Embrujado',
       ],
       thanksTitle: '¡FELIZ HALLOWEEN!',
-      thanksText: 'Dulces sueños… si podés 👻',
+      thanksText: 'Dulces sueños… si podés',
     },
   },
   {
@@ -1338,7 +1338,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     label: 'Mascotas',
     keywords: ['mascota', 'perr', 'gat', 'cachorr', 'michi', 'firulais', '=pet', '=dog', '=cat'],
     category: 'Mascotas',
-    emoji: '🐾',
+    emoji: 'corazon',
     cover: 'friends',
     particles: 'circle',
     palettes: [
@@ -1403,19 +1403,19 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
           question: '¿Cuántas horas por día duerme un gato, aproximadamente?',
           options: ['6', '10', '15', '20'],
           correct: 3,
-          hint: 'Más de la mitad del día 😴',
+          hint: 'Más de la mitad del día',
         },
         {
           question: '¿Qué sentido tienen más desarrollado los perros?',
           options: ['La vista', 'El olfato', 'El gusto', 'El tacto'],
           correct: 2,
-          hint: 'Por eso huelen todo 👃',
+          hint: 'Por eso huelen todo',
         },
         {
           question: '¿Por qué los gatos ronronean?',
           options: ['Solo de hambre', 'Para comunicarse', 'Porque roncan', 'Para dormir'],
           correct: 2,
-          hint: 'Casi siempre es un "te quiero" 😻',
+          hint: 'Casi siempre es un "te quiero"',
         },
       ],
       fortunes: [
@@ -1426,7 +1426,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
         'Tu mascota piensa que sos la mejor persona del mundo. Tiene razón.',
       ],
       thanksTitle: '¡GUAU!',
-      thanksText: 'Gracias por tanto amor peludo 🐾',
+      thanksText: 'Gracias por tanto amor peludo',
     },
   },
   {
@@ -1585,13 +1585,13 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
           question: '¿Cómo se llama el fontanero más famoso de los videojuegos?',
           options: ['Luigi', 'Mario', 'Wario', 'Toad'],
           correct: 2,
-          hint: 'Tiene bigote y gorra roja 🍄',
+          hint: 'Tiene bigote y gorra roja',
         },
         {
           question: '¿En qué juego se construye con bloques y se esquiva a los creepers?',
           options: ['Roblox', 'Fortnite', 'Minecraft', 'Terraria'],
           correct: 3,
-          hint: 'Todo es cúbico ⛏️',
+          hint: 'Todo es cúbico',
         },
         {
           question: '¿Qué significa "GG"?',
@@ -1634,7 +1634,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
       'rugby',
     ],
     category: 'Hobbies',
-    emoji: '⚽',
+    emoji: 'trofeo',
     cover: 'recipient',
     particles: 'circle',
     palettes: [
@@ -1706,13 +1706,13 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
           question: '¿Cuántos jugadores tiene un equipo de fútbol en cancha?',
           options: ['9', '10', '11', '12'],
           correct: 3,
-          hint: 'Arquero incluido 🧤',
+          hint: 'Arquero incluido',
         },
         {
           question: '¿Qué número usaba Maradona en la Selección?',
           options: ['7', '9', '10', '11'],
           correct: 3,
-          hint: 'El número de los cracks 🔟',
+          hint: 'El número de los cracks',
         },
       ],
       thanksTitle: '¡GRACIAS, CRACK!',
@@ -1816,7 +1816,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
       'educador',
     ],
     category: 'Agradecimiento',
-    emoji: '🍎',
+    emoji: 'escribir',
     cover: 'recipient',
     particles: 'circle',
     palettes: [
@@ -1888,7 +1888,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
       'reconocimiento',
     ],
     category: 'Agradecimiento',
-    emoji: '🙌',
+    emoji: 'gracias',
     cover: 'recipient',
     particles: 'circle',
     palettes: [
@@ -2025,7 +2025,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
     label: 'Perdón y reconciliación',
     keywords: ['perdon', 'disculpa', 'reconcilia', 'lo siento', 'arrepent'],
     category: 'Amor',
-    emoji: '🕊️',
+    emoji: 'paz',
     cover: 'recipient',
     particles: 'heart',
     palettes: [
@@ -2051,7 +2051,7 @@ export const ARCHETYPE_SPECS: ArchetypeSpec[] = [
       edition: 'SORRY EDITION',
       thought: 'SINCERIDAD',
       message: 'A veces las palabras no alcanzan. Por eso esto.',
-      dedicationHeading: 'Te debo esto 🕊️',
+      dedicationHeading: 'Te debo esto 🙏',
       reasonsTitle: '10 Razones',
       reasonsSubtitle: 'Por las que vale la pena volver a intentarlo...',
       reasons: [

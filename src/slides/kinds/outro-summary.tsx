@@ -1,46 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  Camera,
-  CircleCheck,
-  Film,
-  Gamepad2,
-  Gift,
-  Headphones,
-  Heart,
-  Moon,
-  Music,
-  PartyPopper,
-  PenTool,
-  Share2,
-  Smile,
-  Sparkles,
-  Sun,
-  Ticket,
-  type LucideIcon,
-} from 'lucide-react'
+import { Share2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { EmojiText, Icon } from '@/ui/Icon'
 import { RichText } from '../RichText'
-import type { SummaryIcon } from '../types'
+import { SUMMARY_ICONS } from '../summary-icons'
 import { ease, spring } from './motion'
 import { useActivated, type Props } from './shared'
-
-const ICONS: Record<SummaryIcon, LucideIcon> = {
-  gift: Gift,
-  heart: Heart,
-  music: Music,
-  headphones: Headphones,
-  smile: Smile,
-  sun: Sun,
-  ticket: Ticket,
-  camera: Camera,
-  'check-circle': CircleCheck,
-  'pen-tool': PenTool,
-  moon: Moon,
-  film: Film,
-  sparkles: Sparkles,
-  gamepad: Gamepad2,
-  party: PartyPopper,
-}
 
 const INTRO_MS = 4000
 const ITEM_DELAY = 1.3
@@ -113,7 +78,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                 animate={{ opacity: 1 }}
                 style={{ fontWeight: 'normal', fontSize: '1.2rem', marginBottom: 10 }}
               >
-                {theme.wait}
+                <EmojiText text={theme.wait} />
               </motion.h3>
               <motion.div
                 initial={{ scale: 0.6, opacity: 0, rotate: -8 }}
@@ -131,7 +96,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                   boxShadow: '5px 5px 0px rgba(0,0,0,0.1)',
                 }}
               >
-                {theme.badge1}
+                <EmojiText text={theme.badge1} />
               </motion.div>
               <motion.div
                 initial={{ x: -50, opacity: 0, rotate: 1 }}
@@ -149,7 +114,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                   boxShadow: '5px 5px 0px rgba(244,78,99,0.3)',
                 }}
               >
-                {theme.badge2}
+                <EmojiText text={theme.badge2} />
               </motion.div>
               <motion.p
                 initial={{ opacity: 0 }}
@@ -157,7 +122,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                 transition={{ delay: 1 }}
                 style={{ fontSize: '1.2rem', marginTop: 20 }}
               >
-                {theme.intro}
+                <EmojiText text={theme.intro} />
               </motion.p>
             </motion.div>
           )}
@@ -196,7 +161,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                     margin: 0,
                   }}
                 >
-                  {theme.timelineTitle}
+                  <EmojiText text={theme.timelineTitle} />
                 </h2>
               </div>
               <motion.div
@@ -240,7 +205,6 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                   }}
                 >
                   {items.map((item, i) => {
-                    const Icon = ICONS[item.icon] ?? Sparkles
                     const even = i % 2 === 0
                     const appear = 0.5 + i * ITEM_DELAY
                     return (
@@ -262,20 +226,20 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                           animate={{ scale: 1, rotate: 0 }}
                           transition={{ ...spring.pop, delay: appear }}
                           style={{
-                            width: 42,
-                            height: 42,
-                            background: 'var(--bx-primary)',
+                            width: 46,
+                            height: 46,
+                            background: 'white',
                             borderRadius: '50%',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: 'white',
                             flexShrink: 0,
-                            boxShadow: '0 0 0 4px #fff0f3, 0 4px 10px rgba(244,78,99,0.3)',
+                            boxShadow:
+                              '0 0 0 3px var(--bx-primary), 0 0 0 7px #fff0f3, 0 4px 10px rgba(244,78,99,0.3)',
                             zIndex: 2,
                           }}
                         >
-                          <Icon size={22} />
+                          <Icon name={SUMMARY_ICONS[item.icon] ?? 'destellos'} size={30} />
                         </motion.div>
                         <div
                           style={{
@@ -296,7 +260,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                               fontSize: '0.95rem',
                             }}
                           >
-                            {item.title}
+                            <EmojiText text={item.title} />
                           </h4>
                           <p
                             style={{
@@ -306,7 +270,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                               lineHeight: 1.3,
                             }}
                           >
-                            {item.text}
+                            <EmojiText text={item.text} />
                           </p>
                         </div>
                       </motion.div>
@@ -350,7 +314,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                   margin: '0 0 10px 0',
                 }}
               >
-                {theme.thanksTitle}
+                <EmojiText text={theme.thanksTitle} />
               </h2>
               <p
                 style={{
@@ -361,7 +325,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                   color: '#555',
                 }}
               >
-                {theme.thanksText}
+                <EmojiText text={theme.thanksText} />
               </p>
               <motion.div
                 initial={{ y: 30, opacity: 0 }}
@@ -375,12 +339,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                   maxWidth: 320,
                 }}
               >
-                <Heart
-                  size={30}
-                  color="var(--bx-primary)"
-                  fill="var(--bx-primary)"
-                  style={{ marginBottom: 15 }}
-                />
+                <Icon name="corazon" size={40} style={{ marginBottom: 12 }} />
                 <p
                   style={{
                     fontWeight: 'bold',
@@ -389,7 +348,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                     color: 'var(--bx-ink)',
                   }}
                 >
-                  {theme.favorTitle}
+                  <EmojiText text={theme.favorTitle} />
                 </p>
                 <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: 20, lineHeight: 1.4 }}>
                   <RichText value={theme.favorText} />
@@ -409,7 +368,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                     marginBottom: 15,
                   }}
                 >
-                  <Share2 size={18} /> {theme.handle}
+                  <Share2 size={18} /> <EmojiText text={theme.handle} />
                 </div>
                 <motion.button
                   type="button"
@@ -425,7 +384,7 @@ export function OutroSummary({ theme, ctx }: Props<'outro.summary'>) {
                     marginTop: 5,
                   }}
                 >
-                  {theme.replayLabel}
+                  <EmojiText text={theme.replayLabel} />
                 </motion.button>
               </motion.div>
             </motion.div>

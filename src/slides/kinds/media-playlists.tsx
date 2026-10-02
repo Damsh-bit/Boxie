@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Play } from 'lucide-react'
+import { EmojiText } from '@/ui/Icon'
 import type { BuyerPhoto } from '../fields'
 import { Appear, ease, frames, Loop, Pop, spring } from './motion'
 import type { Props } from './shared'
@@ -30,10 +31,11 @@ export function MediaPlaylists({ theme, ctx }: Props<'media.playlists'>) {
         <div className="bx-spotify-shade" />
         <div className="bx-spotify-header-content">
           <Appear as="h1" active={active} delay={0.15} y={20} className="bx-spotify-title">
-            {theme.title}
+            <EmojiText text={theme.title} />
           </Appear>
           <Appear as="p" active={active} delay={0.3} y={10} className="bx-spotify-subtitle">
-            {theme.subtitlePrefix} {ctx.recipientName} • {theme.playlists.length} Playlists
+            <EmojiText text={theme.subtitlePrefix} /> {ctx.recipientName} • {theme.playlists.length}{' '}
+            Playlists
           </Appear>
         </div>
         <Pop
@@ -88,8 +90,12 @@ export function MediaPlaylists({ theme, ctx }: Props<'media.playlists'>) {
               }}
             />
             <div>
-              <h4>{pl.title}</h4>
-              <p>{pl.description}</p>
+              <h4>
+                <EmojiText text={pl.title} />
+              </h4>
+              <p>
+                <EmojiText text={pl.description} />
+              </p>
             </div>
             <div className="bx-spotify-duration">...</div>
           </motion.a>

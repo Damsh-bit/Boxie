@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Share2 } from 'lucide-react'
 import { useState } from 'react'
+import { EmojiText } from '@/ui/Icon'
 import type { BuyerPhoto } from '../fields'
 import { RichText } from '../RichText'
 import { Appear, ease, spring } from './motion'
@@ -126,7 +127,7 @@ export function StoryEditorial({ theme, ctx }: Props<'story.editorial'>) {
             fontFamily: 'var(--font-outfit), sans-serif',
           }}
         >
-          <Share2 size={16} color="var(--bx-primary)" /> {theme.shareLabel}
+          <Share2 size={16} color="var(--bx-primary)" /> <EmojiText text={theme.shareLabel} />
         </motion.button>
       </Appear>
       <AnimatePresence>{hint && <ShareHint onClose={() => setHint(false)} />}</AnimatePresence>

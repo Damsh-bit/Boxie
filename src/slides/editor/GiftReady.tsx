@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { site } from '@/content/site'
 import { Button, ButtonLink } from '@/ui/Button'
 import { ConfettiBurst } from '@/ui/ConfettiBurst'
+import { Icon } from '@/ui/Icon'
 import { ease, spring, useCalm } from '@/ui/motion'
 import { formatLongDate, giftShareMessage, whatsappShareUrl } from './share'
 
@@ -88,7 +89,7 @@ export function GiftReady({
         }}
       >
         <motion.div
-          className="mb-4 inline-block text-6xl"
+          className="mb-4 inline-block"
           aria-hidden
           variants={{
             hidden: { y: -80, scale: 0.4, rotate: -25, opacity: 0 },
@@ -117,7 +118,7 @@ export function GiftReady({
               delay: 1.2,
             }}
           >
-            🎁
+            <Icon name="regalo" size={80} />
           </motion.span>
         </motion.div>
         <motion.h1 variants={item} className="font-display text-3xl font-bold text-ink sm:text-4xl">
@@ -135,8 +136,8 @@ export function GiftReady({
               variants={item}
               className="relative mt-8 overflow-hidden rounded-3xl bg-ink p-5 text-left text-white"
             >
-              <span className="absolute -top-4 -right-2 text-7xl opacity-10" aria-hidden>
-                🎀
+              <span className="absolute -top-4 -right-2 opacity-15" aria-hidden>
+                <Icon name="regalo" size={88} />
               </span>
               <p className="text-xs font-semibold tracking-widest text-white/60 uppercase">
                 Link del regalo

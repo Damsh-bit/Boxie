@@ -1,5 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { EmojiText } from '@/ui/Icon'
 import { Appear, Loop, spring } from './motion'
 import { useActivated, type Props } from './shared'
 
@@ -83,7 +84,7 @@ export function StoryReasons({ theme, buyer, ctx }: Props<'story.reasons'>) {
             margin: 0,
           }}
         >
-          {theme.title}
+          <EmojiText text={theme.title} />
         </Appear>
         <AnimatePresence initial={false}>
           {!finished && (
@@ -94,7 +95,7 @@ export function StoryReasons({ theme, buyer, ctx }: Props<'story.reasons'>) {
               animate={{ opacity: ctx.active ? 1 : 0, transition: { delay: 0.2 } }}
               exit={{ opacity: 0, height: 0, marginTop: 0 }}
             >
-              {theme.subtitle}
+              <EmojiText text={theme.subtitle} />
             </motion.p>
           )}
         </AnimatePresence>
@@ -116,9 +117,11 @@ export function StoryReasons({ theme, buyer, ctx }: Props<'story.reasons'>) {
               transition={spring.pop}
             >
               <div className="bx-reason-text" style={{ color: 'white', textShadow: 'none' }}>
-                {theme.finalTitle}
+                <EmojiText text={theme.finalTitle} />
                 <br />
-                <small>{theme.finalText}</small>
+                <small>
+                  <EmojiText text={theme.finalText} />
+                </small>
               </div>
             </motion.div>
           )}
@@ -144,13 +147,13 @@ export function StoryReasons({ theme, buyer, ctx }: Props<'story.reasons'>) {
                     animate={{ opacity: 1, y: 0, x: '-50%' }}
                     exit={{ opacity: 0, y: -6, x: '-50%' }}
                   >
-                    {theme.badgePrefix}
+                    <EmojiText text={theme.badgePrefix} />
                     {card.n}
                   </motion.div>
                 )}
               </AnimatePresence>
               <div className="bx-reason-text">
-                {card.text}
+                <EmojiText text={card.text} />
                 {card.typing && (
                   <motion.span
                     className="bx-cursor"

@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { Emoji, EmojiText } from '@/ui/Icon'
 import { ease } from './motion'
 import { useSequence, type Props } from './shared'
 
@@ -42,8 +43,12 @@ export function ConnectorCinema({ theme, ctx }: Props<'connector.cinema'>) {
               exit={{ opacity: 0, y: -30, scale: 0.95 }}
               transition={{ duration: 0.8, ease: ease.out }}
             >
-              <h1 className="bx-cinema-title">{theme.title}</h1>
-              <p className="bx-cinema-subtitle">{theme.subtitle}</p>
+              <h1 className="bx-cinema-title">
+                <EmojiText text={theme.title} />
+              </h1>
+              <p className="bx-cinema-subtitle">
+                <EmojiText text={theme.subtitle} />
+              </p>
               <motion.div
                 style={{
                   fontSize: '4rem',
@@ -53,7 +58,7 @@ export function ConnectorCinema({ theme, ctx }: Props<'connector.cinema'>) {
                 animate={open ? { scale: [1, 1.12, 1] } : { scale: 1 }}
                 transition={{ duration: 1.6, delay: 1.6, ease: 'easeInOut' }}
               >
-                {theme.emoji}
+                <Emoji value={theme.emoji} size="1.15em" large />
               </motion.div>
             </motion.div>
           ) : (
@@ -65,7 +70,9 @@ export function ConnectorCinema({ theme, ctx }: Props<'connector.cinema'>) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.9, ease: ease.out }}
             >
-              <div style={{ fontSize: '3rem', marginBottom: 20 }}>{theme.secondEmoji}</div>
+              <div style={{ fontSize: '3rem', marginBottom: 20 }}>
+                <Emoji value={theme.secondEmoji} size="1.15em" large />
+              </div>
               <h2
                 style={{
                   color: 'white',
@@ -85,7 +92,7 @@ export function ConnectorCinema({ theme, ctx }: Props<'connector.cinema'>) {
                   {ctx.senderName || 'Alguien'}
                 </span>
                 <br />
-                {theme.message}
+                <EmojiText text={theme.message} />
               </h2>
               <p
                 style={{
@@ -99,7 +106,7 @@ export function ConnectorCinema({ theme, ctx }: Props<'connector.cinema'>) {
                   border: '1px solid rgba(255,255,255,0.2)',
                 }}
               >
-                {theme.quote}
+                <EmojiText text={theme.quote} />
               </p>
               <div
                 style={{
@@ -110,7 +117,7 @@ export function ConnectorCinema({ theme, ctx }: Props<'connector.cinema'>) {
                   letterSpacing: 2,
                 }}
               >
-                {theme.footer}
+                <EmojiText text={theme.footer} />
               </div>
             </motion.div>
           )}

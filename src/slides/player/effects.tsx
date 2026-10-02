@@ -2,6 +2,8 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 import { useMemo } from 'react'
+import type { IconName } from '@/domain/icons'
+import { Icon } from '@/ui/Icon'
 
 /**
  * Efectos decorativos del player. El prototipo usaba Math.random() durante el
@@ -26,9 +28,10 @@ export function seededRandom(seed: number) {
 
 export type ParticleType = 'none' | 'heart' | 'friend' | 'bday-fest' | 'circle'
 
-const EMOJIS: Record<string, string[]> = {
-  friend: ['😎', '✌️', '✨', '⚡', '🥂', '🔥'],
-  'bday-fest': ['🎂', '🎈', '🎉', '🎁', '✨', '🥳'],
+const ICONS: Partial<Record<ParticleType, IconName[]>> = {
+  heart: ['corazon'],
+  friend: ['canchero', 'paz', 'destellos', 'rayo', 'brindis', 'fuego'],
+  'bday-fest': ['torta', 'globo', 'cotillon', 'regalo', 'destellos', 'cara-de-fiesta'],
 }
 
 export function FloatingParticles({
@@ -44,14 +47,14 @@ export function FloatingParticles({
   const particles = useMemo(() => {
     const rand = seededRandom(seed * 7919 + type.length)
     return Array.from({ length: 15 }, () => {
-      const pool = EMOJIS[type]
+      const pool = ICONS[type]
       return {
         left: `${rand() * 100}%`,
         top: `${rand() * 100}%`,
         delay: rand() * 5,
         duration: 6 + rand() * 5,
         size: `${rand() * 10 + 10}px`,
-        content: type === 'heart' ? '❤' : pool ? pool[Math.floor(rand() * pool.length)] : '',
+        icon: pool ? pool[Math.floor(rand() * pool.length)] : null,
       }
     })
   }, [type, seed])
@@ -99,7 +102,7 @@ export function FloatingParticles({
           }
           transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'linear' }}
         >
-          {p.content}
+          {p.icon && <Icon name={p.icon} size={26} />}
         </motion.div>
       ))}
     </div>

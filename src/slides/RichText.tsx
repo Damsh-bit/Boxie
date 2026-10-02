@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { EmojiText } from '@/ui/Icon'
 import type { RichMark, RichText as RichTextValue } from './rich-text'
 
 const DEFAULT_MARK_CLASS: Record<RichMark, string> = {
@@ -16,15 +16,15 @@ interface Props {
 
 export function RichText({ value, marks }: Props) {
   if (!value) return null
-  if (typeof value === 'string') return <>{value}</>
+  if (typeof value === 'string') return <EmojiText text={value} />
   return (
     <>
       {value.v.map((node, i) => {
         if ('br' in node) return <br key={i} />
-        if (!node.mark) return <Fragment key={i}>{node.text}</Fragment>
+        if (!node.mark) return <EmojiText key={i} text={node.text} />
         return (
           <span key={i} className={marks?.[node.mark] ?? DEFAULT_MARK_CLASS[node.mark]}>
-            {node.text}
+            <EmojiText text={node.text} />
           </span>
         )
       })}

@@ -1,3 +1,4 @@
+import { Emoji, EmojiText } from '@/ui/Icon'
 import { RichText } from '../RichText'
 import { Appear, frames, Loop, Pop } from './motion'
 import { tint, type Props } from './shared'
@@ -78,7 +79,7 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
             boxShadow: `0 4px 15px ${tint('--bx-primary', 15)}`,
           }}
         >
-          {theme.badge}
+          <EmojiText text={theme.badge} />
         </Appear>
 
         <Pop
@@ -137,7 +138,7 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
               letterSpacing: 0.5,
             }}
           >
-            {theme.thanks}
+            <EmojiText text={theme.thanks} />
           </div>
         </Pop>
 
@@ -154,7 +155,7 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
             frames={frames.float(15, -6)}
             style={{ fontSize: '3.5rem' }}
           >
-            {theme.emojiTop}
+            <Emoji value={theme.emojiTop} size="1.15em" large />
           </Loop>
         </Pop>
         <Pop
@@ -170,7 +171,7 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
             frames={frames.float(15, 6)}
             style={{ fontSize: '3.5rem' }}
           >
-            {theme.emojiBottom}
+            <Emoji value={theme.emojiBottom} size="1.15em" large />
           </Loop>
         </Pop>
       </div>
@@ -191,7 +192,7 @@ export function CoverFriends({ theme, ctx }: Props<'cover.friends'>) {
           zIndex: 1,
         }}
       >
-        {theme.senderPrefix} {ctx.senderName}
+        <EmojiText text={theme.senderPrefix} /> {ctx.senderName}
       </Appear>
     </div>
   )

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Heart, Share2 } from 'lucide-react'
 import { useState } from 'react'
+import { EmojiText, Icon } from '@/ui/Icon'
 import { Appear, Pop, spring } from './motion'
 import { ShareHint } from './share-hint'
 import type { Props } from './shared'
@@ -120,7 +121,7 @@ export function StoryAnecdote({ theme, buyer, ctx }: Props<'story.anecdote'>) {
               letterSpacing: -0.5,
             }}
           >
-            {title}
+            <EmojiText text={title} />
           </Appear>
           <Appear
             as="p"
@@ -136,7 +137,9 @@ export function StoryAnecdote({ theme, buyer, ctx }: Props<'story.anecdote'>) {
               whiteSpace: 'pre-line',
             }}
           >
-            &quot;{text}&quot;
+            &quot;
+            <EmojiText text={text} />
+            &quot;
           </Appear>
           <Appear
             active={active}
@@ -166,7 +169,7 @@ export function StoryAnecdote({ theme, buyer, ctx }: Props<'story.anecdote'>) {
                 boxShadow: '0 10px 20px rgba(244, 78, 99, 0.25)',
               }}
             >
-              <Share2 size={18} /> {theme.shareLabel}
+              <Share2 size={18} /> <EmojiText text={theme.shareLabel} />
             </motion.button>
             <motion.button
               type="button"
@@ -229,7 +232,7 @@ export function StoryAnecdote({ theme, buyer, ctx }: Props<'story.anecdote'>) {
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                     >
-                      ❤
+                      <Icon name="corazon" size={14} />
                     </motion.span>
                   ))}
               </AnimatePresence>

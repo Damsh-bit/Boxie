@@ -1,5 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useMemo, useState } from 'react'
+import { Emoji, EmojiText } from '@/ui/Icon'
 import { seededRandom } from '../player/effects'
 import { RichText } from '../RichText'
 import { Appear, ease, Pop, spring } from './motion'
@@ -137,7 +138,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
                   filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.4))',
                 }}
               >
-                {theme.introEmoji}
+                <Emoji value={theme.introEmoji} size="1.15em" large />
               </div>
               <h2
                 style={{
@@ -147,7 +148,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
                   textShadow: '0 5px 15px rgba(0,100,200,0.2)',
                 }}
               >
-                {theme.introTitle}
+                <EmojiText text={theme.introTitle} />
               </h2>
             </Appear>
             <Appear
@@ -189,7 +190,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
                   boxShadow: '0 15px 40px rgba(0,198,251,0.3)',
                 }}
               >
-                {theme.openLabel}
+                <EmojiText text={theme.openLabel} />
               </motion.button>
             </Pop>
           </motion.div>
@@ -232,7 +233,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
                   textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                 }}
               >
-                {theme.promptTitle}
+                <EmojiText text={theme.promptTitle} />
               </div>
               <h2
                 style={{
@@ -243,7 +244,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
                   textShadow: '0 5px 20px rgba(0,100,200,0.2)',
                 }}
               >
-                {theme.promptText}
+                <EmojiText text={theme.promptText} />
               </h2>
               <div style={{ position: 'relative', flex: 1, maxHeight: '40vh' }}>
                 <textarea
@@ -294,7 +295,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
                   boxShadow: '0 10px 30px rgba(0,198,251,0.2)',
                 }}
               >
-                {theme.saveLabel}
+                <EmojiText text={theme.saveLabel} />
               </motion.button>
             </div>
           </motion.div>
@@ -326,7 +327,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
                 filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.6))',
               }}
             >
-              {theme.outroEmoji}
+              <Emoji value={theme.outroEmoji} size="1.15em" large />
             </Pop>
             <Appear
               as="h2"
@@ -339,7 +340,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
                 textShadow: '0 5px 15px rgba(0,100,200,0.2)',
               }}
             >
-              {theme.outroTitle}
+              <EmojiText text={theme.outroTitle} />
             </Appear>
             <Appear
               as="p"
@@ -353,7 +354,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
                 maxWidth: 350,
               }}
             >
-              {theme.outroQuote}
+              <EmojiText text={theme.outroQuote} />
             </Appear>
             <Appear
               active
@@ -370,7 +371,7 @@ export function ReflectJournal({ theme, ctx }: Props<'reflect.journal'>) {
                 backdropFilter: 'blur(10px)',
               }}
             >
-              {theme.outroBadge}
+              <EmojiText text={theme.outroBadge} />
             </Appear>
           </motion.div>
         )}

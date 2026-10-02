@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { useState } from 'react'
+import { Emoji, EmojiText } from '@/ui/Icon'
 import { RichText } from '../RichText'
 import { Appear, ease, Pop, spring } from './motion'
 import { useSequence, type Props } from './shared'
@@ -20,7 +21,7 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
   const introStep = useSequence(ctx.active && view === 'intro', [1500, 4500])
   const questions = theme.questions.length
     ? theme.questions
-    : [{ icon: '✨', label: '', question: '', placeholder: '' }]
+    : [{ icon: 'destellos', label: '', question: '', placeholder: '' }]
   const question = questions[step] ?? questions[0]!
   const canGo = answer.trim().length >= 2
 
@@ -110,9 +111,11 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
           >
             <div style={{ height: 100 }} />
             <Appear active={ctx.active} y={20} duration={1}>
-              <div style={{ fontSize: '3rem', marginBottom: 20 }}>{theme.introEmoji}</div>
+              <div style={{ fontSize: '3rem', marginBottom: 20 }}>
+                <Emoji value={theme.introEmoji} size="1.15em" large />
+              </div>
               <h2 style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: 10 }}>
-                {theme.introTitle}
+                <EmojiText text={theme.introTitle} />
               </h2>
             </Appear>
             <Appear
@@ -148,7 +151,7 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
                   boxShadow: '0 10px 30px rgba(244, 78, 99, 0.3)',
                 }}
               >
-                {theme.startLabel}
+                <EmojiText text={theme.startLabel} />
               </motion.button>
             </Pop>
           </motion.div>
@@ -220,10 +223,10 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
                     gap: 8,
                   }}
                 >
-                  {question.icon} {question.label}
+                  <Emoji value={question.icon} size="1.3em" /> <EmojiText text={question.label} />
                 </div>
                 <h2 style={{ fontSize: '2rem', lineHeight: 1.3, marginBottom: 30 }}>
-                  {question.question}
+                  <EmojiText text={question.question} />
                 </h2>
                 <textarea
                   autoFocus
@@ -291,10 +294,10 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
             }}
           >
             <Pop active from={0.2} rotate={-25} style={{ fontSize: '4rem', marginBottom: 20 }}>
-              {theme.outroEmoji}
+              <Emoji value={theme.outroEmoji} size="1.15em" large />
             </Pop>
             <Appear as="h2" active delay={0.2} style={{ fontSize: '2rem', fontWeight: 'bold' }}>
-              {theme.outroTitle}
+              <EmojiText text={theme.outroTitle} />
             </Appear>
             <Appear
               as="p"
@@ -316,7 +319,7 @@ export function ReflectGratitude({ theme, ctx }: Props<'reflect.gratitude'>) {
                 color: 'var(--bx-primary)',
               }}
             >
-              {theme.outroBadge}
+              <EmojiText text={theme.outroBadge} />
             </Appear>
           </motion.div>
         )}

@@ -7,6 +7,7 @@ import { useEffect, useId, useState, type FormEvent } from 'react'
 import { TOPIC_INFO, type NewTicketInput, type SupportTopic } from '@/domain/support'
 import { Button } from '../Button'
 import { Field, Input, Textarea } from '../form'
+import { Emoji } from '../Icon'
 import { Notice, Spinner, spring } from '../motion'
 import { SupportRequestError, type Conversation } from './client'
 
@@ -119,9 +120,7 @@ export function NewTicketForm({
   return (
     <form onSubmit={submit} className="space-y-4" noValidate>
       <p className="flex items-center gap-2 rounded-2xl bg-brand-soft px-3.5 py-2.5 text-sm font-semibold text-ink">
-        <span aria-hidden className="text-lg">
-          {info.emoji}
-        </span>
+        <Emoji value={info.emoji} size={22} />
         {info.prompt}
       </p>
 

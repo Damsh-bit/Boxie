@@ -34,25 +34,25 @@ export const TOPIC_INFO: Record<
 > = {
   boxie: {
     label: 'Mi Ribbly',
-    emoji: '🎁',
+    emoji: 'regalo',
     prompt: 'Tengo un problema con mi Ribbly',
     placeholder: 'Contanos qué pasa: por ejemplo, no puedo entrar al editor o el regalo no abre.',
   },
   error: {
     label: 'Un error',
-    emoji: '🐞',
+    emoji: 'reportar-error',
     prompt: 'Encontré un error',
     placeholder: 'Qué estabas haciendo y qué pasó. Si aparece un mensaje, copialo tal cual.',
   },
   pago: {
     label: 'Pagos y compras',
-    emoji: '💳',
+    emoji: 'pago',
     prompt: 'Pagos y compras',
     placeholder: 'Contanos qué pasó con el pago (fecha, medio de pago y el mail de la compra).',
   },
   otro: {
     label: 'Otra consulta',
-    emoji: '💬',
+    emoji: 'mensaje',
     prompt: 'Otra consulta',
     placeholder: '¿En qué te podemos ayudar?',
   },

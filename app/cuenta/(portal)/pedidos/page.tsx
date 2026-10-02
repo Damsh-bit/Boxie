@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
-import { Receipt, ShoppingBag } from 'lucide-react'
+import { Receipt } from 'lucide-react'
 import Link from 'next/link'
 import { getCustomerPortalData } from '@/server/customer/data'
 import { requireCustomerSession } from '@/server/customer/session'
 import { Button } from '@/ui/Button'
+import { Icon } from '@/ui/Icon'
 
 export const metadata: Metadata = {
   title: 'Mis Compras · Mi Cuenta Ribbly',
@@ -27,8 +28,8 @@ export default async function CustomerOrdersPage() {
 
       {data.orders.length === 0 ? (
         <div className="rounded-3xl border border-line bg-white p-12 text-center shadow-sm">
-          <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-neutral-100 text-neutral-500">
-            <ShoppingBag className="size-8" />
+          <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-neutral-100">
+            <Icon name="compras" size={40} />
           </div>
           <h3 className="mt-4 font-display text-lg font-bold text-ink">
             No encontramos compras registradas

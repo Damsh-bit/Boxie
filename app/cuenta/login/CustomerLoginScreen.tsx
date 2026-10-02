@@ -1,12 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowLeft, Gift, Mail, Sparkles } from 'lucide-react'
+import { ArrowLeft, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { getBrowserSupabase } from '@/client/supabase'
 import { Button } from '@/ui/Button'
 import { Field, Input } from '@/ui/form'
+import { Icon } from '@/ui/Icon'
 import { Spinner } from '@/ui/motion'
 
 export function CustomerLoginScreen({ nextUrl = '/cuenta' }: { nextUrl?: string }) {
@@ -93,8 +94,8 @@ export function CustomerLoginScreen({ nextUrl = '/cuenta' }: { nextUrl?: string 
       >
         {/* Logo e Icono */}
         <div className="text-center">
-          <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-brand text-white shadow-lg shadow-brand/30">
-            <Gift className="size-8" />
+          <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-brand-soft shadow-lg shadow-brand/20">
+            <Icon name="regalo" size={44} />
           </div>
           <h1 className="mt-5 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
             Mi Cuenta Ribbly
@@ -164,7 +165,7 @@ export function CustomerLoginScreen({ nextUrl = '/cuenta' }: { nextUrl?: string 
           {/* Opción Email Magic Link */}
           {magicSent ? (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-center text-emerald-900">
-              <Mail className="mx-auto size-8 text-emerald-600" />
+              <Icon name="carta-de-amor" size={44} className="mx-auto block" />
               <h3 className="mt-2 text-sm font-bold">¡Revisá tu correo!</h3>
               <p className="mt-1 text-xs text-emerald-700">
                 Te enviamos un link de acceso seguro a <b>{email}</b>. Tocá el link para ingresar

@@ -14,6 +14,7 @@ import {
   type SupportTopic,
 } from '@/domain/support'
 import { cn } from '../cn'
+import { Emoji, Icon } from '../Icon'
 import { useIsDesktop } from '../Modal'
 import { ease, spring, useCalm } from '../motion'
 import { SUPPORT_EVENT, type OpenSupportDetail } from '../support-bridge'
@@ -305,7 +306,9 @@ export function SupportWidget({
               transition={spring.bouncy}
               style={{ transformOrigin: 'bottom left' }}
             >
-              <strong className="block">¿Necesitás ayuda? 👋</strong>
+              <strong className="flex items-center gap-1">
+                ¿Necesitás ayuda? <Icon name="hola" size={18} />
+              </strong>
               <span className="text-ink/60">Escribinos: te responde una persona.</span>
             </motion.button>
           )}
@@ -473,7 +476,9 @@ function Header({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: ease.out }}
         >
-          <p className="font-display text-[1.7rem] leading-tight font-bold">¡Hola! 👋</p>
+          <p className="flex items-center gap-2 font-display text-[1.7rem] leading-tight font-bold">
+            ¡Hola! <Icon name="hola" size={34} />
+          </p>
           <p className="mt-1 text-[0.95rem] text-white/90">
             ¿En qué te ayudamos? Te responde una persona del equipo, no un bot.
           </p>
@@ -514,9 +519,7 @@ function Home({
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
             >
-              <span aria-hidden className="text-2xl">
-                {info.emoji}
-              </span>
+              <Emoji value={info.emoji} size={32} />
               <span className="text-sm leading-snug font-bold text-ink">{info.prompt}</span>
             </motion.button>
           )
@@ -584,11 +587,8 @@ export function TicketRow({ ticket, onOpen }: { ticket: CustomerTicket; onOpen()
       whileTap={{ scale: 0.98 }}
       layout="position"
     >
-      <span
-        aria-hidden
-        className="grid size-10 shrink-0 place-items-center rounded-xl bg-paper/70 text-xl"
-      >
-        {TOPIC_INFO[ticket.topic].emoji}
+      <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-xl bg-paper/70">
+        <Emoji value={TOPIC_INFO[ticket.topic].emoji} size={26} />
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">

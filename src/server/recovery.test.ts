@@ -120,7 +120,7 @@ describe('recuperar el acceso', () => {
     ]
     expect(await resendAccessByEmail('leandro@example.com')).toEqual({ sent: 1 })
     const [mail] = devOutbox()
-    expect(mail!.subject).toBe('El regalo para Sofía está listo 🎁')
+    expect(mail!.subject).toBe('El regalo para Sofía está listo')
     expect(mail!.text).toContain(`https://boxie.test/g/${gift}`)
     expect(mail!.text).toContain('Le pusiste una clave')
     expect(state.updates).toHaveLength(0)

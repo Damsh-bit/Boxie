@@ -14,9 +14,9 @@ export interface OutgoingMail extends MailContent {
   /**
    * Remitente opcional para segmentar por sector.
    * Ejemplos recomendados:
-   *  - 🎁 Regalos y compras: "Ribbly Regalos <regalos@ribbly.com.ar>"
-   *  - 💬 Soporte y consultas: "Soporte Ribbly <ayuda@ribbly.com.ar>"
-   *  - ✨ Contacto institucional: "Ribbly <hola@ribbly.com.ar>"
+   *  - Regalos y compras: "Ribbly Regalos <regalos@ribbly.com.ar>"
+   *  - Soporte y consultas: "Soporte Ribbly <ayuda@ribbly.com.ar>"
+   *  - Contacto institucional: "Ribbly <hola@ribbly.com.ar>"
    *
    * Si no se especifica, toma automáticamente MAIL_FROM de las variables de entorno.
    */

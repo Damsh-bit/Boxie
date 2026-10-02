@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import type { Route } from 'next'
 import type { ReactNode } from 'react'
+import { Icon } from './Icon'
 import { spring, useCalm } from './motion'
 
 const MotionLink = motion.create(Link)
@@ -47,12 +48,12 @@ export function SocialButton({
   )
 }
 
-/** El corazón de "Hecho con ❤️": late. */
+/** El corazón de "Hecho con amor": late. */
 export function Heartbeat() {
   const calm = useCalm()
   return (
     <motion.span
-      className="inline-block"
+      className="inline-block align-[-0.2em]"
       aria-label="amor"
       role="img"
       animate={
@@ -77,7 +78,7 @@ export function Heartbeat() {
         ease: 'easeInOut',
       }}
     >
-      ❤️
+      <Icon name="corazon" size="1.2em" />
     </motion.span>
   )
 }

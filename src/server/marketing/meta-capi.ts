@@ -10,7 +10,7 @@ import { log } from '../log'
  * optimizar por compras y no por clics.
  *
  * Apagada salvo que estén NEXT_PUBLIC_META_PIXEL_ID y META_CAPI_TOKEN. El
- * mail y el teléfono viajan cifrados con SHA-256 (como pide Meta). ⚠️ Antes
+ * mail y el teléfono viajan cifrados con SHA-256 (como pide Meta). OJO: antes
  * de activarla, la Política de Privacidad tiene que decir que se comparten
  * datos con Meta para medir la publicidad (hoy dice lo contrario).
  *

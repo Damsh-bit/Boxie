@@ -25,14 +25,14 @@ export interface Occasion {
 export const occasions: readonly Occasion[] = [
   {
     id: 'aniversario',
-    emoji: '💘',
+    emoji: 'corazon-flechado',
     label: 'Aniversario',
     theme: 'pareja',
     pitch: 'Su historia en fotos, su canción y una carta que se abre como un sobre.',
   },
   {
     id: 'san-valentin',
-    emoji: '🌹',
+    emoji: 'rosa',
     label: 'San Valentín',
     theme: 'pareja',
     pitch:
@@ -40,35 +40,35 @@ export const occasions: readonly Occasion[] = [
   },
   {
     id: 'distancia',
-    emoji: '✈️',
+    emoji: 'viaje',
     label: 'Amor a distancia',
     theme: 'pareja',
     pitch: 'Cruza cualquier distancia: la abre desde su celular, esté donde esté.',
   },
   {
     id: 'cumpleanos',
-    emoji: '🎂',
+    emoji: 'torta',
     label: 'Cumpleaños',
     theme: 'cumpleanos',
     pitch: 'Un regalo de cumpleaños con fiesta, deseos, juegos y sus mejores momentos.',
   },
   {
     id: 'grupal',
-    emoji: '🎉',
+    emoji: 'cotillon',
     label: 'Saludo grupal',
     theme: 'cumpleanos',
     pitch: 'Juntá fotos y mensajes de todos en un solo regalo para su día.',
   },
   {
     id: 'amigo',
-    emoji: '🤝',
+    emoji: 'acuerdo',
     label: 'Día del Amigo',
     theme: 'amistad',
     pitch: 'Selfies, anécdotas y ese temazo que cantan a los gritos.',
   },
   {
     id: 'gracias',
-    emoji: '🙏',
+    emoji: 'gracias',
     label: 'Para agradecer',
     theme: 'amistad',
     pitch: 'Para esa persona que está en todas: decile gracias de una forma que no olvide.',
@@ -96,7 +96,7 @@ export const experiences = [
   {
     id: 'dedicatoria',
     kind: 'story.dedication',
-    emoji: '💌',
+    emoji: 'carta-de-amor',
     label: 'Dedicatoria',
     title: 'Una carta que se abre como un sobre',
     text: 'Escribí lo que sentís, con tu estilo y tus emojis. Se lee con calma, como una carta de verdad.',
@@ -104,7 +104,7 @@ export const experiences = [
   {
     id: 'fotos',
     kind: 'story.dedication',
-    emoji: '📸',
+    emoji: 'camara',
     label: 'Fotos',
     title: 'Sus mejores momentos, en polaroids',
     text: 'Subí fotos desde el celular y armá un recorrido por viajes, cumpleaños y risas compartidas.',
@@ -112,7 +112,7 @@ export const experiences = [
   {
     id: 'cancion',
     kind: 'media.song',
-    emoji: '🎵',
+    emoji: 'musica',
     label: 'Su canción',
     title: 'La canción que es de ustedes',
     text: 'Elegí el tema que los representa y hacelo sonar mientras recorre su regalo.',
@@ -120,7 +120,7 @@ export const experiences = [
   {
     id: 'trivia',
     kind: 'game.trivia',
-    emoji: '🧠',
+    emoji: 'trivia',
     label: 'Trivia',
     title: '¿Cuánto me conocés?',
     text: 'Armá preguntas sobre ustedes. Si acierta, desbloquea un premio que elegís vos.',
@@ -128,7 +128,7 @@ export const experiences = [
   {
     id: 'jackpot',
     kind: 'game.jackpot',
-    emoji: '🎰',
+    emoji: 'tragamonedas',
     label: 'Tragamonedas',
     title: 'Un jackpot que siempre gana',
     text: 'Gira los rodillos y el premio lo decidís vos: una cena, una salida, un abrazo eterno.',
@@ -136,7 +136,7 @@ export const experiences = [
   {
     id: 'cuponera',
     kind: 'game.coupons',
-    emoji: '🎟️',
+    emoji: 'entrada',
     label: 'Cuponera',
     title: 'Vales para canjear cuando quiera',
     text: 'Masajes, desayunos en la cama, elegir la peli: vales que canjea con un toque.',
@@ -153,28 +153,28 @@ export type ExperienceId = (typeof experiences)[number]['id']
 export const giftComparisons = [
   {
     id: 'flores',
-    emoji: '💐',
+    emoji: 'ramo',
     label: 'Ramo de flores',
     priceCents: 3_200_000,
     note: 'con envío, y a la semana se marchita',
   },
   {
     id: 'desayuno',
-    emoji: '🥐',
+    emoji: 'medialuna',
     label: 'Desayuno sorpresa',
     priceCents: 3_800_000,
     note: 'solo si vive en tu ciudad',
   },
   {
     id: 'peluche',
-    emoji: '🧸',
+    emoji: 'osito',
     label: 'Peluche y tarjeta',
     priceCents: 2_400_000,
     note: 'más el envío, y a esperar',
   },
   {
     id: 'bombones',
-    emoji: '🍫',
+    emoji: 'chocolate',
     label: 'Caja de bombones',
     priceCents: 1_800_000,
     note: 'dura lo que dura la caja',

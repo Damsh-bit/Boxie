@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Gift, Home, LifeBuoy } from 'lucide-react'
 import { ButtonLink } from './Button'
+import { Icon } from './Icon'
 import { Float, spring, useCalm } from './motion'
 import { SupportButton } from './SupportButton'
 
@@ -20,7 +21,7 @@ export function NotFoundContent() {
       />
       <Float distance={10} duration={6}>
         <motion.div
-          className="relative mb-6 text-[7rem] leading-none select-none sm:text-[9rem]"
+          className="relative mb-6 size-[7.5rem] select-none sm:size-[9.5rem]"
           aria-hidden
           initial={{ scale: 0.4, rotate: -20, opacity: 0 }}
           animate={
@@ -30,7 +31,7 @@ export function NotFoundContent() {
           }
           transition={{ ...spring.bouncy, rotate: { duration: 0.9, delay: 0.5 } }}
         >
-          🎁
+          <Icon name="regalo" size="100%" large />
         </motion.div>
       </Float>
       <motion.p

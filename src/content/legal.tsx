@@ -26,7 +26,7 @@ const terms: LegalDoc = {
   slug: 'terminos',
   title: 'Términos y Condiciones',
   summary: 'Las reglas del juego. Leé nuestro contrato de servicio.',
-  icon: '📜',
+  icon: 'pergamino',
   updated: '2026-09-22',
   body: (
     <>
@@ -109,7 +109,7 @@ const privacy: LegalDoc = {
   slug: 'privacidad',
   title: 'Política de Privacidad',
   summary: 'Cómo cuidamos tus datos y fotos (Ley 25.326).',
-  icon: '🔒',
+  icon: 'candado',
   updated: '2026-09-22',
   body: (
     <>
@@ -159,7 +159,7 @@ const payments: LegalDoc = {
   slug: 'pagos',
   title: 'Pagos y Reembolsos',
   summary: 'Política de Mercado Pago y derecho de arrepentimiento.',
-  icon: '💳',
+  icon: 'pago',
   updated: '2026-09-22',
   body: (
     <>
@@ -200,7 +200,7 @@ const ip: LegalDoc = {
   slug: 'propiedad-intelectual',
   title: 'Propiedad Intelectual',
   summary: 'Sobre la marca Ribbly y el uso de contenidos.',
-  icon: '©️',
+  icon: 'idea',
   updated: '2026-09-22',
   body: (
     <>

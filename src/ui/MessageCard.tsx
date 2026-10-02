@@ -3,11 +3,12 @@
 import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'
 import { cn } from './cn'
+import { Emoji } from './Icon'
 import { ease, spring, useCalm } from './motion'
 
 /**
  * Tarjeta de aviso (link vencido, editor de prueba, regalo que no existe…):
- * entra subiendo, el emoji salta y después queda flotando.
+ * entra subiendo, el ícono salta y después queda flotando.
  */
 export function MessageCard({
   emoji,
@@ -15,6 +16,7 @@ export function MessageCard({
   children,
   className,
 }: {
+  /** Nombre de ícono o emoji (src/domain/icons.ts). */
   emoji: string
   title: ReactNode
   children?: ReactNode
@@ -40,7 +42,7 @@ export function MessageCard({
       }}
     >
       <motion.div
-        className="mb-4 inline-block text-5xl"
+        className="mb-4 inline-block"
         aria-hidden
         variants={{
           hidden: { scale: 0, rotate: -25 },
@@ -56,7 +58,7 @@ export function MessageCard({
           }
           transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
         >
-          {emoji}
+          <Emoji value={emoji} size={64} />
         </motion.span>
       </motion.div>
       <motion.h1

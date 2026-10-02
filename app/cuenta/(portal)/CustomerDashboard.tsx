@@ -9,11 +9,9 @@ import {
   ExternalLink,
   Eye,
   Gift,
-  Heart,
   MessageCircle,
   PartyPopper,
   Plus,
-  Sparkles,
   Trash2,
   X,
 } from 'lucide-react'
@@ -24,6 +22,7 @@ import type { CustomerPortalData } from '@/server/customer/data'
 import type { CustomerSpecialDate } from '@/server/customer/reminders'
 import { giftShareMessage, whatsappShareUrl } from '@/slides/editor/share'
 import { Button } from '@/ui/Button'
+import { Icon } from '@/ui/Icon'
 import { addSpecialDateAction, deleteSpecialDateAction } from './actions'
 
 const MONTHS = [
@@ -116,7 +115,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-            ¡Hola, {name}! 👋
+            ¡Hola, {name}! <Icon name="hola" size="1.1em" style={{ verticalAlign: '-0.15em' }} />
           </h1>
           <p className="mt-1 text-sm text-neutral-600">
             Acá podés seguir tus regalos, editarlos, compartirlos por WhatsApp y enterarte apenas
@@ -138,8 +137,8 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
             <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase">
               Mis Regalos
             </span>
-            <div className="grid size-8 place-items-center rounded-xl bg-brand/10 text-brand">
-              <Gift className="size-4" />
+            <div className="grid size-9 place-items-center rounded-xl bg-brand/10">
+              <Icon name="regalo" size={24} />
             </div>
           </div>
           <p className="mt-2 font-display text-3xl font-bold text-ink">{data.stats.totalBoxies}</p>
@@ -151,8 +150,8 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
             <span className="text-xs font-semibold tracking-wider text-emerald-800 uppercase">
               ¡Ya Abiertas!
             </span>
-            <div className="grid size-8 place-items-center rounded-xl bg-emerald-100 text-emerald-600">
-              <PartyPopper className="size-4" />
+            <div className="grid size-9 place-items-center rounded-xl bg-emerald-100">
+              <Icon name="cotillon" size={24} />
             </div>
           </div>
           <p className="mt-2 font-display text-3xl font-bold text-emerald-950">
@@ -188,8 +187,8 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
 
         {data.boxies.length === 0 ? (
           <div className="rounded-3xl border border-line bg-white p-12 text-center shadow-sm">
-            <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-brand/10 text-brand">
-              <Sparkles className="size-8" />
+            <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-brand/10">
+              <Icon name="destellos" size={40} />
             </div>
             <h3 className="mt-4 font-display text-lg font-bold text-ink">
               Todavía no tenés ningún regalo
@@ -344,7 +343,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xl">🎂</span>
+              <Icon name="calendario" size={26} />
               <h2 className="font-display text-xl font-bold text-ink">
                 Fechas Especiales y Recordatorios
               </h2>
@@ -376,7 +375,9 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
         {/* Sugerencia inteligente de agasajados pasados */}
         {suggestedRecipients.length > 0 && !showForm && (
           <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-brand/5 p-3 text-xs text-ink">
-            <span className="font-medium text-brand">💡 Sugerencia rápida:</span>
+            <span className="inline-flex items-center gap-1 font-medium text-brand">
+              <Icon name="idea" size={16} /> Sugerencia rápida:
+            </span>
             <span>¿Querés agendar la fecha de</span>
             {suggestedRecipients.slice(0, 3).map((r) => (
               <button
@@ -430,10 +431,10 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
                     onChange={(e) => setFormOccasion(e.target.value)}
                     className="mt-1 w-full rounded-xl border border-line bg-white px-3 py-2 text-xs text-ink shadow-xs focus:border-brand focus:outline-none"
                   >
-                    <option value="Cumpleaños">Cumpleaños 🎂</option>
-                    <option value="Aniversario">Aniversario ❤️</option>
-                    <option value="Día del Amigo">Día del Amigo 🥂</option>
-                    <option value="Fecha especial">Otra fecha especial ✨</option>
+                    <option value="Cumpleaños">Cumpleaños</option>
+                    <option value="Aniversario">Aniversario</option>
+                    <option value="Día del Amigo">Día del Amigo</option>
+                    <option value="Fecha especial">Otra fecha especial</option>
                   </select>
                 </div>
 
@@ -526,11 +527,18 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
               >
                 <div className="flex items-center gap-3">
                   <div className="grid size-10 place-items-center rounded-xl bg-white shadow-xs">
-                    {date.occasion === 'Aniversario' ? (
-                      <Heart className="size-5 text-rose-500" />
-                    ) : (
-                      <span className="text-lg">🎂</span>
-                    )}
+                    <Icon
+                      name={
+                        date.occasion === 'Aniversario'
+                          ? 'corazon'
+                          : date.occasion === 'Día del Amigo'
+                            ? 'brindis'
+                            : date.occasion === 'Cumpleaños'
+                              ? 'torta'
+                              : 'destellos'
+                      }
+                      size={26}
+                    />
                   </div>
 
                   <div>
@@ -543,7 +551,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
                     <div className="mt-1">
                       {date.status === 'today' ? (
                         <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
-                          ¡Es hoy! 🥳
+                          ¡Es hoy! <Icon name="cara-de-fiesta" size={14} className="ml-1" />
                         </span>
                       ) : date.status === 'urgent' ? (
                         <span className="inline-flex items-center rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800">

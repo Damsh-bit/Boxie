@@ -37,7 +37,7 @@ import { AdminRepoError, type Actor, type AdminRepo } from './repo'
  * reglas (versiones inmutables, reembolsos atómicos, un solo dueño…).
  *
  * Necesita la migración 20260925120000_admin_backoffice.sql aplicada.
- * ⚠️ Escrita contra los tipos generados de las migraciones y probada en su
+ * OJO: escrita contra los tipos generados de las migraciones y probada en su
  * lógica con el modo demo; al conectar el proyecto real, recorrer el panel
  * una vez (docs/ADMIN.md § "Conectar Supabase").
  */

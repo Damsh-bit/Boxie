@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { houseAd, industries } from '@/content/brands'
 import type { PublicSponsor } from '@/domain/sponsors'
 import { cn } from '../cn'
+import { Emoji } from '../Icon'
 import { Float, spring } from '../motion'
 
 /**
@@ -46,9 +47,7 @@ export function SponsorMark({
           loading="lazy"
         />
       ) : (
-        <span aria-hidden style={{ fontSize: Math.round(size * 0.48) }}>
-          {sponsor.emoji}
-        </span>
+        <Emoji value={sponsor.emoji} size={Math.round(size * 0.6)} />
       )}
     </span>
   )
@@ -124,7 +123,7 @@ function SponsorTileLive({ sponsor, compact }: { sponsor: PublicSponsor; compact
           variants={{ rest: { rotate: -8, scale: 1 }, hover: { rotate: 4, scale: 1.08 } }}
           transition={spring.soft}
         >
-          {sponsor.emoji}
+          <Emoji value={sponsor.emoji} size="1.1em" large />
         </motion.span>
         <div className="relative flex items-end gap-3">
           <SponsorMark sponsor={sponsor} size={compact ? 44 : 60} />
@@ -224,13 +223,13 @@ function HouseTile({ compact }: { compact: boolean }) {
             <motion.span
               className={cn(
                 'grid place-items-center rounded-2xl bg-white shadow-[0_10px_24px_-10px_rgba(42,36,51,0.35)] ring-1 ring-black/5',
-                compact ? 'size-11 text-xl' : 'size-16 text-3xl sm:size-[4.5rem]',
+                compact ? 'size-11 text-[26px]' : 'size-16 text-[40px] sm:size-[4.5rem]',
               )}
               style={{ rotate: (i - 1.5) * 7 }}
               variants={{ rest: { y: 0 }, hover: { y: i % 2 ? -8 : 6 } }}
               transition={spring.bouncy}
             >
-              {e}
+              <Emoji value={e} size="1em" />
             </motion.span>
           </Float>
         ))}
@@ -308,7 +307,7 @@ function SponsorBandLive({ sponsor, className }: { sponsor: PublicSponsor; class
         variants={{ rest: { rotate: -10 }, hover: { rotate: 6 } }}
         transition={spring.soft}
       >
-        {sponsor.emoji}
+        <Emoji value={sponsor.emoji} size="1.1em" large />
       </motion.span>
       <SponsorMark sponsor={sponsor} size={72} />
       <div className="min-w-0 flex-1">
@@ -376,7 +375,7 @@ function HouseBand({ className }: { className?: string }) {
               variants={{ rest: { y: 0 }, hover: { y: n % 2 ? -3 : 3 } }}
               transition={spring.bouncy}
             >
-              <span aria-hidden>{i.emoji}</span> {i.label}
+              <Emoji value={i.emoji} size={20} /> {i.label}
             </motion.li>
           ))}
         </ul>

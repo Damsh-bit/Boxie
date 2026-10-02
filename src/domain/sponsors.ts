@@ -238,7 +238,7 @@ export function leadToInput(lead: SponsorLead): SponsorInput {
     tagline: '',
     offer: '',
     description: '',
-    emoji: lead.kind === 'local' ? '☕' : '🤝',
+    emoji: lead.kind === 'local' ? 'cafe' : 'acuerdo',
     logoUrl: null,
     color: '#F44E63',
     url: null,

@@ -4,11 +4,12 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import type { Route } from 'next'
 import { cn } from './cn'
+import { Emoji } from './Icon'
 import { spring } from './motion'
 
 const MotionLink = motion.create(Link)
 
-/** Tarjeta de "¿Qué Boxie elegir?": se levanta y el emoji salta al pasar el mouse. */
+/** Tarjeta de "¿Qué Boxie elegir?": se levanta y el ícono salta al pasar el mouse. */
 export function GuideCard({
   href,
   emoji,
@@ -37,12 +38,12 @@ export function GuideCard({
       transition={spring.soft}
     >
       <motion.span
-        className={cn('block origin-bottom-left', compact ? 'mb-3 text-4xl' : 'mb-5 text-5xl')}
+        className={cn('block w-fit origin-bottom-left', compact ? 'mb-3' : 'mb-5')}
         variants={{ rest: { rotate: 0, scale: 1 }, hover: { rotate: -10, scale: 1.15 } }}
         transition={spring.bouncy}
         aria-hidden
       >
-        {emoji}
+        <Emoji value={emoji} size={compact ? 44 : 56} />
       </motion.span>
       <h3
         className={cn(

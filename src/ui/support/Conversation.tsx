@@ -12,6 +12,7 @@ import {
 } from 'react'
 import type { CustomerTicket } from '@/domain/support'
 import { cn } from '../cn'
+import { EmojiText, Icon } from '../Icon'
 import { spring } from '../motion'
 import { SupportRequestError } from './client'
 import { clock, dayLabel, sameDay } from './format'
@@ -217,7 +218,7 @@ function MessageRow({
           transition={spring.soft}
         >
           <span className="max-w-[90%] rounded-2xl bg-ink/[0.06] px-3.5 py-2 text-center text-xs leading-relaxed text-ink/70">
-            {message.body}
+            <EmojiText text={message.body} />
           </span>
         </motion.li>
       ) : (
@@ -250,7 +251,7 @@ function MessageRow({
                 message.failed && 'bg-red-500',
               )}
             >
-              {message.body}
+              <EmojiText text={message.body} />
             </p>
             <span className="mt-0.5 flex items-center gap-1 px-1 text-[10px] text-ink/40">
               {message.failed ? (
@@ -326,7 +327,12 @@ function RatingBar({ ticket, center }: { ticket: CustomerTicket; center: Support
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            ¡Gracias por contarnos! {ticket.rating === 'good' ? '💖' : '🙏'}
+            ¡Gracias por contarnos!{' '}
+            <Icon
+              name={ticket.rating === 'good' ? 'corazon-brillo' : 'gracias'}
+              size="1.2em"
+              style={{ verticalAlign: '-0.25em' }}
+            />
           </motion.span>
         ) : (
           <motion.span

@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps<'/g/[token]'>): Pro
   const found = await gift((await params).token)
   const robots = { index: false, follow: false }
   if (!found || found.availability !== 'available') return { title: 'Ribbly', robots }
-  const title = `${found.recipientName ? `${found.recipientName}, tenés` : 'Tenés'} un regalo 🎁`
+  const title = `${found.recipientName ? `${found.recipientName}, tenés` : 'Tenés'} un regalo`
   const description = found.senderName
     ? `${found.senderName} te preparó un regalo en Ribbly. Abrilo desde el celular.`
     : 'Te prepararon un regalo en Ribbly. Abrilo desde el celular.'
@@ -64,17 +64,17 @@ export default async function GiftPage({ params }: PageProps<'/g/[token]'>) {
 function GiftMessage({ gift }: { gift: Gift }) {
   const copy = {
     not_ready: {
-      emoji: '🎀',
+      emoji: 'regalo',
       title: 'Tu regalo todavía se está preparando',
       text: `${gift.senderName || 'Quien te lo regala'} todavía no terminó de armarlo. Volvé a abrir este link en un rato.`,
     },
     expired: {
-      emoji: '⌛',
+      emoji: 'cuenta-regresiva',
       title: 'Este regalo ya no está disponible',
       text: `Los regalos se pueden abrir durante un tiempo limitado, y este plazo terminó el ${formatLongDate(gift.expiresAt)}.`,
     },
     refunded: {
-      emoji: '📭',
+      emoji: 'envio',
       title: 'Este regalo ya no está disponible',
       text: 'Quien lo compró lo canceló.',
     },

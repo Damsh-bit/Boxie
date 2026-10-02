@@ -35,7 +35,7 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
   return [
     {
       id: 'comprar',
-      emoji: '🛍️',
+      emoji: 'compras',
       title: 'Comprar',
       items: [
         {
@@ -69,7 +69,7 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
     },
     {
       id: 'personalizar',
-      emoji: '✏️',
+      emoji: 'escribir',
       title: 'Personalizar',
       items: [
         {
@@ -96,7 +96,7 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
     },
     {
       id: 'regalar',
-      emoji: '🎁',
+      emoji: 'regalo',
       title: 'Regalar',
       items: [
         {
@@ -124,7 +124,7 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
     },
     {
       id: 'despues',
-      emoji: '⏳',
+      emoji: 'cuenta-regresiva',
       title: 'Después de regalarla',
       items: [
         {
@@ -140,7 +140,7 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
     },
     {
       id: 'problemas',
-      emoji: '🛟',
+      emoji: 'ayuda',
       title: 'Problemas',
       items: [
         {
@@ -167,7 +167,7 @@ export function helpCategories(ctx: HelpContext): HelpCategory[] {
     },
     {
       id: 'privacidad',
-      emoji: '🔒',
+      emoji: 'candado',
       title: 'Privacidad',
       items: [
         {

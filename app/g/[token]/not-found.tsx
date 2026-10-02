@@ -6,7 +6,7 @@ import { Reveal } from '@/ui/motion'
 export default function GiftNotFound() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-[radial-gradient(circle_at_top,#ffd6de_0%,#fff_60%)] px-5 py-12 text-center">
-      <MessageCard emoji="🔗" title="Este link no existe" className="max-w-md">
+      <MessageCard emoji="link" title="Este link no existe" className="max-w-md">
         <p className="leading-relaxed text-neutral-600">
           Revisá que esté completo: los links de los regalos son largos y a veces se cortan al
           copiarlos. Si el problema sigue, pedile a quien te lo mandó que te lo reenvíe.

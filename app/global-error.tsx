@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { Icon } from '@/ui/Icon'
 
 /**
  * Último recurso: falló el layout raíz. Reemplaza todo el documento, así que
@@ -33,9 +34,7 @@ export default function GlobalError({
         }}
       >
         <div>
-          <p style={{ fontSize: 64, margin: 0 }} aria-hidden>
-            🎁
-          </p>
+          <Icon name="regalo" size={88} />
           <h1 style={{ fontSize: 28, margin: '16px 0 8px' }}>Uy, algo se trabó</h1>
           <p style={{ color: '#6b6272', margin: '0 0 24px' }}>
             No pudimos cargar Ribbly. Probá de nuevo en un momento.

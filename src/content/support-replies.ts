@@ -1,5 +1,5 @@
 /**
- * Respuestas rápidas del soporte (panel → Soporte → ⚡). `{nombre}` se
+ * Respuestas rápidas del soporte (panel → Soporte → respuestas rápidas). `{nombre}` se
  * reemplaza por el nombre de pila del cliente. Se editan acá: son las que
  * más se repiten; el resto se escribe a mano.
  */
@@ -7,7 +7,7 @@ export const QUICK_REPLIES = [
   {
     id: 'saludo',
     label: 'Saludo',
-    text: '¡Hola {nombre}! Gracias por escribirnos. Ya lo estamos revisando y te respondemos por acá 🙌',
+    text: '¡Hola {nombre}! Gracias por escribirnos. Ya lo estamos revisando y te respondemos por acá.',
   },
   {
     id: 'codigo',
@@ -37,7 +37,7 @@ export const QUICK_REPLIES = [
   {
     id: 'cierre',
     label: 'Cierre',
-    text: '¡Genial, {nombre}! Cualquier otra cosa, escribinos por acá. ¡Que la disfruten! 💖',
+    text: '¡Genial, {nombre}! Cualquier otra cosa, escribinos por acá. ¡Que la disfruten!',
   },
 ] as const
 

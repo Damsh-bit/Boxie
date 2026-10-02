@@ -1,7 +1,7 @@
 /**
  * Textos de /nosotros.
  *
- * ⚠️ TEXTOS DE EJEMPLO (septiembre 2026): la historia, los roles, las bios, las
+ * OJO, TEXTOS DE EJEMPLO (septiembre 2026): la historia, los roles, las bios, las
  * frases y los datos de cada fundador son un borrador para ver el diseño con
  * contenido real de largo. Los reemplazan los dueños; el diseño se acomoda
  * solo (más o menos capítulos, principios o datos).
@@ -82,28 +82,28 @@ export const founders: Founder[] = [
 export const chapters = [
   {
     id: 'pregunta',
-    emoji: '✈️',
+    emoji: 'viaje',
     kicker: 'La pregunta',
     title: 'Un cumpleaños a 10.000 km',
     text: 'Un amigo se había ido a vivir afuera y se venía su cumple. Una gift card nos parecía fría y mandar algo por correo, imposible a tiempo. ¿Cómo se abraza a alguien que está tan lejos?',
   },
   {
     id: 'primer-regalo',
-    emoji: '🎁',
+    emoji: 'regalo',
     kicker: 'El primer regalo',
     title: 'Fotos, su canción y un audio llorando de risa',
     text: 'Armamos a mano una página con fotos de toda la vida, su canción y un mensaje de cada uno. Se la mandamos por WhatsApp y a los cinco minutos llegó la respuesta: un audio que todavía guardamos.',
   },
   {
     id: 'ribbly',
-    emoji: '📦',
+    emoji: 'envio',
     kicker: 'Nace Ribbly',
     title: 'Todos tenemos a alguien a quien abrazar',
     text: 'Nos dimos cuenta de que todos tenemos a alguien lejos, o a alguien cerca a quien no le decimos lo suficiente. Le pusimos nombre, diseñamos las primeras temáticas y empezamos a regalarlas a amigos y familia.',
   },
   {
     id: 'hoy',
-    emoji: '💌',
+    emoji: 'carta-de-amor',
     kicker: 'Hoy',
     title: 'Un regalo que cualquiera arma en minutos',
     text: 'Un editor para armar la tuya desde el celular, {temáticas} temáticas, pagos con Mercado Pago y un chat donde te respondemos nosotros. La idea sigue siendo la misma: que llegue el abrazo.',

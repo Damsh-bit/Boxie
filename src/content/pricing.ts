@@ -18,36 +18,36 @@ export const moduleGroups: ModuleGroup[] = [
   {
     id: 'esencia',
     label: 'Lo que la hace única',
-    emoji: '💌',
+    emoji: 'carta-de-amor',
     kinds: ['story.intro', 'story.dedication', 'media.song', 'story.reasons'],
   },
   {
     id: 'juegos',
     label: 'Juegos',
-    emoji: '🎮',
+    emoji: 'juego',
     kinds: ['game.trivia', 'game.jackpot', 'game.coupons', 'game.fortune'],
   },
   {
     id: 'recuerdos',
     label: 'Recuerdos',
-    emoji: '📸',
+    emoji: 'camara',
     kinds: ['story.anecdote', 'story.editorial', 'outro.summary'],
   },
   {
     id: 'pantalla',
     label: 'Música y pantalla',
-    emoji: '🎬',
+    emoji: 'claqueta',
     kinds: ['media.playlists', 'media.streaming'],
   },
   {
     id: 'sentir',
     label: 'Para sentir',
-    emoji: '🙏',
+    emoji: 'gracias',
     kinds: ['reflect.gratitude', 'reflect.journal'],
   },
 ]
 
-export const OTHER_GROUP = { id: 'otros', label: 'Más sorpresas', emoji: '✨' }
+export const OTHER_GROUP = { id: 'otros', label: 'Más sorpresas', emoji: 'destellos' }
 
 /** Qué hace cada módulo, para quien está armando su Boxie. */
 export const moduleBlurbs: Partial<Record<SlideKind, string>> = {

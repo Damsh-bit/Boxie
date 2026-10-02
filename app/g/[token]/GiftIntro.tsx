@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { ConfettiBurst } from '@/ui/ConfettiBurst'
+import { EmojiText, Icon } from '@/ui/Icon'
 import { ease, spring, useCalm } from '@/ui/motion'
 
 const SPARKLES = [
@@ -149,16 +150,16 @@ export function GiftIntro({
           <motion.button
             type="button"
             onClick={open}
-            className="relative rounded-full bg-brand px-9 py-4 text-lg font-bold shadow-[0_12px_40px_rgb(244_78_99/0.45)]"
+            className="relative inline-flex items-center gap-2 rounded-full bg-brand px-9 py-4 text-lg font-bold shadow-[0_12px_40px_rgb(244_78_99/0.45)]"
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.95 }}
             transition={spring.snappy}
           >
-            Abrir mi regalo 🎁
+            Abrir mi regalo <Icon name="regalo" size={28} />
           </motion.button>
         </motion.div>
         <motion.p className="mt-5 text-xs text-white/50" variants={line}>
-          Subí el volumen: tiene música 🔊
+          <EmojiText text="Subí el volumen: tiene música 🔊" />
         </motion.p>
       </motion.div>
     </motion.div>
@@ -185,7 +186,10 @@ function GiftBox({ opening }: { opening: boolean }) {
         transition={opening ? { duration: 0.8, ease: [0.3, 0.7, 0.4, 1] } : spring.soft}
       >
         <span className="absolute inset-y-0 left-1/2 -ml-3 w-6 bg-gold" />
-        <span className="absolute -top-8 left-1/2 -ml-6 text-5xl leading-none">🎀</span>
+        <span className="absolute -top-7 left-1/2 flex -translate-x-1/2 items-end">
+          <span className="block h-8 w-9 -rotate-[28deg] rounded-[50%_50%_40%_60%] border-[6px] border-gold" />
+          <span className="block h-8 w-9 rotate-[28deg] rounded-[50%_50%_60%_40%] border-[6px] border-gold" />
+        </span>
       </motion.span>
       {/* Caja */}
       <motion.span

@@ -13,7 +13,7 @@ export type EditorMessageKind =
 
 const COPY: Record<EditorMessageKind, { emoji: string; title: string; text: ReactNode }> = {
   'no-session': {
-    emoji: '📬',
+    emoji: 'envio',
     title: 'Entrá con el link de tu mail',
     text: (
       <>
@@ -23,7 +23,7 @@ const COPY: Record<EditorMessageKind, { emoji: string; title: string; text: Reac
     ),
   },
   'bad-link': {
-    emoji: '🔗',
+    emoji: 'link',
     title: 'Ese link no funciona',
     text: (
       <>
@@ -33,17 +33,17 @@ const COPY: Record<EditorMessageKind, { emoji: string; title: string; text: Reac
     ),
   },
   rate: {
-    emoji: '⏳',
+    emoji: 'cuenta-regresiva',
     title: 'Demasiados intentos',
     text: <>Esperá unos minutos y volvé a abrir el link de tu mail.</>,
   },
   server: {
-    emoji: '🛠️',
+    emoji: 'atencion',
     title: 'No pudimos abrir el editor',
     text: <>Tuvimos un problema de nuestro lado. Probá de nuevo en un rato.</>,
   },
   expired: {
-    emoji: '⌛',
+    emoji: 'cuenta-regresiva',
     title: 'El plazo para editar venció',
     text: (
       <>
@@ -53,12 +53,12 @@ const COPY: Record<EditorMessageKind, { emoji: string; title: string; text: Reac
     ),
   },
   refunded: {
-    emoji: '↩️',
+    emoji: 'pago',
     title: 'Este regalo fue reembolsado',
     text: <>Si tenés dudas sobre la devolución, escribinos.</>,
   },
   demo: {
-    emoji: '🧪',
+    emoji: 'idea',
     title: 'En la demo, el editor es de prueba',
     text: (
       <>

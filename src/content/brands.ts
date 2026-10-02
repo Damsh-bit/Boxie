@@ -27,7 +27,7 @@ export interface Industry {
 export const industries: Industry[] = [
   {
     id: 'cafeteria',
-    emoji: '☕',
+    emoji: 'cafe',
     label: 'Cafeterías',
     color: '#8B5E3C',
     brand: 'Café de la Esquina',
@@ -37,7 +37,7 @@ export const industries: Industry[] = [
   },
   {
     id: 'floreria',
-    emoji: '💐',
+    emoji: 'ramo',
     label: 'Florerías',
     color: '#C2185B',
     brand: 'Flores del Jardín',
@@ -47,7 +47,7 @@ export const industries: Industry[] = [
   },
   {
     id: 'gaming',
-    emoji: '🎮',
+    emoji: 'juego',
     label: 'Gaming',
     color: '#2A78D6',
     brand: 'Level Up Bar',
@@ -57,7 +57,7 @@ export const industries: Industry[] = [
   },
   {
     id: 'cine',
-    emoji: '🎬',
+    emoji: 'claqueta',
     label: 'Cine y series',
     color: '#D03B3B',
     brand: 'Cine Club Centro',
@@ -67,7 +67,7 @@ export const industries: Industry[] = [
   },
   {
     id: 'eventos',
-    emoji: '🎉',
+    emoji: 'cotillon',
     label: 'Eventos',
     color: '#EDA100',
     brand: 'Salón Aurora',
@@ -77,7 +77,7 @@ export const industries: Industry[] = [
   },
   {
     id: 'retail',
-    emoji: '🛍️',
+    emoji: 'compras',
     label: 'Moda y tiendas',
     color: '#7A4FC4',
     brand: 'Tienda Lila',
@@ -91,28 +91,28 @@ export const industries: Industry[] = [
 export const partnershipFormats = [
   {
     id: 'sponsor',
-    emoji: '🌐',
+    emoji: 'mundo',
     title: 'Sponsor en Ribbly',
     text: 'Tu marca en el sitio (la portada, la galería y precios) con tu propuesta, tu cupón y tu link.',
     ideal: 'Comercios que abren o quieren llegar a más gente de su ciudad.',
   },
   {
     id: 'cobranding',
-    emoji: '🎁',
+    emoji: 'regalo',
     title: 'Una Ribbly con tu marca',
     text: 'Una temática con tus colores, tu logo y módulos pensados para tu rubro: una trivia de tu local, una cuponera con tus promos.',
     ideal: 'Marcas con comunidad que quieren un regalo propio.',
   },
   {
     id: 'campana',
-    emoji: '📅',
+    emoji: 'calendario',
     title: 'Campañas y fechas',
     text: 'Día de la Madre, San Valentín o un lanzamiento: un QR o un cupón que regala Ribbly con tu producto, con resultados medidos.',
     ideal: 'Picos de venta y fechas fuertes.',
   },
   {
     id: 'corporativo',
-    emoji: '💼',
+    emoji: 'empresas',
     title: 'Regalos corporativos',
     text: 'Ribbly para tu equipo o tus clientes: fin de año, aniversarios, bienvenidas. Un regalo que no termina en un cajón.',
     ideal: 'Empresas y equipos de cualquier tamaño.',

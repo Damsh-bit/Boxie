@@ -43,7 +43,7 @@ function layout({
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1f2;padding:32px 12px">
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:20px;overflow:hidden">
-<tr><td style="background:${BRAND};padding:22px 32px;color:#fff;font-size:22px;font-weight:bold;letter-spacing:.5px">Ribbly 🎁</td></tr>
+<tr><td style="background:${BRAND};padding:22px 32px;color:#fff;font-size:22px;font-weight:bold;letter-spacing:.5px">Ribbly</td></tr>
 <tr><td style="padding:32px;font-size:16px;line-height:1.6">${body}</td></tr>
 <tr><td style="padding:20px 32px;background:#faf7f8;color:#8a8190;font-size:12px;line-height:1.5">
 ${esc(reason)}<br>
@@ -75,7 +75,7 @@ export function editorAccessEmail(p: {
   const first = p.buyerName.trim().split(/\s+/)[0] ?? ''
   const subject = p.resent
     ? 'Tu nuevo link para editar tu regalo'
-    : '¡Gracias por tu compra! Ya podés armar tu regalo 🎁'
+    : '¡Gracias por tu compra! Ya podés armar tu regalo'
   const intro = p.resent
     ? 'Nos pediste un link nuevo para entrar a tu regalo. El anterior dejó de funcionar.'
     : `Recibimos tu pago de la temática <strong>${esc(p.themeName)}</strong>. Ya podés personalizarla: fotos, dedicatoria, música y sorpresas.`
@@ -124,7 +124,7 @@ ${p.giftUrl}
 ${p.hasPassword ? '\nLe pusiste una clave: acordate de pasársela.\n' : ''}
 Disponible hasta el ${dateAR(p.expiresAt)}.
 `
-  return { subject: `El regalo para ${p.recipientName} está listo 🎁`, html, text }
+  return { subject: `El regalo para ${p.recipientName} está listo`, html, text }
 }
 
 export function contactEmail(p: {
@@ -180,7 +180,7 @@ Recibimos tu consulta #${p.number}: «${p.subject}». Te respondemos por el chat
 Seguí la conversación acá (link personal):
 ${p.url}
 `
-  return { subject: `Recibimos tu consulta #${p.number} 💬`, html, text }
+  return { subject: `Recibimos tu consulta #${p.number}`, html, text }
 }
 
 /** Al cliente: el equipo le respondió. */
@@ -279,7 +279,7 @@ ${p.inviteUrl}
 Este enlace vence el ${dateAR(p.expiresAt)}.
 `
   return {
-    subject: `Te invitaron al equipo de Ribbly 🎁`,
+    subject: `Te invitaron al equipo de Ribbly`,
     html,
     text,
   }
@@ -292,24 +292,24 @@ export function giftOpenedEmail(p: {
   accountUrl: string
 }): MailContent {
   const recipient = p.recipientName.trim() || 'Tu agasajado/a'
-  const subject = `¡${recipient} acaba de abrir tu regalo! 🎉`
+  const subject = `¡${recipient} acaba de abrir tu regalo!`
   const preheader = `${recipient} abrió tu regalo sorpresa en este momento. ¡Qué emoción!`
 
   const body = `
-<p style="font-size:20px;font-weight:bold;margin:0 0 14px;color:${INK}">¡Llegó el momento más esperado! 🥳</p>
+<p style="font-size:20px;font-weight:bold;margin:0 0 14px;color:${INK}">¡Llegó el momento más esperado!</p>
 <p style="font-size:16px;line-height:1.6">Te avisamos que <strong>${esc(recipient)}</strong> acaba de abrir tu <strong>regalo digital en Ribbly</strong> en este instante.</p>
 <div style="background:#faf7f8;border:1px solid #ebd9df;border-radius:16px;padding:20px;margin:24px 0">
   <p style="margin:0 0 8px;font-size:13px;color:#8a8190;text-transform:uppercase;font-weight:600;letter-spacing:0.5px">Detalles del regalo</p>
-  <p style="margin:0;font-weight:700;font-size:17px;color:${INK}">🎁 Para: ${esc(recipient)}</p>
+  <p style="margin:0;font-weight:700;font-size:17px;color:${INK}">Para: ${esc(recipient)}</p>
   ${p.themeName ? `<p style="margin:6px 0 0;font-size:14px;color:#6b6272">Temática: ${esc(p.themeName)}</p>` : ''}
 </div>
 <p style="font-size:15px;line-height:1.6">Ahora mismo está recorriendo la experiencia con las fotos, la música y las palabras que le dedicaste.</p>
-<p style="font-size:15px;line-height:1.6">¿Qué tal si le mandás un mensajito por WhatsApp para ver su reacción? 😉</p>
+<p style="font-size:15px;line-height:1.6">¿Qué tal si le mandás un mensajito por WhatsApp para ver su reacción?</p>
 ${button(p.accountUrl, 'Ver mis regalos en Mi Cuenta')}
 <p style="font-size:13px;color:#8a8190;margin-top:20px">Podés ver el estado de todas tus compras y regalos entregados desde tu portal de cliente.</p>
 `
 
-  const text = `¡${recipient} acaba de abrir tu regalo! 🎉\n\nTe avisamos que ${recipient} acaba de abrir tu regalo en este momento.\n\nAhora mismo está viviendo la experiencia con las fotos, la música y las palabras que le dedicaste.\n\nPodés ver tus regalos en: ${p.accountUrl}\n\n¡Gracias por regalar momentos inolvidables con Ribbly!`
+  const text = `¡${recipient} acaba de abrir tu regalo!\n\nTe avisamos que ${recipient} acaba de abrir tu regalo en este momento.\n\nAhora mismo está viviendo la experiencia con las fotos, la música y las palabras que le dedicaste.\n\nPodés ver tus regalos en: ${p.accountUrl}\n\n¡Gracias por regalar momentos inolvidables con Ribbly!`
 
   return {
     subject,
@@ -328,11 +328,11 @@ export function specialDateReminderEmail(p: {
   storeUrl: string
 }): MailContent {
   const recipient = p.recipientName.trim()
-  const subject = `Se acerca el ${p.occasion} de ${recipient} 🎂 (tenés ${p.discountPercent}% OFF)`
+  const subject = `Se acerca el ${p.occasion} de ${recipient} (tenés ${p.discountPercent}% OFF)`
   const preheader = `Faltan solo ${p.daysUntil} días para el ${p.occasion} de ${recipient}. Sorprendelo/a con un nuevo regalo en Ribbly.`
 
   const body = `
-<p style="font-size:20px;font-weight:bold;margin:0 0 14px;color:${INK}">¡No te cuelgues con el regalo! ⏰</p>
+<p style="font-size:20px;font-weight:bold;margin:0 0 14px;color:${INK}">¡No te cuelgues con el regalo!</p>
 <p style="font-size:16px;line-height:1.6">Faltan solo <strong>${p.daysUntil} días</strong> para el <strong>${esc(p.occasion)} de ${esc(recipient)}</strong>.</p>
 <p style="font-size:15px;line-height:1.6">Como el año pasado le hiciste un regalo inolvidable, queremos darte un beneficio exclusivo para que vuelvas a sorprender a ${esc(recipient)}:</p>
 <div style="background:#faf7f8;border:2px dashed ${BRAND};border-radius:16px;padding:24px;margin:24px 0;text-align:center">
@@ -345,7 +345,7 @@ ${button(p.storeUrl, 'Elegir temática y armar regalo')}
 <p style="font-size:13px;color:#8a8190;margin-top:20px">Cupón válido por los próximos 14 días. Aplicable al finalizar tu compra.</p>
 `
 
-  const text = `Se acerca el ${p.occasion} de ${recipient} 🎂\n\nFaltan solo ${p.daysUntil} días. Te regalamos un cupón de ${p.discountPercent}% OFF:\n\nCUPÓN: ${p.couponCode}\n\nElegí su temática y armá su regalo acá: ${p.storeUrl}`
+  const text = `Se acerca el ${p.occasion} de ${recipient}\n\nFaltan solo ${p.daysUntil} días. Te regalamos un cupón de ${p.discountPercent}% OFF:\n\nCUPÓN: ${p.couponCode}\n\nElegí su temática y armá su regalo acá: ${p.storeUrl}`
 
   return {
     subject,

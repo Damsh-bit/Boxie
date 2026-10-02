@@ -5,6 +5,7 @@ import { LockKeyhole, LockKeyholeOpen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '@/ui/Button'
+import { Icon } from '@/ui/Icon'
 import { FieldMessage, Input, Label } from '@/ui/form'
 import { ease, Spinner, spring } from '@/ui/motion'
 import { unlockGiftAction } from './actions'
@@ -35,7 +36,7 @@ export function PasswordGate({ token, recipientName }: { token: string; recipien
     void card.start({ x: [0, -12, 12, -8, 8, -4, 0], transition: { duration: 0.45 } })
   }
 
-  const Icon = open ? LockKeyholeOpen : LockKeyhole
+  const LockIcon = open ? LockKeyholeOpen : LockKeyhole
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-[radial-gradient(circle_at_top,#ffd6de_0%,#2a2433_70%)] px-5">
@@ -56,7 +57,7 @@ export function PasswordGate({ token, recipientName }: { token: string; recipien
             animate={open ? { scale: [1, 1.2, 1], rotate: [0, -12, 0] } : { scale: 1, rotate: 0 }}
             transition={open ? { duration: 0.5 } : { ...spring.bouncy, delay: 0.2 }}
           >
-            <Icon className="size-8" aria-hidden />
+            <LockIcon className="size-8" aria-hidden />
           </motion.div>
           <h1 className="font-display text-2xl font-bold text-ink">
             {recipientName ? `¡Hola, ${recipientName}!` : '¡Hola!'}
@@ -89,7 +90,9 @@ export function PasswordGate({ token, recipientName }: { token: string; recipien
                 <Spinner className="size-5" /> {open ? '¡Abriendo!' : 'Abriendo…'}
               </>
             ) : (
-              'Abrir mi regalo 🎁'
+              <>
+                Abrir mi regalo <Icon name="regalo" size={24} />
+              </>
             )}
           </Button>
           <motion.p

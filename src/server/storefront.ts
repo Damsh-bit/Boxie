@@ -194,7 +194,7 @@ export const getStorefront = cache(async (): Promise<Storefront> => {
     maxPhotos: storePlans.length ? Math.max(...storePlans.map((p) => p.maxPhotos)) : PHOTO_LIMIT,
     editWindowDays: settings.giftLifetimeDays,
     welcome,
-    business: businessContact(settings.business, 'Hola Boxie 👋 Tengo una consulta'),
+    business: businessContact(settings.business, 'Hola Ribbly, tengo una consulta'),
     salesPaused: settings.salesPaused,
     kindFromPlan: kindTiers(plans, configs),
     screens: screenRows(plans, configs),

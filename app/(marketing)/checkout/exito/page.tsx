@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function ExitoPage() {
   return (
     <div className="flex justify-center bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] px-5 pt-[130px] pb-24">
-      <MessageCard emoji="🎉" title="¡Compra realizada!">
+      <MessageCard emoji="cotillon" title="¡Compra realizada!">
         <p className="leading-relaxed text-ink/70">
           Tu pago se acreditó. En tu mail está el link para personalizar tu Ribbly (si no lo ves,
           revisá spam o promociones).

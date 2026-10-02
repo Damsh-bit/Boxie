@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function PendientePage() {
   return (
     <div className="flex justify-center bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] px-5 pt-[130px] pb-24">
-      <MessageCard emoji="⏳" title="Tu pago está pendiente">
+      <MessageCard emoji="cuenta-regresiva" title="Tu pago está pendiente">
         <p className="leading-relaxed text-ink/70">
           Mercado Pago está procesando el pago: según el medio elegido puede tardar unas horas. En
           cuanto se acredite te llega un mail con el link para personalizar tu Ribbly.

@@ -1,10 +1,11 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { MessageCircleHeart, Search, X } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { useDeferredValue, useState } from 'react'
 import type { HelpCategory } from '@/content/help'
 import { cn } from '@/ui/cn'
+import { Emoji, Icon } from '@/ui/Icon'
 import { spring } from '@/ui/motion'
 import { SupportButton } from '@/ui/SupportButton'
 import { Faq } from './Faq'
@@ -82,7 +83,7 @@ export function HelpCenter({ categories }: { categories: HelpCategory[] }) {
                   words.length > 0 && count === 0 && 'opacity-40',
                 )}
               >
-                <span aria-hidden>{c.emoji}</span>
+                <Emoji value={c.emoji} size={20} />
                 {c.title}
                 {words.length > 0 && (
                   <span className="ml-auto rounded-full bg-paper px-1.5 text-xs text-ink/60 tabular-nums">
@@ -95,7 +96,7 @@ export function HelpCenter({ categories }: { categories: HelpCategory[] }) {
         </nav>
 
         <div className="mt-6 hidden rounded-3xl bg-ink p-5 text-white lg:block">
-          <MessageCircleHeart className="mb-3 size-7 text-brand-muted" aria-hidden />
+          <Icon name="mensaje" size={36} className="mb-3" />
           <p className="font-display text-lg font-bold">¿No está tu pregunta?</p>
           <p className="mt-1 text-sm text-white/65">
             Abrí el chat y te responde una persona del equipo.
@@ -127,7 +128,7 @@ export function HelpCenter({ categories }: { categories: HelpCategory[] }) {
                 id={`tema-${c.id}-title`}
                 className="mb-4 flex items-center gap-2.5 font-display text-2xl font-bold text-ink"
               >
-                <span aria-hidden>{c.emoji}</span> {c.title}
+                <Emoji value={c.emoji} size={30} /> {c.title}
               </h2>
               <Faq key={`${c.id}-${deferred}`} items={c.items} />
             </motion.section>
@@ -140,9 +141,7 @@ export function HelpCenter({ categories }: { categories: HelpCategory[] }) {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <span className="mb-3 text-4xl" aria-hidden>
-              🔎
-            </span>
+            <Icon name="buscar" size={48} className="mb-3" />
             <p className="font-display text-xl font-bold text-ink">No encontramos esa respuesta</p>
             <p className="mt-1 max-w-sm text-ink/60">
               Probá con otras palabras, o preguntanos directamente: te responde una persona.

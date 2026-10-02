@@ -3,6 +3,7 @@
 import { motion, useInView, useScroll, useSpring } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/ui/cn'
+import { Emoji } from '@/ui/Icon'
 import { Reveal, Swap, spring } from '@/ui/motion'
 import { Mark } from '../_home/primitives'
 
@@ -132,7 +133,7 @@ function ChapterItem({
         }}
         transition={spring.snappy}
       >
-        {chapter.emoji}
+        <Emoji value={chapter.emoji} size="1.3em" />
       </motion.span>
       <Reveal
         y={36}

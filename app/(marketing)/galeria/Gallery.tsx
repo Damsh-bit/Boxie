@@ -28,6 +28,7 @@ import {
 import type { PublicSponsor } from '@/domain/sponsors'
 import { Button, ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Icon } from '@/ui/Icon'
 import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { Modal } from '@/ui/Modal'
 import { Reveal, Swap, spring, useCalm } from '@/ui/motion'
@@ -279,12 +280,12 @@ export function Gallery({
                 transition={spring.soft}
               >
                 <motion.span
-                  className="mb-3 text-5xl"
+                  className="mb-3"
                   aria-hidden
                   animate={calm ? undefined : { rotate: [0, -12, 12, 0] }}
                   transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 1.5 }}
                 >
-                  🔎
+                  <Icon name="buscar" size={60} />
                 </motion.span>
                 <p className="font-display text-2xl font-bold text-ink">
                   No encontramos esa ocasión
@@ -313,8 +314,8 @@ export function Gallery({
             aria-hidden
             className="pointer-events-none absolute -top-24 -right-10 size-72 rounded-full bg-brand/40 blur-3xl"
           />
-          <span className="relative grid size-16 shrink-0 place-items-center rounded-2xl bg-white/10 text-3xl">
-            <span aria-hidden>💡</span>
+          <span className="relative grid size-16 shrink-0 place-items-center rounded-2xl bg-white/10">
+            <Icon name="idea" size={40} />
           </span>
           <div className="relative flex-1">
             <h2 className="font-display text-2xl leading-tight font-bold text-balance sm:text-3xl">

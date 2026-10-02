@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react'
 import { giftComparisons } from '@/content/home'
 import { ButtonLink, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Emoji, Icon } from '@/ui/Icon'
 import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { Stagger, StaggerItem, Swap, ease, spring, useCalm } from '@/ui/motion'
 import { PlanCards, PlanPromises, type PlanCardData } from '../_plans/PlanCards'
@@ -297,11 +298,11 @@ function CouponTicket({ welcome, className }: { welcome: WelcomeCoupon; classNam
     >
       <motion.span
         aria-hidden
-        className="text-2xl"
+        className="flex"
         animate={{ rotate: [0, -12, 10, -6, 0] }}
         transition={{ duration: 1, repeat: Infinity, repeatDelay: 3 }}
       >
-        🎁
+        <Icon name="regalo" size={32} />
       </motion.span>
       <div className="min-w-0 flex-1 leading-tight">
         <p className="text-sm font-bold text-ink">{welcome.discount} en tu primera Ribbly</p>
@@ -412,11 +413,11 @@ function Comparator({ priceCents, label = 'Ribbly' }: { priceCents: number; labe
               )}
               <motion.span
                 aria-hidden
-                className="relative text-2xl"
+                className="relative flex"
                 animate={selected ? { scale: [1, 1.3, 1], rotate: [0, -10, 0] } : {}}
                 transition={{ duration: 0.4 }}
               >
-                {g.emoji}
+                <Emoji value={g.emoji} size={32} />
               </motion.span>
               <span className="relative text-center leading-tight">{g.label}</span>
             </motion.button>
@@ -426,7 +427,8 @@ function Comparator({ priceCents, label = 'Ribbly' }: { priceCents: number; labe
 
       <div className="mt-7 space-y-4">
         <Bar
-          label={`${other.emoji} ${other.label}`}
+          icon={other.emoji}
+          label={other.label}
           value={formatPrice(other.priceCents)}
           width={100}
           className="bg-white/25"
@@ -434,7 +436,8 @@ function Comparator({ priceCents, label = 'Ribbly' }: { priceCents: number; labe
           visible={inView}
         />
         <Bar
-          label={`🎁 ${label}`}
+          icon="regalo"
+          label={label}
           value={formatPrice(priceCents)}
           width={boxieWidth}
           className="bg-[linear-gradient(90deg,#f44e63,#ff9a9e)]"
@@ -474,6 +477,7 @@ function Comparator({ priceCents, label = 'Ribbly' }: { priceCents: number; labe
 }
 
 function Bar({
+  icon,
   label,
   value,
   width,
@@ -482,6 +486,7 @@ function Bar({
   visible,
   highlight = false,
 }: {
+  icon: string
   label: string
   value: string
   width: number
@@ -493,7 +498,13 @@ function Bar({
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between gap-3 text-sm">
-        <span className={cn('font-semibold', highlight ? 'text-white' : 'text-white/80')}>
+        <span
+          className={cn(
+            'inline-flex items-center gap-1.5 font-semibold',
+            highlight ? 'text-white' : 'text-white/80',
+          )}
+        >
+          <Emoji value={icon} size={18} />
           {label}
         </span>
         <span className="relative inline-flex font-display font-bold">

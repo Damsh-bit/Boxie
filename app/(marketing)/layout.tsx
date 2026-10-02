@@ -11,7 +11,7 @@ import { SupportWidget } from '@/ui/support/SupportWidget'
 export default async function MarketingLayout({ children }: LayoutProps<'/'>) {
   // Los datos de contacto del pie salen de la Configuración del panel.
   const [businessInfo, exchangeRate] = await Promise.all([getBusinessInfo(), getUsdExchangeRate()])
-  const contact = businessContact(businessInfo, 'Hola Ribbly 👋 Tengo una consulta')
+  const contact = businessContact(businessInfo, 'Hola Ribbly, tengo una consulta')
   return (
     <CurrencyProvider initialRate={exchangeRate.rate}>
       {isDemoMode() && <DemoBanner />}

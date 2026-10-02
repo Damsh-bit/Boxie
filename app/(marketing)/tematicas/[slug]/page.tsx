@@ -13,6 +13,8 @@ import {
   listPublicPlans,
   listPublishedThemes,
 } from '@/server/catalog'
+import type { IconName } from '@/domain/icons'
+import { Icon } from '@/ui/Icon'
 import { HoverZoom, LiftLink } from '@/ui/LiftLink'
 import { Reveal, Stagger, StaggerItem } from '@/ui/motion'
 import { BuyBox } from './BuyBox'
@@ -34,11 +36,11 @@ export async function generateMetadata({
   }
 }
 
-const WHY = [
-  ['🚀', 'Envío inmediato'],
-  ['🌎', 'Sin distancias'],
-  ['💖', 'Emoción garantizada'],
-] as const
+const WHY: [IconName, string][] = [
+  ['cohete', 'Envío inmediato'],
+  ['mundo', 'Sin distancias'],
+  ['corazon-brillo', 'Emoción garantizada'],
+]
 
 export default async function ThemePage({ params, searchParams }: PageProps<'/tematicas/[slug]'>) {
   const { slug } = await params
@@ -102,7 +104,7 @@ export default async function ThemePage({ params, searchParams }: PageProps<'/te
               )}
               {recipient && (
                 <p className="mt-3 inline-flex max-w-full items-center gap-2 rounded-full bg-brand-soft px-3.5 py-1.5 text-sm font-semibold text-brand-dark">
-                  <span aria-hidden>💖</span>
+                  <Icon name="corazon-brillo" size={18} />
                   <span className="truncate">La Ribbly de {recipient}</span>
                 </p>
               )}
@@ -181,9 +183,7 @@ export default async function ThemePage({ params, searchParams }: PageProps<'/te
                     key={text}
                     className="flex flex-col items-center gap-1.5 rounded-xl border border-neutral-100 bg-neutral-50 px-2 py-3"
                   >
-                    <span className="text-xl" aria-hidden>
-                      {icon}
-                    </span>
+                    <Icon name={icon} size={30} />
                     <p className="text-center text-xs leading-tight font-semibold text-neutral-600">
                       {text}
                     </p>

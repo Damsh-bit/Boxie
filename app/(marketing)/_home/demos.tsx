@@ -10,8 +10,10 @@ import {
 import { Pause, Play, RotateCcw, SkipBack, SkipForward } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import type { IconName } from '@/domain/icons'
 import { ConfettiBurst } from '@/ui/ConfettiBurst'
 import { cn } from '@/ui/cn'
+import { Emoji, EmojiText, Icon } from '@/ui/Icon'
 import { ease, spring, useCalm } from '@/ui/motion'
 
 /**
@@ -154,7 +156,7 @@ export function DedicationDemo({ onInteract }: DemoProps) {
                 }}
                 transition={{ duration: 0.5, ease: ease.out }}
               >
-                {line}
+                <EmojiText text={line} />
               </motion.p>
             ))}
             <motion.p
@@ -182,12 +184,12 @@ export function DedicationDemo({ onInteract }: DemoProps) {
         />
         <motion.span
           aria-hidden
-          className="absolute top-[244px] left-1/2 z-30 grid size-10 -translate-x-1/2 place-items-center rounded-full bg-[#b3243a] text-lg shadow-md"
+          className="absolute top-[244px] left-1/2 z-30 grid size-10 -translate-x-1/2 place-items-center rounded-full bg-white shadow-md"
           initial={false}
           animate={{ opacity: isOpen ? 0 : 1, scale: isOpen ? 0.4 : 1 }}
           transition={spring.snappy}
         >
-          ❤
+          <Icon name="corazon" size={24} />
         </motion.span>
       </div>
 
@@ -253,7 +255,7 @@ export function PhotosDemo({ onInteract, photos }: DemoProps & { photos: string[
                 />
               </div>
               <p className="absolute inset-x-0 bottom-3 text-center font-fun text-sm font-semibold text-ink">
-                {CAPTIONS[photo % CAPTIONS.length]}
+                <EmojiText text={CAPTIONS[photo % CAPTIONS.length]} />
               </p>
             </motion.div>
           )
@@ -290,7 +292,7 @@ export function PhotosDemo({ onInteract, photos }: DemoProps & { photos: string[
             }
             transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
           >
-            👉
+            <Icon name="senalar" size={20} />
           </motion.span>
           Deslizá o tocá: siguiente foto
         </motion.button>
@@ -339,8 +341,8 @@ export function SongDemo({ onInteract }: DemoProps) {
           className="relative grid size-44 place-items-center rounded-full bg-[repeating-radial-gradient(circle,#1a191d_0_2px,#2c2a31_2px_4px)] shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
           style={{ rotate: spin }}
         >
-          <div className="grid size-16 place-items-center rounded-full bg-[linear-gradient(135deg,#f44e63,#ff9a9e)] text-2xl">
-            ❤
+          <div className="grid size-16 place-items-center rounded-full bg-[linear-gradient(135deg,#ffd1d7,#fff1f3)]">
+            <Icon name="corazon" size={32} />
           </div>
           <span className="absolute size-2 rounded-full bg-night" />
         </motion.div>
@@ -459,18 +461,18 @@ export function TriviaDemo({ onInteract }: DemoProps) {
           >
             <ConfettiBurst count={40} seed={11} className="top-1/3" />
             <motion.span
-              className="text-7xl"
+              className="block"
               initial={{ scale: 0, rotate: -40 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ ...spring.bouncy, delay: 0.15 }}
               aria-hidden
             >
-              🏆
+              <Icon name="trofeo" size={84} />
             </motion.span>
             <h3 className="mt-4 font-fun text-3xl font-bold">¡Acertaste!</h3>
             <p className="mt-2 text-sm font-medium text-ink/75">Desbloqueaste tu premio:</p>
             <p className="mt-3 rounded-2xl bg-white px-4 py-3 font-fun text-lg font-bold shadow-lg">
-              Una cena a elección 🍝
+              <EmojiText text="Una cena a elección 🍝" />
             </p>
             <div className="mt-6">
               <ReplayButton onClick={restart} label="Jugar de nuevo" />
@@ -488,11 +490,11 @@ export function TriviaDemo({ onInteract }: DemoProps) {
             <Eyebrow className="text-center text-ink/60">Pregunta 1 de 3</Eyebrow>
             <motion.div
               aria-hidden
-              className="mx-auto mt-3 text-5xl"
+              className="mx-auto mt-3 w-fit"
               animate={{ rotate: [0, -8, 8, 0] }}
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
             >
-              🤔
+              <Icon name="pensar" size={56} />
             </motion.div>
             <div className="mt-3 rounded-2xl bg-white/90 p-4 text-center shadow-lg">
               <h3 className="font-fun text-xl leading-tight font-bold">
@@ -522,7 +524,9 @@ export function TriviaDemo({ onInteract }: DemoProps) {
                     whileHover={picked === null ? { scale: 1.03 } : undefined}
                     whileTap={picked === null ? { scale: 0.96 } : undefined}
                   >
-                    {option}
+                    <span>
+                      <EmojiText text={option} />
+                    </span>
                     <AnimatePresence>
                       {chosen && (
                         <motion.span
@@ -544,7 +548,9 @@ export function TriviaDemo({ onInteract }: DemoProps) {
               className="mt-auto min-h-5 text-center text-xs font-semibold text-ink/70"
               aria-live="polite"
             >
-              {misses > 0 ? 'Pista: había mucho viento 😅' : 'Tocá una respuesta'}
+              <EmojiText
+                text={misses > 0 ? 'Pista: había mucho viento 😅' : 'Tocá una respuesta'}
+              />
             </p>
           </motion.div>
         )}
@@ -555,8 +561,8 @@ export function TriviaDemo({ onInteract }: DemoProps) {
 
 // ── Tragamonedas ───────────────────────────────────────────────────────────
 
-const SYMBOLS = ['🍒', '⭐', '💖', '🍀', '🔔', '🎁']
-const IDLE = ['🍒', '💖', '⭐']
+const SYMBOLS: IconName[] = ['cerezas', 'estrella', 'corazon-brillo', 'suerte', 'aviso', 'regalo']
+const IDLE: IconName[] = ['cerezas', 'corazon-brillo', 'estrella']
 
 export function JackpotDemo({ onInteract }: DemoProps) {
   const calm = useCalm()
@@ -602,7 +608,7 @@ export function JackpotDemo({ onInteract }: DemoProps) {
           {[0, 1, 2].map((reel) => (
             <div
               key={reel}
-              className="relative h-[76px] w-[62px] overflow-hidden rounded-xl bg-white text-4xl"
+              className="relative h-[76px] w-[62px] overflow-hidden rounded-xl bg-white"
             >
               {stopped[reel] ? (
                 <motion.span
@@ -612,7 +618,7 @@ export function JackpotDemo({ onInteract }: DemoProps) {
                   animate={{ y: 0, opacity: 1 }}
                   transition={spring.bouncy}
                 >
-                  {spun ? '🎁' : IDLE[reel]}
+                  <Icon name={spun ? 'regalo' : IDLE[reel]!} size={44} />
                 </motion.span>
               ) : (
                 <motion.div
@@ -622,7 +628,7 @@ export function JackpotDemo({ onInteract }: DemoProps) {
                 >
                   {[...SYMBOLS, ...SYMBOLS].map((s, i) => (
                     <span key={i} className="grid h-[76px] place-items-center blur-[1px]">
-                      {s}
+                      <Icon name={s} size={44} />
                     </span>
                   ))}
                 </motion.div>
@@ -643,8 +649,12 @@ export function JackpotDemo({ onInteract }: DemoProps) {
               transition={spring.bouncy}
             >
               <ConfettiBurst count={36} seed={23} className="-top-24" />
-              <p className="font-fun text-3xl font-bold text-gold">¡JACKPOT! 🎉</p>
-              <p className="mt-1 text-sm text-white/80">Ganaste: una escapada juntos ✈️</p>
+              <p className="font-fun text-3xl font-bold text-gold">
+                <EmojiText text="¡JACKPOT! 🎉" />
+              </p>
+              <p className="mt-1 text-sm text-white/80">
+                <EmojiText text="Ganaste: una escapada juntos ✈️" />
+              </p>
             </motion.div>
           ) : (
             <motion.p
@@ -654,7 +664,7 @@ export function JackpotDemo({ onInteract }: DemoProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              {spinning ? 'Girando…' : 'Tres regalos iguales y ganás 🎁'}
+              <EmojiText text={spinning ? 'Girando…' : 'Tres regalos iguales y ganás 🎁'} />
             </motion.p>
           )}
         </AnimatePresence>
@@ -669,7 +679,7 @@ export function JackpotDemo({ onInteract }: DemoProps) {
         whileTap={spinning ? undefined : { y: 4, boxShadow: '0 2px 0 #b89800' }}
         transition={spring.snappy}
       >
-        {won ? 'Girar otra vez' : 'Girar 🎰'}
+        <EmojiText text={won ? 'Girar otra vez' : 'Girar 🎰'} />
       </motion.button>
     </div>
   )
@@ -678,9 +688,9 @@ export function JackpotDemo({ onInteract }: DemoProps) {
 // ── Cuponera ───────────────────────────────────────────────────────────────
 
 const COUPONS = [
-  { emoji: '💆', title: 'Vale por un masaje', detail: 'de 20 minutos, sin apuro' },
-  { emoji: '🍿', title: 'Vale por elegir la peli', detail: 'sin quejas de mi parte' },
-  { emoji: '🥐', title: 'Vale por un desayuno', detail: 'en la cama, un domingo' },
+  { emoji: 'masaje', title: 'Vale por un masaje', detail: 'de 20 minutos, sin apuro' },
+  { emoji: 'pochoclos', title: 'Vale por elegir la peli', detail: 'sin quejas de mi parte' },
+  { emoji: 'medialuna', title: 'Vale por un desayuno', detail: 'en la cama, un domingo' },
 ]
 
 export function CouponsDemo({ onInteract }: DemoProps) {
@@ -703,8 +713,8 @@ export function CouponsDemo({ onInteract }: DemoProps) {
             key={c.title}
             className="relative flex overflow-hidden rounded-2xl bg-white shadow-[0_8px_20px_rgba(214,58,78,0.14)]"
           >
-            <div className="grid w-16 shrink-0 place-items-center border-r-2 border-dashed border-brand/25 bg-brand-soft text-3xl">
-              <span aria-hidden>{c.emoji}</span>
+            <div className="grid w-16 shrink-0 place-items-center border-r-2 border-dashed border-brand/25 bg-brand-soft">
+              <Emoji value={c.emoji} size={36} />
             </div>
             <span
               className="absolute top-0 left-16 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ffe9cc]"
@@ -753,9 +763,13 @@ export function CouponsDemo({ onInteract }: DemoProps) {
 
       <div className="mt-auto flex flex-col items-center gap-2 text-center">
         <p className="text-sm font-semibold text-ink/70" aria-live="polite">
-          {count === COUPONS.length
-            ? '¡Usaste todos! 🥳'
-            : `${count} de ${COUPONS.length} canjeados`}
+          <EmojiText
+            text={
+              count === COUPONS.length
+                ? '¡Usaste todos! 🥳'
+                : `${count} de ${COUPONS.length} canjeados`
+            }
+          />
         </p>
         {count > 0 && (
           <ReplayButton

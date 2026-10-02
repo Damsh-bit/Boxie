@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { industries, type Industry } from '@/content/brands'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Emoji, Icon } from '@/ui/Icon'
 import { Float, Stagger, StaggerItem, ease, spring, useCalm } from '@/ui/motion'
 import { Mark, PhoneFrame } from '../_home/primitives'
 import { PseudoQr } from './PseudoQr'
@@ -118,9 +119,7 @@ export function BrandsHero() {
                         aria-hidden
                       />
                     )}
-                    <span className="relative" aria-hidden>
-                      {ind.emoji}
-                    </span>
+                    <Emoji value={ind.emoji} size={20} className="relative" />
                     <span className="relative">{ind.label}</span>
                   </button>
                 )
@@ -175,13 +174,13 @@ function Mockup({ industry }: { industry: Industry }) {
                   Te la regala {industry.brand}
                 </span>
                 <motion.span
-                  className="mt-7 text-center text-6xl"
+                  className="mx-auto mt-7 block w-fit"
                   aria-hidden
                   initial={{ scale: 0, rotate: -20 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ ...spring.bouncy, delay: 0.15 }}
                 >
-                  {industry.emoji}
+                  <Emoji value={industry.emoji} size={72} />
                 </motion.span>
                 <p className="mt-4 text-center font-fun text-[1.7rem] leading-tight font-semibold">
                   Para vos, Sofi
@@ -203,7 +202,8 @@ function Mockup({ industry }: { industry: Industry }) {
                   ))}
                 </ul>
                 <span className="mt-4 rounded-full bg-white py-2.5 text-center text-sm font-bold text-ink">
-                  Abrir mi Ribbly ✨
+                  Abrir mi Ribbly{' '}
+                  <Icon name="destellos" size="1.2em" style={{ verticalAlign: '-0.25em' }} />
                 </span>
               </motion.div>
             </AnimatePresence>
@@ -253,7 +253,12 @@ function Mockup({ industry }: { industry: Industry }) {
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25 }}
           >
-            {industry.emoji} {industry.label}
+            <Emoji
+              value={industry.emoji}
+              size="1.25em"
+              style={{ verticalAlign: '-0.25em', marginRight: '0.3em' }}
+            />
+            {industry.label}
           </motion.p>
         </AnimatePresence>
       </motion.div>

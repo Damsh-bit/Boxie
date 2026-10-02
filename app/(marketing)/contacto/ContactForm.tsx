@@ -5,6 +5,7 @@ import { MessagesSquare, Send } from 'lucide-react'
 import { useState } from 'react'
 import { contactAreas } from '@/content/site'
 import { Button } from '@/ui/Button'
+import { Icon } from '@/ui/Icon'
 import { SupportButton } from '@/ui/SupportButton'
 import { Field, Input, Select, Textarea } from '@/ui/form'
 import { ease, Notice, Spinner, spring } from '@/ui/motion'
@@ -56,13 +57,13 @@ export function ContactForm() {
           transition={spring.soft}
         >
           <motion.div
-            className="mb-4 inline-block text-6xl"
+            className="mb-4 inline-block"
             initial={{ scale: 0, rotate: -30 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ ...spring.bouncy, delay: 0.15 }}
             aria-hidden
           >
-            ✨
+            <Icon name="destellos" size={72} />
           </motion.div>
           <h2 className="mb-3 text-3xl font-semibold text-ink">¡Mensaje Enviado!</h2>
           <p className="mb-6 leading-relaxed text-neutral-600">

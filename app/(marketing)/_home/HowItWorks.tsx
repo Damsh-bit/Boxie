@@ -1,29 +1,22 @@
 'use client'
 
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from 'framer-motion'
-import {
-  CheckCheck,
-  Gift,
-  Mail,
-  PencilLine,
-  Play,
-  ShoppingBag,
-  Wand2,
-  type LucideIcon,
-} from 'lucide-react'
+import { CheckCheck, Mail, Play, Wand2 } from 'lucide-react'
 import type { Route } from 'next'
 import { useEffect, useRef, useState } from 'react'
 import { howItWorks, type HowItWorksIcon } from '@/content/site'
+import type { IconName } from '@/domain/icons'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Emoji, EmojiText, Icon } from '@/ui/Icon'
 import { Reveal, Swap, spring, useCalm } from '@/ui/motion'
 import { Magnetic, Mark, SectionHeading } from './primitives'
 
-const ICONS: Record<HowItWorksIcon, LucideIcon> = {
-  bag: ShoppingBag,
-  mail: Mail,
-  pen: PencilLine,
-  gift: Gift,
+const ICONS: Record<HowItWorksIcon, IconName> = {
+  bag: 'compras',
+  mail: 'carta-de-amor',
+  pen: 'escribir',
+  gift: 'regalo',
 }
 
 /**
@@ -104,7 +97,6 @@ export function HowItWorks({
         </span>
 
         {howItWorks.map((step, i) => {
-          const Icon = ICONS[step.icon]
           const on = i < lit
           return (
             <li
@@ -126,13 +118,13 @@ export function HowItWorks({
               <motion.span
                 className={cn(
                   'relative z-10 grid size-14 place-items-center self-start rounded-2xl shadow-[0_10px_30px_rgba(244,78,99,0.18)] ring-1 ring-brand/10 transition-colors duration-300 [grid-area:icon]',
-                  on ? 'bg-brand text-white' : 'bg-white text-brand',
+                  on ? 'bg-brand-soft ring-brand/30' : 'bg-white',
                 )}
                 animate={on ? { scale: [1, 1.18, 1], rotate: [0, -8, 0] } : { scale: 1 }}
                 transition={{ duration: 0.5 }}
                 whileHover={{ rotate: -8, scale: 1.08 }}
               >
-                <Icon className="size-6" aria-hidden />
+                <Icon name={ICONS[step.icon]} size={36} />
                 <span
                   className={cn(
                     'absolute -top-2 -right-2 grid size-6 place-items-center rounded-full text-xs font-bold transition-colors duration-300',
@@ -227,11 +219,8 @@ function PayVisual({
   return (
     <div className="w-full rounded-2xl bg-white p-3 text-left shadow-sm">
       <div className="flex items-center gap-2.5">
-        <span
-          className="grid size-9 place-items-center rounded-xl bg-brand-soft text-lg"
-          aria-hidden
-        >
-          {sample.emoji}
+        <span className="grid size-9 place-items-center rounded-xl bg-brand-soft" aria-hidden>
+          <Emoji value={sample.emoji} size={24} />
         </span>
         <div className="min-w-0 leading-tight">
           <p className="truncate text-xs font-bold text-ink">Ribbly {sample.name}</p>
@@ -276,7 +265,7 @@ function MailVisual({ active }: { active: boolean }) {
             <div className="min-w-0 leading-tight">
               <p className="text-xs font-bold text-ink">Ribbly · ahora</p>
               <p className="truncate text-[0.7rem] text-ink/60">
-                ¡Tu Ribbly está lista para editar! ✨
+                <EmojiText text="¡Tu Ribbly está lista para editar! ✨" />
               </p>
             </div>
           </motion.div>
@@ -298,7 +287,7 @@ function EditorVisual({ active }: { active: boolean }) {
     <div className="w-full rounded-2xl bg-white p-3 text-left shadow-sm">
       <p className="text-[0.6rem] font-bold tracking-wider text-ink/40 uppercase">Para</p>
       <div className="mt-1 flex h-8 items-center rounded-lg border border-brand/40 px-2 text-sm font-semibold text-ink">
-        {letters.slice(0, shown).join('')}
+        <EmojiText text={letters.slice(0, shown).join('')} />
         <motion.span
           aria-hidden
           className="ml-0.5 h-4 w-0.5 bg-brand"
@@ -336,7 +325,7 @@ function ShareVisual({ active }: { active: boolean }) {
         animate={{ scale: 1, opacity: 1 }}
         transition={spring.bouncy}
       >
-        🎁 ¡Te mandé algo! Abrilo cuando estés tranqui
+        <EmojiText text="🎁 ¡Te mandé algo! Abrilo cuando estés tranqui" />
         <span className="mt-0.5 flex items-center justify-end gap-1 text-[0.6rem] text-ink/45">
           20:14
           <CheckCheck

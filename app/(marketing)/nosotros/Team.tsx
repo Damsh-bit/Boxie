@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, Quote } from 'lucide-react'
 import { useState } from 'react'
 import type { Founder } from '@/content/about'
+import { EmojiText } from '@/ui/Icon'
 import { Collapse, Stagger, StaggerItem, ease, spring } from '@/ui/motion'
 import { Mark, SectionHeading } from '../_home/primitives'
 import { FounderAvatar } from './FounderAvatar'
@@ -127,7 +128,7 @@ function Panel({ founder, open, onOpen }: { founder: Founder; open: boolean; onO
                     {fact.label}
                   </dt>
                   <dd className="mt-1 text-sm leading-snug font-semibold text-white/90">
-                    {fact.value}
+                    <EmojiText text={fact.value} />
                   </dd>
                 </div>
               ))}
@@ -200,7 +201,9 @@ function FounderCard({ founder }: { founder: Founder }) {
                 className="flex items-baseline justify-between gap-3 rounded-2xl bg-canvas px-4 py-2.5"
               >
                 <dt className="text-xs font-bold text-ink/50">{fact.label}</dt>
-                <dd className="text-right text-sm font-semibold text-ink">{fact.value}</dd>
+                <dd className="text-right text-sm font-semibold text-ink">
+                  <EmojiText text={fact.value} />
+                </dd>
               </div>
             ))}
           </dl>

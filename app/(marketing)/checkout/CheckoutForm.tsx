@@ -1,25 +1,17 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  Check,
-  Gift,
-  Lock,
-  Mail,
-  PencilLine,
-  ShoppingBag,
-  TicketPercent,
-  X,
-  type LucideIcon,
-} from 'lucide-react'
+import { Check, Lock, TicketPercent, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Route } from 'next'
 import { useEffect, useState } from 'react'
 import { howItWorks, type HowItWorksIcon } from '@/content/site'
+import type { IconName } from '@/domain/icons'
 import { formatARS } from '@/domain/money'
 import { Button, ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Icon } from '@/ui/Icon'
 import { CurrencyToggle, useCurrency } from '@/ui/currency/CurrencyContext'
 import { Field, Input } from '@/ui/form'
 import { currentAttribution, forgetCoupon, pendingCoupon } from '@/ui/marketing/attribution-client'
@@ -55,11 +47,11 @@ interface Props {
   recipient?: string
 }
 
-const STEP_ICONS: Record<HowItWorksIcon, LucideIcon> = {
-  bag: ShoppingBag,
-  mail: Mail,
-  pen: PencilLine,
-  gift: Gift,
+const STEP_ICONS: Record<HowItWorksIcon, IconName> = {
+  bag: 'compras',
+  mail: 'carta-de-amor',
+  pen: 'escribir',
+  gift: 'regalo',
 }
 
 const item = {
@@ -216,7 +208,6 @@ export function CheckoutForm({
             variants={{ show: { transition: { staggerChildren: 0.08, delayChildren: 0.25 } } }}
           >
             {howItWorks.map((step) => {
-              const Icon = STEP_ICONS[step.icon]
               return (
                 <motion.li
                   key={step.title}
@@ -226,8 +217,8 @@ export function CheckoutForm({
                     show: { opacity: 1, x: 0, transition: { duration: 0.45, ease: ease.out } },
                   }}
                 >
-                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-white shadow-[0_4px_12px_rgb(244_78_99/0.3)]">
-                    <Icon className="size-4" aria-hidden />
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft ring-1 ring-brand/15">
+                    <Icon name={STEP_ICONS[step.icon]} size={22} />
                   </span>
                   <p className="pt-1.5 leading-snug">
                     <strong>{step.title}:</strong> {step.text}
@@ -398,13 +389,25 @@ export function CheckoutForm({
             </h3>
             {recipient && (
               <p className="mb-1 truncate text-sm font-semibold text-brand-dark">
-                💖 Para {recipient}
+                <Icon
+                  name="corazon-brillo"
+                  size="1.2em"
+                  style={{ verticalAlign: '-0.25em', marginRight: '0.25em' }}
+                />
+                Para {recipient}
               </p>
             )}
-            <ul className="text-xs leading-relaxed text-neutral-500">
-              <li>✅ Experiencia 100% digital</li>
-              <li>✏️ Editable hasta que la bloqueás</li>
-              <li>⏳ Disponible {giftLifetimeDays} días desde que la regalás</li>
+            <ul className="space-y-0.5 text-xs leading-relaxed text-neutral-500">
+              <li className="flex items-center gap-1.5">
+                <Icon name="destellos" size={16} /> Experiencia 100% digital
+              </li>
+              <li className="flex items-center gap-1.5">
+                <Icon name="escribir" size={16} /> Editable hasta que la bloqueás
+              </li>
+              <li className="flex items-center gap-1.5">
+                <Icon name="cuenta-regresiva" size={16} /> Disponible {giftLifetimeDays} días desde
+                que la regalás
+              </li>
             </ul>
           </div>
         </div>

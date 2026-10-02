@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, Inbox, Plus } from 'lucide-react'
+import { ArrowLeft, Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import {
@@ -12,6 +12,7 @@ import {
   type SupportTopic,
 } from '@/domain/support'
 import { cn } from '@/ui/cn'
+import { Emoji, Icon } from '@/ui/Icon'
 import { spring } from '@/ui/motion'
 import { Conversation } from '@/ui/support/Conversation'
 import { NewTicketForm } from '@/ui/support/NewTicketForm'
@@ -105,8 +106,8 @@ export function SupportCenterPage({
           </div>
         ) : tickets.length === 0 ? (
           <div className="flex flex-col items-center px-4 py-10 text-center">
-            <span className="mb-3 grid size-12 place-items-center rounded-2xl bg-brand-soft text-brand">
-              <Inbox className="size-6" aria-hidden />
+            <span className="mb-3 grid size-12 place-items-center rounded-2xl bg-brand-soft">
+              <Icon name="mensaje" size={30} />
             </span>
             <p className="font-semibold text-ink">Todavía no hay consultas acá</p>
             <p className="mt-1 text-sm text-ink/60">
@@ -234,9 +235,7 @@ export function SupportCenterPage({
                         whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        <span aria-hidden className="text-2xl">
-                          {TOPIC_INFO[topic].emoji}
-                        </span>
+                        <Emoji value={TOPIC_INFO[topic].emoji} size={32} />
                         <span className="font-semibold text-ink">{TOPIC_INFO[topic].prompt}</span>
                       </motion.button>
                     ))}

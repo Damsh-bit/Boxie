@@ -13,6 +13,7 @@ import Image from 'next/image'
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { ConfettiBurst } from '@/ui/ConfettiBurst'
 import { cn } from '@/ui/cn'
+import { Emoji, EmojiText, Icon } from '@/ui/Icon'
 import { Swap, ease, spring, useCalm } from '@/ui/motion'
 import { useTimers } from './demos'
 import { lookOf, themeGradient, type HomeTheme, type ThemeStory } from './theme-look'
@@ -128,7 +129,6 @@ export function CoverScene({
 }: Pick<SceneProps, 'theme' | 'pointer'> & { typed: string; example: string }) {
   const calm = useCalm()
   const look = lookOf(theme.slug)
-  const Icon = look.icon
   const icon = useDepth(pointer, 28, 22)
   const text = useDepth(pointer, 12, 9)
   const glow = useDepth(pointer, -36, -30)
@@ -156,7 +156,7 @@ export function CoverScene({
           key={`${theme.slug}-${i}`}
           aria-hidden
           className="absolute bottom-0 text-white/70 motion-reduce:hidden"
-          style={{ left: p.left, fontSize: p.size }}
+          style={{ left: p.left }}
           initial={{ opacity: 0 }}
           animate={
             calm
@@ -168,7 +168,7 @@ export function CoverScene({
           }
           transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'linear' }}
         >
-          {look.particle}
+          <Emoji value={look.particle} size={p.size + 4} />
         </motion.span>
       ))}
 
@@ -207,14 +207,8 @@ export function CoverScene({
                   ease: 'easeInOut',
                 }}
               >
-                {Icon ? (
-                  <Icon className="size-16" strokeWidth={1.5} aria-hidden />
-                ) : (
-                  // Las temáticas creadas en el panel llevan su emoji.
-                  <span className="block text-6xl leading-none" aria-hidden>
-                    {theme.emoji}
-                  </span>
-                )}
+                {/* Las temáticas creadas en el panel llevan su propio ícono. */}
+                <Emoji value={look.icon ?? theme.emoji} size={76} />
               </motion.span>
             </motion.span>
           </AnimatePresence>
@@ -278,7 +272,7 @@ export function CoverScene({
             }
             transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
           >
-            👆
+            <Icon name="toca-aca" size={18} />
           </motion.span>
           Tocá para abrir
         </motion.span>
@@ -345,7 +339,7 @@ export function PhotosScene({ theme, story, name, pointer, onInteract }: ScenePr
             />
           </div>
           <p className="absolute inset-x-0 bottom-1.5 truncate px-1 text-center font-fun text-[0.7rem] font-semibold text-ink">
-            {story.captions[1]}
+            <EmojiText text={story.captions[1]} />
           </p>
         </motion.div>
       )}
@@ -367,10 +361,11 @@ export function PhotosScene({ theme, story, name, pointer, onInteract }: ScenePr
             key="b"
             className="mt-1 font-fun text-[1.75rem] leading-tight font-bold [text-shadow:0_2px_12px_rgba(0,0,0,0.35)]"
           >
-            {story.captions[0]}
+            <EmojiText text={story.captions[0]} />
           </h3>,
           <p key="c" className="mt-1.5 text-sm font-medium text-white/80">
-            Con {name}, siempre ✨
+            Con {name}, siempre{' '}
+            <Icon name="destellos" size="1.2em" style={{ verticalAlign: '-0.25em' }} />
           </p>,
         ].map((child) => (
           <motion.div
@@ -454,7 +449,7 @@ export function LetterScene({ theme, story, name, pointer, onInteract }: ScenePr
                 }}
                 transition={{ duration: 0.5, ease: ease.out }}
               >
-                {line}
+                <EmojiText text={line} />
               </motion.p>
             ))}
             <motion.p
@@ -475,8 +470,7 @@ export function LetterScene({ theme, story, name, pointer, onInteract }: ScenePr
           type="button"
           onClick={love}
           aria-label="Mandar corazones"
-          className="pointer-events-auto absolute -top-5 -right-3 grid size-12 place-items-center rounded-full text-xl text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] ring-4 ring-white/70"
-          style={{ background: accent }}
+          className="pointer-events-auto absolute -top-5 -right-3 grid size-12 place-items-center rounded-full bg-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] ring-4 ring-white/70"
           initial={{ scale: 0, rotate: -40 }}
           animate={{ scale: 1, rotate: 12 }}
           transition={{ ...spring.bouncy, delay: 0.8 }}
@@ -493,20 +487,19 @@ export function LetterScene({ theme, story, name, pointer, onInteract }: ScenePr
             }
             transition={{ duration: 1.3, repeat: Infinity, repeatDelay: 0.6 }}
           >
-            ❤
+            <Icon name="corazon" size={26} />
           </motion.span>
           {bursts.map((id) =>
             HEART_PATHS.map((dx, i) => (
               <motion.span
                 key={`${id}-${i}`}
                 aria-hidden
-                className="pointer-events-none absolute text-base"
-                style={{ color: accent }}
+                className="pointer-events-none absolute"
                 initial={{ opacity: 1, x: 0, y: 0, scale: 0.4 }}
                 animate={{ opacity: 0, x: dx * 1.6, y: -70 - (i % 3) * 22, scale: 1.1, rotate: dx }}
                 transition={{ duration: 1.1, ease: ease.out, delay: i * 0.03 }}
               >
-                ❤
+                <Icon name="corazon" size={18} />
               </motion.span>
             )),
           )}
@@ -787,12 +780,12 @@ export function TriviaScene({ theme, story, auto, onInteract }: SceneProps) {
             <ConfettiBurst count={36} seed={11} className="top-1/3" />
             <motion.span
               aria-hidden
-              className="text-7xl"
+              className="block"
               initial={{ scale: 0, rotate: -40 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ ...spring.bouncy, delay: 0.1 }}
             >
-              🏆
+              <Icon name="trofeo" size={84} />
             </motion.span>
             <h3 className="mt-4 font-fun text-3xl font-bold">¡Acertaste!</h3>
             <p className="mt-2 text-sm font-medium text-ink/75">
@@ -822,11 +815,11 @@ export function TriviaScene({ theme, story, auto, onInteract }: SceneProps) {
             <Eyebrow className="text-center text-ink/60">Pregunta 1 de 3</Eyebrow>
             <motion.div
               aria-hidden
-              className="mx-auto mt-3 text-5xl"
+              className="mx-auto mt-3 w-fit"
               animate={calm ? undefined : { rotate: [0, -8, 8, 0] }}
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
             >
-              🤔
+              <Icon name="pensar" size={56} />
             </motion.div>
             <motion.div
               className="mt-3 rounded-2xl bg-white/90 p-4 text-center shadow-lg"
@@ -866,7 +859,9 @@ export function TriviaScene({ theme, story, auto, onInteract }: SceneProps) {
                     whileHover={picked === null ? { scale: 1.03 } : undefined}
                     whileTap={picked === null ? { scale: 0.96 } : undefined}
                   >
-                    {option}
+                    <span>
+                      <EmojiText text={option} />
+                    </span>
                     <AnimatePresence>
                       {chosen && (
                         <motion.span
@@ -891,7 +886,7 @@ export function TriviaScene({ theme, story, auto, onInteract }: SceneProps) {
               className="mt-auto min-h-5 text-center text-xs font-semibold text-ink/70"
               aria-live="polite"
             >
-              {misses > 0 ? 'Casi 😅 ¡probá otra!' : 'Tocá una respuesta'}
+              <EmojiText text={misses > 0 ? 'Casi 😅 ¡probá otra!' : 'Tocá una respuesta'} />
             </p>
           </motion.div>
         )}
@@ -964,12 +959,12 @@ export function SurpriseScene({ theme, story, auto, onInteract, onRestart }: Sce
               <div className="px-4 pt-4 pb-3">
                 <motion.span
                   aria-hidden
-                  className="block text-5xl"
+                  className="block w-fit"
                   initial={{ scale: 0, rotate: -30 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ ...spring.bouncy, delay: 0.7 }}
                 >
-                  {surprise.emoji}
+                  <Emoji value={surprise.emoji} size={52} />
                 </motion.span>
                 <p className="mt-2 font-fun text-lg leading-tight font-bold">{surprise.title}</p>
                 <p className="mt-1 text-xs text-ink/60">{surprise.detail}</p>
@@ -977,7 +972,9 @@ export function SurpriseScene({ theme, story, auto, onInteract, onRestart }: Sce
               <div className="relative border-t-2 border-dashed border-ink/15 py-2 text-[0.6rem] font-extrabold tracking-[0.2em] text-ink/45 uppercase">
                 <span className="absolute top-0 -left-2 size-4 -translate-y-1/2 rounded-full bg-black/25" />
                 <span className="absolute top-0 -right-2 size-4 -translate-y-1/2 rounded-full bg-black/25" />
-                Vale por siempre ♾️
+                <span className="inline-flex items-center gap-1">
+                  Vale por siempre <Icon name="infinito" size={16} />
+                </span>
               </div>
             </motion.div>
           )}
@@ -1072,7 +1069,7 @@ export function SurpriseScene({ theme, story, auto, onInteract, onRestart }: Sce
               transition={{ duration: 0.5, ease: ease.out, delay: 1.1 }}
             >
               <p className="text-lg" style={MARKER}>
-                Con amor, vos 💖
+                <EmojiText text="Con amor, vos 💖" />
               </p>
               <motion.button
                 {...interactive}
@@ -1102,7 +1099,7 @@ export function SurpriseScene({ theme, story, auto, onInteract, onRestart }: Sce
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              Tocá la caja 🎁
+              <EmojiText text="Tocá la caja 🎁" />
             </motion.p>
           )}
         </AnimatePresence>

@@ -9,6 +9,7 @@ import { couponDiscount } from '@/domain/coupons'
 import { shortRecipient } from '@/domain/recipient'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Icon } from '@/ui/Icon'
 import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { ease, spring, useCalm } from '@/ui/motion'
 import { useBottomBar } from '@/ui/use-bottom-bar'
@@ -147,7 +148,7 @@ export function BuyBox({
 
       {occasion && (
         <p className="mb-3 flex items-start gap-2 rounded-2xl bg-canvas px-3.5 py-2.5 text-sm text-neutral-700">
-          <span aria-hidden>🗓️</span>
+          <Icon name="calendario" size={20} className="mt-px" />
           <span>
             <b className="text-ink">
               {occasion.daysUntil === 0
@@ -173,12 +174,12 @@ export function BuyBox({
             >
               <div className="mb-3 flex items-center gap-3 rounded-2xl border border-amber-300 bg-[#FFFBEA] p-3 text-left text-[#5d4037] shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
                 <motion.span
-                  className="text-2xl"
+                  className="flex"
                   aria-hidden
                   animate={calm ? undefined : { rotate: [0, -14, 12, -8, 0] }}
                   transition={{ duration: 0.9, delay: 0.5 }}
                 >
-                  🎁
+                  <Icon name="regalo" size={32} />
                 </motion.span>
                 <div className="flex flex-col">
                   <strong className="text-[13px] tracking-wide text-red-700 uppercase">

@@ -1,4 +1,4 @@
-import { ArrowRight, MessageCircleHeart } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import type { Metadata, Route } from 'next'
 import { experiences, homeFaqs, occasions, type FaqItem, type Occasion } from '@/content/home'
 import { site, siteUrl } from '@/content/site'
@@ -9,6 +9,7 @@ import type { SlideKind } from '@/slides/schemas'
 import { getSocialProof } from '@/server/social-proof'
 import { getLiveSponsors } from '@/server/sponsors/repo'
 import { getStorefront, type Storefront } from '@/server/storefront'
+import { Icon } from '@/ui/Icon'
 import { LiftLink } from '@/ui/LiftLink'
 import { Reveal } from '@/ui/motion'
 import { SponsorBand } from '@/ui/sponsors/SponsorUnits'
@@ -231,7 +232,10 @@ export default async function HomePage() {
         price={byPlans ? `desde ${price}` : price}
         editorHref={editorHref}
         exampleHref={exampleHref}
-        sample={{ name: homeThemes[0]?.name ?? 'Pareja', emoji: homeThemes[0]?.emoji ?? '💘' }}
+        sample={{
+          name: homeThemes[0]?.name ?? 'Pareja',
+          emoji: homeThemes[0]?.emoji ?? 'corazon-flechado',
+        }}
       />
       <Reaction maxScreens={sf.maxScreens} lifetimeDays={sf.lifetimeDays} />
       <Pricing
@@ -273,8 +277,8 @@ export default async function HomePage() {
               href="/ayuda"
               className="mx-auto flex max-w-md items-center gap-4 rounded-3xl bg-paper/60 p-5 ring-1 ring-black/5 lg:mx-0"
             >
-              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand text-white">
-                <MessageCircleHeart className="size-6" aria-hidden />
+              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-white ring-1 ring-black/5">
+                <Icon name="mensaje" size={30} />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold text-ink">¿Te quedó alguna duda?</span>

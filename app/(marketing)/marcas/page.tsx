@@ -1,10 +1,10 @@
-import { Handshake } from 'lucide-react'
 import type { Metadata } from 'next'
 import { industries, partnershipFormats, partnershipSteps } from '@/content/brands'
 import { site } from '@/content/site'
 import { SPONSOR_KIND_LABELS } from '@/domain/sponsors'
 import { getLiveSponsors } from '@/server/sponsors/repo'
 import { getStorefront } from '@/server/storefront'
+import { Emoji, Icon } from '@/ui/Icon'
 import { Reveal, Stagger, StaggerItem } from '@/ui/motion'
 import { SponsorMark } from '@/ui/sponsors/SponsorUnits'
 import { Mark, SectionHeading } from '../_home/primitives'
@@ -69,9 +69,9 @@ export default async function BrandsPage() {
               <span className="font-display text-sm font-bold text-ink/30">0{i + 1}</span>
               <span
                 aria-hidden
-                className="mt-4 inline-block origin-bottom-left text-4xl transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
+                className="mt-4 inline-block origin-bottom-left transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
               >
-                {f.emoji}
+                <Emoji value={f.emoji} size={48} />
               </span>
               <h3 className="mt-4 font-display text-xl leading-tight font-bold text-ink">
                 {f.title}
@@ -197,7 +197,7 @@ export default async function BrandsPage() {
                 key={i.id}
                 className="inline-flex items-center gap-2 rounded-full border-2 border-dashed border-black/10 px-5 py-3 font-semibold text-ink/60"
               >
-                <span aria-hidden>{i.emoji}</span> ¿Tu {i.label.toLowerCase().replace(/s$/, '')}?
+                <Emoji value={i.emoji} size={22} /> ¿Tu {i.label.toLowerCase().replace(/s$/, '')}?
               </span>
             ))}
           </Reveal>
@@ -216,7 +216,7 @@ export default async function BrandsPage() {
               className="pointer-events-none absolute -right-20 -bottom-20 -z-10 size-80 rounded-full bg-brand/40 blur-3xl"
             />
             <span className="grid size-14 place-items-center rounded-2xl bg-white/10">
-              <Handshake className="size-7 text-brand-muted" aria-hidden />
+              <Icon name="acuerdo" size={38} />
             </span>
             <h2
               id="sumate-title"

@@ -1,4 +1,4 @@
-import { Cake, Heart, Users, type LucideIcon } from 'lucide-react'
+import type { IconName } from '@/domain/icons'
 
 /** Lo que la home necesita de cada temática (lo arma la página con el catálogo). */
 export interface HomeTheme {
@@ -10,7 +10,7 @@ export interface HomeTheme {
   tone: 'light' | 'dark'
   images: string[]
   features: string[]
-  /** El emoji de la temática: el de la home, el de su guía en el panel o un regalo. */
+  /** El ícono de la temática (nombre o emoji): el de la home, el de su guía en el panel o un regalo. */
   emoji: string
   /** Precio ya formateado ("$ 4.990"). */
   price: string
@@ -35,8 +35,8 @@ interface ThemeLook {
   emoji: string
   /** Lo que flota en la portada de muestra. */
   particle: string
-  /** El ícono grande de la portada. Sin ícono, va el emoji de la temática. */
-  icon?: LucideIcon
+  /** El ícono grande de la portada. Sin ícono, va el de la temática. */
+  icon?: IconName
   /** Nombres que van pasando en la portada mientras no escribas uno. */
   names: string[]
   story: ThemeStory
@@ -44,9 +44,9 @@ interface ThemeLook {
 
 const LOOKS: Record<string, ThemeLook> = {
   pareja: {
-    emoji: '💘',
+    emoji: 'corazon-flechado',
     particle: '❤',
-    icon: Heart,
+    icon: 'corazon',
     names: ['Sofía', 'Martu', 'Lucas', 'mi amor'],
     story: {
       captions: ['Nuestro primer viaje ✈️', 'Esa tarde 🌅'],
@@ -62,16 +62,16 @@ const LOOKS: Record<string, ThemeLook> = {
         answer: 1,
       },
       surprise: {
-        emoji: '🍝',
+        emoji: 'pasta',
         title: 'Una cena a elección',
         detail: 'Vos elegís el lugar, yo invito',
       },
     },
   },
   cumpleanos: {
-    emoji: '🎂',
+    emoji: 'torta',
     particle: '🎈',
-    icon: Cake,
+    icon: 'torta',
     names: ['Mamá', 'la Abu', 'Tomi', 'Juli'],
     story: {
       captions: ['Tu cumple pasado 🎈', 'La mejor noche 🪩'],
@@ -87,16 +87,16 @@ const LOOKS: Record<string, ThemeLook> = {
         answer: 0,
       },
       surprise: {
-        emoji: '🎟️',
+        emoji: 'entrada',
         title: 'Dos entradas al recital',
         detail: 'Guardá la fecha: vamos juntos',
       },
     },
   },
   amistad: {
-    emoji: '🤝',
+    emoji: 'acuerdo',
     particle: '✦',
-    icon: Users,
+    icon: 'amigas',
     names: ['Cami', 'Nico', 'Flor', 'mi team'],
     story: {
       captions: ['Ese viaje juntos 🚐', 'Los de siempre 📸'],
@@ -112,7 +112,7 @@ const LOOKS: Record<string, ThemeLook> = {
         answer: 2,
       },
       surprise: {
-        emoji: '🍕',
+        emoji: 'pizza',
         title: 'Noche de pizza y pelis',
         detail: 'Yo pongo la pizza, vos la peli',
       },
@@ -121,7 +121,7 @@ const LOOKS: Record<string, ThemeLook> = {
 }
 
 const FALLBACK: ThemeLook = {
-  emoji: '🎁',
+  emoji: 'regalo',
   particle: '✦',
   names: ['Sofía', 'Mamá', 'Lucas'],
   story: {
@@ -137,7 +137,7 @@ const FALLBACK: ThemeLook = {
       options: ['Pizza 🍕', 'Sushi 🍣', 'Asado 🥩'],
       answer: 2,
     },
-    surprise: { emoji: '☕', title: 'Un desayuno juntos', detail: 'Cuando quieras, yo invito' },
+    surprise: { emoji: 'cafe', title: 'Un desayuno juntos', detail: 'Cuando quieras, yo invito' },
   },
 }
 

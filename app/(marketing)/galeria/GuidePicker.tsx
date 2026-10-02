@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useRef, useState, type KeyboardEvent } from 'react'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Emoji } from '@/ui/Icon'
 import { ease, spring } from '@/ui/motion'
 import { Mark, SectionHeading } from '../_home/primitives'
 import { themeHref } from './helpers'
@@ -96,12 +97,12 @@ export function GuidePicker({
                   />
                 )}
                 <motion.span
-                  className="relative text-2xl lg:text-3xl"
+                  className="relative flex text-[28px] lg:text-[36px]"
                   aria-hidden
                   animate={selected ? { rotate: [0, -14, 10, 0], scale: [1, 1.25, 1] } : {}}
                   transition={{ duration: 0.5 }}
                 >
-                  {t.guide!.emoji}
+                  <Emoji value={t.guide!.emoji} size="1em" />
                 </motion.span>
                 <span className="relative">
                   <span className="block font-display text-[1.05rem] leading-tight font-bold lg:text-lg">
@@ -163,13 +164,13 @@ export function GuidePicker({
                   </motion.div>
                 )}
                 <motion.span
-                  className="absolute bottom-4 left-4 grid size-16 place-items-center rounded-2xl bg-white text-4xl shadow-lg"
+                  className="absolute bottom-4 left-4 grid size-16 place-items-center rounded-2xl bg-white shadow-lg"
                   initial={{ scale: 0, rotate: -25 }}
                   animate={{ scale: 1, rotate: -6 }}
                   transition={{ ...spring.bouncy, delay: 0.15 }}
                   aria-hidden
                 >
-                  {guide.emoji}
+                  <Emoji value={guide.emoji} size={42} />
                 </motion.span>
               </div>
               <div className="flex flex-col p-6 sm:p-8">

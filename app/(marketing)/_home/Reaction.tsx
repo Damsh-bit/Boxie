@@ -1,9 +1,10 @@
 'use client'
 
 import { AnimatePresence, motion, useInView } from 'framer-motion'
-import { CheckCheck, Gift, RotateCcw } from 'lucide-react'
+import { CheckCheck, RotateCcw } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '@/ui/cn'
+import { EmojiText, Icon } from '@/ui/Icon'
 import { Stagger, StaggerItem, spring, useCalm } from '@/ui/motion'
 import { CountUp, Mark, SectionHeading } from './primitives'
 
@@ -161,7 +162,9 @@ function ChatDemo() {
             S
           </span>
           <div className="leading-tight">
-            <p className="font-semibold text-ink">Sofi ❤️</p>
+            <p className="font-semibold text-ink">
+              <EmojiText text="Sofi ❤️" />
+            </p>
             <p className="relative h-4 text-xs text-ink/50">
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.span
@@ -199,7 +202,7 @@ function ChatDemo() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={spring.bouncy}
               >
-                {m.link ? <LinkPreview /> : m.text}
+                {m.link ? <LinkPreview /> : <EmojiText text={m.text} />}
                 {m.from === 'me' && (
                   <span className="mt-0.5 flex items-center justify-end gap-1 text-[0.6rem] text-ink/45">
                     20:14
@@ -216,13 +219,13 @@ function ChatDemo() {
                   <AnimatePresence>
                     {loved && (
                       <motion.span
-                        className="absolute -bottom-3 left-2 rounded-full bg-white px-1.5 py-0.5 text-sm shadow-md"
+                        className="absolute -bottom-3 left-2 flex rounded-full bg-white px-1.5 py-1 shadow-md"
                         initial={{ scale: 0, rotate: -30 }}
                         animate={{ scale: 1, rotate: 0 }}
                         transition={spring.bouncy}
                         aria-label="Reaccionó con un corazón"
                       >
-                        ❤️
+                        <Icon name="corazon" size={16} />
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -285,10 +288,12 @@ function LinkPreview() {
     <span className="block">
       <span className="block overflow-hidden rounded-xl bg-white/70">
         <span className="flex h-24 items-center justify-center gap-2 bg-[linear-gradient(135deg,#f44e63,#ff9a9e)] font-fun text-xl font-bold text-white">
-          <Gift className="size-7" strokeWidth={1.6} aria-hidden /> Para Sofi
+          <Icon name="regalo" size={40} /> Para Sofi
         </span>
         <span className="block p-2">
-          <span className="block text-xs font-bold">Un regalo especial para vos 🎁</span>
+          <span className="block text-xs font-bold">
+            <EmojiText text="Un regalo especial para vos 🎁" />
+          </span>
           <span className="block text-[0.65rem] text-ink/50">ribbly.com.ar</span>
         </span>
       </span>

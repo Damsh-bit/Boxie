@@ -1,11 +1,12 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, Gift, Sparkles, Wand2 } from 'lucide-react'
+import { Check, Gift, Wand2 } from 'lucide-react'
 import type { Route } from 'next'
 import { useState } from 'react'
 import { ButtonLink } from '@/ui/Button'
 import { ConfettiBurst } from '@/ui/ConfettiBurst'
+import { EmojiText, Icon } from '@/ui/Icon'
 import { Float, Reveal, spring, useCalm } from '@/ui/motion'
 import { Magnetic, Mark } from './primitives'
 
@@ -57,7 +58,7 @@ export function FinalCta({ price, editorHref }: { price: string; editorHref: Rou
           <GiftBox open={open} bursts={bursts} onToggle={toggle} />
 
           <div className="text-center lg:text-left">
-            <Sparkles className="mx-auto mb-5 size-9 text-brand-muted lg:mx-0" aria-hidden />
+            <Icon name="destellos" size={44} className="mx-auto mb-5 block lg:mx-0" />
             <h2
               id="cierre-title"
               className="font-display text-[2.1rem] leading-[1.1] font-bold text-balance sm:text-5xl"
@@ -130,8 +131,8 @@ function GiftBox({ open, bursts, onToggle }: { open: boolean; bursts: number; on
               <motion.span
                 key={i}
                 aria-hidden
-                className="absolute bottom-24 left-1/2 text-brand-muted"
-                style={{ fontSize: h.size, marginLeft: h.x }}
+                className="absolute bottom-24 left-1/2"
+                style={{ marginLeft: h.x }}
                 initial={{ opacity: 0, y: 0 }}
                 animate={
                   calm
@@ -146,7 +147,7 @@ function GiftBox({ open, bursts, onToggle }: { open: boolean; bursts: number; on
                   ease: 'easeOut',
                 }}
               >
-                ❤
+                <Icon name="corazon" size={h.size + 4} />
               </motion.span>
             ))}
         </AnimatePresence>
@@ -193,7 +194,7 @@ function GiftBox({ open, bursts, onToggle }: { open: boolean; bursts: number; on
       </motion.button>
 
       <p className="mt-3 text-sm font-semibold text-white/60" aria-hidden>
-        {open ? '¡Así se siente abrir una Ribbly! ✨' : 'Tocá la caja 👆'}
+        <EmojiText text={open ? '¡Así se siente abrir una Ribbly! ✨' : 'Tocá la caja 👆'} />
       </p>
     </div>
   )

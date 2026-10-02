@@ -19,7 +19,9 @@ import {
   type MouseEvent,
   type PointerEvent,
 } from 'react'
+import type { IconName } from '@/domain/icons'
 import { cn } from '@/ui/cn'
+import { EmojiText, Icon } from '@/ui/Icon'
 import { Float, ease, spring, useCalm } from '@/ui/motion'
 import {
   CoverScene,
@@ -35,12 +37,12 @@ import { lookOf, type HomeTheme } from './theme-look'
 
 /** Las pantallas de la Boxie de muestra, en orden, y cuánto dura cada una. */
 const SCENES = [
-  { id: 'portada', label: 'Portada', emoji: '🎁', seconds: 4.2, light: false },
-  { id: 'fotos', label: 'Fotos', emoji: '📸', seconds: 4.8, light: false },
-  { id: 'dedicatoria', label: 'Dedicatoria', emoji: '💌', seconds: 6.2, light: true },
-  { id: 'cancion', label: 'Su canción', emoji: '🎵', seconds: 5.2, light: false },
-  { id: 'trivia', label: 'Trivia', emoji: '🧠', seconds: 6.4, light: true },
-  { id: 'sorpresa', label: 'Sorpresa', emoji: '🎉', seconds: 6.8, light: false },
+  { id: 'portada', label: 'Portada', emoji: 'regalo', seconds: 4.2, light: false },
+  { id: 'fotos', label: 'Fotos', emoji: 'camara', seconds: 4.8, light: false },
+  { id: 'dedicatoria', label: 'Dedicatoria', emoji: 'carta-de-amor', seconds: 6.2, light: true },
+  { id: 'cancion', label: 'Su canción', emoji: 'musica', seconds: 5.2, light: false },
+  { id: 'trivia', label: 'Trivia', emoji: 'trivia', seconds: 6.4, light: true },
+  { id: 'sorpresa', label: 'Sorpresa', emoji: 'cotillon', seconds: 6.8, light: false },
 ] as const
 
 type SceneId = (typeof SCENES)[number]['id']
@@ -89,7 +91,7 @@ const HINTS: Record<Hint, string> = {
   next: 'Seguir ›',
   back: '‹ Volver',
   again: 'De nuevo ↺',
-  paused: '⏸ En pausa',
+  paused: 'En pausa',
 }
 
 const slide = {
@@ -478,7 +480,7 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
                   transition={spring.snappy}
                 >
                   <span className="mt-4 ml-4 block rounded-full bg-ink/85 px-3 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-[0_8px_20px_rgba(42,36,51,0.3)] backdrop-blur">
-                    {HINTS[shownHint]}
+                    <EmojiText text={HINTS[shownHint]} />
                   </span>
                 </motion.span>
               )}
@@ -494,7 +496,8 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
           <Chip
             key={chip.scene}
             {...chip}
-            label={`${s.emoji} ${s.label}`}
+            icon={s.emoji}
+            label={s.label}
             active={i === index}
             mouse={mouse}
             onSelect={() => {
@@ -552,6 +555,7 @@ function Fill({
  * pantalla está a la vista.
  */
 function Chip({
+  icon,
   label,
   className,
   depth,
@@ -561,6 +565,7 @@ function Chip({
   mouse,
   onSelect,
 }: {
+  icon: IconName
   label: string
   className: string
   depth: number
@@ -597,7 +602,7 @@ function Chip({
         transition={spring.snappy}
       >
         <motion.span
-          className="block"
+          className="flex items-center gap-1.5"
           animate={
             calm
               ? undefined
@@ -605,6 +610,7 @@ function Chip({
           }
           transition={{ duration: float, repeat: Infinity, ease: 'easeInOut' }}
         >
+          <Icon name={icon} size="1.35em" />
           {label}
         </motion.span>
       </motion.button>

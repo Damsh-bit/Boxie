@@ -7,6 +7,7 @@ import Link from 'next/link'
 import type { GalleryView } from '@/domain/gallery'
 import { describeDaysUntil } from '@/domain/gallery'
 import { cn } from '@/ui/cn'
+import { Emoji } from '@/ui/Icon'
 import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { ease, spring } from '@/ui/motion'
 import { contentsOf, exampleHref, priceOf, shortDate, themeHref } from './helpers'
@@ -182,14 +183,14 @@ export function GalleryCard({
             </Link>
             <motion.span
               aria-hidden
-              className={compact ? 'ml-1.5 inline-block text-base' : 'text-xl'}
+              className={compact ? 'ml-1.5 inline-flex' : 'inline-flex'}
               variants={{
                 rest: { rotate: 0, scale: 1 },
                 hover: { rotate: [0, -14, 10, 0], scale: 1.2 },
               }}
               transition={{ duration: 0.5 }}
             >
-              {theme.emoji}
+              <Emoji value={theme.emoji} size={compact ? 18 : 26} />
             </motion.span>
           </h2>
 

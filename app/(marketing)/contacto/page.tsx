@@ -1,8 +1,8 @@
-import { AtSign, Mail, MessageCircle, MessagesSquare } from 'lucide-react'
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { businessContact } from '@/domain/business'
 import { getBusinessInfo } from '@/server/catalog'
+import { Icon } from '@/ui/Icon'
 import { Reveal, Stagger, StaggerItem } from '@/ui/motion'
 import { SupportButton } from '@/ui/SupportButton'
 import { PageIntro } from '../_components/PageIntro'
@@ -31,7 +31,7 @@ function Channel({
 }) {
   return (
     <div className="flex items-start gap-4 rounded-3xl bg-white p-5 ring-1 ring-black/5">
-      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-soft text-brand [&_svg]:size-5">
+      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-soft">
         {icon}
       </span>
       <div className="min-w-0 flex-1">
@@ -44,7 +44,7 @@ function Channel({
 }
 
 export default async function ContactPage() {
-  const contact = businessContact(await getBusinessInfo(), 'Hola Boxie 👋 Tengo una consulta')
+  const contact = businessContact(await getBusinessInfo(), 'Hola Ribbly, tengo una consulta')
 
   return (
     <div className="overflow-x-clip bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] pb-24">
@@ -66,7 +66,7 @@ export default async function ContactPage() {
                 Lo más rápido
               </span>
               <p className="mt-3 flex items-center gap-2 font-display text-2xl font-bold">
-                <MessagesSquare className="size-6 text-brand-muted" aria-hidden /> Chat de soporte
+                <Icon name="mensaje" size={30} /> Chat de soporte
               </p>
               <p className="mt-1 text-sm text-white/70">
                 Para tu Boxie, un pago o un error del sitio. Te responde una persona y te avisamos
@@ -80,7 +80,7 @@ export default async function ContactPage() {
           {contact.whatsapp && (
             <StaggerItem>
               <Channel
-                icon={<MessageCircle />}
+                icon={<Icon name="mensaje" size={28} />}
                 title="WhatsApp"
                 text="Escribinos directo desde el celular."
               >
@@ -97,7 +97,7 @@ export default async function ContactPage() {
           )}
           <StaggerItem>
             <Channel
-              icon={<Mail />}
+              icon={<Icon name="carta-de-amor" size={28} />}
               title="Mail de soporte"
               text="Para lo que quieras dejar por escrito."
             >
@@ -111,7 +111,11 @@ export default async function ContactPage() {
           </StaggerItem>
           {contact.instagram && (
             <StaggerItem>
-              <Channel icon={<AtSign />} title="Instagram" text="Novedades, ideas y promociones.">
+              <Channel
+                icon={<Icon name="camara" size={28} />}
+                title="Instagram"
+                text="Novedades, ideas y promociones."
+              >
                 <a
                   href={contact.instagram.url}
                   target="_blank"

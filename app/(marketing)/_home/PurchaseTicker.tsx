@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { themeDetail } from '@/content/social-proof'
 import { isFresh, timeAgo, type PurchaseEvent } from '@/domain/social-proof'
 import { cn } from '@/ui/cn'
+import { Emoji } from '@/ui/Icon'
 import { MercadoPagoLogo } from '@/ui/MercadoPagoLogo'
 import { ease, spring, useCalm } from '@/ui/motion'
 import { avatarGradient, type HomeTheme } from './theme-look'
@@ -107,7 +108,12 @@ export function PurchaseTicker({
             <span className="flex items-baseline gap-2 text-[13px] text-ink sm:text-sm">
               <span className="truncate">
                 <b className="font-bold">{event.name}</b> {fresh ? 'acaba de comprar' : 'compró'}{' '}
-                una Ribbly <span aria-hidden>{theme?.emoji ?? '🎁'}</span>
+                una Ribbly{' '}
+                <Emoji
+                  value={theme?.emoji ?? 'regalo'}
+                  size="1.2em"
+                  style={{ verticalAlign: '-0.25em' }}
+                />
               </span>
               {!fresh && (
                 <span className="shrink-0 text-[11px] font-medium text-ink/45">

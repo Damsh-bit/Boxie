@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { describeDaysUntil } from '@/domain/gallery'
 import { ButtonLink } from '@/ui/Button'
+import { Emoji } from '@/ui/Icon'
 import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { Stagger, StaggerItem, spring } from '@/ui/motion'
 import { CountUp, Mark } from '../_home/primitives'
@@ -208,7 +209,7 @@ function SeasonSpotlight({
           </div>
           <div className="mt-7 flex flex-wrap gap-2">
             <ButtonLink href={href} variant="white" size="md">
-              Ver la Ribbly <span aria-hidden>{theme.emoji}</span>
+              Ver la Ribbly <Emoji value={theme.emoji} size={20} />
             </ButtonLink>
             <button
               type="button"
@@ -270,7 +271,7 @@ function ThemeFan({ themes }: { themes: GalleryTheme[] }) {
                 <Image src={t.images[0]} alt="" fill sizes="220px" className="object-cover" />
               )}
               <span className="absolute inset-x-3 bottom-3 rounded-full bg-white/95 px-3 py-1.5 text-center font-display text-sm font-bold text-ink">
-                {t.name} {t.emoji}
+                {t.name} <Emoji value={t.emoji} size="1.2em" style={{ verticalAlign: '-0.25em' }} />
               </span>
             </motion.div>
           )

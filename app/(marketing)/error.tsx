@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Home, LifeBuoy, RotateCcw } from 'lucide-react'
 import { useEffect } from 'react'
 import { Button, ButtonLink } from '@/ui/Button'
+import { Icon } from '@/ui/Icon'
 import { spring } from '@/ui/motion'
 import { SupportButton } from '@/ui/SupportButton'
 
@@ -26,13 +27,13 @@ export default function MarketingError({
   return (
     <div className="flex min-h-[70dvh] flex-col items-center justify-center bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_55%)] px-5 pt-[120px] pb-20 text-center">
       <motion.span
-        className="mb-5 text-7xl"
+        className="mb-5"
         aria-hidden
         initial={{ scale: 0.3, rotate: -25 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={spring.bouncy}
       >
-        🙈
+        <Icon name="verguenza" size={88} />
       </motion.span>
       <h1 className="max-w-lg font-display text-4xl leading-tight font-bold text-balance text-ink">
         Uy, algo se trabó

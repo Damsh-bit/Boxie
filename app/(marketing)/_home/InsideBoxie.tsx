@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 
 import { experiences, type ExperienceId } from '@/content/home'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Emoji } from '@/ui/Icon'
 import { Collapse, Float, Swap, ease, spring, useCalm } from '@/ui/motion'
 import {
   CouponsDemo,
@@ -180,7 +181,7 @@ export function InsideBoxie({
                       animate={selected ? { rotate: [0, -14, 10, 0], scale: [1, 1.18, 1] } : {}}
                       transition={{ duration: 0.5 }}
                     >
-                      {exp.emoji}
+                      <Emoji value={exp.emoji} size="1.3em" />
                     </motion.span>
                     <span className="font-display text-base font-bold whitespace-nowrap lg:text-xl">
                       {exp.label}
@@ -222,13 +223,13 @@ export function InsideBoxie({
               <motion.span
                 key={current.id}
                 aria-hidden
-                className="absolute -top-5 -right-7 z-50 grid size-16 place-items-center rounded-2xl bg-white text-3xl shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
+                className="absolute -top-5 -right-7 z-50 grid size-16 place-items-center rounded-2xl bg-white shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
                 initial={{ opacity: 0, scale: 0.3, rotate: -35 }}
                 animate={{ opacity: 1, scale: 1, rotate: 8 }}
                 exit={{ opacity: 0, scale: 0.3, rotate: 35 }}
                 transition={spring.bouncy}
               >
-                {current.emoji}
+                <Emoji value={current.emoji} size={42} />
               </motion.span>
             </AnimatePresence>
 

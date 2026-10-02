@@ -1,8 +1,9 @@
 import type { GalleryIndexItem } from '@/domain/gallery'
 
-/** Una pantalla del regalo como la cuenta la galería ("🧠 Trivia"). */
+/** Una pantalla del regalo como la cuenta la galería (ícono de trivia + "Trivia"). */
 export interface GalleryScreen {
   kind: string
+  /** Nombre de ícono o emoji (src/domain/icons.ts). */
   emoji: string
   label: string
   game: boolean

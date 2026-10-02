@@ -24,10 +24,11 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import type { Route } from 'next'
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { modulesOf, nextStep, pickPlan, savingsOf, type Reason } from '@/domain/quote-builder'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Emoji, Icon } from '@/ui/Icon'
 import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { Swap, ease, spring } from '@/ui/motion'
 import { useBottomBar } from '@/ui/use-bottom-bar'
@@ -221,7 +222,8 @@ export function QuoteBuilder({
                     )}
                   </span>
                   <span className="font-semibold whitespace-nowrap text-ink">
-                    {t.name} <span aria-hidden>{t.emoji}</span>
+                    {t.name}{' '}
+                    <Emoji value={t.emoji} size="1.2em" style={{ verticalAlign: '-0.25em' }} />
                   </span>
                   <AnimatePresence>
                     {on && (
@@ -261,7 +263,13 @@ export function QuoteBuilder({
                     className="rounded-full bg-canvas px-3 py-1.5 text-xs font-bold text-ink/70 transition-colors hover:bg-ink hover:text-white"
                   >
                     {i === 0 ? 'Lo esencial' : i === plans.length - 1 ? 'Todo' : p.name}
-                    {i === recommendedIndex && ' ⭐'}
+                    {i === recommendedIndex && (
+                      <Icon
+                        name="estrella"
+                        size="1.2em"
+                        style={{ verticalAlign: '-0.25em', marginLeft: '0.25em' }}
+                      />
+                    )}
                   </button>
                 ))}
               </div>
@@ -275,7 +283,7 @@ export function QuoteBuilder({
               return (
                 <div key={g.id}>
                   <p className="mb-2 flex items-center gap-2 text-xs font-extrabold tracking-wider text-ink/45 uppercase">
-                    <span aria-hidden>{g.emoji}</span> {g.label}
+                    <Emoji value={g.emoji} size={18} /> {g.label}
                   </p>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {list.map((m) => (
@@ -430,7 +438,8 @@ export function QuoteBuilder({
               </p>
               <p className="truncate font-display text-lg font-bold">
                 <Swap id={theme.slug}>
-                  {theme.name} {theme.emoji}
+                  {theme.name}{' '}
+                  <Emoji value={theme.emoji} size="1.1em" style={{ verticalAlign: '-0.2em' }} />
                 </Swap>
               </p>
             </div>
@@ -472,7 +481,14 @@ export function QuoteBuilder({
                         )}
                         <span className="relative block text-sm leading-tight font-bold">
                           {p.name}
-                          {i === recommendedIndex && <span aria-label="(el más elegido)"> ⭐</span>}
+                          {i === recommendedIndex && (
+                            <Icon
+                              name="estrella"
+                              label="(el más elegido)"
+                              size="1.15em"
+                              style={{ verticalAlign: '-0.2em', marginLeft: '0.25em' }}
+                            />
+                          )}
                         </span>
                         <PlanPrice
                           cents={p.priceCents}
@@ -561,13 +577,18 @@ export function QuoteBuilder({
                   {step.adds.length > 0 ? (
                     <>
                       {step.adds.length} {step.adds.length === 1 ? 'módulo' : 'módulos'}{' '}
-                      <span aria-hidden>
-                        {step.adds
-                          .map((k) => theme.modules.find((m) => m.kind === k)?.emoji)
-                          .filter(Boolean)
-                          .slice(0, 5)
-                          .join(' ')}
-                      </span>
+                      {step.adds
+                        .map((k) => theme.modules.find((m) => m.kind === k)?.emoji)
+                        .filter(Boolean)
+                        .slice(0, 5)
+                        .map((emoji, i) => (
+                          <Emoji
+                            key={i}
+                            value={emoji}
+                            size="1.2em"
+                            style={{ verticalAlign: '-0.25em', marginRight: '0.15em' }}
+                          />
+                        ))}
                     </>
                   ) : (
                     'más fotos y días online'
@@ -693,12 +714,12 @@ function ModuleToggle({
     <>
       <span
         className={cn(
-          'grid size-10 shrink-0 place-items-center rounded-xl text-xl',
+          'grid size-10 shrink-0 place-items-center rounded-xl',
           state === 'on' ? 'bg-white/10' : 'bg-canvas',
         )}
         aria-hidden
       >
-        {m.emoji}
+        <Emoji value={m.emoji} size={26} />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm leading-tight font-semibold">{m.label}</span>
@@ -780,18 +801,18 @@ function Reasons({
   plan: QuotePlan
   modules: QuoteModule[]
 }) {
-  const parts = reasons.map((r) => {
+  const parts = reasons.map((r): { icon: string; text: string } => {
     if (r.type === 'module') {
       const m = modules.find((x) => x.kind === r.kind)
-      return m ? `${m.emoji} ${m.label}` : r.kind
+      return { icon: m?.emoji ?? '', text: m?.label ?? r.kind }
     }
-    if (r.type === 'photos') return `📷 ${r.photos} fotos`
-    if (r.type === 'days') return `⏳ ${r.days} días online`
-    return '🔐 la clave'
+    if (r.type === 'photos') return { icon: 'camara', text: `${r.photos} fotos` }
+    if (r.type === 'days') return { icon: 'cuenta-regresiva', text: `${r.days} días online` }
+    return { icon: 'candado', text: 'la clave' }
   })
   return (
     <p className="mt-3 min-h-[2.5rem] text-sm leading-snug text-ink/60" aria-live="polite">
-      <Swap id={`${plan.slug}-${parts.join()}`} className="block">
+      <Swap id={`${plan.slug}-${parts.map((p) => p.text).join()}`} className="block">
         {parts.length === 0 ? (
           <>
             Con <strong className="text-ink">{plan.name}</strong> ya tenés lo esencial para
@@ -800,7 +821,18 @@ function Reasons({
         ) : (
           <>
             <strong className="text-ink">{plan.name}</strong> porque elegiste{' '}
-            {listing(parts.slice(0, 3))}
+            {listing(
+              parts.slice(0, 3).map((p) => (
+                <span key={p.text} className="whitespace-nowrap">
+                  <Emoji
+                    value={p.icon}
+                    size="1.2em"
+                    style={{ verticalAlign: '-0.25em', marginRight: '0.2em' }}
+                  />
+                  {p.text}
+                </span>
+              )),
+            )}
             {parts.length > 3 && ` y ${parts.length - 3} más`}.
           </>
         )}
@@ -810,9 +842,13 @@ function Reasons({
 }
 
 /** "a, b y c" */
-function listing(items: string[]) {
-  if (items.length <= 1) return items.join('')
-  return `${items.slice(0, -1).join(', ')} y ${items.at(-1)}`
+function listing(items: ReactNode[]) {
+  return items.map((item, i) => (
+    <Fragment key={i}>
+      {i > 0 && (i === items.length - 1 ? ' y ' : ', ')}
+      {item}
+    </Fragment>
+  ))
 }
 
 function Fact({ icon, children }: { icon: ReactNode; children: ReactNode }) {

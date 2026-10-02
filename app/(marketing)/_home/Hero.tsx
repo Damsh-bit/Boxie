@@ -23,6 +23,7 @@ import {
 import type { SocialProof } from '@/domain/social-proof'
 import { ButtonLink, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Emoji, Icon } from '@/ui/Icon'
 import { rememberRecipient } from '@/ui/recipient'
 import { MercadoPagoLogo } from '@/ui/MercadoPagoLogo'
 import { Swap, ease, spring, useCalm } from '@/ui/motion'
@@ -193,10 +194,11 @@ export function Hero({
             >
               <motion.span
                 aria-hidden
+                className="inline-flex"
                 animate={calm ? undefined : { rotate: [0, 18, -10, 0], scale: [1, 1.25, 1] }}
                 transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.4 }}
               >
-                ✨
+                <Icon name="destellos" size={16} />
               </motion.span>
               <span className="truncate">Regalo digital personalizado · Hecho en Argentina</span>
             </motion.span>
@@ -278,12 +280,12 @@ export function Hero({
               />
               <motion.span
                 aria-hidden
-                className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-lg"
+                className="pointer-events-none absolute top-1/2 right-4 flex -translate-y-1/2"
                 animate={short ? { scale: [1, 1.35, 1], rotate: [0, -12, 0] } : { scale: 1 }}
                 transition={{ duration: 0.4 }}
                 key={short.length}
               >
-                {short ? '💖' : '✍️'}
+                <Icon name={short ? 'corazon-brillo' : 'escribir'} size={22} />
               </motion.span>
             </label>
 
@@ -556,11 +558,11 @@ function ThemePicker({
             <span className="relative flex items-center justify-center gap-1.5 whitespace-nowrap">
               <motion.span
                 aria-hidden
-                className="inline-block"
+                className="inline-flex"
                 variants={{ hover: { rotate: [0, -16, 12, 0], scale: [1, 1.3, 1.15] } }}
                 transition={{ duration: 0.5 }}
               >
-                {t.emoji}
+                <Emoji value={t.emoji} size={20} />
               </motion.span>
               <span className={cn(!many && 'truncate')}>{t.name}</span>
             </span>

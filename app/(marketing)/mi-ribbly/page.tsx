@@ -1,5 +1,6 @@
-import { KeyRound, LifeBuoy, Mail, PencilLine } from 'lucide-react'
 import type { Metadata } from 'next'
+import type { IconName } from '@/domain/icons'
+import { Icon } from '@/ui/Icon'
 import { Reveal, Stagger, StaggerItem } from '@/ui/motion'
 import { SupportButton } from '@/ui/SupportButton'
 import { PageIntro } from '../_components/PageIntro'
@@ -13,19 +14,19 @@ export const metadata: Metadata = {
   alternates: { canonical: '/mi-ribbly' },
 }
 
-const STEPS = [
+const STEPS: { icon: IconName; title: string; text: string }[] = [
   {
-    icon: Mail,
+    icon: 'carta-de-amor',
     title: 'Buscá el mail de la compra',
     text: 'Te llega apenas se acredita el pago, con el asunto "¡Gracias por tu compra!".',
   },
   {
-    icon: PencilLine,
+    icon: 'escribir',
     title: 'Tocá "Personalizar mi regalo"',
     text: 'El link es personal: se abre en cualquier dispositivo, sin usuario ni clave.',
   },
   {
-    icon: KeyRound,
+    icon: 'buscar',
     title: '¿No lo encontrás?',
     text: 'Pedilo de nuevo acá con tu mail y te mandamos uno nuevo al instante.',
   },
@@ -51,15 +52,15 @@ export default function MyBoxiePage() {
 
       <div className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-8 px-5 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
         <Stagger as="ol" className="space-y-4" step={0.08}>
-          {STEPS.map(({ icon: Icon, title, text }, i) => (
+          {STEPS.map(({ icon, title, text }, i) => (
             <StaggerItem
               as="li"
               key={title}
               className="flex items-start gap-4 rounded-3xl bg-white p-5 ring-1 ring-black/5"
             >
-              <span className="relative grid size-11 shrink-0 place-items-center rounded-2xl bg-brand text-white">
-                <Icon className="size-5" aria-hidden />
-                <span className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-ink text-[11px] font-bold">
+              <span className="relative grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-soft">
+                <Icon name={icon} size={28} />
+                <span className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-ink text-[11px] font-bold text-white">
                   {i + 1}
                 </span>
               </span>
@@ -87,7 +88,7 @@ export default function MyBoxiePage() {
             delay={0.1}
             className="flex flex-col gap-4 rounded-3xl bg-ink p-6 text-white sm:flex-row sm:items-center"
           >
-            <LifeBuoy className="size-8 shrink-0 text-brand-muted" aria-hidden />
+            <Icon name="ayuda" size={40} />
             <p className="flex-1 text-sm text-white/75">
               <strong className="block text-base text-white">¿Algo no funciona?</strong>
               Abrí un ticket y te ayuda una persona del equipo.

@@ -1,11 +1,13 @@
-import { ExternalLink, Gift, KeyRound, Layers, Mail, MessageCircle, Wand2 } from 'lucide-react'
+import { ExternalLink, Mail, MessageCircle } from 'lucide-react'
 import type { Metadata, Route } from 'next'
 import { helpCategories } from '@/content/help'
 import { legalDocs } from '@/content/legal'
 import { site } from '@/content/site'
 import { formatARS } from '@/domain/money'
+import type { IconName } from '@/domain/icons'
 import { describeLifetime } from '@/domain/plans'
 import { getStorefront, type Storefront } from '@/server/storefront'
+import { Emoji, Icon } from '@/ui/Icon'
 import { LiftLink } from '@/ui/LiftLink'
 import { Reveal, Stagger, StaggerItem } from '@/ui/motion'
 import { SupportButton } from '@/ui/SupportButton'
@@ -40,28 +42,28 @@ export default async function HelpPage() {
   const categories = categoriesOf(sf)
   const sample = sf.themes[0]?.slug ?? 'pareja'
 
-  const shortcuts: { href: Route; icon: typeof Gift; title: string; text: string }[] = [
+  const shortcuts: { href: Route; icon: IconName; title: string; text: string }[] = [
     {
       href: '/mi-ribbly',
-      icon: KeyRound,
+      icon: 'candado',
       title: 'Entrar a mi Ribbly',
       text: 'Recuperá tu link para editar',
     },
     {
       href: '/precios',
-      icon: Layers,
+      icon: 'pago',
       title: 'Planes y precios',
       text: 'Qué trae cada plan',
     },
     {
       href: `/ejemplo/${sample}/personalizar` as Route,
-      icon: Wand2,
+      icon: 'escribir',
       title: 'Probar el editor',
       text: 'Gratis, sin comprar',
     },
     {
       href: '/galeria',
-      icon: Gift,
+      icon: 'regalo',
       title: 'Elegir una Boxie',
       text: 'Todas las temáticas',
     },
@@ -96,15 +98,15 @@ export default async function HelpPage() {
         className="mx-auto mb-16 grid max-w-6xl grid-cols-2 gap-3 px-5 sm:gap-4 sm:px-8 lg:grid-cols-4"
         step={0.06}
       >
-        {shortcuts.map(({ href, icon: Icon, title, text }) => (
+        {shortcuts.map(({ href, icon, title, text }) => (
           <StaggerItem key={href} className="h-full" y={20}>
             <LiftLink
               href={href}
               lift={4}
               className="flex h-full flex-col gap-3 rounded-3xl bg-white p-4 ring-1 ring-black/5 transition-shadow hover:shadow-[0_18px_40px_-20px_rgba(42,36,51,0.3)] sm:flex-row sm:items-center sm:p-5"
             >
-              <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-soft text-brand">
-                <Icon className="size-5" aria-hidden />
+              <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-soft">
+                <Icon name={icon} size={28} />
               </span>
               <span className="min-w-0">
                 <span className="block font-semibold text-ink">{title}</span>
@@ -179,9 +181,7 @@ export default async function HelpPage() {
                 href={`/legales/${doc.slug}` as Route}
                 className="flex h-full items-start gap-4 rounded-3xl bg-white p-6 ring-1 ring-black/5 transition-[box-shadow] duration-300 hover:shadow-[0_18px_40px_-20px_rgba(42,36,51,0.3)]"
               >
-                <span className="text-3xl" aria-hidden>
-                  {doc.icon}
-                </span>
+                <Emoji value={doc.icon} size={40} />
                 <span>
                   <span className="block font-display text-xl font-bold text-ink">{doc.title}</span>
                   <span className="mt-1 block text-ink/60">{doc.summary}</span>

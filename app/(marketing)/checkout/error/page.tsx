@@ -13,7 +13,7 @@ export default async function ErrorPage({ searchParams }: PageProps<'/checkout/e
 
   return (
     <div className="flex justify-center bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] px-5 pt-[130px] pb-24">
-      <MessageCard emoji={rejected ? '💳' : '😕'} title="El pago no se completó">
+      <MessageCard emoji={rejected ? 'pago' : 'uy'} title="El pago no se completó">
         <p className="leading-relaxed text-ink/70">
           {rejected
             ? 'Mercado Pago rechazó el pago. Podés intentarlo de nuevo con otra tarjeta o medio de pago.'

@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { industries } from '@/content/brands'
 import type { PublicSponsor } from '@/domain/sponsors'
 import { cn } from '@/ui/cn'
+import { Emoji, EmojiText, Icon } from '@/ui/Icon'
 import { ease, spring } from '@/ui/motion'
 import { SponsorTile } from '@/ui/sponsors/SponsorUnits'
 import { PhoneFrame } from '../_home/primitives'
@@ -66,7 +67,7 @@ export function PlacementShowcase() {
         <div role="tablist" aria-label="Dónde aparece tu marca" className="grid gap-2">
           {TABS.map((t) => {
             const selected = t.id === active
-            const Icon = t.icon
+            const TabIcon = t.icon
             return (
               <button
                 key={t.id}
@@ -97,7 +98,7 @@ export function PlacementShowcase() {
                     selected ? 'bg-white/10 text-brand-muted' : 'bg-brand-soft text-brand',
                   )}
                 >
-                  <Icon className="size-5" aria-hidden />
+                  <TabIcon className="size-5" aria-hidden />
                 </span>
                 <span className="relative min-w-0">
                   <span className="flex flex-wrap items-center gap-2 font-display text-lg font-bold">
@@ -192,18 +193,18 @@ function CupMockup() {
               {cafe.brand}
             </p>
             <p className="font-display text-sm leading-tight font-bold">
-              Escaneá y regalá una Ribbly ✨
+              <EmojiText text="Escaneá y regalá una Ribbly ✨" />
             </p>
           </div>
         </div>
       </motion.div>
       <motion.span
         aria-hidden
-        className="absolute top-2 left-1/2 text-3xl"
+        className="absolute top-2 left-1/2"
         animate={{ y: [-4, -18, -4], opacity: [0.4, 0.9, 0.4] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
       >
-        ♨️
+        <Icon name="relax" size={34} />
       </motion.span>
     </div>
   )
@@ -221,7 +222,7 @@ function GiftClosingMockup() {
             style={{ backgroundColor: `color-mix(in srgb, ${cafe.color} 60%, transparent)` }}
           />
           <p className="relative font-fun text-2xl leading-tight font-semibold">
-            Gracias por abrirla 💌
+            <EmojiText text="Gracias por abrirla 💌" />
           </p>
           <p className="relative mt-2 text-xs text-white/70">Con cariño, Sofi</p>
           <div className="relative mt-8 w-full rounded-2xl bg-white/10 p-3 ring-1 ring-white/15">
@@ -229,7 +230,12 @@ function GiftClosingMockup() {
               Este regalo llegó con
             </p>
             <p className="mt-1 font-display text-base font-bold">
-              {cafe.emoji} {cafe.brand}
+              <Emoji
+                value={cafe.emoji}
+                size="1.2em"
+                style={{ verticalAlign: '-0.25em', marginRight: '0.3em' }}
+              />
+              {cafe.brand}
             </p>
             <p className="mt-2 rounded-lg bg-white py-1.5 text-[0.7rem] font-bold text-ink">
               Tu próximo café va por nuestra cuenta

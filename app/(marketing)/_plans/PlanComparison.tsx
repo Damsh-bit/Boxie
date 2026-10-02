@@ -3,6 +3,7 @@
 import { Check, Minus } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '@/ui/cn'
+import { Emoji } from '@/ui/Icon'
 import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { Reveal } from '@/ui/motion'
 import type { PlanCardData } from './PlanCards'
@@ -95,11 +96,7 @@ export function PlanComparison({
                     className="sticky left-0 z-10 bg-white px-3 py-3 font-medium text-ink sm:px-6"
                   >
                     <span className="flex items-center gap-1.5 sm:gap-2">
-                      {row.emoji && (
-                        <span aria-hidden className="text-base">
-                          {row.emoji}
-                        </span>
-                      )}
+                      {row.emoji && <Emoji value={row.emoji} size={20} />}
                       {row.label}
                     </span>
                   </th>

@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react'
 import { describeDaysUntil } from '@/domain/gallery'
 import { ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Emoji, Icon } from '@/ui/Icon'
 import { useCurrency } from '@/ui/currency/CurrencyContext'
 import { useIsDesktop } from '@/ui/Modal'
 import { ease, spring } from '@/ui/motion'
@@ -341,9 +342,7 @@ function Details({
 
         <Dialog.Title className="flex items-center gap-2 font-display text-[1.9rem] leading-tight font-bold text-ink">
           {theme.name}
-          <span aria-hidden className="text-2xl">
-            {theme.emoji}
-          </span>
+          <Emoji value={theme.emoji} size={32} />
         </Dialog.Title>
         <Dialog.Description className="mt-2 text-[0.98rem] leading-relaxed text-ink/70">
           {theme.subtitle || theme.description}
@@ -351,7 +350,8 @@ function Details({
 
         {theme.next?.hot && (
           <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-brand-soft px-3 py-1.5 text-sm font-semibold text-brand-dark">
-            <span aria-hidden>🗓️</span> {theme.next.name}: {describeDaysUntil(theme.next.daysUntil)}
+            <Icon name="calendario" size={18} /> {theme.next.name}:{' '}
+            {describeDaysUntil(theme.next.daysUntil)}
           </p>
         )}
 
@@ -444,7 +444,7 @@ function Details({
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={spring.snappy}
                   >
-                    <span aria-hidden>{item.emoji}</span>
+                    <Emoji value={item.emoji} size={20} />
                     <span className="min-w-0 leading-tight">{item.label}</span>
                   </motion.li>
                 ))}
@@ -457,10 +457,14 @@ function Details({
                 className="mt-3 text-left text-sm text-ink/60 underline-offset-4 hover:text-brand hover:underline"
               >
                 Con <strong className="text-ink">{top.name}</strong> suma {extra.length} más:{' '}
-                {extra
-                  .slice(0, 4)
-                  .map((i) => i.emoji)
-                  .join(' ')}
+                {extra.slice(0, 4).map((i) => (
+                  <Emoji
+                    key={i.kind}
+                    value={i.emoji}
+                    size="1.2em"
+                    style={{ verticalAlign: '-0.25em', marginRight: '0.2em' }}
+                  />
+                ))}
                 {extra.length > 4 && '…'}
               </button>
             )}

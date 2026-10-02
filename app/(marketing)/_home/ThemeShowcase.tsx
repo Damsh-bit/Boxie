@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Occasion } from '@/content/home'
 import { Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Emoji, EmojiText, Icon } from '@/ui/Icon'
 import { Swap, ease, spring } from '@/ui/motion'
 import { Mark, SectionHeading, useTilt } from './primitives'
 import type { HomeTheme } from './theme-look'
@@ -127,11 +128,11 @@ export function ThemeShowcase({
               )}
               <motion.span
                 aria-hidden
-                className="relative"
+                className="relative flex"
                 animate={selected ? { rotate: [0, -16, 12, 0], scale: [1, 1.3, 1] } : {}}
                 transition={{ duration: 0.5 }}
               >
-                {o.emoji}
+                <Emoji value={o.emoji} size={22} />
               </motion.span>
               <span className="relative">{o.label}</span>
             </motion.button>
@@ -147,12 +148,17 @@ export function ThemeShowcase({
           {occasion ? (
             <>
               <strong className="text-ink">
-                {occasion.emoji} {occasion.label}:
+                <Emoji
+                  value={occasion.emoji}
+                  size="1.25em"
+                  style={{ verticalAlign: '-0.25em', marginRight: '0.3em' }}
+                />
+                {occasion.label}:
               </strong>{' '}
               {occasion.pitch}
             </>
           ) : (
-            'Tocá una ocasión y te recomendamos la temática perfecta 👆'
+            <EmojiText text="Tocá una ocasión y te recomendamos la temática perfecta 👆" />
           )}
         </Swap>
       </p>
@@ -260,7 +266,7 @@ function CarouselArrow({
   onClick(): void
   label: string
 }) {
-  const Icon = side === 'left' ? ChevronLeft : ChevronRight
+  const Arrow = side === 'left' ? ChevronLeft : ChevronRight
   return (
     <motion.button
       type="button"
@@ -275,7 +281,7 @@ function CarouselArrow({
       whileTap={{ scale: 0.92 }}
       transition={spring.snappy}
     >
-      <Icon className="size-6" aria-hidden />
+      <Arrow className="size-6" aria-hidden />
     </motion.button>
   )
 }
@@ -361,7 +367,8 @@ function ThemeTile({
                 exit={{ opacity: 0, scale: 0.6 }}
                 transition={spring.bouncy}
               >
-                <span className="truncate">✨ Ideal para {occasion.label}</span>
+                <Icon name="destellos" size={16} />
+                <span className="truncate">Ideal para {occasion.label}</span>
               </motion.span>
             )}
           </AnimatePresence>
@@ -378,14 +385,14 @@ function ThemeTile({
             <span className="min-w-0">{theme.name}</span>
             <motion.span
               aria-hidden
-              className="text-2xl"
+              className="flex rounded-full bg-white p-1.5 shadow-sm"
               variants={{
                 rest: { rotate: 0, scale: 1 },
                 hover: { rotate: [0, -15, 12, 0], scale: 1.2 },
               }}
               transition={{ duration: 0.5 }}
             >
-              {theme.emoji}
+              <Emoji value={theme.emoji} size={28} />
             </motion.span>
           </h3>
           <p className={cn('mt-1 text-base font-medium', light ? 'text-white' : 'text-ink/85')}>

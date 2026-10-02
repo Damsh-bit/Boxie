@@ -4,6 +4,7 @@ import { chapters, founders, principles } from '@/content/about'
 import { getSocialProof } from '@/server/social-proof'
 import { getStorefront } from '@/server/storefront'
 import { ButtonLink } from '@/ui/Button'
+import { Icon } from '@/ui/Icon'
 import { LiftLink } from '@/ui/LiftLink'
 import { Reveal, Stagger, StaggerItem } from '@/ui/motion'
 import { CountUp } from '../_home/primitives'
@@ -81,9 +82,9 @@ export default async function AboutPage() {
             />
             <span
               aria-hidden
-              className="pointer-events-none absolute top-6 right-8 -z-10 text-7xl opacity-25 sm:text-8xl"
+              className="pointer-events-none absolute top-6 right-8 -z-10 opacity-25"
             >
-              💌
+              <Icon name="carta-de-amor" size={110} />
             </span>
             <h2 className="max-w-md font-display text-3xl leading-[1.08] font-bold text-balance sm:text-[2.6rem]">
               ¿Tenés a alguien a quien abrazar?

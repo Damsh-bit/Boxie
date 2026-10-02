@@ -7,6 +7,7 @@ import { useState } from 'react'
 import type { ThemeListing } from '@/domain/catalog'
 import { cn } from '@/ui/cn'
 import { Field, Input, Select, Textarea } from '@/ui/form'
+import { IconPicker } from '@/ui/IconPicker'
 import { spring } from '@/ui/motion'
 import { ListInput } from '../../../_ui/fields'
 import { Card } from '../../../_ui/primitives'
@@ -329,16 +330,14 @@ export function ListingTab({
             />
           </div>
 
-          <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-[88px_1fr]">
-            <Field label="Emoji" htmlFor="g-emoji">
-              <Input
+          <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="Ícono" htmlFor="g-emoji">
+              <IconPicker
                 id="g-emoji"
                 value={listing.guide?.emoji ?? ''}
-                maxLength={16}
-                className="text-center text-xl"
-                onChange={(e) =>
+                onChange={(emoji) =>
                   set('guide', {
-                    emoji: e.target.value,
+                    emoji,
                     title: listing.guide?.title ?? '',
                     text: listing.guide?.text ?? '',
                   })
@@ -356,7 +355,7 @@ export function ListingTab({
                 maxLength={60}
                 onChange={(e) =>
                   set('guide', {
-                    emoji: listing.guide?.emoji ?? '🎁',
+                    emoji: listing.guide?.emoji ?? 'regalo',
                     title: e.target.value,
                     text: listing.guide?.text ?? '',
                   })
@@ -371,7 +370,7 @@ export function ListingTab({
                 rows={2}
                 onChange={(e) =>
                   set('guide', {
-                    emoji: listing.guide?.emoji ?? '🎁',
+                    emoji: listing.guide?.emoji ?? 'regalo',
                     title: listing.guide?.title ?? '',
                     text: e.target.value,
                   })

@@ -1,7 +1,7 @@
 import { handle, json, limit, supportTokens } from '@/server/support/http'
 import { customerRate } from '@/server/support/service'
 
-/** "¿Te ayudamos?": 👍 o 👎 cuando la consulta está resuelta. */
+/** "¿Te ayudamos?": pulgar arriba o abajo cuando la consulta está resuelta. */
 
 export const dynamic = 'force-dynamic'
 

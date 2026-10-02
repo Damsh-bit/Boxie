@@ -15,6 +15,7 @@ import {
   type SupportTicket,
 } from '@/domain/support'
 import { cn } from '@/ui/cn'
+import { Emoji } from '@/ui/Icon'
 import { spring } from '@/ui/motion'
 import { timeAgo } from '@/ui/support/format'
 import { useEventStream } from '@/ui/support/use-event-stream'
@@ -385,7 +386,7 @@ export function SupportInbox({
             <EmptyState
               icon={<Inbox className="size-6" aria-hidden />}
               title="Elegí una consulta"
-              text="Las nuevas aparecen arriba en vivo. Activá los avisos (🔔) para enterarte aunque estés en otra pestaña."
+              text="Las nuevas aparecen arriba en vivo. Activá los avisos (la campanita) para enterarte aunque estés en otra pestaña."
             />
           </div>
         )}
@@ -488,7 +489,11 @@ function TicketListItem({
             unread ? 'text-ink' : 'text-neutral-600',
           )}
         >
-          <span aria-hidden>{TOPIC_INFO[ticket.topic].emoji} </span>
+          <Emoji
+            value={TOPIC_INFO[ticket.topic].emoji}
+            size="1.2em"
+            style={{ verticalAlign: '-0.25em', marginRight: '0.3em' }}
+          />
           {ticket.subject}
         </span>
         <span className="mt-1.5 flex flex-wrap items-center gap-1.5">

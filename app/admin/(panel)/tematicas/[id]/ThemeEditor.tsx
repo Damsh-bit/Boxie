@@ -26,6 +26,7 @@ import { parseThemeConfig } from '@/slides/config'
 import type { ThemeConfigInput } from '@/slides/theme-config'
 import { Button, ButtonLink } from '@/ui/Button'
 import { cn } from '@/ui/cn'
+import { Emoji } from '@/ui/Icon'
 import { ease, spring, Spinner } from '@/ui/motion'
 import { useConfirm } from '../../../_ui/Confirm'
 import { Badge, NeedsDb } from '../../../_ui/primitives'
@@ -191,7 +192,7 @@ export function ThemeEditor({
     }
     const next = (theme.currentVersion ?? 0) + 1
     const ok = await confirm({
-      icon: '🚀',
+      icon: 'cohete',
       title: `¿Publicar la versión ${next}?`,
       description: `${config.slides.length} pantallas. Las compras nuevas usan esta versión; las Boxies ya vendidas no cambian.${theme.status === 'draft' ? ' La temática pasa a estar a la venta.' : ''}`,
       confirm: 'Publicar',
@@ -234,7 +235,7 @@ export function ThemeEditor({
   }
 
   const status = THEME_STATUS[theme.status]
-  const emoji = listing.guide?.emoji ?? '🎁'
+  const emoji = listing.guide?.emoji ?? 'regalo'
   const withPreview = tab === 'modulos' || tab === 'planes' || tab === 'estilo'
 
   return (
@@ -254,14 +255,14 @@ export function ThemeEditor({
       >
         <div className="flex min-w-0 items-center gap-4">
           <motion.span
-            className="grid size-16 shrink-0 place-items-center rounded-3xl text-3xl shadow-[0_10px_30px_rgba(42,36,51,0.12)]"
+            className="grid size-16 shrink-0 place-items-center rounded-3xl shadow-[0_10px_30px_rgba(42,36,51,0.12)]"
             style={{ background: listing.cardColor }}
             initial={{ scale: 0.5, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={spring.bouncy}
             aria-hidden
           >
-            {emoji}
+            <Emoji value={emoji} size={40} />
           </motion.span>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">

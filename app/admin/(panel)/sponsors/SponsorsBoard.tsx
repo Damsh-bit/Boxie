@@ -35,6 +35,7 @@ import {
 import { Button } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { Field, Input, Select, Textarea } from '@/ui/form'
+import { IconPicker } from '@/ui/IconPicker'
 import { spring, Spinner } from '@/ui/motion'
 import { SponsorMark, SponsorTile } from '@/ui/sponsors/SponsorUnits'
 import { useConfirm } from '../../_ui/Confirm'
@@ -65,7 +66,7 @@ const EMPTY: SponsorInput = {
   tagline: '',
   offer: '',
   description: '',
-  emoji: '☕',
+  emoji: 'cafe',
   logoUrl: null,
   color: '#F44E63',
   url: null,
@@ -475,16 +476,10 @@ function SponsorSheet({ sponsor, onClose }: { sponsor: SponsorInput | null; onCl
               onChange={(e) => set({ tagline: e.target.value })}
             />
           </Field>
-          <div className="grid gap-4 sm:grid-cols-[100px_140px_1fr]">
-            <Field label="Emoji" htmlFor="s-emoji" error={fields.emoji}>
-              <Input
-                id="s-emoji"
-                value={draft.emoji}
-                maxLength={16}
-                className="text-center text-xl"
-                onChange={(e) => set({ emoji: e.target.value })}
-              />
-            </Field>
+          <Field label="Ícono" htmlFor="s-emoji" error={fields.emoji}>
+            <IconPicker id="s-emoji" value={draft.emoji} onChange={(emoji) => set({ emoji })} />
+          </Field>
+          <div className="grid gap-4 sm:grid-cols-[140px_1fr]">
             <Field label="Color" htmlFor="s-color" error={fields.color}>
               <div className="flex items-center gap-2">
                 <input

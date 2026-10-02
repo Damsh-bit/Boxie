@@ -25,6 +25,7 @@ import { formatCompactARS, formatRelative } from '@/domain/admin/format'
 import type { ThemeOrigin, ThemeStatus } from '@/domain/admin/types'
 import { Button } from '@/ui/Button'
 import { Input } from '@/ui/form'
+import { Emoji } from '@/ui/Icon'
 import { Modal } from '@/ui/Modal'
 import { ease, spring, Spinner } from '@/ui/motion'
 import { useConfirm } from '../../_ui/Confirm'
@@ -159,7 +160,7 @@ function Card({ theme }: { theme: ThemeCard }) {
         description:
           'Sale de la tienda. Las Boxies ya vendidas siguen funcionando igual (usan su versión).',
         confirm: 'Archivar',
-        icon: '🗄️',
+        icon: 'envio',
       })
     )
       void run(() => setThemeStatus(theme.id, 'archived'))
@@ -171,7 +172,7 @@ function Card({ theme }: { theme: ThemeCard }) {
         description: 'Es un borrador sin versiones publicadas: se borra para siempre.',
         confirm: 'Borrar',
         danger: true,
-        icon: '🗑️',
+        icon: 'atencion',
       })
     )
       void run(() => deleteTheme(theme.id))
@@ -213,12 +214,12 @@ function Card({ theme }: { theme: ThemeCard }) {
           )}
         </span>
         <motion.span
-          className="absolute right-3 bottom-3 grid size-11 place-items-center rounded-2xl bg-white/95 text-2xl shadow-lg"
+          className="absolute right-3 bottom-3 grid size-11 place-items-center rounded-2xl bg-white/95 shadow-lg"
           whileHover={{ rotate: -12, scale: 1.1 }}
           transition={spring.bouncy}
           aria-hidden
         >
-          {theme.emoji}
+          <Emoji value={theme.emoji} size={30} />
         </motion.span>
         <span className="absolute bottom-3 left-4 text-lg font-semibold text-white drop-shadow">
           {theme.name}
@@ -340,7 +341,7 @@ export function NewThemeButton() {
         open={open}
         onOpenChange={setOpen}
         locked={pending}
-        icon="✨"
+        icon="destellos"
         title="Nueva temática"
         description="Escribí la ocasión y armamos el borrador completo: textos, paleta, fotos y planes. Después lo ajustás."
       >

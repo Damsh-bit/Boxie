@@ -273,7 +273,7 @@ export function SettingsForm({
               disabled={pending}
               onClick={async () => {
                 const ok = await confirm({
-                  icon: '🔄',
+                  icon: 'atencion',
                   title: '¿Restablecer la demo?',
                   description:
                     'Se pierde todo lo que cambiaste en el panel (solo datos de muestra).',

@@ -36,6 +36,7 @@ import { Button, ButtonLink } from '@/ui/Button'
 import { ConfettiBurst } from '@/ui/ConfettiBurst'
 import { cn } from '@/ui/cn'
 import { Textarea } from '@/ui/form'
+import { Emoji } from '@/ui/Icon'
 import { Modal } from '@/ui/Modal'
 import { Collapse, ease, spring, Spinner } from '@/ui/motion'
 import { Segmented, Switch } from '../../_ui/fields'
@@ -248,9 +249,7 @@ export function Generator({ plans, existingSlugs }: { plans: Plan[]; existingSlu
           <div className="grid gap-2 pt-3 sm:grid-cols-2 lg:grid-cols-3">
             {[...ARCHETYPES, GENERAL_ARCHETYPE].map((a) => (
               <div key={a.id} className="flex items-start gap-3 rounded-2xl bg-canvas p-3">
-                <span className="text-2xl" aria-hidden>
-                  {a.emoji}
-                </span>
+                <Emoji value={a.emoji} size={32} />
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-ink">{a.label}</p>
                   <p className="truncate text-xs text-neutral-500">
@@ -451,13 +450,13 @@ function ResultCard({
         />
         <motion.span
           key={`${animateKey}-emoji`}
-          className="absolute top-4 left-4 grid size-14 place-items-center rounded-2xl bg-white text-3xl shadow-lg"
+          className="absolute top-4 left-4 grid size-14 place-items-center rounded-2xl bg-white shadow-lg"
           initial={{ scale: 0, rotate: -30 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ ...spring.bouncy, delay: delay + STEP }}
           aria-hidden
         >
-          {theme.archetype.emoji}
+          <Emoji value={theme.archetype.emoji} size={36} />
         </motion.span>
         <div className="absolute top-3 right-3 flex gap-1">
           <IconButton label="Vista previa" onClick={onPreview}>

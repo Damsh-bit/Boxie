@@ -40,7 +40,7 @@ export default async function ThemesPage({ searchParams }: PageProps<'/admin/tem
         origin: t.origin,
         image: listing.success ? (listing.data.images[0] ?? null) : null,
         cardColor: listing.success ? listing.data.cardColor : '#F44E63',
-        emoji: listing.success ? (listing.data.guide?.emoji ?? '🎁') : '🎁',
+        emoji: listing.success ? (listing.data.guide?.emoji ?? 'regalo') : 'regalo',
         version: t.currentVersion,
         slides: t.slides,
         hasUnpublishedChanges: t.hasUnpublishedChanges,

@@ -210,7 +210,7 @@ export default async function CustomersPage({ searchParams }: PageProps<'/admin/
                         </p>
                       </div>
                       <a
-                        href={`mailto:${c.email}?subject=${encodeURIComponent('Tu Boxie te está esperando 🎁')}&body=${encodeURIComponent(body)}`}
+                        href={`mailto:${c.email}?subject=${encodeURIComponent('Tu Ribbly te está esperando')}&body=${encodeURIComponent(body)}`}
                         className="flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-brand-soft px-3 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-white"
                       >
                         <Mail className="size-3.5" aria-hidden /> Escribir

@@ -17,6 +17,7 @@ import {
   type SupportTicket,
 } from '@/domain/support'
 import { cn } from '@/ui/cn'
+import { Emoji, EmojiText } from '@/ui/Icon'
 import { Spinner, spring } from '@/ui/motion'
 import { clock, dayLabel, sameDay } from '@/ui/support/format'
 import { Menu } from '../../_ui/Menu'
@@ -132,7 +133,11 @@ export function TicketThread({
           </button>
           <div className="min-w-0 flex-1">
             <h2 className="truncate text-base font-semibold text-ink">
-              <span aria-hidden>{TOPIC_INFO[ticket.topic].emoji} </span>
+              <Emoji
+                value={TOPIC_INFO[ticket.topic].emoji}
+                size="1.2em"
+                style={{ verticalAlign: '-0.25em', marginRight: '0.3em' }}
+              />
               {ticket.subject}
             </h2>
             <p className="truncate text-xs text-neutral-500">
@@ -249,7 +254,7 @@ function Bubble({ message, previous }: { message: SupportMessage; previous?: Sup
       {message.author === 'system' ? (
         <li className="my-1 text-center">
           <span className="inline-block rounded-full bg-white px-3 py-1.5 text-xs text-neutral-500 ring-1 ring-line">
-            {message.body} · {clock(message.createdAt)}
+            <EmojiText text={message.body} /> · {clock(message.createdAt)}
           </span>
         </li>
       ) : (
@@ -273,7 +278,7 @@ function Bubble({ message, previous }: { message: SupportMessage; previous?: Sup
                     : 'rounded-bl-md bg-white text-ink ring-1 ring-line',
               )}
             >
-              {message.body}
+              <EmojiText text={message.body} />
             </p>
             <span className="mt-0.5 px-1 text-[10px] text-neutral-400">
               {clock(message.createdAt)}

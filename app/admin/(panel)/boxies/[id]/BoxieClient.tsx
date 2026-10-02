@@ -99,7 +99,7 @@ export function BoxieActions({
           disabled={pending}
           onClick={async () => {
             const ok = await confirm({
-              icon: '🔓',
+              icon: 'candado',
               title: `¿Desbloquear ${boxie.code}?`,
               description:
                 'El comprador vuelve a poder editarla (tiene al menos 7 días). Si ya la regaló, el destinatario ve los cambios cuando la vuelva a bloquear.',

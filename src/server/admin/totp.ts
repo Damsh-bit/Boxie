@@ -58,7 +58,7 @@ export async function startTotpSetup(userId: string, email: string): Promise<Tot
   const secretEnc = encryptToken(secret, env().TOKEN_ENCRYPTION_KEY)
 
   const otpauthUrl = otp.generateURI({
-    issuer: 'Boxie',
+    issuer: 'Ribbly',
     label: email,
     secret,
   })

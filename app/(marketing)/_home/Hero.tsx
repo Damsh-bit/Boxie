@@ -94,10 +94,16 @@ export function Hero({
   themes,
   salesPaused,
   proof,
+  userName,
+  hasPreviousPurchases,
+  draft,
 }: {
   themes: HomeTheme[]
   salesPaused: boolean
   proof: SocialProof
+  userName?: string | null
+  hasPreviousPurchases?: boolean
+  draft?: { id: string; recipientName: string; editUrl: string } | null
 }) {
   const ref = useRef<HTMLElement>(null)
   const calm = useCalm()
@@ -135,7 +141,9 @@ export function Hero({
   // El nombre viaja a la ficha, al checkout y al editor: no se vuelve a pedir.
   const href =
     `/tematicas/${theme.slug}${short ? `?para=${encodeURIComponent(short)}` : ''}` as Route
-  const cta = short && short.length <= 10 ? `Crear la Ribbly de ${short}` : 'Crear su Ribbly'
+  // CTA adaptado: si ya compraron antes, "Crear otra Ribbly"
+  const baseCtaLabel = hasPreviousPurchases ? 'Crear otra Ribbly' : 'Crear su Ribbly'
+  const cta = short && short.length <= 10 ? `Crear la Ribbly de ${short}` : baseCtaLabel
 
   return (
     <section
@@ -178,7 +186,49 @@ export function Hero({
         variants={{ show: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } } }}
       >
         <div className="flex min-w-0 flex-col items-center gap-6 text-center [grid-area:copy] lg:items-start lg:self-end lg:text-left">
-          {proof.events.length ? (
+          {/* Banner de borrador pendiente */}
+          {draft && (
+            <motion.a
+              href={draft.editUrl}
+              data-reveal=""
+              variants={rise}
+              className="flex w-full items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-left transition-all hover:border-amber-300 hover:bg-amber-100"
+            >
+              <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-amber-100">
+                <Icon name="escribir" size={20} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs font-bold text-amber-900">
+                  Tenés un regalo sin terminar
+                </span>
+                <span className="block truncate text-xs text-amber-700">
+                  Para {draft.recipientName} · Tocá para continuar
+                </span>
+              </span>
+              <ArrowRight className="size-4 shrink-0 text-amber-600" aria-hidden />
+            </motion.a>
+          )}
+
+          {/* Badge de bienvenida personalizado si está logueado, ticker de compras si no */}
+          {userName ? (
+            <motion.span
+              data-reveal=""
+              variants={rise}
+              className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 text-xs font-bold tracking-wide text-ink shadow-[0_6px_20px_rgba(42,36,51,0.08)] ring-1 ring-black/5 backdrop-blur"
+            >
+              <motion.span
+                aria-hidden
+                className="inline-flex"
+                animate={calm ? undefined : { rotate: [0, 18, -10, 0], scale: [1, 1.25, 1] }}
+                transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.4 }}
+              >
+                <Icon name="hola" size={16} />
+              </motion.span>
+              <span className="truncate">
+                ¡Hola, {userName.split(' ')[0]}! Bienvenido de vuelta
+              </span>
+            </motion.span>
+          ) : proof.events.length ? (
             <motion.div
               data-reveal=""
               variants={rise}
@@ -228,7 +278,7 @@ export function Hero({
                 className="block text-[1.35rem] font-bold tracking-normal text-balance text-ink/85 min-[380px]:text-2xl sm:text-3xl"
                 variants={line}
               >
-                el regalo digital que emociona
+                {userName ? '¿a quién le regalás hoy?' : 'el regalo digital que emociona'}
               </motion.span>
             </span>
           </h1>

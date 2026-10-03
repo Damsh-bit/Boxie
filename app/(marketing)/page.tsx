@@ -6,6 +6,8 @@ import { formatARS } from '@/domain/money'
 import { describeLifetime } from '@/domain/plans'
 import { sponsorFor } from '@/domain/sponsors'
 import type { SlideKind } from '@/slides/schemas'
+import { getCustomerHeroContext } from '@/server/customer/data'
+import { getCustomerSession } from '@/server/customer/session'
 import { getSocialProof } from '@/server/social-proof'
 import { getLiveSponsors } from '@/server/sponsors/repo'
 import { getStorefront, type Storefront } from '@/server/storefront'
@@ -167,9 +169,11 @@ function structuredData(sf: Storefront, faqs: FaqItem[]) {
 
 export default async function HomePage() {
   const sf = await getStorefront()
-  const [proof, sponsors] = await Promise.all([
+  const session = await getCustomerSession()
+  const [proof, sponsors, heroCtx] = await Promise.all([
     getSocialProof({ themes: sf.themes, salesPaused: sf.salesPaused }),
     getLiveSponsors(),
+    session ? getCustomerHeroContext(session.email) : Promise.resolve(null),
   ])
   const byPlans = sf.plans.length > 1
   const price = formatARS(sf.priceFromCents)
@@ -215,7 +219,14 @@ export default async function HomePage() {
     <div className="overflow-x-clip bg-paper">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
 
-      <Hero themes={homeThemes} salesPaused={sf.salesPaused} proof={proof} />
+      <Hero
+        themes={homeThemes}
+        salesPaused={sf.salesPaused}
+        proof={proof}
+        userName={session?.name ?? null}
+        hasPreviousPurchases={heroCtx?.hasPreviousPurchases ?? false}
+        draft={heroCtx?.draft ?? null}
+      />
       <OccasionMarquee />
       <ThemeShowcase
         themes={homeThemes}

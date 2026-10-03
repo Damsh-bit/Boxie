@@ -187,3 +187,50 @@ export async function getOrRotateEditorUrl(
 
   return `${base}/editor/${token}`
 }
+
+export interface CustomerHeroContext {
+  hasPreviousPurchases: boolean
+  draft: { id: string; recipientName: string; editUrl: string } | null
+}
+
+/**
+ * Consulta mínima para personalizar el Hero del home cuando el usuario está logueado.
+ * Solo trae los datos imprescindibles sin cargar el portal completo.
+ */
+export async function getCustomerHeroContext(customerEmail: string): Promise<CustomerHeroContext> {
+  const email = customerEmail.toLowerCase().trim()
+  const db = serviceDb()
+  const base = siteUrl()
+
+  const { data: orders } = await db
+    .from('orders')
+    .select('id')
+    .ilike('buyer_email', escapeIlike(email))
+    .limit(1)
+
+  if (!orders || orders.length === 0) {
+    return { hasPreviousPurchases: false, draft: null }
+  }
+
+  const orderIds = orders.map((o) => o.id)
+
+  // Buscar el primer borrador sin bloquear
+  const { data: draftBoxie } = await db
+    .from('boxies')
+    .select('id, recipient_name, locked_at')
+    .in('order_id', orderIds)
+    .is('locked_at', null)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  const draft = draftBoxie
+    ? {
+        id: draftBoxie.id,
+        recipientName: draftBoxie.recipient_name || 'tu regalo',
+        editUrl: `${base}/cuenta/boxies/${draftBoxie.id}/editar`,
+      }
+    : null
+
+  return { hasPreviousPurchases: true, draft }
+}

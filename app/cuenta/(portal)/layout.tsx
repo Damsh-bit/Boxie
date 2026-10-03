@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Gift, PackageCheck, HelpCircle } from 'lucide-react'
+import { Gift, PackageCheck, HelpCircle, ShoppingBag } from 'lucide-react'
 import { requireCustomerSession } from '@/server/customer/session'
 import { CustomerLogoutButton } from './CustomerLogoutButton'
 
@@ -48,6 +48,13 @@ export default async function CustomerPortalLayout({ children }: { children: Rea
 
           {/* Perfil del Cliente */}
           <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="hidden items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-semibold text-neutral-600 shadow-sm transition-colors hover:border-brand/40 hover:bg-brand/5 hover:text-brand sm:flex"
+            >
+              <ShoppingBag className="size-3.5" /> Ir a la tienda
+            </Link>
+
             <div className="flex items-center gap-2.5">
               {session.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element

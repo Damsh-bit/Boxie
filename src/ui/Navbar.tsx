@@ -36,7 +36,7 @@ const isCurrent = (pathname: string, href: string) =>
  * sólida (con blur) y se achica, se esconde al bajar y vuelve al subir. Todo
  * con valores de movimiento: scrollear no re-renderiza nada.
  */
-export function Navbar() {
+export function Navbar({ session }: { session?: { name: string; avatarUrl?: string } | null }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [lastPath, setLastPath] = useState(pathname)
@@ -118,14 +118,35 @@ export function Navbar() {
 
           <div className="hidden items-center gap-2 lg:flex">
             <CurrencyToggle size="sm" />
-            <ButtonLink
-              href="/cuenta"
-              variant="ghost"
-              size="sm"
-              className="h-10 px-3.5 text-xs font-semibold text-neutral-600 hover:text-ink"
-            >
-              <User className="size-4 text-neutral-500" aria-hidden /> Mi Cuenta
-            </ButtonLink>
+            {session ? (
+              <Link
+                href="/cuenta"
+                className="flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink shadow-sm transition-all hover:border-brand/40 hover:shadow-md"
+              >
+                {session.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={session.avatarUrl}
+                    alt={session.name}
+                    className="size-6 rounded-full object-cover ring-1 ring-brand/20"
+                  />
+                ) : (
+                  <span className="grid size-6 place-items-center rounded-full bg-brand text-[10px] font-bold text-white">
+                    {session.name.slice(0, 2).toUpperCase()}
+                  </span>
+                )}
+                <span className="max-w-[120px] truncate">{session.name.split(' ')[0]}</span>
+              </Link>
+            ) : (
+              <ButtonLink
+                href="/cuenta"
+                variant="ghost"
+                size="sm"
+                className="h-10 px-3.5 text-xs font-semibold text-neutral-600 hover:text-ink"
+              >
+                <User className="size-4 text-neutral-500" aria-hidden /> Mi Cuenta
+              </ButtonLink>
+            )}
             <ButtonLink href="/galeria" size="sm" className="h-10 px-5">
               <Gift className="size-4" aria-hidden /> Regalar
             </ButtonLink>
@@ -138,7 +159,12 @@ export function Navbar() {
         </motion.nav>
       </motion.header>
 
-      <MobileMenu open={open} pathname={pathname} onClose={() => setOpen(false)} />
+      <MobileMenu
+        open={open}
+        pathname={pathname}
+        session={session}
+        onClose={() => setOpen(false)}
+      />
     </>
   )
 }
@@ -225,10 +251,12 @@ function MenuButton({ open, onToggle }: { open: boolean; onToggle(): void }) {
 function MobileMenu({
   open,
   pathname,
+  session,
   onClose,
 }: {
   open: boolean
   pathname: string
+  session?: { name: string; avatarUrl?: string } | null
   onClose(): void
 }) {
   return (
@@ -298,16 +326,42 @@ function MobileMenu({
               <span className="text-sm font-semibold text-neutral-600">Ver precios en</span>
               <CurrencyToggle size="sm" />
             </div>
-            <ButtonLink
-              href="/cuenta"
-              variant="secondary"
-              size="lg"
-              block
-              onClick={onClose}
-              className="text-base"
-            >
-              <User className="size-5" aria-hidden /> Mi Cuenta
-            </ButtonLink>
+            {session ? (
+              <Link
+                href="/cuenta"
+                onClick={onClose}
+                className="flex items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 shadow-sm transition-all hover:border-brand/40"
+              >
+                {session.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={session.avatarUrl}
+                    alt={session.name}
+                    className="size-9 rounded-full object-cover ring-2 ring-brand/20"
+                  />
+                ) : (
+                  <span className="grid size-9 place-items-center rounded-full bg-brand text-sm font-bold text-white">
+                    {session.name.slice(0, 2).toUpperCase()}
+                  </span>
+                )}
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-bold text-ink">{session.name}</p>
+                  <p className="text-xs text-neutral-500">Ver mi cuenta</p>
+                </div>
+                <ArrowRight className="size-4 text-brand" aria-hidden />
+              </Link>
+            ) : (
+              <ButtonLink
+                href="/cuenta"
+                variant="secondary"
+                size="lg"
+                block
+                onClick={onClose}
+                className="text-base"
+              >
+                <User className="size-5" aria-hidden /> Mi Cuenta
+              </ButtonLink>
+            )}
             <ButtonLink href="/galeria" size="lg" block onClick={onClose}>
               <Gift className="size-5" aria-hidden /> Regalar una Ribbly
             </ButtonLink>

@@ -24,10 +24,81 @@ export interface CustomerBoxieItem {
 
 export interface CustomerOrderReceipt {
   id: string
+  fullId: string
   date: string
+  time: string
   amount: number
+  listPrice: number
+  discount: number
+  couponCode: string | null
   themeName: string
+  planName: string | null
   status: string
+  isPaid: boolean
+  paymentProvider: string
+  mpPaymentId: string | null
+  paymentMethodDetail: string
+  buyerName: string
+  buyerEmail: string
+  buyerPhone: string | null
+  boxie: {
+    id: string
+    code: string
+    recipientName: string
+    status: 'draft' | 'ready' | 'opened'
+    statusLabel: string
+    editUrl: string | null
+    giftUrl: string | null
+  } | null
+}
+
+function formatPaymentMethod(
+  provider: string,
+  mpPaymentId: string | null,
+  raw: Record<string, unknown> | null,
+): string {
+  if (provider === 'fake') return 'Pago simulado (Prueba)'
+  if (provider === 'free') return 'Gratuito / Promoción'
+
+  if (raw) {
+    const paymentTypeId = String(raw.payment_type_id || '').toLowerCase()
+    const paymentMethodId = String(raw.payment_method_id || '').toLowerCase()
+    const installments = typeof raw.installments === 'number' ? raw.installments : 1
+    const card = raw.card as { last_four_digits?: string } | undefined
+    const lastFour = card?.last_four_digits
+
+    if (paymentTypeId === 'account_money' || paymentMethodId === 'account_money') {
+      return 'Mercado Pago · Dinero en cuenta'
+    }
+
+    const cardBrand = paymentMethodId ? paymentMethodId.toUpperCase() : 'Tarjeta'
+    if (paymentTypeId === 'credit_card') {
+      const cuotasText = installments > 1 ? ` (${installments} cuotas)` : ' (1 pago)'
+      return lastFour
+        ? `Tarjeta de crédito ${cardBrand} **** ${lastFour}${cuotasText}`
+        : `Tarjeta de crédito ${cardBrand}${cuotasText}`
+    }
+
+    if (paymentTypeId === 'debit_card') {
+      return lastFour
+        ? `Tarjeta de débito ${cardBrand} **** ${lastFour}`
+        : `Tarjeta de débito ${cardBrand}`
+    }
+
+    if (paymentTypeId === 'ticket') {
+      return `Efectivo (${paymentMethodId.toUpperCase()})`
+    }
+
+    if (paymentTypeId === 'bank_transfer') {
+      return 'Transferencia bancaria'
+    }
+  }
+
+  if (mpPaymentId) {
+    return 'Mercado Pago'
+  }
+
+  return 'Online'
 }
 
 export interface CustomerPortalData {
@@ -53,7 +124,9 @@ export async function getCustomerPortalData(
   // 1. Obtener órdenes del comprador
   const { data: ordersData, error: ordersError } = await db
     .from('orders')
-    .select('id, amount_cents, created_at, status, paid_at, theme:themes(name)')
+    .select(
+      'id, amount_cents, list_price_cents, discount_cents, coupon_code, payment_provider, mp_payment_id, buyer_name, buyer_email, buyer_phone, created_at, status, paid_at, theme:themes(name), plan:plans(name)',
+    )
     .ilike('buyer_email', escapeIlike(email))
     .order('created_at', { ascending: false })
 
@@ -137,17 +210,77 @@ export async function getCustomerPortalData(
     })
   }
 
-  const receipts: CustomerOrderReceipt[] = ordersData.map((o) => ({
-    id: o.id.slice(0, 8),
-    date: new Date(o.paid_at || o.created_at).toLocaleDateString('es-AR', {
+  // 3. Obtener eventos de pago para extraer el detalle del medio de pago
+  const { data: eventsData } = await db
+    .from('payment_events')
+    .select('order_id, provider, provider_payment_id, status, raw, received_at')
+    .in('order_id', orderIds)
+    .order('received_at', { ascending: false })
+
+  const receipts: CustomerOrderReceipt[] = ordersData.map((o) => {
+    const paidDate = o.paid_at ? new Date(o.paid_at) : new Date(o.created_at)
+    const dateFormatted = paidDate.toLocaleDateString('es-AR', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
-    }),
-    amount: o.amount_cents / 100,
-    themeName: (o.theme as { name?: string } | null)?.name || 'Boxie Digital',
-    status: o.status === 'paid' ? 'Pagado' : o.status,
-  }))
+    })
+    const timeFormatted = paidDate.toLocaleTimeString('es-AR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+
+    const orderEvents = (eventsData ?? []).filter((e) => e.order_id === o.id)
+    const approvedEvent = orderEvents.find((e) => e.status === 'approved') ?? orderEvents[0]
+    const raw = (
+      approvedEvent?.raw && typeof approvedEvent.raw === 'object' ? approvedEvent.raw : null
+    ) as Record<string, unknown> | null
+
+    const paymentMethodDetail = formatPaymentMethod(o.payment_provider, o.mp_payment_id, raw)
+
+    const associatedBoxie = boxies.find((b) => {
+      const match = boxiesData?.find((item) => item.id === b.id)
+      return match?.order_id === o.id
+    })
+
+    return {
+      id: o.id.slice(0, 8),
+      fullId: o.id,
+      date: dateFormatted,
+      time: timeFormatted,
+      amount: o.amount_cents / 100,
+      listPrice: o.list_price_cents / 100,
+      discount: o.discount_cents / 100,
+      couponCode: o.coupon_code ?? null,
+      themeName: (o.theme as { name?: string } | null)?.name || 'Ribbly Digital',
+      planName: (o.plan as { name?: string } | null)?.name || null,
+      status:
+        o.status === 'paid'
+          ? 'Pagado'
+          : o.status === 'pending'
+            ? 'Pendiente'
+            : o.status === 'refunded'
+              ? 'Reembolsado'
+              : o.status,
+      isPaid: o.status === 'paid',
+      paymentProvider: o.payment_provider,
+      mpPaymentId: o.mp_payment_id ?? approvedEvent?.provider_payment_id ?? null,
+      paymentMethodDetail,
+      buyerName: o.buyer_name,
+      buyerEmail: o.buyer_email,
+      buyerPhone: o.buyer_phone ?? null,
+      boxie: associatedBoxie
+        ? {
+            id: associatedBoxie.id,
+            code: associatedBoxie.code,
+            recipientName: associatedBoxie.recipientName,
+            status: associatedBoxie.status,
+            statusLabel: associatedBoxie.statusLabel,
+            editUrl: associatedBoxie.editUrl,
+            giftUrl: associatedBoxie.giftUrl,
+          }
+        : null,
+    }
+  })
 
   return {
     stats: {

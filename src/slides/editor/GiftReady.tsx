@@ -1,13 +1,14 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, Copy, ExternalLink, Eye, PencilLine, Share2 } from 'lucide-react'
+import { Check, Copy, ExternalLink, Eye, Home, PencilLine, Share2, User } from 'lucide-react'
 import { useState } from 'react'
 import { site } from '@/content/site'
 import { Button, ButtonLink } from '@/ui/Button'
 import { ConfettiBurst } from '@/ui/ConfettiBurst'
 import { Icon } from '@/ui/Icon'
 import { ease, spring, useCalm } from '@/ui/motion'
+import Link from 'next/link'
 import { formatLongDate, giftShareMessage, whatsappShareUrl } from './share'
 
 interface Props {
@@ -122,11 +123,11 @@ export function GiftReady({
           </motion.span>
         </motion.div>
         <motion.h1 variants={item} className="font-display text-3xl font-bold text-ink sm:text-4xl">
-          {sandbox ? '¡Así se regala una Boxie!' : '¡Boxie lista!'}
+          {sandbox ? '¡Así se regala una Ribbly!' : '¡Ribbly lista!'}
         </motion.h1>
         <motion.p variants={item} className="mx-auto mt-3 max-w-sm text-neutral-600">
           {sandbox
-            ? `Comprala desde acá y todo lo que armaste pasa a tu Boxie: en este paso te damos el link único para mandarle a ${name} por WhatsApp.`
+            ? `Comprala desde acá y todo lo que armaste pasa a tu Ribbly: en este paso te damos el link único para mandarle a ${name} por WhatsApp.`
             : `Ya podés mandársela a ${name}. Se abre desde el celular, sin instalar nada.`}
         </motion.p>
 
@@ -230,6 +231,23 @@ export function GiftReady({
             .
           </p>
         </motion.div>
+
+        {!sandbox && (
+          <motion.div variants={item} className="mt-6 flex justify-center gap-3">
+            <Link
+              href="/cuenta"
+              className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand"
+            >
+              <User className="size-4" aria-hidden /> Mi cuenta
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand"
+            >
+              <Home className="size-4" aria-hidden /> Volver al inicio
+            </Link>
+          </motion.div>
+        )}
       </motion.div>
     </div>
   )

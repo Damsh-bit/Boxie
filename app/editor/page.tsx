@@ -1,6 +1,9 @@
-import type { Metadata } from 'next'
+import type { Metadata, Route } from 'next'
 import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { listPublishedThemes } from '@/server/catalog'
+import { getCustomerHeroContext } from '@/server/customer/data'
+import { getCustomerSession } from '@/server/customer/session'
 import { isDemoMode } from '@/server/demo'
 import { loadEditor } from '@/server/editor'
 import { EDITOR_COOKIE, readEditorSession } from '@/server/editor-session'
@@ -34,11 +37,25 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
   }
 
   const { error } = await searchParams
-  const session = readEditorSession((await cookies()).get(EDITOR_COOKIE)?.value)
+  const cookieStore = await cookies()
+  const session = readEditorSession(cookieStore.get(EDITOR_COOKIE)?.value)
+
+  // 1. Si no hay sesión de edición activa:
   if (!session) {
+    const customer = await getCustomerSession()
+    if (customer) {
+      // Si el cliente está logueado y tiene un borrador pendiente, lo llevamos a editarlo
+      const heroCtx = await getCustomerHeroContext(customer.email)
+      if (heroCtx.draft) {
+        redirect(heroCtx.draft.editUrl as Route)
+      }
+      // Si no tiene borradores pendientes, lo llevamos a sus regalos
+      redirect('/cuenta/boxies')
+    }
     return <EditorMessage kind={(typeof error === 'string' && ERRORS[error]) || 'no-session'} />
   }
 
+  // 2. Si hay sesión, cargar la Ribbly
   let data: Awaited<ReturnType<typeof loadEditor>>
   try {
     data = await loadEditor(session)
@@ -46,9 +63,31 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
     log.error('No se pudo cargar el editor', e, { boxieId: session.boxieId })
     return <EditorMessage kind="server" />
   }
-  if (!data) return <EditorMessage kind="bad-link" />
-  if (data.availability === 'expired') return <EditorMessage kind="expired" />
-  if (data.availability === 'refunded') return <EditorMessage kind="refunded" />
+
+  if (!data) {
+    cookieStore.delete(EDITOR_COOKIE)
+    return <EditorMessage kind="bad-link" />
+  }
+
+  // Si la Ribbly ya fue bloqueada para regalar: no se puede editar más
+  if (data.availability === 'locked') {
+    cookieStore.delete(EDITOR_COOKIE)
+    const customer = await getCustomerSession()
+    if (customer) {
+      redirect('/cuenta/boxies')
+    }
+    redirect('/cuenta/login?next=/cuenta/boxies' as Route)
+  }
+
+  if (data.availability === 'expired') {
+    cookieStore.delete(EDITOR_COOKIE)
+    return <EditorMessage kind="expired" />
+  }
+
+  if (data.availability === 'refunded') {
+    cookieStore.delete(EDITOR_COOKIE)
+    return <EditorMessage kind="refunded" />
+  }
 
   return (
     <>
@@ -62,7 +101,7 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
         editableUntil={data.expiresAt}
         lifetimeDays={data.lifetimeDays}
         allowPassword={data.allowPassword}
-        locked={data.giftUrl ? { giftUrl: data.giftUrl, expiresAt: data.expiresAt } : null}
+        locked={null}
       />
       {/* El botón de ayuda ya sabe de qué Boxie se trata. */}
       <SupportWidget hint={{ boxieCode: data.code, topic: 'boxie' }} nudge={false} />

@@ -57,7 +57,12 @@ export async function lockBoxieAction(): Promise<LockResult> {
     return { ok: false, error: TOO_FAST }
   }
   try {
-    return await lockForGifting(s)
+    const result = await lockForGifting(s)
+    if (result.ok) {
+      const cookieStore = await cookies()
+      cookieStore.delete(EDITOR_COOKIE)
+    }
+    return result
   } catch (error) {
     log.error('No se pudo bloquear la Boxie', error, { boxieId: s.boxieId })
     return { ok: false, error: 'No pudimos bloquear el regalo. Probá de nuevo en un rato.' }

@@ -49,8 +49,9 @@ export const site = {
 
 /** URL pública del sitio (metadatos, links absolutos y datos estructurados). */
 export function siteUrl(): string {
+  // `||` y no `??`: una variable definida pero vacía también cae al valor por defecto.
   return (
-    process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
     (process.env.VERCEL_PROJECT_PRODUCTION_URL
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : 'http://localhost:3000')

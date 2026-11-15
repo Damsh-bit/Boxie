@@ -35,7 +35,20 @@ jobs:
       - name: Catálogo inicial al día con supabase/seed
         run: npm run themes:check
       - name: Build
-        run: npm run build
+        # Si falla, las últimas líneas del build quedan en una anotación: se leen
+        # en el resumen (y por la API) sin iniciar sesión en GitHub.
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee "$RUNNER_TEMP/build.log" || {
+            tail -n 400 "$RUNNER_TEMP/build.log" \
+              | sed -r 's/\x1b\[[0-9;]*[A-Za-z]//g' \
+              | grep -v '"level":"warn"' \
+              | tail -n 45 \
+              | sed -e 's/%/%25/g' -e 's/\r//g' \
+              | awk 'BEGIN { ORS = "%0A" } { print }' > "$RUNNER_TEMP/build-tail.txt"
+            echo "::error title=Falló el build::$(cat "$RUNNER_TEMP/build-tail.txt")"
+            exit 1
+          }
 
   e2e:
     name: E2E (catálogo, checkout, editor y regalo)

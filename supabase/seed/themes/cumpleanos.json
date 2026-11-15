@@ -16,11 +16,11 @@
       "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?q=80&w=800&auto=format&fit=crop"
     ],
     "features": [
-      "Portada de Festejo con toda la onda.",
-      "Recorrido por sus mejores momentos.",
-      "Tus deseos para este nuevo año.",
-      "Música de fiesta para celebrar.",
-      "Espacio final para tu gift card o sorpresa."
+      "Portada con su nombre y la torta con las velas de su edad.",
+      "Tu carta en un sobre que se abre, escrita a mano.",
+      "Sus mejores momentos en polaroids, año por año.",
+      "Trivia, tragamonedas, piñata y vales para canjear.",
+      "Regalo sorpresa al final, si querés sumar uno."
     ],
     "guide": {
       "emoji": "🎂",
@@ -29,98 +29,92 @@
     }
   },
   "config": {
+    "palette": {
+      "primary": "#F44E63",
+      "ink": "#1C2A5A",
+      "accent": "#FFD35C"
+    },
     "slides": [
-      { "key": "intro", "kind": "intro.logo" },
-      { "key": "portada", "kind": "cover.birthday" },
       {
-        "key": "bienvenida",
-        "kind": "story.intro",
-        "props": {
-          "tag": "BIRTHDAY EDITION",
-          "title": "CELEBRACIÓN",
-          "message": "Te merecés un día lleno de magia."
-        }
+        "key": "intro",
+        "kind": "intro.brand"
       },
-      { "key": "dedicatoria", "kind": "story.dedication" },
-      { "key": "cancion", "kind": "media.song" },
-      { "key": "playlists", "kind": "media.playlists" },
-      { "key": "game-start", "kind": "connector.gamer" },
-      { "key": "trivia", "kind": "game.trivia" },
-      { "key": "cine", "kind": "connector.cinema" },
-      { "key": "streaming", "kind": "media.streaming" },
-      { "key": "jackpot", "kind": "game.jackpot" },
       {
-        "key": "cuponera",
-        "kind": "game.coupons",
-        "props": {
-          "suggestions": [
-            "Torta Favorita",
-            "Regalo Sorpresa",
-            "Brindis Especial",
-            "Organizo la Previa",
-            "Fotógrafo Personal",
-            "Día Libre",
-            "Bajón Post-Fiesta",
-            "Deseo de Cumple"
-          ]
-        }
+        "key": "portada",
+        "kind": "cover.cake"
+      },
+      {
+        "key": "edicion",
+        "kind": "cover.age"
+      },
+      {
+        "key": "tarjeta",
+        "kind": "story.card"
+      },
+      {
+        "key": "momentos",
+        "kind": "story.moments"
+      },
+      {
+        "key": "cancion",
+        "kind": "media.video"
+      },
+      {
+        "key": "playlist",
+        "kind": "media.mix"
+      },
+      {
+        "key": "trivia",
+        "kind": "game.quiz"
+      },
+      {
+        "key": "cine",
+        "kind": "connector.premiere"
+      },
+      {
+        "key": "recomendado",
+        "kind": "media.poster"
+      },
+      {
+        "key": "tragamonedas",
+        "kind": "game.slots"
+      },
+      {
+        "key": "vales",
+        "kind": "game.vouchers"
       },
       {
         "key": "revista",
-        "kind": "story.editorial",
-        "props": {
-          "title": {
-            "t": "rich",
-            "v": [
-              { "text": "¡Feliz" },
-              { "br": true },
-              { "text": "Vuelta al", "mark": "accent" },
-              { "br": true },
-              { "text": "Sol! 🎂" }
-            ]
-          },
-          "body1": {
-            "t": "rich",
-            "v": [
-              { "text": "Hoy el mundo brilla un poco más porque es tu día. " },
-              { "text": "Celebro tu existencia", "mark": "highlight" },
-              { "text": ", tu energía y todo lo que contagias a los que te rodean." }
-            ]
-          },
-          "body2": {
-            "t": "rich",
-            "v": [
-              {
-                "text": "Deseo que este nuevo año te traiga aventuras increíbles, salud de hierro y momentos inolvidables. Gracias por dejarme ser parte de tu historia un año más."
-              }
-            ]
-          }
-        }
+        "kind": "story.magazine"
       },
       {
-        "key": "razones",
-        "kind": "story.reasons",
-        "props": {
-          "suggestions": [
-            "Porque iluminás todo.",
-            "Por tu energía única.",
-            "Porque te merecés todo lo bueno.",
-            "Por ser un luchador/a.",
-            "Por tu corazón enorme.",
-            "Porque inspirás a los demás.",
-            "Por cómo festejás la vida.",
-            "Porque sos inolvidable.",
-            "Por ser auténtico/a.",
-            "¡Porque es tu día!"
-          ]
-        }
+        "key": "deseos",
+        "kind": "story.wishes"
       },
-      { "key": "gratitud", "kind": "reflect.gratitude" },
-      { "key": "diario", "kind": "reflect.journal" },
-      { "key": "fortuna", "kind": "game.fortune" },
-      { "key": "anecdota", "kind": "story.anecdote" },
-      { "key": "repaso", "kind": "outro.summary" },
-      { "key": "gracias", "kind": "outro.thanks" }
+      {
+        "key": "velitas",
+        "kind": "reflect.candles"
+      },
+      {
+        "key": "capsula",
+        "kind": "reflect.capsule"
+      },
+      {
+        "key": "pinata",
+        "kind": "game.pinata"
+      },
+      {
+        "key": "anecdota",
+        "kind": "story.memory"
+      },
+      {
+        "key": "resumen",
+        "kind": "outro.recap"
+      },
+      {
+        "key": "cierre",
+        "kind": "outro.finale"
+      }
     ]
   }
 }

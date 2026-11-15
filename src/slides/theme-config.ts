@@ -34,6 +34,11 @@ export const FrameSchema = z.object({
   /** Sin bordes redondeados ni margen: la slide ocupa toda la pantalla. */
   fullScreen: z.boolean().default(false),
   confetti: z.boolean().default(false),
+  /**
+   * Color de lo que el player dibuja encima (progreso, flechas, cerrar):
+   * claro para fondos con color u oscuros, oscuro para fondos claros.
+   */
+  chrome: z.enum(['light', 'dark']).default('light'),
 })
 export type Frame = z.infer<typeof FrameSchema>
 export type FrameInput = z.input<typeof FrameSchema>

@@ -78,6 +78,9 @@
   background: #2a2433;
   position: relative;
   overflow: hidden;
+  /* `clip` no se puede scrollear ni por código: si algo de una slide toma el
+     foco o pide scrollIntoView, el mazo no se corre de lugar. */
+  overflow: clip;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
   touch-action: none;
   user-select: none;
@@ -158,6 +161,19 @@
   inset: 0;
   border-radius: inherit;
   box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+}
+
+/* Sobre fondos claros (tarjeta, vales, revista) el cromo pasa a tinta. */
+.bx-chrome-dark .bx-progress-segment {
+  background: rgba(28, 42, 90, 0.16);
+}
+
+.bx-chrome-dark .bx-progress-fill {
+  background: #1c2a5a;
+}
+
+.bx-chrome-dark .bx-progress-glow {
+  box-shadow: 0 0 6px rgba(28, 42, 90, 0.35);
 }
 
 .bx-close {

@@ -1,0 +1,690 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   Ribbly · Pantallas nuevas (kit compartido)
+
+   Todo lo que usan las pantallas de src/slides/kinds/rb-*.tsx: tokens de la
+   marca, la unidad responsive, tipografías, botones, chips y los efectos de
+   ambiente (confeti, rayos, guirnalda, globos).
+
+   · Responsive: cada pantalla es un contenedor (`container-type: size`) y
+     todas las medidas salen de --u, "un píxel del diseño" (390 × 760 de
+     referencia) escalado a lo que mida el teléfono: el del regalo, el del
+     editor o el de la portada del sitio. Nada depende del viewport.
+   · Movimiento: las entradas y lo que responde al dedo lo hace framer-motion
+     desde los componentes, como en el resto del player. Lo que es puro
+     ambiente y corre en loop (confeti que cae, globos, destellos) va con
+     keyframes de CSS sobre transform/opacity, y solo mientras la slide está
+     en pantalla (.bx-slide.is-active).
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.rb-stage {
+  --rb-coral: #f44e63;
+  --rb-cielo: #4fc3f7;
+  --rb-cielo-p: #1e88c9;
+  --rb-sol: #ffd35c;
+  --rb-naranja: #f2a93b;
+  --rb-lila: #b28dff;
+  --rb-menta: #5ed6a8;
+  --rb-rosa: #ff8fb1;
+  --rb-noche: #1c2a5a;
+  --rb-acierto: #22a66b;
+  --rb-error: #e5484d;
+  --rb-crema: #fff9ee;
+  --rb-tinta-2: #5a6480;
+  /* Un píxel del diseño. Se usa solo en los descendientes (las unidades cq de
+     un contenedor no se miden contra sí mismo). */
+  --u: clamp(0.62px, min(100cqw / 390, 100cqh / 760), 1.5px);
+
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  overflow: hidden;
+  overflow: clip;
+  isolation: isolate;
+  font-family: var(--font-outfit), system-ui, sans-serif;
+  color: #fff;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.rb-stage button {
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Capa de fondo y capa de contenido. */
+.rb-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.rb-body {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: calc(var(--u) * 470);
+  margin: 0 auto;
+  padding: calc(var(--u) * 58) calc(var(--u) * 24) calc(var(--u) * 26);
+}
+
+/* Fila de botones de abajo: deja libre la esquina de las flechas del player. */
+.rb-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 10);
+  width: 100%;
+  padding: calc(var(--u) * 10) calc(var(--u) * 38) 0;
+}
+
+.rb-actions.is-row {
+  flex-direction: row;
+  justify-content: center;
+}
+
+.rb-grow {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Tipografías ────────────────────────────────────────────────────────── */
+
+.rb-fredoka {
+  font-family: var(--font-fredoka), var(--font-outfit), sans-serif;
+}
+
+.rb-caveat {
+  font-family: var(--font-caveat), 'Segoe Script', cursive;
+}
+
+.rb-playfair {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.rb-josefin {
+  font-family: var(--font-josefin), var(--font-outfit), sans-serif;
+}
+
+.rb-kicker {
+  font-weight: 700;
+  font-size: calc(var(--u) * 12);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.rb-title {
+  font-family: var(--font-fredoka), var(--font-outfit), sans-serif;
+  font-weight: 600;
+  font-size: calc(var(--u) * 30);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.rb-sub {
+  font-weight: 500;
+  font-size: calc(var(--u) * 14);
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+.rb-hand {
+  font-family: var(--font-caveat), 'Segoe Script', cursive;
+  font-weight: 600;
+  font-size: calc(var(--u) * 24);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.rb-shadow-text {
+  text-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 10) rgba(28, 42, 90, 0.22);
+}
+
+/* ── Marca ──────────────────────────────────────────────────────────────── */
+
+.rb-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34em;
+  font-family: var(--font-josefin), var(--font-outfit), sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  color: currentColor;
+}
+
+.rb-brand span {
+  /* Josefin tiene la caja corrida hacia arriba: se centra a ojo con la marca. */
+  transform: translateY(0.09em);
+  margin-right: -0.16em;
+}
+
+.rb-mark {
+  display: inline-block;
+  flex: none;
+  aspect-ratio: 383 / 489;
+  background: currentColor;
+  -webkit-mask: url('/brand/boxie-mark.png') center / contain no-repeat;
+  mask: url('/brand/boxie-mark.png') center / contain no-repeat;
+}
+
+/* ── Botones ────────────────────────────────────────────────────────────── */
+
+.rb-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 8);
+  min-height: calc(var(--u) * 48);
+  max-width: 100%;
+  padding: calc(var(--u) * 10) calc(var(--u) * 26);
+  border: 0;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: calc(var(--u) * 16);
+  line-height: 1.15;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    filter 0.2s,
+    background-color 0.2s,
+    opacity 0.2s;
+}
+
+.rb-btn:disabled {
+  cursor: default;
+}
+
+.rb-btn.is-wide {
+  width: 100%;
+  max-width: calc(var(--u) * 250);
+}
+
+.rb-btn.is-big {
+  min-height: calc(var(--u) * 58);
+  padding-inline: calc(var(--u) * 44);
+  font-size: calc(var(--u) * 20);
+}
+
+.rb-btn.is-small {
+  min-height: calc(var(--u) * 40);
+  padding: calc(var(--u) * 6) calc(var(--u) * 16);
+  font-size: calc(var(--u) * 14);
+  font-weight: 500;
+}
+
+.rb-btn-primary {
+  background: linear-gradient(180deg, #f8627a, var(--rb-coral));
+  color: #fff;
+  box-shadow:
+    0 calc(var(--u) * 5) 0 #c93049,
+    0 calc(var(--u) * 12) calc(var(--u) * 24) rgba(244, 78, 99, 0.45);
+}
+
+.rb-btn-primary.is-flat {
+  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 24) rgba(244, 78, 99, 0.45);
+}
+
+.rb-btn-white {
+  background: #fff;
+  color: var(--rb-noche);
+  box-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 18) rgba(0, 0, 0, 0.14);
+}
+
+.rb-btn-dark {
+  background: rgba(28, 42, 90, 0.62);
+  color: #fff;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.rb-btn-glass {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  border: calc(var(--u) * 1.5) solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.rb-btn-glass.is-ink {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.9);
+  color: var(--rb-noche);
+  box-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 18) rgba(28, 42, 90, 0.12);
+}
+
+.rb-btn-yellow {
+  background: linear-gradient(180deg, #ffe07a, var(--rb-sol));
+  color: #4a3410;
+  box-shadow:
+    0 calc(var(--u) * 5) 0 #d99a2b,
+    0 calc(var(--u) * 12) calc(var(--u) * 26) rgba(242, 169, 59, 0.5);
+}
+
+.rb-btn-icon {
+  width: calc(var(--u) * 50);
+  min-height: calc(var(--u) * 50);
+  padding: 0;
+}
+
+/* ── Chips, tarjetas y sellos ───────────────────────────────────────────── */
+
+.rb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 5);
+  padding: calc(var(--u) * 6) calc(var(--u) * 12);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--rb-noche);
+  font-weight: 600;
+  font-size: calc(var(--u) * 13);
+  line-height: 1.15;
+  white-space: nowrap;
+  box-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(0, 0, 0, 0.1);
+}
+
+.rb-chip.is-yellow {
+  background: var(--rb-sol);
+}
+
+.rb-chip.is-sky {
+  background: var(--rb-cielo);
+}
+
+.rb-chip.is-glass {
+  background: rgba(255, 255, 255, 0.16);
+  border: calc(var(--u) * 1.2) solid rgba(255, 255, 255, 0.38);
+  color: #fff;
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.rb-glass {
+  background: rgba(255, 255, 255, 0.13);
+  border: calc(var(--u) * 1.2) solid rgba(255, 255, 255, 0.32);
+  border-radius: calc(var(--u) * 22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Cinta inclinada con texto (¡CORRECTO!, ¡PREMIO MAYOR!). */
+.rb-ribbon {
+  display: inline-block;
+  padding: calc(var(--u) * 7) calc(var(--u) * 18);
+  border-radius: calc(var(--u) * 12);
+  border: calc(var(--u) * 3) solid #fff;
+  font-family: var(--font-fredoka), sans-serif;
+  font-weight: 700;
+  font-size: calc(var(--u) * 26);
+  line-height: 1.1;
+  color: #fff;
+  white-space: nowrap;
+  box-shadow: 0 calc(var(--u) * 10) calc(var(--u) * 24) rgba(0, 0, 0, 0.28);
+}
+
+/* Barritas de progreso de un juego (pregunta 1/3, deseo 1 de 3). */
+.rb-steps {
+  display: flex;
+  gap: calc(var(--u) * 6);
+  flex: 1;
+}
+
+.rb-steps i {
+  flex: 1;
+  height: calc(var(--u) * 6);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
+  transition: background-color 0.35s;
+}
+
+/* Código de barras decorativo. */
+.rb-barcode {
+  display: block;
+  height: calc(var(--u) * 34);
+  background: repeating-linear-gradient(
+    90deg,
+    currentColor 0 calc(var(--u) * 2),
+    transparent calc(var(--u) * 2) calc(var(--u) * 3.4),
+    currentColor calc(var(--u) * 3.4) calc(var(--u) * 4.2),
+    transparent calc(var(--u) * 4.2) calc(var(--u) * 6.6),
+    currentColor calc(var(--u) * 6.6) calc(var(--u) * 9.4),
+    transparent calc(var(--u) * 9.4) calc(var(--u) * 11)
+  );
+}
+
+/* ── Aviso (guardar / compartir) ────────────────────────────────────────── */
+
+.rb-sheet-back {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: calc(var(--u) * 14);
+  background: rgba(16, 20, 44, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.rb-sheet {
+  width: 100%;
+  max-width: calc(var(--u) * 360);
+  padding: calc(var(--u) * 26) calc(var(--u) * 22) calc(var(--u) * 20);
+  border-radius: calc(var(--u) * 28);
+  background: var(--rb-crema);
+  color: var(--rb-noche);
+  box-shadow: 0 calc(var(--u) * 20) calc(var(--u) * 50) rgba(0, 0, 0, 0.35);
+}
+
+.rb-sheet h3 {
+  font-family: var(--font-fredoka), sans-serif;
+  font-weight: 600;
+  font-size: calc(var(--u) * 22);
+  margin-top: calc(var(--u) * 8);
+}
+
+.rb-sheet p {
+  margin: calc(var(--u) * 8) 0 calc(var(--u) * 18);
+  font-size: calc(var(--u) * 14.5);
+  line-height: 1.5;
+  color: var(--rb-tinta-2);
+}
+
+/* ── Ambiente ───────────────────────────────────────────────────────────── */
+
+/* Rayos que giran muy despacio detrás del protagonista. */
+.rb-rays {
+  position: absolute;
+  width: 260cqmax;
+  height: 260cqmax;
+  margin: -130cqmax 0 0 -130cqmax;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, var(--rb-rays, 0.13)) 0deg 8deg,
+    transparent 8deg 16deg
+  );
+  -webkit-mask: radial-gradient(circle, #000 0, rgba(0, 0, 0, 0.75) 22%, transparent 46%);
+  mask: radial-gradient(circle, #000 0, rgba(0, 0, 0, 0.75) 22%, transparent 46%);
+  animation: rb-spin 90s linear infinite;
+  animation-play-state: paused;
+}
+
+/* Confeti que cae: cada papelito trae su recorrido en variables. */
+.rb-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.rb-confetti i {
+  position: absolute;
+  top: 0;
+  left: var(--x);
+  width: calc(var(--u) * var(--w));
+  height: calc(var(--u) * var(--h));
+  background: var(--c);
+  border-radius: var(--r);
+  opacity: var(--o, 0.95);
+  animation: rb-fall var(--d) linear var(--delay) infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
+
+@keyframes rb-fall {
+  from {
+    transform: translate3d(0, -6cqh, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(var(--sway), 108cqh, 0) rotate(var(--spin));
+  }
+}
+
+/* Puntitos de luz (bokeh) y destellos. */
+.rb-bokeh i {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: calc(var(--u) * var(--s));
+  height: calc(var(--u) * var(--s));
+  border-radius: 50%;
+  background: var(--c);
+  filter: blur(calc(var(--u) * var(--b, 6)));
+  opacity: var(--o);
+  animation: rb-drift var(--d) ease-in-out var(--delay) infinite alternate;
+  animation-play-state: paused;
+}
+
+.rb-stars i {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: calc(var(--u) * var(--s));
+  height: calc(var(--u) * var(--s));
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.2;
+  animation: rb-twinkle var(--d) ease-in-out var(--delay) infinite;
+  animation-play-state: paused;
+}
+
+.rb-stars i.is-spark {
+  border-radius: 0;
+  background: var(--c, #ffd35c);
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+}
+
+@keyframes rb-twinkle {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes rb-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(calc(var(--u) * 14), calc(var(--u) * -22), 0);
+  }
+}
+
+@keyframes rb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Guirnalda de banderines: se mece desde el hilo. */
+.rb-bunting {
+  position: absolute;
+  top: calc(var(--u) * 30);
+  left: -4%;
+  width: 108%;
+  z-index: 1;
+  pointer-events: none;
+  transform-origin: 50% 0;
+  animation: rb-sway 5.5s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+@keyframes rb-sway {
+  0%,
+  100% {
+    transform: rotate(-0.9deg) translateY(0);
+  }
+  50% {
+    transform: rotate(0.9deg) translateY(calc(var(--u) * 2));
+  }
+}
+
+/* Globos: suben y bajan, cada uno a su ritmo. */
+.rb-balloon {
+  position: absolute;
+  pointer-events: none;
+  filter: drop-shadow(0 calc(var(--u) * 10) calc(var(--u) * 12) rgba(28, 42, 90, 0.18));
+  animation: rb-float var(--d, 6s) ease-in-out var(--delay, 0s) infinite;
+  animation-play-state: paused;
+}
+
+@keyframes rb-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--tilt, -3deg));
+  }
+  50% {
+    transform: translate3d(calc(var(--u) * 5), calc(var(--u) * -16), 0)
+      rotate(calc(var(--tilt, -3deg) * -1));
+  }
+}
+
+/* Haz de luz (edición, cine, cierre). */
+.rb-beam {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: calc(var(--u) * 330);
+  height: 86%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0));
+  clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+  filter: blur(calc(var(--u) * 6));
+  animation: rb-breathe 5s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+@keyframes rb-breathe {
+  0%,
+  100% {
+    opacity: 0.62;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Marca de "tocá acá" que late sobre lo que se puede tocar. */
+.rb-tap {
+  position: absolute;
+  width: calc(var(--u) * 46);
+  height: calc(var(--u) * 46);
+  margin: calc(var(--u) * -23) 0 0 calc(var(--u) * -23);
+  border-radius: 50%;
+  border: calc(var(--u) * 2.5) solid rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.28);
+  pointer-events: none;
+  animation: rb-tap 1.7s ease-out infinite;
+  animation-play-state: paused;
+}
+
+@keyframes rb-tap {
+  0% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+/* Todo el ambiente corre solo con la slide en pantalla. */
+.bx-slide.is-active .rb-rays,
+.bx-slide.is-active .rb-confetti i,
+.bx-slide.is-active .rb-bokeh i,
+.bx-slide.is-active .rb-stars i,
+.bx-slide.is-active .rb-bunting,
+.bx-slide.is-active .rb-balloon,
+.bx-slide.is-active .rb-beam,
+.bx-slide.is-active .rb-tap,
+.bx-slide.is-active .rb-loop {
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-stage .rb-rays,
+  .rb-stage .rb-confetti i,
+  .rb-stage .rb-bokeh i,
+  .rb-stage .rb-stars i,
+  .rb-stage .rb-bunting,
+  .rb-stage .rb-balloon,
+  .rb-stage .rb-beam,
+  .rb-stage .rb-tap,
+  .rb-stage .rb-loop {
+    animation: none !important;
+  }
+
+  .rb-confetti i {
+    top: var(--rest);
+  }
+}
+
+/* Campos donde escribe quien recibe (deseos, cápsula). */
+.rb-input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  resize: none;
+  background: transparent;
+  font-family: var(--font-caveat), cursive;
+  font-weight: 600;
+  color: var(--rb-cielo-p);
+  caret-color: var(--rb-coral);
+  user-select: text;
+  -webkit-user-select: text;
+  touch-action: manipulation;
+}
+
+.rb-input::placeholder {
+  color: rgba(30, 136, 201, 0.42);
+}
+
+.rb-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.rb-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.rb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

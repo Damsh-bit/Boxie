@@ -41,12 +41,34 @@ export const DEFAULT_KIND_TIER: Record<SlideKind, 1 | 2 | 3> = {
   'reflect.gratitude': 3,
   'reflect.journal': 3,
   'game.fortune': 3,
+  // Pantallas nuevas de Ribbly: la base de pantallas las pone todas desde el
+  // plan básico (plan_minimo). El reparto por plan se hace en el panel.
+  'intro.brand': 1,
+  'cover.cake': 1,
+  'cover.age': 1,
+  'story.card': 1,
+  'story.moments': 1,
+  'media.video': 1,
+  'media.mix': 1,
+  'game.quiz': 1,
+  'connector.premiere': 1,
+  'media.poster': 1,
+  'game.slots': 1,
+  'game.vouchers': 1,
+  'story.magazine': 1,
+  'story.wishes': 1,
+  'reflect.candles': 1,
+  'reflect.capsule': 1,
+  'game.pinata': 1,
+  'story.memory': 1,
+  'outro.recap': 1,
+  'outro.finale': 1,
 }
 
 /** Las slides que no pueden faltar en ningún plan (sin ellas no hay regalo). */
 export function isStructural(kind: SlideKind): boolean {
   const category = slideDefinitions[kind].category
-  return category === 'intro' || kind === 'outro.thanks'
+  return category === 'intro' || kind === 'outro.thanks' || kind === 'outro.finale'
 }
 
 /** El plan que corresponde a un nivel (1, 2, 3…) entre los planes activos. */

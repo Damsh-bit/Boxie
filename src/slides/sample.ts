@@ -29,6 +29,16 @@ export function sampleGift(
     if (slide.kind === 'media.song') {
       content[slide.key] = { youtubeUrl: 'https://youtu.be/450p7goxZqg', songTitle: 'All of Me' }
     }
+    // Pantallas nuevas de Ribbly: lo mínimo para que el ejemplo se vea completo.
+    if (slide.kind === 'cover.cake') {
+      content[slide.key] = { age: '28', treatment: 'ella', birthday: '14/05' }
+    }
+    if (slide.kind === 'media.video') {
+      content[slide.key] = { youtubeUrl: 'https://youtu.be/450p7goxZqg', songTitle: 'All of Me' }
+    }
+    if (slide.kind === 'outro.finale') {
+      content[slide.key] = { gift: 'Gift card para tu librería favorita 📚' }
+    }
     if (slide.kind === 'story.anecdote') {
       content[slide.key] = {
         title: 'El viaje a Mendoza',

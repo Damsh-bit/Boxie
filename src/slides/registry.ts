@@ -14,6 +14,26 @@ import { MediaSong } from './kinds/media-song'
 import { MediaStreaming } from './kinds/media-streaming'
 import { OutroSummary } from './kinds/outro-summary'
 import { OutroThanks } from './kinds/outro-thanks'
+import { ConnectorPremiere } from './kinds/rb-connector-premiere'
+import { CoverAge } from './kinds/rb-cover-age'
+import { CoverCake } from './kinds/rb-cover-cake'
+import { GamePinata } from './kinds/rb-game-pinata'
+import { GameQuiz } from './kinds/rb-game-quiz'
+import { GameSlots } from './kinds/rb-game-slots'
+import { GameVouchers } from './kinds/rb-game-vouchers'
+import { IntroBrand } from './kinds/rb-intro-brand'
+import { MediaMix } from './kinds/rb-media-mix'
+import { MediaPoster } from './kinds/rb-media-poster'
+import { MediaVideo } from './kinds/rb-media-video'
+import { OutroFinale } from './kinds/rb-outro-finale'
+import { OutroRecap } from './kinds/rb-outro-recap'
+import { ReflectCandles } from './kinds/rb-reflect-candles'
+import { ReflectCapsule } from './kinds/rb-reflect-capsule'
+import { StoryCard } from './kinds/rb-story-card'
+import { StoryMagazine } from './kinds/rb-story-magazine'
+import { StoryMemory } from './kinds/rb-story-memory'
+import { StoryMoments } from './kinds/rb-story-moments'
+import { StoryWishes } from './kinds/rb-story-wishes'
 import { ReflectGratitude } from './kinds/reflect-gratitude'
 import { ReflectJournal } from './kinds/reflect-journal'
 import { StoryAnecdote } from './kinds/story-anecdote'
@@ -56,6 +76,27 @@ export const slideComponents = {
   'reflect.journal': ReflectJournal,
   'outro.summary': OutroSummary,
   'outro.thanks': OutroThanks,
+  // Pantallas nuevas de Ribbly (kinds/rb-*.tsx).
+  'intro.brand': IntroBrand,
+  'cover.cake': CoverCake,
+  'cover.age': CoverAge,
+  'story.card': StoryCard,
+  'story.moments': StoryMoments,
+  'media.video': MediaVideo,
+  'media.mix': MediaMix,
+  'game.quiz': GameQuiz,
+  'connector.premiere': ConnectorPremiere,
+  'media.poster': MediaPoster,
+  'game.slots': GameSlots,
+  'game.vouchers': GameVouchers,
+  'story.magazine': StoryMagazine,
+  'story.wishes': StoryWishes,
+  'reflect.candles': ReflectCandles,
+  'reflect.capsule': ReflectCapsule,
+  'game.pinata': GamePinata,
+  'story.memory': StoryMemory,
+  'outro.recap': OutroRecap,
+  'outro.finale': OutroFinale,
 } satisfies { [K in SlideKind]: ComponentType<Props<K>> }
 
 export const slideRegistry = Object.fromEntries(

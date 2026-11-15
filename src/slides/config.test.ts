@@ -10,11 +10,14 @@ import {
   readThemeConfig,
 } from './config'
 import { arrayElement, getFieldMeta, objectShape } from './fields'
+import { ribblyDefinitions } from './ribbly/schemas'
 import { initialBuyerProps, SLIDE_KINDS, slideDefinitions } from './schemas'
 
 const SEED_DIR = join(import.meta.dirname, '..', '..', 'supabase', 'seed', 'themes')
 const seeds = readdirSync(SEED_DIR).map((f) => JSON.parse(readFileSync(join(SEED_DIR, f), 'utf8')))
 const pareja = seeds.find((s) => s.slug === 'pareja')
+const amistad = seeds.find((s) => s.slug === 'amistad')
+const cumpleanos = seeds.find((s) => s.slug === 'cumpleanos')
 
 describe('registro de slides', () => {
   it.each(SLIDE_KINDS)(
@@ -47,12 +50,20 @@ describe('temáticas iniciales (criterio de aceptación de la Fase 5)', () => {
     expect(result.success ? [] : result.issues).toEqual([])
   })
 
-  it('las tres tienen las 20 slides del prototipo en el mismo orden', () => {
-    const kinds = seeds.map((s) =>
-      readThemeConfig(s.config).slides.map((slide) => slide.kind.split('.')[0]),
-    )
-    for (const k of kinds) expect(k).toHaveLength(20)
-    expect(new Set(kinds.map((k) => k.join()))).toHaveProperty('size', 1)
+  it('las tres tienen 20 slides; pareja y amistad, las del prototipo en el mismo orden', () => {
+    const categories = (seed: (typeof seeds)[number]) =>
+      readThemeConfig(seed.config).slides.map((slide) => slide.kind.split('.')[0])
+    for (const seed of seeds) expect(categories(seed)).toHaveLength(20)
+    expect(categories(pareja)).toEqual(categories(amistad))
+  })
+
+  it('cumpleaños usa las 20 pantallas de la base de Ribbly', () => {
+    const kinds = readThemeConfig(cumpleanos.config).slides.map((slide) => slide.kind)
+    expect(kinds).toEqual(Object.keys(ribblyDefinitions))
+    // Todas a pantalla completa y con su propio fondo.
+    for (const slide of readThemeConfig(cumpleanos.config).slides) {
+      expect(slide.frame).toMatchObject({ background: 'none', fullScreen: true })
+    }
   })
 
   it('cada una usa su portada y sus textos propios', () => {
@@ -60,7 +71,7 @@ describe('temáticas iniciales (criterio de aceptación de la Fase 5)', () => {
       readThemeConfig(seeds.find((s) => s.slug === slug).config).slides[1]!.kind
     expect(cover('pareja')).toBe('cover.recipient')
     expect(cover('amistad')).toBe('cover.friends')
-    expect(cover('cumpleanos')).toBe('cover.birthday')
+    expect(cover('cumpleanos')).toBe('cover.cake')
   })
 
   it('el resultado resuelto sobrevive a JSON (se guarda en theme_versions)', () => {

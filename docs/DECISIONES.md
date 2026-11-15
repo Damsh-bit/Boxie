@@ -306,6 +306,45 @@ Detalle de uso en [ADMIN.md](ADMIN.md#soporte). Lo que se decidió:
   lo armado en el editor de prueba se puede traer a la Boxie comprada: no se pide dos veces lo que
   la persona ya hizo. Ideas priorizadas en `docs/IDEAS-VENTA.md`.
 
+## Pantallas de Ribbly (Cumpleaños)
+
+- **Salen de la base de pantallas de Cumpleaños** (20 pantallas / 34 vistas). Cada pantalla es un
+  tipo de slide nuevo: contrato en `src/slides/ribbly/schemas.ts`, componente en
+  `src/slides/kinds/rb-*.tsx`. Las vistas de una pantalla (sobre y tarjeta; pregunta, acierto,
+  error y los dos finales de la trivia; vale abierto y canjeado) son estados del mismo componente,
+  no slides aparte: la barra de progreso cuenta pantallas y el puntaje o el vale abierto no se
+  pierden al pasar.
+- **Responsive sin depender del viewport:** cada pantalla es un contenedor (`container-type:
+size`) y todo se mide en `--u`, un píxel del diseño (390 × 760) escalado al teléfono donde se
+  dibuja: el regalo, la vista previa del editor o la portada. Probado en 320 × 568, 360 × 640,
+  390 × 844 y escritorio.
+- **Variables `{{…}}`** (`src/slides/ribbly/vars.ts`): la edad, cómo se le dice (ella, él o sin
+  género) y la fecha del cumple se cargan una sola vez, en la portada (`variables` en la definición
+  de la slide), y las usa cualquier pantalla. Sin edad, los textos que la nombran tienen su
+  alternativa: no se inventa un número.
+- **Revista:** el banco de 100 textos del documento (`magazine-bank.ts`, generado desde él). Se
+  elige por vínculo y tono, siempre el mismo para el mismo regalo (la semilla son los nombres), y
+  "Versión del texto" deja probar otro. Quien regala también puede escribir el suyo.
+- **Lo que hace quien recibe** (vales canjeados, sus deseos, la carta de la cápsula, el puntaje de
+  la trivia) se guarda en su dispositivo, por regalo y por slide; en la vista previa vive solo en
+  memoria. **Pendiente:** el documento pide que la carta de la cápsula llegue por mail en el próximo
+  cumple; eso necesita backend y no está hecho.
+- **Movimiento:** entradas, toques y estados con framer-motion, como el resto del player. El
+  ambiente que corre en loop (confeti que cae, globos, rayos, destellos, luces del tragamonedas)
+  es la excepción a "nada con keyframes de CSS": son decenas de piezas, van sobre
+  `transform`/`opacity`, corren solo con la slide en pantalla y se apagan con reducir movimiento.
+  Los keyframes de framer-motion de más de dos valores no admiten resorte: van con duración.
+- **Ilustraciones en SVG y CSS** (torta con las velas de la edad, piñata, tragamonedas, telón,
+  frasco, escenas de ejemplo para cuando no hay fotos): nada nuevo para descargar.
+- **Diferencias con el documento:** la barra de progreso y el botón de cerrar son los del player;
+  el teclado nativo no se dibuja; "Guardar" y "Compartir Story" explican cómo hacer la captura (no
+  se exporta un PNG de 1080 × 1920); las playlists de ejemplo abren búsquedas de Spotify; una
+  recomendación sin link no muestra "Ver ahora".
+- **Temática:** `supabase/seed/themes/cumpleanos.json` usa las 20 pantallas, todas desde el plan
+  más básico como dice el documento (el reparto por plan se hace en el panel), y la migración del
+  catálogo inicial se regeneró: eso solo alcanza a bases nuevas. En una base que ya existe
+  (producción), Cumpleaños sigue con sus pantallas anteriores hasta publicar una versión nueva.
+
 ## Modo demo
 
 `DEMO_MODE=1` levanta el sitio sin Supabase ni Mercado Pago, con el catálogo de `supabase/seed`.

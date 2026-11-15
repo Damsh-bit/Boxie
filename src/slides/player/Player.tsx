@@ -14,6 +14,7 @@ import {
 import type { ParsedSlide, ParsedThemeConfig } from '../config'
 import type { BuyerPhoto } from '../fields'
 import { slideComponents } from '../registry'
+import { buildVars } from '../ribbly/vars'
 import { slideDefinitions } from '../schemas'
 import type { SlideContext } from '../types'
 import { ConfettiLayer, FloatingParticles, GradientDrift } from './effects'
@@ -133,6 +134,12 @@ export function Player({
     [config.slides],
   )
 
+  const vars = useMemo(() => buildVars(config, data), [config, data])
+  const slideList = useMemo(
+    () => config.slides.map((s) => ({ key: s.key, kind: s.kind as string })),
+    [config.slides],
+  )
+
   const resolveMedia = useCallback(
     (ref: BuyerPhoto | string | null | undefined) => {
       if (!ref) return undefined
@@ -172,7 +179,7 @@ export function Player({
     >
       <motion.div
         ref={phoneRef}
-        className="bx-phone"
+        className={`bx-phone ${config.slides[current]?.frame.chrome === 'dark' ? 'bx-chrome-dark' : ''}`}
         tabIndex={0}
         role="region"
         aria-roledescription="presentación"
@@ -230,6 +237,11 @@ export function Player({
             summaries,
             goTo: change,
             logoUrl,
+            slideKey: slideConfig.key,
+            index,
+            slides: slideList,
+            next: () => change(Math.min(index + 1, count - 1)),
+            vars,
           }
           return (
             <SlideFrame

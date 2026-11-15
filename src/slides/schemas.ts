@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { field } from './fields'
 import { accent, br, highlight, rich } from './rich-text'
+import { ribblyDefinitions, ribblyInitialBuyerProps } from './ribbly/schemas'
 import type { SlideDefinition } from './types'
 
 /**
@@ -958,6 +959,8 @@ export const slideDefinitions = {
   'reflect.journal': reflectJournal,
   'outro.summary': outroSummary,
   'outro.thanks': outroThanks,
+  // Pantallas nuevas de Ribbly (ribbly/schemas.ts).
+  ...ribblyDefinitions,
 } as const
 
 export type SlideKind = keyof typeof slideDefinitions
@@ -992,6 +995,6 @@ export function initialBuyerProps(
         })),
       }
     default:
-      return {}
+      return ribblyInitialBuyerProps(kind, themeProps) ?? {}
   }
 }

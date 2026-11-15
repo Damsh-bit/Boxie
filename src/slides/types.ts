@@ -45,7 +45,16 @@ export interface SlideDefinition<
   summary: { icon: SummaryIcon; title: string; text: string } | null
   /** Cómo se presenta como módulo en el editor del comprador (slides con buyerSchema). */
   editor?: { title: string; intro: string }
+  /**
+   * Datos del comprador que esta slide le presta a todo el regalo: nombre de
+   * la variable → campo de su buyerSchema. La portada de cumpleaños carga la
+   * edad una vez y cualquier pantalla la usa como {{edad}} (ribbly/vars.ts).
+   */
+  variables?: Record<string, string>
 }
+
+/** Valores para reemplazar las {{variables}} de los textos. */
+export type SlideVars = Record<string, string>
 
 export interface SlideContext {
   recipientName: string
@@ -63,6 +72,15 @@ export interface SlideContext {
   summaries: { key: string; icon: SummaryIcon; title: string; text: string }[]
   goTo(index: number): void
   logoUrl: string
+  /** Clave y lugar de esta slide en la temática. */
+  slideKey: string
+  index: number
+  /** Todas las slides del regalo, en orden (para buscar otra por su tipo). */
+  slides: { key: string; kind: string }[]
+  /** Pasa a la slide siguiente (botones "Empezar", "Seguir"). */
+  next(): void
+  /** {{nombre}}, {{de}}, {{edad}}… ya resueltas para este regalo. */
+  vars: SlideVars
 }
 
 export interface SlideComponentProps<TTheme = unknown, TBuyer = unknown> {

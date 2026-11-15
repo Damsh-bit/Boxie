@@ -290,6 +290,48 @@ export type Database = {
           },
         ]
       }
+      customer_reminders: {
+        Row: {
+          id: string
+          customer_email: string
+          recipient_name: string
+          occasion: string
+          day: number
+          month: number
+          year: number | null
+          notes: string
+          last_notified_year: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          customer_email: string
+          recipient_name: string
+          occasion: string
+          day: number
+          month: number
+          year?: number | null
+          notes?: string
+          last_notified_year?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          customer_email?: string
+          recipient_name?: string
+          occasion?: string
+          day?: number
+          month?: number
+          year?: number | null
+          notes?: string
+          last_notified_year?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           id: string

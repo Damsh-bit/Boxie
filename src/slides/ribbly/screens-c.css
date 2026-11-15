@@ -1,0 +1,628 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   Ribbly · Pantallas propias de Pareja (portada con regalo, edición especial,
+   gratitud, diario y fortuna). Medidas en --u (ver ribbly.css).
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Portada con regalo ─────────────────────────────────────────────────── */
+
+.rb-gift-tap {
+  position: relative;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.rb-love-name {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-fredoka), sans-serif;
+  font-weight: 700;
+  line-height: 1;
+  overflow-wrap: anywhere;
+  text-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 18) rgba(150, 20, 50, 0.3);
+}
+
+.rb-underline {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: calc(var(--u) * -16);
+  height: calc(var(--u) * 16);
+  overflow: visible;
+}
+
+/* ── Edición especial ───────────────────────────────────────────────────── */
+
+.rb-photo-bg {
+  position: absolute;
+  inset: -10%;
+  filter: blur(calc(var(--u) * 22)) saturate(1.1);
+  opacity: 0.7;
+}
+
+.rb-photo-bg img,
+.rb-polaroid-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rb-edition-title {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: calc(var(--u) * 70);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+.rb-edition-sub {
+  font-family: var(--font-josefin), sans-serif;
+  font-weight: 700;
+  font-size: calc(var(--u) * 30);
+  letter-spacing: 0.32em;
+  line-height: 1;
+  color: #ffccd5;
+}
+
+.rb-edition-polaroid {
+  position: absolute;
+  right: calc(var(--u) * 2);
+  top: calc(var(--u) * 26);
+  width: calc(var(--u) * 182);
+}
+
+.rb-edition-polaroid .rb-polaroid {
+  cursor: default;
+}
+
+/* ── Gratitud ───────────────────────────────────────────────────────────── */
+
+.rb-breath {
+  position: relative;
+  width: calc(var(--u) * 240);
+  height: calc(var(--u) * 240);
+  display: grid;
+  place-items: center;
+}
+
+.rb-breath i {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: calc(var(--u) * 1.5) solid rgba(255, 255, 255, 0.55);
+  animation: rb-breathe-ring 8s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+.rb-breath i:nth-child(2) {
+  inset: 16%;
+  animation-delay: -0.4s;
+}
+
+.rb-breath i:nth-child(3) {
+  inset: 32%;
+  background: radial-gradient(circle, rgba(255, 236, 200, 0.95), rgba(255, 205, 184, 0.4) 70%);
+  border-color: rgba(255, 255, 255, 0.8);
+  animation-delay: -0.8s;
+}
+
+/* Cuatro segundos para inhalar, cuatro para exhalar. */
+@keyframes rb-breathe-ring {
+  0%,
+  100% {
+    transform: scale(0.82);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+.bx-slide.is-active .rb-breath i {
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-stage .rb-breath i {
+    animation: none !important;
+  }
+}
+
+.rb-hills {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26%;
+}
+
+.rb-frost.is-rose .rb-steps i {
+  background: rgba(244, 78, 99, 0.16);
+}
+
+.rb-answer {
+  display: block;
+  min-height: calc(var(--u) * 92);
+  margin-top: calc(var(--u) * 12);
+  padding-bottom: calc(var(--u) * 6);
+  font-size: calc(var(--u) * 27);
+  line-height: 1.16;
+  color: var(--rb-ink, #2a2433);
+  border-bottom: calc(var(--u) * 2.5) solid var(--rb-coral);
+}
+
+/* ── Diario ─────────────────────────────────────────────────────────────── */
+
+.rb-wood {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      92deg,
+      rgba(60, 30, 15, 0) 0,
+      rgba(60, 30, 15, 0.08) calc(var(--u) * 3),
+      rgba(60, 30, 15, 0) calc(var(--u) * 9),
+      rgba(255, 220, 180, 0.05) calc(var(--u) * 15),
+      rgba(60, 30, 15, 0) calc(var(--u) * 22)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(40, 20, 10, 0.18) 0 calc(var(--u) * 1.5),
+      transparent calc(var(--u) * 1.5) calc(var(--u) * 96)
+    ),
+    radial-gradient(120% 70% at 30% 20%, rgba(255, 200, 150, 0.25), transparent 70%),
+    linear-gradient(180deg, #9a6a45, #7a4e30 60%, #6a4128);
+}
+
+.rb-notebook {
+  position: relative;
+  width: calc(var(--u) * 214);
+  height: calc(var(--u) * 282);
+  border-radius: calc(var(--u) * 8) calc(var(--u) * 14) calc(var(--u) * 14) calc(var(--u) * 8);
+  background: linear-gradient(135deg, #d63a62, #c8305a 55%, #a8244a);
+  box-shadow:
+    calc(var(--u) * 6) calc(var(--u) * 8) 0 #f3e6d6,
+    calc(var(--u) * 10) calc(var(--u) * 26) calc(var(--u) * 36) rgba(40, 15, 5, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffd9a8;
+}
+
+.rb-notebook::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--u) * 10);
+  border: calc(var(--u) * 1.5) dashed rgba(255, 217, 168, 0.45);
+  border-radius: calc(var(--u) * 6);
+}
+
+.rb-notebook::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: calc(var(--u) * 28);
+  width: calc(var(--u) * 12);
+  background: #8e1b3e;
+  box-shadow: inset calc(var(--u) * 2) 0 0 rgba(255, 255, 255, 0.12);
+}
+
+.rb-ribbon-mark {
+  position: absolute;
+  bottom: calc(var(--u) * -30);
+  left: 50%;
+  width: calc(var(--u) * 14);
+  height: calc(var(--u) * 46);
+  background: #ffc56e;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+}
+
+.rb-diary {
+  position: relative;
+  width: 100%;
+  flex: 1 1 0;
+  min-height: calc(var(--u) * 300);
+  max-height: calc(var(--u) * 470);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: calc(var(--u) * 6);
+  background: #fff9f2;
+  color: #2a2433;
+  text-align: left;
+  box-shadow: 0 calc(var(--u) * 24) calc(var(--u) * 40) rgba(40, 15, 5, 0.5);
+  transform-origin: 50% 100%;
+}
+
+.rb-diary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: calc(var(--u) * 20);
+  margin-left: calc(var(--u) * -10);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.12) 45%,
+    rgba(0, 0, 0, 0.12) 55%,
+    rgba(0, 0, 0, 0)
+  );
+  pointer-events: none;
+}
+
+.rb-diary-page {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--u) * 16) calc(var(--u) * 12) calc(var(--u) * 12);
+}
+
+.rb-diary-lines {
+  flex: 1;
+  min-height: 0;
+  font-weight: 500;
+  font-size: calc(var(--u) * 18);
+  line-height: calc(var(--u) * 27);
+  color: #2a2433;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent calc(var(--u) * 25.5),
+    #f7c9d2 calc(var(--u) * 25.5),
+    #f7c9d2 calc(var(--u) * 27)
+  );
+  background-attachment: local;
+}
+
+.rb-diary-item {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--u) * 3);
+  font-family: var(--font-caveat), cursive;
+  font-size: calc(var(--u) * 16);
+  color: #2a2433;
+}
+
+.rb-diary-item input {
+  flex: 1;
+  min-width: 0;
+  font-size: calc(var(--u) * 15.5);
+  color: #2a2433;
+  border-bottom: calc(var(--u) * 1) dashed rgba(244, 78, 99, 0.35);
+}
+
+.rb-diary-photo {
+  width: 86%;
+  margin: calc(var(--u) * 8) auto calc(var(--u) * 12);
+  padding: calc(var(--u) * 6) calc(var(--u) * 6) calc(var(--u) * 4);
+  background: #fff;
+  box-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 12) rgba(40, 15, 5, 0.25);
+  transform: rotate(-4deg);
+  position: relative;
+}
+
+.rb-diary-photo::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: calc(var(--u) * -8);
+  width: calc(var(--u) * 40);
+  height: calc(var(--u) * 13);
+  margin-left: calc(var(--u) * -20);
+  background: rgba(255, 197, 110, 0.7);
+  transform: rotate(4deg);
+}
+
+.rb-cup {
+  position: absolute;
+  right: calc(var(--u) * -22);
+  top: calc(var(--u) * 92);
+  width: calc(var(--u) * 112);
+  z-index: 1;
+  filter: drop-shadow(0 calc(var(--u) * 10) calc(var(--u) * 14) rgba(40, 15, 5, 0.45));
+}
+
+/* ── Fortuna ────────────────────────────────────────────────────────────── */
+
+.rb-cookies {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: calc(var(--u) * 6);
+}
+
+.rb-cookie {
+  position: relative;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 12);
+}
+
+.rb-cookie-label {
+  min-width: calc(var(--u) * 34);
+  padding: calc(var(--u) * 3) calc(var(--u) * 10);
+  border-radius: 999px;
+  border: calc(var(--u) * 1.2) solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 700;
+  font-size: calc(var(--u) * 12);
+}
+
+.rb-cookie.is-hint .rb-cookie-label {
+  background: #ffc56e;
+  border-color: #ffc56e;
+  color: #4a3410;
+}
+
+.rb-halo {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: calc(var(--u) * 150);
+  height: calc(var(--u) * 150);
+  margin: calc(var(--u) * -75) 0 0 calc(var(--u) * -75);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 210, 130, 0.55), rgba(255, 210, 130, 0) 65%);
+  pointer-events: none;
+}
+
+/* ── Estilo Pareja sobre las pantallas compartidas ──────────────────────── */
+
+.rb-stage.is-pareja {
+  --rb-noche: #2a2433;
+  --rb-tinta-2: #5a5060;
+}
+
+.is-pareja .rb-mag {
+  color: #2a2433;
+  border-color: #2a2433;
+  outline-color: #2a2433;
+}
+
+.is-pareja .rb-mag-mark {
+  background-image: linear-gradient(
+    transparent 62%,
+    rgba(247, 121, 138, 0.55) 62%,
+    rgba(247, 121, 138, 0.55) 94%,
+    transparent 94%
+  );
+}
+
+.is-pareja .rb-mag-photo {
+  border-bottom-color: var(--rb-coral);
+}
+
+.is-pareja .rb-band {
+  background: linear-gradient(180deg, #f7798a, #f44e63);
+  box-shadow:
+    0 calc(var(--u) * 8) calc(var(--u) * 16) rgba(244, 78, 99, 0.3),
+    inset 0 calc(var(--u) * 3) 0 rgba(255, 255, 255, 0.35);
+}
+
+.is-pareja .rb-slots-body {
+  background: linear-gradient(180deg, #f7798a, #e8405a);
+  border-color: #ffc56e;
+}
+
+.is-pareja .rb-slots-top {
+  background: linear-gradient(180deg, #ffe0a8, #ffc56e);
+}
+
+.is-pareja .rb-slots-window {
+  background: #3b1830;
+}
+
+.is-pareja .rb-coin {
+  background: #8e1b3e;
+}
+
+.is-pareja .rb-glow-title {
+  color: #ffccd5;
+  text-shadow:
+    0 0 calc(var(--u) * 12) rgba(255, 143, 177, 0.95),
+    0 0 calc(var(--u) * 28) rgba(244, 78, 99, 0.7);
+}
+
+.is-pareja .rb-glow-title.is-neon {
+  color: #fff6d6;
+  text-shadow:
+    0 0 calc(var(--u) * 8) #ffc56e,
+    0 0 calc(var(--u) * 22) #f2a93b,
+    0 0 calc(var(--u) * 44) rgba(242, 169, 59, 0.8);
+}
+
+.is-pareja .rb-quiz-ribbon {
+  background: var(--rb-coral);
+  color: #fff;
+}
+
+.is-pareja .rb-quiz-title {
+  text-shadow:
+    0 calc(var(--u) * 3) 0 #ff9db0,
+    0 calc(var(--u) * 6) 0 #e8405a,
+    0 calc(var(--u) * 14) calc(var(--u) * 20) rgba(40, 10, 40, 0.45);
+}
+
+.is-pareja .rb-q-badge {
+  background: radial-gradient(circle at 35% 30%, #ff9db0, #f44e63);
+  color: #fff;
+  font-family: var(--font-fredoka), sans-serif;
+  font-weight: 700;
+  font-size: calc(var(--u) * 24);
+}
+
+.is-pareja .rb-track-fill {
+  background: var(--rb-coral);
+}
+
+.is-pareja .rb-track-knob {
+  box-shadow: 0 0 0 calc(var(--u) * 3) rgba(244, 78, 99, 0.35);
+}
+
+.is-pareja .rb-year {
+  width: calc(var(--u) * 8);
+  height: calc(var(--u) * 8);
+  padding: 0;
+  font-size: 0;
+  background: rgba(255, 255, 255, 0.4);
+  transition:
+    width 0.3s,
+    background-color 0.3s;
+}
+
+.is-pareja .rb-year.is-on {
+  width: calc(var(--u) * 26);
+  background: #fff;
+}
+
+.is-pareja .rb-song-band {
+  background: linear-gradient(100deg, #e8405a, #f7798a);
+}
+
+.is-pareja .rb-stat {
+  background: #ffe4e9;
+}
+
+.is-pareja .rb-index span {
+  background: #ffe4e9;
+}
+
+.is-pareja .rb-index b {
+  color: var(--rb-coral);
+}
+
+.is-pareja .rb-giftcard-main {
+  background: linear-gradient(120deg, #c8305a 0%, #a8307a 55%, #8e2a8e 100%);
+}
+
+.is-pareja .rb-ticket-back {
+  background: rgba(90, 40, 60, 0.6);
+}
+
+/* Dedicatoria de Pareja: sobre crema con lacre y carta en hoja rayada. */
+.rb-envelope.is-cream {
+  background: linear-gradient(160deg, #fff8f1 0%, #f6e6da 100%);
+  box-shadow:
+    0 calc(var(--u) * 22) calc(var(--u) * 40) rgba(200, 80, 100, 0.25),
+    inset 0 0 0 calc(var(--u) * 1) rgba(255, 255, 255, 0.6);
+}
+
+.rb-envelope.is-cream::before {
+  background:
+    linear-gradient(
+        to top right,
+        transparent calc(50% - 1px),
+        rgba(160, 100, 90, 0.22) 50%,
+        transparent calc(50% + 1px)
+      )
+      left top / 50% 62% no-repeat,
+    linear-gradient(
+        to top left,
+        transparent calc(50% - 1px),
+        rgba(160, 100, 90, 0.22) 50%,
+        transparent calc(50% + 1px)
+      )
+      right top / 50% 62% no-repeat;
+}
+
+.rb-envelope.is-cream::after {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(240, 220, 205, 0.2));
+}
+
+.rb-seal.is-wax {
+  width: calc(var(--u) * 70);
+  height: calc(var(--u) * 70);
+  margin: calc(var(--u) * -35) 0 0 calc(var(--u) * -35);
+  border: 0;
+  background: radial-gradient(circle at 36% 30%, #ff8a9a, #f44e63 55%, #c8304a);
+  box-shadow:
+    0 calc(var(--u) * 6) calc(var(--u) * 14) rgba(150, 20, 50, 0.35),
+    inset 0 0 0 calc(var(--u) * 5) rgba(200, 40, 70, 0.6);
+}
+
+.rb-letter-wrap {
+  position: relative;
+  width: calc(var(--u) * 300);
+  max-width: 100%;
+  height: 100%;
+  max-height: calc(var(--u) * 520);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.rb-letter {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0 calc(var(--u) * 12) calc(var(--u) * -96);
+  padding: calc(var(--u) * 20) calc(var(--u) * 18) calc(var(--u) * 104);
+  border-radius: calc(var(--u) * 4);
+  background: #fff9f2;
+  color: #2a2433;
+  text-align: left;
+  transform: rotate(-2deg);
+  box-shadow: 0 calc(var(--u) * 14) calc(var(--u) * 28) rgba(150, 40, 60, 0.22);
+}
+
+.rb-letter-text {
+  margin-top: calc(var(--u) * 4);
+  line-height: calc(var(--u) * 29);
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent calc(var(--u) * 27.5),
+    #f7c9d2 calc(var(--u) * 27.5),
+    #f7c9d2 calc(var(--u) * 29)
+  );
+}
+
+.rb-pocket {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  height: calc(var(--u) * 150);
+  border-radius: 0 0 calc(var(--u) * 10) calc(var(--u) * 10);
+  background: linear-gradient(180deg, #fbefe6, #f1ded2);
+  box-shadow: 0 calc(var(--u) * 18) calc(var(--u) * 30) rgba(150, 40, 60, 0.2);
+}
+
+.rb-pocket::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+        to bottom right,
+        transparent calc(50% - 1px),
+        rgba(160, 100, 90, 0.22) 50%,
+        transparent calc(50% + 1px)
+      )
+      left bottom / 50% 70% no-repeat,
+    linear-gradient(
+        to bottom left,
+        transparent calc(50% - 1px),
+        rgba(160, 100, 90, 0.22) 50%,
+        transparent calc(50% + 1px)
+      )
+      right bottom / 50% 70% no-repeat;
+}

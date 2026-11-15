@@ -2,20 +2,82 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Bookmark } from 'lucide-react'
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
-import { Balloon, Confetti, Squiggles } from '../ribbly/art'
+import { Balloon, Confetti, Heart, PETALS, Squiggles } from '../ribbly/art'
 import { Btn, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { Appear, ease, spring } from './motion'
 import type { Props } from './shared'
 
+/** Pareja: la carta en una hoja rayada que sube desde el sobre abierto. */
+function Letter({
+  name,
+  text,
+  sender,
+  calm,
+}: {
+  name: string
+  text: string
+  sender: string
+  calm: boolean | null
+}) {
+  const size = text.length > 210 ? 17 : text.length > 150 ? 18.5 : 20
+  return (
+    <motion.div
+      className="rb-letter-wrap"
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0, transition: spring.soft }}
+      exit={{ opacity: 0, y: 30, transition: { duration: 0.22 } }}
+    >
+      <motion.div
+        className="rb-letter"
+        initial={calm ? false : { y: '42%' }}
+        animate={{ y: '0%' }}
+        transition={{ duration: 0.9, delay: 0.2, ease: ease.out }}
+      >
+        <p
+          className="rb-hand"
+          style={{ color: 'var(--rb-coral)', fontWeight: 700, fontSize: u(28), textAlign: 'left' }}
+        >
+          {name}:
+        </p>
+        <motion.p
+          className="rb-card-text rb-letter-text"
+          style={{ fontSize: u(size) }}
+          initial={calm ? false : { clipPath: 'inset(0 0 100% 0)' }}
+          animate={{ clipPath: 'inset(0 0 0% 0)' }}
+          transition={{ duration: 2.2, delay: 1, ease: 'linear' }}
+        >
+          {text}
+        </motion.p>
+        <motion.p
+          className="rb-hand"
+          style={{ color: 'var(--rb-coral)', fontSize: u(23), textAlign: 'right' }}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: calm ? 0 : 3.1 }}
+        >
+          — {sender}
+        </motion.p>
+        <Heart
+          still
+          color="#F44E63"
+          style={{ position: 'absolute', left: u(26), bottom: u(52), width: u(30) }}
+        />
+      </motion.div>
+      <div className="rb-pocket" aria-hidden />
+    </motion.div>
+  )
+}
+
 /**
- * 04 · Tarjeta de cumple. Dos vistas: el sobre cerrado (se abre tocando el
+ * 04 · Tarjeta de cumple (o dedicatoria, en Pareja). Dos vistas: el sobre cerrado (se abre tocando el
  * sticker) y la tarjeta, que se despliega como una de papel: el lomo de color
  * y la hoja con la carta escrita por quien regala.
  */
 export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
   const active = ctx.active
   const calm = useReducedMotion()
+  const pareja = theme.look === 'pareja'
   const [open, setOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   // Si se va de la pantalla, la tarjeta vuelve a su sobre.
@@ -26,10 +88,23 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
   const textSize = text.length > 210 ? 17.5 : text.length > 150 ? 19 : 20.5
 
   return (
-    <Stage bg="linear-gradient(170deg, #F2FAFE 0%, #EDE6F7 60%, #F9D9E2 100%)">
+    <Stage
+      bg={
+        pareja
+          ? 'linear-gradient(170deg, #FFE4E9 0%, #FFCCD5 55%, #F7A8B8 100%)'
+          : 'linear-gradient(170deg, #F2FAFE 0%, #EDE6F7 60%, #F9D9E2 100%)'
+      }
+      className={pareja ? 'is-pareja' : ''}
+    >
       <div className="rb-bg">
-        <Confetti seed={4} count={16} opacity={0.8} />
-        <Squiggles />
+        {pareja ? (
+          <Confetti seed={4} count={14} petals colors={PETALS} opacity={0.8} />
+        ) : (
+          <>
+            <Confetti seed={4} count={16} opacity={0.8} />
+            <Squiggles />
+          </>
+        )}
       </div>
 
       <div className="rb-body" style={{ color: 'var(--rb-noche)' }}>
@@ -38,7 +113,7 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
           active={active}
           y={10}
           className="rb-kicker"
-          style={{ color: 'var(--rb-cielo-p)', marginTop: u(8) }}
+          style={{ color: pareja ? 'var(--rb-coral)' : 'var(--rb-cielo-p)', marginTop: u(8) }}
         >
           <T text={theme.kicker} ctx={ctx} />
         </Appear>
@@ -47,7 +122,12 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
           active={active}
           delay={0.1}
           className="rb-title"
-          style={{ fontWeight: 700, fontSize: u(29), marginTop: u(4) }}
+          style={{
+            fontWeight: 700,
+            fontSize: u(29),
+            marginTop: u(4),
+            color: pareja ? 'var(--rb-coral)' : undefined,
+          }}
         >
           <T text={theme.title} ctx={ctx} />
         </Appear>
@@ -56,7 +136,7 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
           active={active}
           delay={0.2}
           className="rb-hand"
-          style={{ color: 'var(--rb-coral)', fontSize: u(21) }}
+          style={{ color: pareja ? '#F7798A' : 'var(--rb-coral)', fontSize: u(21) }}
         >
           <T text={theme.subtitle} ctx={ctx} />
         </Appear>
@@ -82,37 +162,53 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
                   transition: { duration: 0.28, ease: ease.inOut },
                 }}
               >
-                <div className="rb-envelope">
-                  <div className="rb-stamp">
-                    <Icon name="globo" size={u(30)} />
-                  </div>
+                <div className={`rb-envelope ${pareja ? 'is-cream' : ''}`}>
+                  {!pareja && (
+                    <div className="rb-stamp">
+                      <Icon name="globo" size={u(30)} />
+                    </div>
+                  )}
                   <motion.button
                     type="button"
-                    className="rb-seal"
+                    className={`rb-seal ${pareja ? 'is-wax' : ''}`}
                     onClick={() => setOpen(true)}
-                    aria-label="Abrir la tarjeta"
+                    aria-label={pareja ? 'Abrir la carta' : 'Abrir la tarjeta'}
                     whileTap={{ scale: 0.88 }}
                   >
-                    <Icon name="torta" size={u(38)} />
+                    {pareja ? (
+                      <Heart still color="#FF8A9A" style={{ width: u(28) }} />
+                    ) : (
+                      <Icon name="torta" size={u(38)} />
+                    )}
                   </motion.button>
                   <TapMark style={{ left: '50%', top: '62%', zIndex: 4 }} />
-                  <p
-                    className="rb-hand"
-                    style={{
-                      position: 'absolute',
-                      left: u(18),
-                      right: u(18),
-                      bottom: u(14),
-                      textAlign: 'left',
-                      fontSize: u(21),
-                      transform: 'rotate(-2deg)',
-                      zIndex: 2,
-                    }}
-                  >
-                    <T text={theme.envelopeLine} ctx={ctx} />
-                  </p>
+                  {theme.envelopeLine && (
+                    <p
+                      className="rb-hand"
+                      style={{
+                        position: 'absolute',
+                        left: u(18),
+                        right: u(18),
+                        bottom: u(14),
+                        textAlign: 'left',
+                        fontSize: u(21),
+                        transform: 'rotate(-2deg)',
+                        zIndex: 2,
+                      }}
+                    >
+                      <T text={theme.envelopeLine} ctx={ctx} />
+                    </p>
+                  )}
                 </div>
               </motion.div>
+            ) : pareja ? (
+              <Letter
+                key="carta"
+                name={ctx.recipientName || 'Para vos'}
+                text={text}
+                sender={ctx.senderName}
+                calm={calm}
+              />
             ) : (
               <motion.div
                 key="tarjeta"
@@ -234,10 +330,10 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
         open={saving}
         onClose={() => setSaving(false)}
         icon={<Icon name="camara" size="1em" large />}
-        title="Guardá tu tarjeta"
+        title={pareja ? 'Guardá tu carta' : 'Guardá tu tarjeta'}
       >
-        Hacé una <strong>captura de pantalla</strong> con la tarjeta abierta y te queda guardada en
-        tus fotos, lista para volver a leerla cuando quieras.
+        Hacé una <strong>captura de pantalla</strong> con la {pareja ? 'carta' : 'tarjeta'} abierta
+        y te queda guardada en tus fotos, lista para volver a leerla cuando quieras.
       </Sheet>
     </Stage>
   )

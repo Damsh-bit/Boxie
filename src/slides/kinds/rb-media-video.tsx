@@ -12,7 +12,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { youtubeId } from '../fields'
-import { Confetti, PartyScene } from '../ribbly/art'
+import { Bokeh, Confetti, CoupleScene, PartyScene } from '../ribbly/art'
 import { Btn, Chip, Stage, T, u } from '../ribbly/ui'
 import { Appear, ease, spring } from './motion'
 import type { Props } from './shared'
@@ -154,7 +154,7 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
   }
 
   return (
-    <Stage bg="#0d0a16">
+    <Stage bg="#0d0a16" className={theme.look === 'pareja' ? 'is-pareja' : ''}>
       <div ref={stage} style={{ position: 'absolute', inset: 0, background: '#0d0a16' }}>
         <div className="rb-bg">
           {showVideo ? (
@@ -179,8 +179,17 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
             />
           ) : (
             <>
-              <PartyScene />
-              <Confetti seed={6} count={14} opacity={0.8} />
+              {theme.look === 'pareja' ? (
+                <>
+                  <CoupleScene />
+                  <Bokeh seed={66} count={9} colors={['#FFD9A0', '#FFC56E']} maxOpacity={0.4} />
+                </>
+              ) : (
+                <>
+                  <PartyScene />
+                  <Confetti seed={6} count={14} opacity={0.8} />
+                </>
+              )}
             </>
           )}
           <div className="rb-video-shade" />
@@ -212,7 +221,7 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
               active={active}
               delay={0.3}
               className="rb-kicker"
-              style={{ color: 'var(--rb-sol)' }}
+              style={{ color: theme.look === 'pareja' ? '#fff' : 'var(--rb-sol)' }}
             >
               <T text={theme.kicker} ctx={ctx} />
             </Appear>

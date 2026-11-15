@@ -16,11 +16,11 @@
       "https://images.unsplash.com/photo-1529619768328-e37af76c6fe5?q=80&w=800&auto=format&fit=crop"
     ],
     "features": [
-      "Portada personalizada con sus nombres.",
-      "Carrusel de 3 fotos para revivir momentos.",
-      "Carta Dedicatoria para escribir lo que sentís.",
-      "Su canción favorita sonando de fondo.",
-      "Espacio final para agregar un regalo sorpresa."
+      "Portada con su nombre y un regalo que se abre al tocarlo.",
+      "Tu carta en un sobre con lacre, escrita a mano.",
+      "Sus fotos como polaroids con luces y una tapa de revista.",
+      "Trivia, tragamonedas, cuponera de amor y galletita de la fortuna.",
+      "Regalo sorpresa al final, si querés sumar entradas o una gift card."
     ],
     "guide": {
       "emoji": "💘",
@@ -29,27 +29,359 @@
     }
   },
   "config": {
+    "palette": {
+      "primary": "#F44E63",
+      "ink": "#2A2433",
+      "accent": "#FFC56E"
+    },
     "slides": [
-      { "key": "intro", "kind": "intro.logo" },
-      { "key": "portada", "kind": "cover.recipient" },
-      { "key": "bienvenida", "kind": "story.intro" },
-      { "key": "dedicatoria", "kind": "story.dedication" },
-      { "key": "cancion", "kind": "media.song" },
-      { "key": "playlists", "kind": "media.playlists" },
-      { "key": "game-start", "kind": "connector.gamer" },
-      { "key": "trivia", "kind": "game.trivia" },
-      { "key": "cine", "kind": "connector.cinema" },
-      { "key": "streaming", "kind": "media.streaming" },
-      { "key": "jackpot", "kind": "game.jackpot" },
-      { "key": "cuponera", "kind": "game.coupons" },
-      { "key": "revista", "kind": "story.editorial" },
-      { "key": "razones", "kind": "story.reasons" },
-      { "key": "gratitud", "kind": "reflect.gratitude" },
-      { "key": "diario", "kind": "reflect.journal" },
-      { "key": "fortuna", "kind": "game.fortune" },
-      { "key": "anecdota", "kind": "story.anecdote" },
-      { "key": "repaso", "kind": "outro.summary" },
-      { "key": "gracias", "kind": "outro.thanks" }
+      {
+        "key": "intro",
+        "kind": "intro.brand",
+        "props": {
+          "look": "pareja"
+        }
+      },
+      {
+        "key": "portada",
+        "kind": "cover.gift"
+      },
+      {
+        "key": "edicion",
+        "kind": "cover.edition"
+      },
+      {
+        "key": "dedicatoria",
+        "kind": "story.card",
+        "props": {
+          "look": "pareja",
+          "screenTitle": "Dedicatoria",
+          "editorTitle": "Dedicatoria",
+          "editorIntro": "Llega en un sobre con lacre: lo abre tocando el corazón y adentro está tu carta, con su nombre arriba y tu firma abajo.",
+          "title": "Mi dedicatoria",
+          "subtitle": "de {{de}}, con amor",
+          "envelopeLine": "",
+          "hint": "Tocá el lacre para abrir tu carta 💌",
+          "openLabel": "Abrir mi carta",
+          "saveLabel": "Guardar recuerdo",
+          "defaultText": "Hay días en los que no alcanzan las palabras, así que te hice esto. Gracias por cada risa, cada viaje y cada abrazo. Te elijo todos los días ❤️"
+        }
+      },
+      {
+        "key": "momentos",
+        "kind": "story.moments",
+        "props": {
+          "look": "pareja",
+          "screenTitle": "Fotos",
+          "editorTitle": "Sus mejores momentos",
+          "editorIntro": "Fotos de ustedes como polaroids colgadas de una guirnalda de luces. Subí de 1 a 10 y poneles un pie: se recorren deslizando.",
+          "kicker": "NUESTROS MOMENTOS",
+          "title": "Sus mejores momentos",
+          "phrase": "Cada foto, un recuerdo nuestro 💕",
+          "defaultCaption": "Nuestro primer viaje ✈️"
+        }
+      },
+      {
+        "key": "cancion",
+        "kind": "media.video",
+        "props": {
+          "look": "pareja",
+          "editorTitle": "Nuestra canción",
+          "editorIntro": "El tema de ustedes, sonando a pantalla completa. Pegá el link de YouTube.",
+          "kicker": "NUESTRA CANCIÓN",
+          "defaultTitle": "Nuestra canción",
+          "caption": "{{de}} siempre que se acuerda de vos, piensa en esta canción."
+        }
+      },
+      {
+        "key": "playlist",
+        "kind": "media.mix",
+        "props": {
+          "look": "pareja",
+          "kicker": "PLAYLISTS PARA VOS",
+          "title": "Ribbly Mix",
+          "subtitle": "Creado para {{nombre}} · {{n}} playlists",
+          "playlists": [
+            {
+              "name": "Top 50: Global",
+              "description": "Los hits mundiales.",
+              "color": "#FFC56E",
+              "url": "https://open.spotify.com/search/Top%2050%3A%20Global"
+            },
+            {
+              "name": "Viva Latino",
+              "description": "Los éxitos más calientes.",
+              "color": "#F7798A",
+              "url": "https://open.spotify.com/search/Viva%20Latino"
+            },
+            {
+              "name": "Today's Top Hits",
+              "description": "Lo que suena ahora.",
+              "color": "#5ED6A8",
+              "url": "https://open.spotify.com/search/Today%27s%20Top%20Hits"
+            },
+            {
+              "name": "Rock Classics",
+              "description": "Leyendas del rock.",
+              "color": "#C88FD8",
+              "url": "https://open.spotify.com/search/Rock%20Classics"
+            },
+            {
+              "name": "Chill Hits",
+              "description": "Relajate y disfrutá.",
+              "color": "#F44E63",
+              "url": "https://open.spotify.com/search/Chill%20Hits"
+            },
+            {
+              "name": "Mega Hit Mix",
+              "description": "Una mezcla perfecta.",
+              "color": "#FFC56E",
+              "url": "https://open.spotify.com/search/Mega%20Hit%20Mix"
+            },
+            {
+              "name": "All Out 2010s",
+              "description": "La década dorada.",
+              "color": "#C88FD8",
+              "url": "https://open.spotify.com/search/All%20Out%202010s"
+            },
+            {
+              "name": "Reggaeton Viejo",
+              "description": "Los clásicos de siempre.",
+              "color": "#F7798A",
+              "url": "https://open.spotify.com/search/Reggaeton%20Viejo"
+            }
+          ]
+        }
+      },
+      {
+        "key": "trivia",
+        "kind": "game.quiz",
+        "props": {
+          "look": "pareja",
+          "editorIntro": "\"¿Cuánto me conocés?\": preguntas sobre vos o sobre ustedes. Vienen ejemplos: cambialos por los tuyos y elegí el premio.",
+          "ribbon": "DESAFÍO RIBBLY",
+          "title": "¿CUÁNTO ME CONOCÉS?",
+          "defaultPrize": "Una cena romántica",
+          "examples": [
+            {
+              "question": "¿Dónde fue nuestra primera cita?",
+              "options": ["En el cine 🎬", "En una plaza 🌳", "En un café ☕", "En la playa 🏖️"],
+              "correct": 3,
+              "hint": "Había olor a café recién hecho.",
+              "comment": "Fue en ese café de Palermo ☕"
+            },
+            {
+              "question": "¿Cuál es mi comida favorita?",
+              "options": ["Pizza 🍕", "Sushi 🍣", "Pasta 🍝", "Milanesa"],
+              "correct": 2,
+              "hint": "Se come con palitos.",
+              "comment": "Era sushi, obvio 🍣"
+            },
+            {
+              "question": "¿Qué es lo que más me gusta hacer con vos?",
+              "options": ["Viajar ✈️", "Cocinar juntos", "Ver series", "Salir a caminar"],
+              "correct": 1,
+              "hint": "Hace falta una valija.",
+              "comment": "Viajar, siempre con vos ✈️"
+            }
+          ]
+        }
+      },
+      {
+        "key": "cine",
+        "kind": "connector.premiere",
+        "props": {
+          "look": "pareja",
+          "kicker": "FUNCIÓN PRIVADA",
+          "subtitle": "La función está por comenzar",
+          "ticketKicker": "ENTRADA × 2",
+          "ticketName": "{{nombre}} & {{de}}",
+          "ticketDetail": "Butacas: juntitos 💕"
+        }
+      },
+      {
+        "key": "recomendado",
+        "kind": "media.poster",
+        "props": {
+          "look": "pareja",
+          "editorIntro": "Pelis y series para ver juntos: una por pantalla, agrupadas por plataforma. Vienen ejemplos para que los cambies.",
+          "suggestions": [
+            {
+              "platform": "Netflix",
+              "title": "Noche de maratón",
+              "tags": "Romance • Comedia • HD",
+              "link": "https://www.netflix.com"
+            },
+            {
+              "platform": "Prime Video",
+              "title": "Una peli de amor",
+              "tags": "Romance • Drama",
+              "link": "https://www.primevideo.com"
+            },
+            {
+              "platform": "Disney+",
+              "title": "Clásicos de los dos",
+              "tags": "Animación • Nostalgia",
+              "link": "https://www.disneyplus.com"
+            }
+          ]
+        }
+      },
+      {
+        "key": "tragamonedas",
+        "kind": "game.slots",
+        "props": {
+          "look": "pareja",
+          "kicker": "RIBBLY CASINO",
+          "title": "Tu día de suerte",
+          "cheer": "¡Suerte! 🤞",
+          "ctaLabel": "Ver mis premios ↓",
+          "symbols": ["rosa", "💋", "corazon", "corazon-brillo", "🎀"],
+          "winSymbol": "🎀",
+          "suggestions": ["🍝 Cena", "🌙 Salida sorpresa", "🤗 Abrazo eterno"]
+        }
+      },
+      {
+        "key": "cuponera",
+        "kind": "game.vouchers",
+        "props": {
+          "look": "pareja",
+          "screenTitle": "Cuponera",
+          "editorTitle": "Cuponera de amor",
+          "editorIntro": "Vales para canjear cuando quiera: una cena, un masaje, una escapada. Vienen 8 de ejemplo.",
+          "title": "CUPONERA DE AMOR",
+          "subtitle": "Tocá un vale para abrirlo y canjearlo 💌",
+          "counter": "💖 {{n}} de {{total}} vales canjeados",
+          "validity": "Válido cuando quieras · sin vencimiento",
+          "confirm": "¡Listo! {{de}} ya sabe lo que le toca 😉",
+          "backLabel": "Volver a la cuponera",
+          "examples": [
+            {
+              "icon": "pasta",
+              "title": "Cena romántica",
+              "detail": "Yo cocino, o elegís el lugar.",
+              "color": "#F44E63"
+            },
+            {
+              "icon": "masaje",
+              "title": "Masaje relajante",
+              "detail": "Media hora de relax total.",
+              "color": "#C88FD8"
+            },
+            {
+              "icon": "pochoclos",
+              "title": "Noche de cine",
+              "detail": "Peli, pochoclos y manta.",
+              "color": "#F2A93B"
+            },
+            {
+              "icon": "medialuna",
+              "title": "Desayuno en la cama",
+              "detail": "Un domingo cualquiera.",
+              "color": "#4FC3F7"
+            },
+            {
+              "icon": "fuego",
+              "title": "Deseo hot",
+              "detail": "Vos elegís cuándo.",
+              "color": "#E8405A"
+            },
+            {
+              "icon": "viaje",
+              "title": "Escapada",
+              "detail": "Un finde juntos, donde vos elijas.",
+              "color": "#1E88C9"
+            },
+            {
+              "icon": "destellos",
+              "title": "Deseo mágico",
+              "detail": "Lo que se te ocurra.",
+              "color": "#8E5AC8"
+            },
+            {
+              "icon": "💋",
+              "title": "Vale por un beso",
+              "detail": "Canjeable todas las veces que quieras.",
+              "color": "#F7798A"
+            }
+          ]
+        }
+      },
+      {
+        "key": "revista",
+        "kind": "story.magazine-love"
+      },
+      {
+        "key": "razones",
+        "kind": "story.wishes",
+        "props": {
+          "look": "pareja",
+          "screenTitle": "10 razones",
+          "editorTitle": "10 razones",
+          "editorIntro": "Las razones por las que la elegís, en notas de colores. Arrancan con las nuestras: dejá las que te gusten y cambiá el resto.",
+          "title": "razones",
+          "subtitle": "por las que te elijo",
+          "subtitleNoAge": "por las que te elijo",
+          "suggestions": [
+            "Por tu forma de mirarme",
+            "Por cómo me hacés reír",
+            "Por tus abrazos que arreglan todo",
+            "Por bancarme siempre",
+            "Por los mates de los domingos",
+            "Por cómo cantás en el auto",
+            "Por hacerme sentir en casa",
+            "Por tus ganas de todo",
+            "Por soñar conmigo",
+            "Porque sos vos ❤️"
+          ]
+        }
+      },
+      {
+        "key": "gratitud",
+        "kind": "reflect.pause"
+      },
+      {
+        "key": "diario",
+        "kind": "reflect.diary"
+      },
+      {
+        "key": "fortuna",
+        "kind": "game.cookie"
+      },
+      {
+        "key": "anecdota",
+        "kind": "story.memory",
+        "props": {
+          "look": "pareja",
+          "editorIntro": "Ese recuerdo de ustedes que siempre vuelve: una foto, un título y dos líneas tuyas.",
+          "defaultTitle": "El viaje a Mendoza",
+          "defaultText": "Nos perdimos tres veces, llegamos tarde a todo y fue el mejor finde de nuestras vidas."
+        }
+      },
+      {
+        "key": "resumen",
+        "kind": "outro.recap",
+        "props": {
+          "look": "pareja",
+          "kicker": "¡QUÉ VIAJE!",
+          "title": "Todo lo que vivimos",
+          "personChip": "Para {{nombre}} 💘",
+          "wishesLabel": "razones"
+        }
+      },
+      {
+        "key": "cierre",
+        "kind": "outro.finale",
+        "props": {
+          "look": "pareja",
+          "giftOpenLabel": "Ver mis entradas",
+          "title1": "Gracias",
+          "title2": "",
+          "subtitle": "por ser parte de mi vida.",
+          "credit": "Hecho con ♥ por {{de}}",
+          "shopUrl": "https://ribbly.com.ar/?utm_source=ribbly&utm_medium=regalo&utm_campaign=cierre_pareja"
+        }
+      }
     ]
   }
 }

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { calculateNextOccurrence, getCustomerSpecialDates } from './reminders'
 import type { User } from '@supabase/supabase-js'
 
@@ -38,7 +38,15 @@ describe('getCustomerSpecialDates', () => {
     expect(getCustomerSpecialDates({ id: 'u1' } as User)).toEqual([])
   })
 
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('parses and sorts special dates by proximity', () => {
+    // El orden depende de la fecha de hoy: se fija a fines de septiembre (sin
+    // esto, el test fallaba entre octubre y diciembre).
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-09-28T12:00:00Z'))
     const user = {
       id: 'u1',
       user_metadata: {

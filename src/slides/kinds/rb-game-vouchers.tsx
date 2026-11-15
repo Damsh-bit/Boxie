@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { Emoji, EmojiText } from '@/ui/Icon'
-import { Burst, Confetti } from '../ribbly/art'
+import { Burst, Confetti, ROSE } from '../ribbly/art'
 import { Btn, Chip, Stage, T, u, useStored } from '../ribbly/ui'
 import { shortDate } from '../ribbly/vars'
 import { Appear, ease, spring } from './motion'
@@ -47,9 +47,21 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
   }
 
   return (
-    <Stage bg="linear-gradient(180deg, #EAF6FE 0%, #E9E4FA 55%, #F9D5E0 100%)">
+    <Stage
+      bg={
+        theme.look === 'pareja'
+          ? 'linear-gradient(180deg, #FFE4E9 0%, #FFCCD5 55%, #F7A8B8 100%)'
+          : 'linear-gradient(180deg, #EAF6FE 0%, #E9E4FA 55%, #F9D5E0 100%)'
+      }
+      className={theme.look === 'pareja' ? 'is-pareja' : ''}
+    >
       <div className="rb-bg">
-        <Confetti seed={12} count={14} opacity={0.7} />
+        <Confetti
+          seed={12}
+          count={14}
+          opacity={0.7}
+          colors={theme.look === 'pareja' ? ROSE : undefined}
+        />
       </div>
 
       <div className="rb-body" style={{ color: 'var(--rb-noche)', paddingTop: u(62) }}>
@@ -112,7 +124,11 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
           })}
         </div>
 
-        <Appear active={active} delay={0.7} style={{ marginBottom: u(2), paddingRight: u(26) }}>
+        <Appear
+          active={active && open === null}
+          delay={open === null ? 0.7 : 0}
+          style={{ marginBottom: u(2), paddingRight: u(26) }}
+        >
           <Chip style={{ padding: `${u(9)} ${u(16)}` }}>
             <T
               text={theme.counter}

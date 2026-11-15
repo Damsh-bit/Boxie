@@ -49,8 +49,9 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
       if (heroCtx.draft) {
         redirect(heroCtx.draft.editUrl as Route)
       }
-      // Si no tiene borradores pendientes, lo llevamos a sus regalos
-      redirect('/cuenta/boxies')
+      // Si no tiene borradores pendientes, lo llevamos a sus regalos ("Mis Regalos",
+      // /cuenta: /cuenta/boxies no tiene página propia, solo /cuenta/boxies/[id]).
+      redirect('/cuenta')
     }
     return <EditorMessage kind={(typeof error === 'string' && ERRORS[error]) || 'no-session'} />
   }
@@ -74,9 +75,9 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
     cookieStore.delete(EDITOR_COOKIE)
     const customer = await getCustomerSession()
     if (customer) {
-      redirect('/cuenta/boxies')
+      redirect('/cuenta')
     }
-    redirect('/cuenta/login?next=/cuenta/boxies' as Route)
+    redirect('/cuenta/login?next=/cuenta' as Route)
   }
 
   if (data.availability === 'expired') {

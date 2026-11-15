@@ -340,10 +340,28 @@ size`) y todo se mide en `--u`, un píxel del diseño (390 × 760) escalado al t
   el teclado nativo no se dibuja; "Guardar" y "Compartir Story" explican cómo hacer la captura (no
   se exporta un PNG de 1080 × 1920); las playlists de ejemplo abren búsquedas de Spotify; una
   recomendación sin link no muestra "Ver ahora".
-- **Temática:** `supabase/seed/themes/cumpleanos.json` usa las 20 pantallas, todas desde el plan
-  más básico como dice el documento (el reparto por plan se hace en el panel), y la migración del
-  catálogo inicial se regeneró: eso solo alcanza a bases nuevas. En una base que ya existe
-  (producción), Cumpleaños sigue con sus pantallas anteriores hasta publicar una versión nueva.
+- **Una pantalla, varias ocasiones:** Pareja (su base de pantallas: 20 pantallas / 34 vistas)
+  comparte 15 pantallas con Cumpleaños. No se duplican: cada pantalla tiene un `look`
+  (`cumple`, `pareja`) que cambia colores, fondos y adornos (globos y guirnalda ↔ corazones,
+  pétalos y lacre), y la temática pone sus textos. Las cinco que no existían son tipos propios:
+  `cover.gift` (regalo que se abre), `cover.edition` (Love edition con su foto),
+  `reflect.pause` (gratitud con respiración), `reflect.diary` (diario sobre la mesa) y
+  `game.cookie` (galletitas de la fortuna). Una ocasión nueva suma un valor a `LOOKS` y sus
+  estilos (`.is-<look>` en `screens-c.css` y las ramas de cada componente).
+- **El nombre de una pantalla es de la temática:** `screenTitle`, `editorTitle` y
+  `editorIntro` (props de todas las pantallas de Ribbly) pisan el resumen y el módulo del editor
+  (`src/slides/labels.ts`): la misma pantalla de notas es "10 deseos" o "10 razones". Por eso
+  los campos del comprador de esas pantallas usan nombres neutros ("Notas").
+- **Revista de Pareja:** `story.magazine-love` es la misma revista con el banco de Pareja
+  (100 textos en voseo; la v001 es el texto del diseño, que mezcla vos y tú como avisa el
+  documento) y sus vínculos (novia, novio, esposa, esposo) y tonos. El banco se elige con la
+  prop `bank`.
+- **Temáticas:** `supabase/seed/themes/cumpleanos.json` y `pareja.json` usan las 20 pantallas
+  nuevas, todas desde el plan más básico como dicen los documentos (el reparto por plan se hace
+  en el panel), y la migración del catálogo inicial se regeneró: eso solo alcanza a bases
+  nuevas. En una base que ya existe (producción), las dos siguen con sus pantallas anteriores
+  hasta publicar una versión nueva. Amistad conserva las del prototipo, y es la que usan los
+  tests del editor que necesitan dedicatoria con foto, razones y cuponera.
 
 ## Modo demo
 

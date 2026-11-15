@@ -76,7 +76,12 @@ export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
 
   return (
     <Stage
-      bg="radial-gradient(120% 70% at 50% 100%, #3A2466 0%, #1B1338 60%, #120C24 100%)"
+      className={theme.look === 'pareja' ? 'is-pareja' : ''}
+      bg={
+        theme.look === 'pareja'
+          ? 'radial-gradient(120% 70% at 50% 100%, #4A1E44 0%, #2A1430 60%, #1A0C1E 100%)'
+          : 'radial-gradient(120% 70% at 50% 100%, #3A2466 0%, #1B1338 60%, #120C24 100%)'
+      }
       onClick={next}
       style={{ cursor: 'pointer' }}
     >
@@ -94,7 +99,10 @@ export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
           active={active}
           delay={1}
           className="rb-kicker"
-          style={{ color: 'var(--rb-sol)', marginTop: u(56) }}
+          style={{
+            color: theme.look === 'pareja' ? '#FFC56E' : 'var(--rb-sol)',
+            marginTop: u(56),
+          }}
         >
           <T text={theme.kicker} ctx={ctx} />
         </Appear>
@@ -147,7 +155,12 @@ export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
               </p>
               <p style={{ fontSize: u(11), color: 'var(--rb-tinta-2)', fontWeight: 500 }}>
                 <T
-                  text={ctx.vars.edad ? theme.ticketDetail : 'Fila 1 · la mejor butaca 🍿'}
+                  text={
+                    // Si el detalle nombra la edad y no hay edad, otro detalle.
+                    !ctx.vars.edad && theme.ticketDetail.includes('{{edad}}')
+                      ? 'Fila 1 · la mejor butaca 🍿'
+                      : theme.ticketDetail
+                  }
                   ctx={ctx}
                 />
               </p>

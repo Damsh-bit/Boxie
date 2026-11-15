@@ -16,7 +16,8 @@ const seed = (slug: string) =>
       'utf8',
     ),
   )
-const pareja = readThemeConfig(seed('pareja').config)
+// Amistad conserva las pantallas del prototipo que estos tests recorren.
+const pareja = readThemeConfig(seed('amistad').config)
 const PHOTO = { assetId: '5a5a5a5a-1111-4111-8111-111111111111' }
 
 describe('módulos del editor', () => {
@@ -114,7 +115,9 @@ describe('borrador', () => {
     const draft = initialDraft(pareja)
     expect(draft.slides.razones!.reasons).toHaveLength(10)
     expect(draft.slides.cuponera!.coupons).toHaveLength(8)
-    expect((draft.slides.cuponera!.coupons as { title: string }[])[0]!.title).toBe('Cena Romántica')
+    expect((draft.slides.cuponera!.coupons as { title: string }[])[0]!.title).toBe(
+      'Birras & Charla',
+    )
     expect(draft.slides.dedicatoria).toEqual({ text: '', photo: null })
   })
 

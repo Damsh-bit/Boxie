@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { formatDate, formatDateTime, formatRelative } from '@/domain/admin/format'
 import { formatBoxieCode } from '@/domain/boxie'
 import { buyerSlides, parseThemeConfig } from '@/slides/config'
+import { slideEditorInfo } from '@/slides/labels'
 import { missingRequired } from '@/slides/fields'
 import { configForPlan } from '@/slides/plans'
 import { slideDefinitions } from '@/slides/schemas'
@@ -42,7 +43,7 @@ export default async function BoxiePage({ params }: PageProps<'/admin/boxies/[id
         const touched = content[s.key] && Object.keys(content[s.key]!).length > 0
         return {
           key: s.key,
-          title: def.editor?.title ?? def.label,
+          title: slideEditorInfo(s).title,
           done: Boolean(touched) && missing.length === 0,
         }
       })

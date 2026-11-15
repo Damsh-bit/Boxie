@@ -22,10 +22,16 @@ test('se personaliza, se revisa y se "regala" sin comprar', async ({ page }) => 
   // La vista previa (en escritorio) o la portada del regalo muestran el nombre.
   await expect(page.getByRole('status').filter({ hasText: 'Guardado' })).toBeVisible()
 
+  // Pareja (pantallas de Ribbly): la carta, una foto de sus momentos y la anécdota.
   await page.getByRole('button', { name: /^Dedicatoria/ }).click()
   await page.locator('#m-dedicatoria-text').fill('Gracias por cada risa.')
-  await page.locator('#m-dedicatoria-photo').setInputFiles(FOTO)
-  await expect(page.locator('#seccion-dedicatoria img[alt="Foto elegida"]')).toBeVisible()
+  await page.getByRole('button', { name: /^Sus mejores momentos/ }).click()
+  await page
+    .locator('#seccion-momentos')
+    .getByRole('button', { name: /Agregar momento/ })
+    .click()
+  await page.locator('#m-momentos-moments-0-photo').setInputFiles(FOTO)
+  await expect(page.locator('#seccion-momentos img[alt="Foto elegida"]')).toBeVisible()
   // Como en el editor real (la subida tarda): lo anterior ya quedó guardado
   // cuando llega la próxima foto.
   await expect(page.getByRole('status').filter({ hasText: 'Guardado' })).toBeVisible()
@@ -39,7 +45,7 @@ test('se personaliza, se revisa y se "regala" sin comprar', async ({ page }) => 
   await expect(page.getByRole('status').filter({ hasText: 'Guardado' })).toBeVisible()
   await page.reload()
   await expect(page.locator('#editor-para')).toHaveValue('Sofía')
-  await expect(page.locator('#seccion-dedicatoria img[alt="Foto elegida"]')).toHaveCount(1)
+  await expect(page.locator('#m-dedicatoria-text')).toHaveValue('Gracias por cada risa.')
   // También lo último que se cargó: "Guardado" tiene que decir la verdad.
   await expect(page.locator('#seccion-anecdota img[alt="Foto elegida"]')).toHaveCount(1)
 
@@ -49,7 +55,7 @@ test('se personaliza, se revisa y se "regala" sin comprar', async ({ page }) => 
   await expect(dialog).toContainText('2 cargadas')
   await dialog.getByRole('button', { name: 'Bloquear y regalar' }).click()
 
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('¡Así se regala una Boxie!')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('¡Así se regala una Ribbly!')
   await page.getByRole('button', { name: 'Ver el regalo como Sofía' }).click()
   await page.getByRole('button', { name: 'Slide siguiente' }).click()
   await expect(page.locator('.bx-overlay:not(.bx-embedded) .bx-slide.is-active')).toContainText(

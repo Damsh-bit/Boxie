@@ -3,7 +3,6 @@ import type { Plan } from '@/domain/plans'
 import { readThemeConfig } from '@/slides/config'
 import { withDefaultPlans } from '@/slides/plans'
 import amistad from '../../supabase/seed/themes/amistad.json'
-import pareja from '../../supabase/seed/themes/pareja.json'
 import { kindTiers, summarizePlans } from './storefront'
 
 function plan(slug: string, rank: number, days: number, overrides: Partial<Plan> = {}): Plan {
@@ -29,7 +28,8 @@ function plan(slug: string, rank: number, days: number, overrides: Partial<Plan>
 const plans = [plan('esencial', 1, 30), plan('clasica', 2, 60), plan('premium', 3, 120)]
 const configOf = (seed: { config: { slides: { key: string; kind: string }[] } }) =>
   readThemeConfig({ slides: withDefaultPlans(seed.config.slides, plans) })
-const configs = [configOf(pareja), configOf(amistad)]
+// Las temáticas con pantallas repartidas por plan (las de Ribbly van todas desde el básico).
+const configs = [configOf(amistad)]
 
 describe('vidriera', () => {
   it('cada plan dice lo que incluye en la temática más completa', () => {

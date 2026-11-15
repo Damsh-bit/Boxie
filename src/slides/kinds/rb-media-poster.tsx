@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown, Play } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
-import { Balloon, Confetti, Rays } from '../ribbly/art'
+import { Balloon, CityNightScene, Confetti, Rays, Stars } from '../ribbly/art'
 import { Btn, Stage, T, u } from '../ribbly/ui'
 import { Appear, ease } from './motion'
 import type { Props } from './shared'
@@ -61,7 +61,6 @@ function Crowd() {
  * sigue el regalo.
  */
 export function MediaPoster({ theme, buyer, ctx }: Props<'media.poster'>) {
-  const active = ctx.active
   const mine = buyer.picks.filter((p) => p.title.trim())
   const picks = mine.length ? mine : theme.suggestions.filter((p) => p.title.trim())
   const platforms = [...new Set(picks.map((p) => p.platform.trim()).filter(Boolean))]
@@ -69,8 +68,33 @@ export function MediaPoster({ theme, buyer, ctx }: Props<'media.poster'>) {
   const index = Math.min(selected, Math.max(picks.length - 1, 0))
   const pick = picks[index]
   const last = index >= picks.length - 1
+  const pareja = theme.look === 'pareja'
 
   if (!pick) return <Stage bg={MOODS[0]}>{null}</Stage>
+
+  if (pareja) {
+    // Pareja: una noche de ciudad con luna llena, la misma para todas.
+    return (
+      <Stage bg="#2A1430" className="is-pareja">
+        <div className="rb-bg">
+          <CityNightScene />
+          <Stars seed={10} count={22} sparks={2} area={36} />
+          <div className="rb-poster-shade" />
+        </div>
+        <PosterBody
+          theme={theme}
+          ctx={ctx}
+          pick={pick}
+          picks={picks}
+          index={index}
+          last={last}
+          platforms={platforms}
+          setSelected={setSelected}
+          kickerColor="#FFCCD5"
+        />
+      </Stage>
+    )
+  }
 
   return (
     <Stage bg={MOODS[0]}>
@@ -112,82 +136,120 @@ export function MediaPoster({ theme, buyer, ctx }: Props<'media.poster'>) {
         tilt={3}
       />
 
-      <div className="rb-body">
-        {platforms.length > 1 && (
-          <Appear active={active} y={-10} className="rb-tabs" style={{ marginTop: u(-30) }}>
-            {platforms.map((platform) => {
-              const on = pick.platform.trim() === platform
-              return (
-                <button
-                  key={platform}
-                  type="button"
-                  className={`rb-tab ${on ? 'is-on' : ''}`}
-                  onClick={() =>
-                    setSelected(picks.findIndex((p) => p.platform.trim() === platform))
-                  }
-                  aria-pressed={on}
-                >
-                  {platform}
-                  {on && <motion.i layoutId={`tab-${ctx.slideKey}`} className="rb-tab-line" />}
-                </button>
-              )
-            })}
-          </Appear>
-        )}
-
-        <div style={{ marginTop: 'auto', width: '100%' }}>
-          <Appear
-            as="p"
-            active={active}
-            delay={0.2}
-            className="rb-kicker"
-            style={{ color: 'var(--rb-sol)' }}
-          >
-            <T text={theme.kicker} ctx={ctx} />
-          </Appear>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0, transition: { duration: 0.45, ease: ease.out } }}
-              exit={{ opacity: 0, y: -14, transition: { duration: 0.18 } }}
-            >
-              <h2
-                className="rb-title"
-                style={{
-                  fontSize: u(pick.title.length > 18 ? 34 : 42),
-                  marginTop: u(8),
-                  overflowWrap: 'anywhere',
-                }}
-              >
-                <EmojiText text={pick.title} />
-              </h2>
-              <p className="rb-sub" style={{ marginTop: u(8) }}>
-                {platforms.length <= 1 && pick.platform ? `${pick.platform} • ` : ''}
-                <EmojiText text={pick.tags} />
-              </p>
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="rb-actions is-row" style={{ marginTop: u(22), padding: 0 }}>
-            {pick.link && (
-              <Btn variant="white" href={pick.link} style={{ borderRadius: u(10) }}>
-                <Play size={16} fill="currentColor" />
-                <T text={theme.watchLabel} ctx={ctx} />
-              </Btn>
-            )}
-            <Btn
-              variant="dark"
-              style={{ borderRadius: u(10) }}
-              onClick={() => (last ? ctx.next() : setSelected(index + 1))}
-            >
-              <ArrowDown size={16} />
-              <T text={theme.nextLabel} ctx={ctx} />
-            </Btn>
-          </div>
-          <div style={{ height: u(46) }} />
-        </div>
-      </div>
+      <PosterBody
+        theme={theme}
+        ctx={ctx}
+        pick={pick}
+        picks={picks}
+        index={index}
+        last={last}
+        platforms={platforms}
+        setSelected={setSelected}
+        kickerColor="var(--rb-sol)"
+      />
     </Stage>
+  )
+}
+
+/** Las solapas por plataforma, el título y los botones (iguales en todas las ocasiones). */
+type Pick = Props<'media.poster'>['buyer']['picks'][number]
+
+function PosterBody({
+  theme,
+  ctx,
+  pick,
+  picks,
+  index,
+  last,
+  platforms,
+  setSelected,
+  kickerColor,
+}: {
+  theme: Props<'media.poster'>['theme']
+  ctx: Props<'media.poster'>['ctx']
+  pick: Pick
+  picks: Pick[]
+  index: number
+  last: boolean
+  platforms: string[]
+  setSelected: (index: number) => void
+  kickerColor: string
+}) {
+  const active = ctx.active
+  return (
+    <div className="rb-body">
+      {platforms.length > 1 && (
+        <Appear active={active} y={-10} className="rb-tabs" style={{ marginTop: u(-30) }}>
+          {platforms.map((platform) => {
+            const on = pick.platform.trim() === platform
+            return (
+              <button
+                key={platform}
+                type="button"
+                className={`rb-tab ${on ? 'is-on' : ''}`}
+                onClick={() => setSelected(picks.findIndex((p) => p.platform.trim() === platform))}
+                aria-pressed={on}
+              >
+                {platform}
+                {on && <motion.i layoutId={`tab-${ctx.slideKey}`} className="rb-tab-line" />}
+              </button>
+            )
+          })}
+        </Appear>
+      )}
+
+      <div style={{ marginTop: 'auto', width: '100%' }}>
+        <Appear
+          as="p"
+          active={active}
+          delay={0.2}
+          className="rb-kicker"
+          style={{ color: kickerColor }}
+        >
+          <T text={theme.kicker} ctx={ctx} />
+        </Appear>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.45, ease: ease.out } }}
+            exit={{ opacity: 0, y: -14, transition: { duration: 0.18 } }}
+          >
+            <h2
+              className="rb-title"
+              style={{
+                fontSize: u(pick.title.length > 18 ? 34 : 42),
+                marginTop: u(8),
+                overflowWrap: 'anywhere',
+              }}
+            >
+              <EmojiText text={pick.title} />
+            </h2>
+            <p className="rb-sub" style={{ marginTop: u(8) }}>
+              {platforms.length <= 1 && pick.platform ? `${pick.platform} • ` : ''}
+              <EmojiText text={pick.tags} />
+            </p>
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="rb-actions is-row" style={{ marginTop: u(22), padding: 0 }}>
+          {pick.link && (
+            <Btn variant="white" href={pick.link} style={{ borderRadius: u(10) }}>
+              <Play size={16} fill="currentColor" />
+              <T text={theme.watchLabel} ctx={ctx} />
+            </Btn>
+          )}
+          <Btn
+            variant="dark"
+            style={{ borderRadius: u(10) }}
+            onClick={() => (last ? ctx.next() : setSelected(index + 1))}
+          >
+            <ArrowDown size={16} />
+            <T text={theme.nextLabel} ctx={ctx} />
+          </Btn>
+        </div>
+        <div style={{ height: u(46) }} />
+      </div>
+    </div>
   )
 }

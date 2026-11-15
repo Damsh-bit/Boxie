@@ -1,7 +1,7 @@
 import { MoreHorizontal, Play } from 'lucide-react'
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
-import { Burst } from '../ribbly/art'
+import { Burst, Heart, ROSE } from '../ribbly/art'
 import { Btn, Stage, T, u } from '../ribbly/ui'
 import { Appear, Pop } from './motion'
 import type { Props } from './shared'
@@ -45,28 +45,67 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
   const [selected, setSelected] = useState(0)
   const [party, setParty] = useState(0)
   const current = playlists[Math.min(selected, playlists.length - 1)]
+  const pareja = theme.look === 'pareja'
 
   return (
-    <Stage bg="linear-gradient(160deg, #1B3B6F 0%, #4A2A6B 50%, #2B1B4E 100%)">
+    <Stage
+      bg={
+        pareja
+          ? 'linear-gradient(160deg, #3B1830 0%, #6B2A6E 50%, #8E2A5E 100%)'
+          : 'linear-gradient(160deg, #1B3B6F 0%, #4A2A6B 50%, #2B1B4E 100%)'
+      }
+      className={pareja ? 'is-pareja' : ''}
+    >
       <div className="rb-body">
         <Pop active={active} from={0.6} className="rb-mix-cover">
-          <i style={{ left: 0, background: '#5ED6A8', transform: 'rotate(-9deg)' }}>
+          <i
+            style={{
+              left: 0,
+              background: pareja ? '#8E5AC8' : '#5ED6A8',
+              transform: 'rotate(-9deg)',
+            }}
+          >
             <svg viewBox="0 0 40 40" style={{ width: '100%', height: '100%' }} aria-hidden>
-              <path d="M0 40 V30 a16 16 0 0 1 32 0 V40 Z" fill="#4A1028" />
+              {pareja ? (
+                <path d="M20 8 L34 22 L20 36 L6 22 Z" fill="#5ED6A8" />
+              ) : (
+                <path d="M0 40 V30 a16 16 0 0 1 32 0 V40 Z" fill="#4A1028" />
+              )}
             </svg>
           </i>
-          <i style={{ right: 0, background: '#FFD35C', transform: 'rotate(9deg)' }}>
+          <i
+            style={{
+              right: 0,
+              background: pareja ? '#F44E63' : '#FFD35C',
+              transform: 'rotate(9deg)',
+            }}
+          >
             <svg viewBox="0 0 40 40" style={{ width: '100%', height: '100%' }} aria-hidden>
-              <path d="M0 26 q10 -10 20 0 t20 0 V40 H0 Z" fill="#F44E63" />
+              {pareja ? (
+                <path
+                  d="M24 34 C14 27 10 22 10 17 C10 13 13 10 17 10 C20 10 22 12 24 14 C26 12 28 10 31 10 C35 10 38 13 38 17 C38 22 34 27 24 34 Z"
+                  fill="#FFCCD5"
+                />
+              ) : (
+                <path d="M0 26 q10 -10 20 0 t20 0 V40 H0 Z" fill="#F44E63" />
+              )}
             </svg>
           </i>
-          <i className="is-main">
-            <svg viewBox="0 0 40 40" style={{ width: '62%' }} aria-hidden>
-              <path
-                d="M20 2 l5.6 11.4 l12.6 1.8 l-9.1 8.9 l2.1 12.5 L20 30.7 l-11.2 5.9 l2.1 -12.5 l-9.1 -8.9 l12.6 -1.8 Z"
-                fill="#FFB8CC"
-              />
-            </svg>
+          <i className="is-main" style={pareja ? { background: '#C88FD8' } : undefined}>
+            {pareja ? (
+              <svg viewBox="0 0 40 40" style={{ width: '100%', height: '100%' }} aria-hidden>
+                {[4, 12, 20, 28, 36].map((y) => (
+                  <rect key={y} x="0" y={y - 2.5} width="40" height="4" fill="#F44E63" />
+                ))}
+              </svg>
+            ) : (
+              <svg viewBox="0 0 40 40" style={{ width: '62%' }} aria-hidden>
+                <path
+                  d="M20 2 l5.6 11.4 l12.6 1.8 l-9.1 8.9 l2.1 12.5 L20 30.7 l-11.2 5.9 l2.1 -12.5 l-9.1 -8.9 l12.6 -1.8 Z"
+                  fill="#FFB8CC"
+                />
+              </svg>
+            )}
           </i>
         </Pop>
 
@@ -75,7 +114,7 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
           active={active}
           delay={0.15}
           className="rb-kicker"
-          style={{ color: 'var(--rb-sol)', marginTop: u(20) }}
+          style={{ color: pareja ? '#FFCCD5' : 'var(--rb-sol)', marginTop: u(20) }}
         >
           <T text={theme.kicker} ctx={ctx} />
         </Appear>
@@ -105,11 +144,25 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
             variant="glass"
             mods="rb-btn-icon"
             onClick={() => setParty((n) => n + 1)}
-            aria-label="¡Fiesta!"
+            aria-label={pareja ? 'Me encanta' : '¡Fiesta!'}
           >
-            <Icon name="cotillon" size={u(24)} />
+            {pareja ? (
+              <Heart still color="#FFCCD5" style={{ width: u(22) }} />
+            ) : (
+              <Icon name="cotillon" size={u(24)} />
+            )}
           </Btn>
-          {party > 0 && <Burst key={party} x="78%" y="50%" seed={party} count={28} power={0.8} />}
+          {party > 0 && (
+            <Burst
+              key={party}
+              x="78%"
+              y="50%"
+              seed={party}
+              count={28}
+              power={0.8}
+              colors={pareja ? ROSE : undefined}
+            />
+          )}
         </Appear>
 
         <div className="rb-mix-list rb-scroll">

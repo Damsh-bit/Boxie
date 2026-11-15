@@ -1,4 +1,11 @@
 import { CUMPLE_MAGAZINE, type MagazineRow } from './magazine-bank'
+import { PAREJA_MAGAZINE } from './magazine-bank-pareja'
+
+/** Un banco por ocasión. */
+export const MAGAZINE_BANK_ROWS: Record<string, readonly MagazineRow[]> = {
+  cumple: CUMPLE_MAGAZINE,
+  pareja: PAREJA_MAGAZINE,
+}
 
 /**
  * Elige el texto de la tapa de revista. Regla de la base de pantallas: "el
@@ -34,13 +41,16 @@ export function magazinePool(
   bank: readonly MagazineRow[] = CUMPLE_MAGAZINE,
 ): readonly MagazineRow[] {
   let pool: readonly MagazineRow[] = bank.filter((row) => row[1] === relation)
-  if (!pool.length) pool = bank.filter((row) => row[1] === 'generico')
+  // Sin textos para ese vínculo: los que sirven para cualquiera.
+  if (!pool.length) pool = bank.filter((row) => row[1] === 'generico' || row[1] === 'neutro')
   if (!pool.length) pool = bank
   const toned = pool.filter((row) => row[2] === tone)
   return toned.length ? toned : pool
 }
 
 export function pickMagazine(options: {
+  /** Banco de la ocasión (cumple, pareja). */
+  bank?: string
   relation: string
   tone: string
   /** 1 = el que toca; cada número siguiente, otro del mismo grupo. */
@@ -48,7 +58,8 @@ export function pickMagazine(options: {
   /** Lo que distingue a este regalo de otro (los nombres). */
   seed: string
 }): MagazineText {
-  const pool = magazinePool(options.relation, options.tone)
+  const bank = MAGAZINE_BANK_ROWS[options.bank ?? 'cumple'] ?? CUMPLE_MAGAZINE
+  const pool = magazinePool(options.relation, options.tone, bank)
   const start = hash(options.seed) % pool.length
   const row = pool[(start + Math.max(options.version, 1) - 1) % pool.length]!
   const [id, , , title, before, mark, after, closing] = row

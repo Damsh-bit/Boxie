@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Check, Lightbulb, X } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText, Icon } from '@/ui/Icon'
-import { Balloon, Bokeh, Burst, Confetti, Rays } from '../ribbly/art'
+import { Balloon, Bokeh, Burst, Confetti, Heart, Rays, ROSE } from '../ribbly/art'
 import { Btn, Chip, Stage, Steps, T, TapMark, u, useStored } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { ease, frames, Loop, shake, spring } from './motion'
@@ -11,11 +11,23 @@ import type { Props } from './shared'
 type View = 'intro' | 'game' | 'win' | 'lose'
 
 const LETTERS = ['A', 'B', 'C', 'D']
-const LETTER_COLORS = ['#F44E63', '#4FC3F7', '#F2A93B', '#B28DFF']
-
-const NIGHT = 'linear-gradient(170deg, #153A7A 0%, #2B2F7E 55%, #7B3A7E 100%)'
-const SKY = 'linear-gradient(180deg, #6FD0F5 0%, #9AA8F0 60%, #F7C9A8 100%)'
-const DUSK = 'linear-gradient(170deg, #14203F 0%, #2E2550 55%, #5B2B5E 100%)'
+/** Colores de cada ocasión: fondo del juego, del final con premio y sin premio. */
+const LOOK = {
+  cumple: {
+    letters: ['#F44E63', '#4FC3F7', '#F2A93B', '#B28DFF'],
+    night: 'linear-gradient(170deg, #153A7A 0%, #2B2F7E 55%, #7B3A7E 100%)',
+    sky: 'linear-gradient(180deg, #6FD0F5 0%, #9AA8F0 60%, #F7C9A8 100%)',
+    dusk: 'linear-gradient(170deg, #14203F 0%, #2E2550 55%, #5B2B5E 100%)',
+    cards: ['#4FC3F7', '#FFD35C'],
+  },
+  pareja: {
+    letters: ['#F44E63', '#C88FD8', '#FFC56E', '#4FC3F7'],
+    night: 'linear-gradient(170deg, #8E2A5E 0%, #6B2A8E 55%, #4A2A8E 100%)',
+    sky: 'linear-gradient(180deg, #F7798A 0%, #F4836B 55%, #F2A93B 100%)',
+    dusk: 'linear-gradient(170deg, #2A1430 0%, #5B2A6E 55%, #7B2A8E 100%)',
+    cards: ['#C88FD8', '#FFC56E'],
+  },
+}
 
 const slide = {
   initial: { opacity: 0, y: 26 },
@@ -36,6 +48,12 @@ export interface QuizResult {
  */
 export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
   const calm = useReducedMotion()
+  const pareja = theme.look === 'pareja'
+  const look = LOOK[pareja ? 'pareja' : 'cumple']
+  const NIGHT = look.night
+  const SKY = look.sky
+  const DUSK = look.dusk
+  const LETTER_COLORS = look.letters
   const active = ctx.active
   const usable = (list: typeof theme.examples) =>
     list.filter((q) => q.question.trim() && q.options.filter((o) => o.trim()).length >= 2)
@@ -99,7 +117,7 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
   })
 
   return (
-    <Stage bg={NIGHT}>
+    <Stage bg={NIGHT} className={pareja ? 'is-pareja' : ''}>
       {/* El fondo cambia con el final: cielo con rayos si ganó, noche si no. */}
       <motion.div
         className="rb-bg"
@@ -128,7 +146,7 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
             maxOpacity={0.3}
           />
         )}
-        {view === 'win' && <Confetti seed={8} count={30} />}
+        {view === 'win' && <Confetti seed={8} count={30} colors={pareja ? ROSE : undefined} />}
       </div>
 
       <AnimatePresence mode="wait" initial={false}>
@@ -151,18 +169,37 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
             >
               ?
             </span>
-            <Balloon
-              color="#F2A93B"
-              style={{ right: '16%', top: '10%', width: u(34) }}
-              duration={5.5}
-            />
-            <Balloon
-              color="#F44E63"
-              style={{ left: '8%', top: '56%', width: u(44) }}
-              duration={6.5}
-              delay={-2}
-              tilt={4}
-            />
+            {pareja ? (
+              <>
+                <Heart
+                  color="#F44E63"
+                  style={{ right: '17%', top: '11%', width: u(30) }}
+                  duration={5.5}
+                />
+                <Heart
+                  color="#F44E63"
+                  style={{ left: '8%', top: '58%', width: u(42) }}
+                  duration={6.5}
+                  delay={-2}
+                  tilt={8}
+                />
+              </>
+            ) : (
+              <>
+                <Balloon
+                  color="#F2A93B"
+                  style={{ right: '16%', top: '10%', width: u(34) }}
+                  duration={5.5}
+                />
+                <Balloon
+                  color="#F44E63"
+                  style={{ left: '8%', top: '56%', width: u(44) }}
+                  duration={6.5}
+                  delay={-2}
+                  tilt={4}
+                />
+              </>
+            )}
 
             <span className="rb-quiz-ribbon" style={{ marginTop: u(36) }}>
               <T text={theme.ribbon} ctx={ctx} />
@@ -178,7 +215,12 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
                 frames={frames.float(8, 1.5)}
                 className="rb-quiz-cards"
               >
-                <i style={{ background: '#4FC3F7', transform: 'translateX(-52%) rotate(-13deg)' }}>
+                <i
+                  style={{
+                    background: look.cards[0],
+                    transform: 'translateX(-52%) rotate(-13deg)',
+                  }}
+                >
                   <b
                     className="rb-fredoka"
                     style={{ fontSize: u(54), color: 'rgba(255,255,255,0.45)' }}
@@ -186,7 +228,9 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
                     A
                   </b>
                 </i>
-                <i style={{ background: '#FFD35C', transform: 'translateX(52%) rotate(12deg)' }}>
+                <i
+                  style={{ background: look.cards[1], transform: 'translateX(52%) rotate(12deg)' }}
+                >
                   <b
                     className="rb-fredoka"
                     style={{ fontSize: u(54), color: 'rgba(255,255,255,0.6)' }}
@@ -195,7 +239,34 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
                   </b>
                 </i>
                 <i style={{ background: '#fff' }}>
-                  <Icon name="torta" size={u(66)} large />
+                  {pareja ? (
+                    <span style={{ display: 'grid', justifyItems: 'center', gap: u(6) }}>
+                      <b
+                        className="rb-fredoka"
+                        style={{ fontSize: u(70), lineHeight: 1, color: 'var(--rb-coral)' }}
+                      >
+                        ?
+                      </b>
+                      <span style={{ display: 'flex', gap: u(4) }} aria-hidden>
+                        {['#F44E63', '#C88FD8', '#FFC56E'].map((c) => (
+                          <i
+                            key={c}
+                            style={{
+                              position: 'static',
+                              width: u(7),
+                              height: u(7),
+                              margin: 0,
+                              borderRadius: '50%',
+                              background: c,
+                              boxShadow: 'none',
+                            }}
+                          />
+                        ))}
+                      </span>
+                    </span>
+                  ) : (
+                    <Icon name="torta" size={u(66)} large />
+                  )}
                 </i>
               </Loop>
             </div>
@@ -207,7 +278,10 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
               <Chip mods="is-yellow" style={{ transform: 'rotate(2deg)' }}>
                 <T text={theme.chipPrize} ctx={ctx} />
               </Chip>
-              <Chip mods="is-sky" style={{ transform: 'rotate(-2deg)' }}>
+              <Chip
+                mods="is-sky"
+                style={{ transform: 'rotate(-2deg)', background: pareja ? '#C88FD8' : undefined }}
+              >
                 <T text={theme.chipHints} ctx={ctx} />
               </Chip>
             </div>
@@ -255,7 +329,7 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
                 initial={{ scale: 0, rotate: -40 }}
                 animate={{ scale: 1, rotate: 0, transition: { ...spring.pop, delay: 0.15 } }}
               >
-                <Icon name="globo" size={u(28)} />
+                {pareja ? '?' : <Icon name="globo" size={u(28)} />}
               </motion.span>
               <EmojiText text={question.question} />
             </div>

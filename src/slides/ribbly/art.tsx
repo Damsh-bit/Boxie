@@ -22,32 +22,35 @@ export function Confetti({
   count = 26,
   colors = PARTY,
   opacity = 0.95,
+  petals = false,
 }: {
   seed?: number
   count?: number
   colors?: string[]
   opacity?: number
+  /** Pétalos en vez de papelitos. */
+  petals?: boolean
 }) {
   const pieces = useMemo(() => {
     const rand = seededRandom(seed * 977 + count)
     return Array.from({ length: count }, () => {
-      const duration = 7 + rand() * 8
+      const duration = petals ? 10 + rand() * 9 : 7 + rand() * 8
       const long = rand() > 0.55
       return {
         '--x': `${n(rand() * 100)}%`,
-        '--w': n(long ? 5 + rand() * 3 : 6 + rand() * 4),
-        '--h': n(long ? 10 + rand() * 6 : 6 + rand() * 4),
+        '--w': petals ? n(9 + rand() * 6) : n(long ? 5 + rand() * 3 : 6 + rand() * 4),
+        '--h': petals ? n(7 + rand() * 4) : n(long ? 10 + rand() * 6 : 6 + rand() * 4),
         '--c': colors[Math.floor(rand() * colors.length)]!,
-        '--r': rand() > 0.75 ? '50%' : '18%',
+        '--r': petals ? '80% 0 80% 0' : rand() > 0.75 ? '50%' : '18%',
         '--d': `${n(duration)}s`,
         '--delay': `${n(-rand() * duration)}s`,
-        '--sway': `${n((rand() - 0.5) * 16)}cqw`,
+        '--sway': `${n((rand() - 0.5) * (petals ? 30 : 16))}cqw`,
         '--spin': `${Math.round((rand() - 0.5) * 900)}deg`,
         '--rest': `${n(rand() * 100)}%`,
         '--o': opacity,
       } as Vars
     })
-  }, [seed, count, colors, opacity])
+  }, [seed, count, colors, opacity, petals])
   return (
     <div className="rb-confetti" aria-hidden>
       {pieces.map((style, i) => (
@@ -627,5 +630,387 @@ export function Squiggles() {
         </svg>
       ))}
     </>
+  )
+}
+
+// ── Pareja ──────────────────────────────────────────────────────────────────
+
+export const ROSE = ['#F44E63', '#F7798A', '#FFCCD5', '#FFFFFF', '#FFC56E']
+export const PETALS = ['#F7798A', '#F44E63', '#FFB3C1', '#FFCCD5']
+
+const HEART_PATH =
+  'M50 88 C20 66 2 48 2 28 C2 13 14 2 28 2 C38 2 46 8 50 16 C54 8 62 2 72 2 C86 2 98 13 98 28 C98 48 80 66 50 88 Z'
+
+/** Corazón con brillo, como de vidrio. Flota como los globos. */
+export function Heart({
+  color = '#F44E63',
+  style,
+  duration = 6,
+  delay = 0,
+  tilt = -6,
+  still = false,
+}: {
+  color?: string
+  style?: CSSProperties
+  duration?: number
+  delay?: number
+  tilt?: number
+  /** Sin flotar (cuando lo mueve otra animación). */
+  still?: boolean
+}) {
+  const id = `rb-heart-${color.replace('#', '')}`
+  return (
+    <svg
+      className={still ? undefined : 'rb-balloon'}
+      viewBox="0 0 100 92"
+      aria-hidden
+      style={
+        {
+          '--d': `${duration}s`,
+          '--delay': `${delay}s`,
+          '--tilt': `${tilt}deg`,
+          display: 'block',
+          overflow: 'visible',
+          ...style,
+        } as Vars
+      }
+    >
+      <defs>
+        <radialGradient id={id} cx="32%" cy="26%" r="80%">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.85" />
+          <stop offset="0.22" stopColor={color} />
+          <stop offset="1" stopColor={color} />
+        </radialGradient>
+      </defs>
+      <path d={HEART_PATH} fill={`url(#${id})`} />
+      <path
+        d={HEART_PATH}
+        fill="rgba(80,0,20,0.12)"
+        transform="translate(0 4) scale(1 0.96)"
+        opacity="0.5"
+      />
+      <path d={HEART_PATH} fill={`url(#${id})`} />
+      <ellipse
+        cx="27"
+        cy="22"
+        rx="10"
+        ry="6"
+        fill="#fff"
+        opacity="0.55"
+        transform="rotate(-28 27 22)"
+      />
+    </svg>
+  )
+}
+
+/** La cinta de la R, que cruza la pantalla como un hilo (intro de Pareja). */
+export function Ribbon({ style, active = true }: { style?: CSSProperties; active?: boolean }) {
+  const d =
+    'M-40 250 C40 170 150 210 140 290 C132 350 60 362 54 318 C46 262 170 240 250 300 C320 352 360 420 440 430'
+  return (
+    <svg viewBox="0 0 390 440" preserveAspectRatio="xMidYMax slice" aria-hidden style={style}>
+      <defs>
+        <linearGradient id="rb-ribbon" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#F7798A" />
+          <stop offset="0.5" stopColor="#F44E63" />
+          <stop offset="1" stopColor="#E8405A" />
+        </linearGradient>
+      </defs>
+      <motion.path
+        d={d}
+        fill="none"
+        stroke="rgba(150,20,50,0.18)"
+        strokeWidth="36"
+        strokeLinecap="round"
+        transform="translate(4 8)"
+        initial={false}
+        animate={{ pathLength: active ? 1 : 0 }}
+        transition={{ duration: active ? 1.6 : 0.2, ease: [0.65, 0, 0.35, 1] }}
+      />
+      <motion.path
+        d={d}
+        fill="none"
+        stroke="url(#rb-ribbon)"
+        strokeWidth="34"
+        strokeLinecap="round"
+        initial={false}
+        animate={{ pathLength: active ? 1 : 0 }}
+        transition={{ duration: active ? 1.6 : 0.2, ease: [0.65, 0, 0.35, 1] }}
+      />
+      <motion.path
+        d={d}
+        fill="none"
+        stroke="rgba(255,255,255,0.45)"
+        strokeWidth="5"
+        strokeLinecap="round"
+        transform="translate(-4 -7)"
+        initial={false}
+        animate={{ pathLength: active ? 1 : 0 }}
+        transition={{
+          duration: active ? 1.6 : 0.2,
+          delay: active ? 0.1 : 0,
+          ease: [0.65, 0, 0.35, 1],
+        }}
+      />
+    </svg>
+  )
+}
+
+/** Guirnalda de lamparitas cálidas que titilan. */
+export function StringLights({ style, count = 11 }: { style?: CSSProperties; count?: number }) {
+  const bulbs = Array.from({ length: count }, (_, i) => {
+    const t = (i + 0.5) / count
+    return { x: 400 * t, y: 2 * (1 - t) * t * 40 + 8, delay: n((i % 4) * -0.6) }
+  })
+  return (
+    <svg
+      viewBox="0 0 400 64"
+      preserveAspectRatio="none"
+      aria-hidden
+      style={{ overflow: 'visible', ...style }}
+    >
+      <path
+        d="M0 8 Q200 48 400 8"
+        fill="none"
+        stroke="rgba(30,15,20,0.75)"
+        strokeWidth="1.6"
+        vectorEffect="non-scaling-stroke"
+      />
+      {bulbs.map((b, i) => (
+        <g key={i} transform={`translate(${n(b.x)} ${n(b.y)})`}>
+          <rect x="-2.5" y="0" width="5" height="5" rx="1" fill="#3a2a2a" />
+          <circle
+            className="rb-bulb"
+            cy="11"
+            r="6"
+            fill="#FFE2A0"
+            style={{ animationDelay: `${b.delay}s` }}
+          />
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+/** Atardecer con la pareja de la mano (cuando todavía no hay foto). */
+export function CoupleScene({ style }: { style?: CSSProperties }) {
+  return (
+    <svg
+      viewBox="0 0 360 300"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden
+      style={{ display: 'block', width: '100%', height: '100%', ...style }}
+    >
+      <defs>
+        <linearGradient id="rb-sc-dusk" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#6B2A6E" />
+          <stop offset="0.45" stopColor="#F4607E" />
+          <stop offset="0.8" stopColor="#FFB06B" />
+        </linearGradient>
+      </defs>
+      <rect width="360" height="300" fill="url(#rb-sc-dusk)" />
+      <circle cx="180" cy="196" r="70" fill="#FFD9A0" opacity="0.9" />
+      <circle cx="180" cy="196" r="96" fill="#FFD9A0" opacity="0.18" />
+      <rect y="214" width="360" height="86" fill="#3B1830" />
+      <path d="M0 214 h360" stroke="#FFC56E" strokeWidth="2" opacity="0.6" />
+      <g fill="#2A1430">
+        <circle cx="156" cy="128" r="15" />
+        <path d="M138 214 V160 a18 18 0 0 1 36 0 V214 Z" />
+        <circle cx="206" cy="122" r="16" />
+        <path d="M187 214 V156 a19 19 0 0 1 38 0 V214 Z" />
+        <path d="M172 178 Q182 190 190 176 l2 8 Q182 198 170 186 Z" />
+      </g>
+    </svg>
+  )
+}
+
+/** Ciudad de noche con luna llena. */
+export function CityNightScene({ style }: { style?: CSSProperties }) {
+  const towers = [
+    [0, 150, 44],
+    [40, 118, 36],
+    [74, 168, 40],
+    [112, 96, 30],
+    [140, 140, 48],
+    [186, 110, 34],
+    [218, 160, 42],
+    [258, 86, 32],
+    [288, 130, 40],
+    [326, 104, 40],
+  ] as const
+  return (
+    <svg
+      viewBox="0 0 360 300"
+      preserveAspectRatio="xMidYMax slice"
+      aria-hidden
+      style={{ display: 'block', width: '100%', height: '100%', ...style }}
+    >
+      <defs>
+        <linearGradient id="rb-sc-night" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#2A1F5E" />
+          <stop offset="0.6" stopColor="#4A2A6E" />
+          <stop offset="1" stopColor="#2A1430" />
+        </linearGradient>
+        <radialGradient id="rb-sc-moon" cx="40%" cy="38%" r="70%">
+          <stop offset="0" stopColor="#FFF6DA" />
+          <stop offset="1" stopColor="#F3DDA6" />
+        </radialGradient>
+      </defs>
+      <rect width="360" height="300" fill="url(#rb-sc-night)" />
+      <circle cx="226" cy="84" r="74" fill="#FFE9B8" opacity="0.12" />
+      <circle cx="226" cy="84" r="52" fill="url(#rb-sc-moon)" />
+      <circle cx="210" cy="72" r="8" fill="#E6CB8E" opacity="0.5" />
+      <circle cx="240" cy="98" r="6" fill="#E6CB8E" opacity="0.45" />
+      {towers.map(([x, h, w], i) => (
+        <g key={i}>
+          <rect x={x} y={300 - h} width={w} height={h} fill={i % 2 ? '#24163F' : '#1B1033'} />
+          {Array.from({ length: Math.floor(h / 22) }, (_, r) =>
+            Array.from({ length: Math.floor(w / 12) }, (_, c) =>
+              (r * 7 + c * 3 + i) % 4 === 0 ? (
+                <rect
+                  key={`${r}-${c}`}
+                  x={x + 5 + c * 11}
+                  y={300 - h + 10 + r * 20}
+                  width="4"
+                  height="6"
+                  fill="#FFD27A"
+                  opacity="0.85"
+                />
+              ) : null,
+            ),
+          )}
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+export const SCENES_PAREJA = [CoupleScene, BeachScene, CityNightScene] as const
+
+/**
+ * Galletita de la fortuna. `half` dibuja una de las dos mitades partidas;
+ * `open`, la galletita ya abierta (sin el papelito que asoma).
+ */
+export function Cookie({
+  half,
+  open = false,
+  style,
+}: {
+  half?: 'left' | 'right'
+  open?: boolean
+  style?: CSSProperties
+}) {
+  const id = `rb-cookie-${half ?? 'whole'}`
+  return (
+    <svg
+      viewBox="0 0 120 96"
+      aria-hidden
+      style={{ display: 'block', overflow: 'visible', ...style }}
+    >
+      <defs>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#FFE7A3" />
+          <stop offset="0.55" stopColor="#F6C25C" />
+          <stop offset="1" stopColor="#E09A3A" />
+        </linearGradient>
+        <clipPath id={`${id}-c`}>
+          {half === 'left' ? (
+            <path d="M-10 -10 H64 L56 40 L66 60 L58 110 H-10 Z" />
+          ) : half === 'right' ? (
+            <path d="M130 -10 H64 L56 40 L66 60 L58 110 H130 Z" />
+          ) : (
+            <rect x="-10" y="-10" width="140" height="120" />
+          )}
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#${id}-c)`}>
+        <path
+          d="M8 62 C6 30 38 6 64 12 C92 18 114 42 112 66 C104 56 88 52 74 58 C64 63 60 76 52 86 C34 88 10 80 8 62 Z"
+          fill={`url(#${id}-g)`}
+        />
+        <path
+          d="M52 86 C56 66 68 56 84 54"
+          fill="none"
+          stroke="#C8822E"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+        <path
+          d="M22 40 C30 28 44 20 58 20"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="4"
+          strokeLinecap="round"
+          opacity="0.45"
+        />
+      </g>
+      {!half && !open && (
+        <path d="M70 62 l20 -4 l3 9 l-20 5 Z" fill="#FFFDF5" stroke="rgba(0,0,0,0.08)" />
+      )}
+    </svg>
+  )
+}
+
+/** Luna creciente. */
+export function Moon({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 60 60" aria-hidden style={{ display: 'block', ...style }}>
+      <defs>
+        <mask id="rb-moon-cut">
+          <rect width="60" height="60" fill="#fff" />
+          <circle cx="40" cy="22" r="22" fill="#000" />
+        </mask>
+      </defs>
+      <circle cx="28" cy="30" r="24" fill="#FFF1C8" mask="url(#rb-moon-cut)" />
+    </svg>
+  )
+}
+
+/** Constelación: estrellas unidas por líneas finas. */
+export function Constellation({ style }: { style?: CSSProperties }) {
+  const pts = [
+    [10, 60],
+    [70, 40],
+    [130, 64],
+    [190, 30],
+    [250, 70],
+    [310, 50],
+    [370, 76],
+  ] as const
+  return (
+    <svg
+      viewBox="0 0 380 100"
+      aria-hidden
+      style={{ display: 'block', overflow: 'visible', ...style }}
+    >
+      <polyline
+        points={pts.map((p) => p.join(',')).join(' ')}
+        fill="none"
+        stroke="rgba(255,255,255,0.35)"
+        strokeWidth="1.2"
+      />
+      {pts.map(([x, y], i) => (
+        <circle
+          key={i}
+          className="rb-bulb"
+          cx={x}
+          cy={y}
+          r="3"
+          fill="#FFF6DA"
+          style={{ animationDelay: `${-i * 0.5}s` }}
+        />
+      ))}
+    </svg>
+  )
+}
+
+/** Moño de una caja de regalo (portada de Pareja y cierre). */
+export function Bow() {
+  return (
+    <svg className="rb-bow" viewBox="0 0 86 44" aria-hidden>
+      <path d="M43 30 C22 2 2 4 6 22 C8 36 28 36 43 30 Z" fill="#F8627A" />
+      <path d="M43 30 C64 2 84 4 80 22 C78 36 58 36 43 30 Z" fill="#F44E63" />
+      <circle cx="43" cy="30" r="9" fill="#D63A55" />
+    </svg>
   )
 }

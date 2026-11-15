@@ -11,7 +11,10 @@ import { initialBuyerProps } from './schemas'
 const PHOTOS = {
   dedication: '5a5a5a5a-1111-4111-8111-111111111111',
   anecdote: '5a5a5a5a-2222-4222-8222-222222222222',
+  couple: '5a5a5a5a-3333-4333-8333-333333333333',
 }
+
+const isLove = (props: unknown) => (props as { look?: string } | null)?.look === 'pareja'
 
 export function sampleGift(
   config: ParsedThemeConfig,
@@ -37,7 +40,29 @@ export function sampleGift(
       content[slide.key] = { youtubeUrl: 'https://youtu.be/450p7goxZqg', songTitle: 'All of Me' }
     }
     if (slide.kind === 'outro.finale') {
-      content[slide.key] = { gift: 'Gift card para tu librería favorita 📚' }
+      content[slide.key] = isLove(slide.props)
+        ? { gift: '2 entradas para el recital', giftDetail: 'Sábado · 21 h · Campo VIP 🎟️' }
+        : { gift: 'Gift card para tu librería favorita 📚' }
+    }
+    // Pareja: las fotos de ellos (en Cumpleaños se ven las escenas de ejemplo).
+    if (slide.kind === 'cover.edition') {
+      content[slide.key] = { photo: { assetId: PHOTOS.dedication } }
+    }
+    if (slide.kind === 'story.moments' && isLove(slide.props)) {
+      content[slide.key] = {
+        moments: [
+          { photo: { assetId: PHOTOS.anecdote }, year: '2021', caption: 'Mendoza 🍇' },
+          {
+            photo: { assetId: PHOTOS.dedication },
+            year: '2023',
+            caption: 'Nuestro primer viaje ✈️',
+          },
+          { photo: { assetId: PHOTOS.couple }, year: '2025', caption: 'Atardecer en la costa' },
+        ],
+      }
+    }
+    if (slide.kind === 'story.memory' && isLove(slide.props)) {
+      content[slide.key] = { photo: { assetId: PHOTOS.anecdote } }
     }
     if (slide.kind === 'story.anecdote') {
       content[slide.key] = {
@@ -56,6 +81,8 @@ export function sampleGift(
         'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1200&auto=format&fit=crop',
       [PHOTOS.anecdote]:
         'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=1200&auto=format&fit=crop',
+      [PHOTOS.couple]:
+        'https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=1200&auto=format&fit=crop',
     },
   }
 }

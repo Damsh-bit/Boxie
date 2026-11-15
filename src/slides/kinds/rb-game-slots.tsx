@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { Emoji, EmojiText } from '@/ui/Icon'
-import { Bokeh, Burst, Confetti, Rays } from '../ribbly/art'
+import { Bokeh, Burst, Confetti, ROSE, Rays } from '../ribbly/art'
 import { Btn, Chip, Stage, T, TapMark, u } from '../ribbly/ui'
 import { ease, spring } from './motion'
 import type { Props } from './shared'
@@ -43,17 +43,30 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
   }
 
   return (
-    <Stage bg="linear-gradient(180deg, #1B3B6F 0%, #3A2A6B 55%, #6B2A5E 100%)">
+    <Stage
+      bg={
+        theme.look === 'pareja'
+          ? 'radial-gradient(130% 80% at 50% 40%, #6B1830 0%, #4A1428 55%, #2A1430 100%)'
+          : 'linear-gradient(180deg, #1B3B6F 0%, #3A2A6B 55%, #6B2A5E 100%)'
+      }
+      className={theme.look === 'pareja' ? 'is-pareja' : ''}
+    >
       <div className="rb-bg">
         <Rays at="50% 42%" strength={0.07} />
         <Bokeh
           seed={11}
           count={10}
-          colors={['#4FC3F7', '#FFD35C', '#F44E63']}
+          colors={
+            theme.look === 'pareja'
+              ? ['#F7798A', '#FFC56E', '#C88FD8']
+              : ['#4FC3F7', '#FFD35C', '#F44E63']
+          }
           blur={5}
           maxOpacity={0.45}
         />
-        {phase === 'won' && <Confetti seed={11} count={26} />}
+        {phase === 'won' && (
+          <Confetti seed={11} count={26} colors={theme.look === 'pareja' ? ROSE : undefined} />
+        )}
       </div>
 
       <div className="rb-body">
@@ -70,7 +83,10 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
             </motion.h2>
           ) : (
             <motion.div key="titulo" exit={{ opacity: 0, transition: { duration: 0.15 } }}>
-              <p className="rb-kicker" style={{ marginTop: u(2) }}>
+              <p
+                className="rb-kicker"
+                style={{ marginTop: u(2), color: theme.look === 'pareja' ? '#FFC56E' : undefined }}
+              >
                 <T text={theme.kicker} ctx={ctx} />
               </p>
               <h2 className="rb-glow-title" style={{ marginTop: u(6) }}>

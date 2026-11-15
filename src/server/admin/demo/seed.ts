@@ -39,7 +39,7 @@ import { DEFAULT_DEMO_EMAIL } from '../token'
  * Ningún dato es de una persona real: los mails son @ejemplo.com.
  */
 
-export const DEMO_DB_VERSION = 7
+export const DEMO_DB_VERSION = 8
 
 export interface DemoThemeVersion {
   id: string

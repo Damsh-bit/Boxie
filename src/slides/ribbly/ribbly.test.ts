@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import cumpleanos from '../../../supabase/seed/themes/cumpleanos.json'
+import parejaSeed from '../../../supabase/seed/themes/pareja.json'
 import { missingForLock, parseBuyerContent, readThemeConfig } from '../config'
+import { slideEditorInfo, slideSummary } from '../labels'
 import { initialBuyerProps } from '../schemas'
 import { magazinePool, pickMagazine } from './magazine'
 import { CUMPLE_MAGAZINE } from './magazine-bank'
+import { PAREJA_MAGAZINE } from './magazine-bank-pareja'
 import { buildVars, fill, parseDayMonth } from './vars'
 
 const config = readThemeConfig(cumpleanos.config)
@@ -134,6 +137,54 @@ describe('contenido del comprador en Cumpleaños', () => {
     expect(missingForLock(config, parsed.data).map((m) => m.path)).toEqual([
       'portada.age',
       'tarjeta.text',
+      'momentos.moments',
+      'anecdota.photo',
+    ])
+  })
+})
+
+describe('Pareja', () => {
+  const pareja = readThemeConfig(parejaSeed.config)
+
+  it('la revista de Pareja sale de su banco, con sus vínculos', () => {
+    expect(PAREJA_MAGAZINE).toHaveLength(100)
+    const text = pickMagazine({
+      bank: 'pareja',
+      relation: 'novia',
+      tone: 'tierno',
+      version: 1,
+      seed: 'Sofía|Lean',
+    })
+    expect(PAREJA_MAGAZINE.find((row) => row[0] === text.id)?.[1]).toBe('novia')
+    // Un vínculo de otra ocasión cae en los textos para cualquiera.
+    expect(
+      magazinePool('amiga', 'cualquiera', PAREJA_MAGAZINE).every((r) => r[1] === 'neutro'),
+    ).toBe(true)
+  })
+
+  it('cada temática nombra sus pantallas: la de notas es "10 razones" en Pareja', () => {
+    const notes = pareja.slides.find((s) => s.kind === 'story.wishes')!
+    expect(slideSummary(notes)?.title).toBe('10 razones')
+    expect(slideEditorInfo(notes).title).toBe('10 razones')
+    const birthdayNotes = config.slides.find((s) => s.kind === 'story.wishes')!
+    expect(slideSummary(birthdayNotes)?.title).toBe('10 deseos')
+  })
+
+  it('para regalar hacen falta la carta, una foto de sus momentos y la de la anécdota', () => {
+    const initial = Object.fromEntries(
+      pareja.slides.map((s) => [
+        s.key,
+        initialBuyerProps(s.kind, s.props as Record<string, unknown>),
+      ]),
+    )
+    const parsed = parseBuyerContent(pareja, {
+      recipientName: 'Sofía',
+      senderName: 'Lean',
+      slides: initial,
+    })
+    if (!parsed.success) throw new Error(parsed.issues.join('\n'))
+    expect(missingForLock(pareja, parsed.data).map((m) => m.path)).toEqual([
+      'dedicatoria.text',
       'momentos.moments',
       'anecdota.photo',
     ])

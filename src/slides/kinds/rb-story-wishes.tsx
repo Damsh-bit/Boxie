@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion'
 import { EmojiText } from '@/ui/Icon'
+import { Bokeh } from '../ribbly/art'
 import { Stage, T, u } from '../ribbly/ui'
 import { Appear, spring } from './motion'
 import type { Props } from './shared'
 
 const NOTE_COLORS = ['#FFFDF2', '#D8F0FB', '#FFF3C8', '#E8DEFF', '#D9F7E8']
+const LOVE_NOTES = ['#FFFDF2', '#FFE4E9', '#FFF3C8', '#F0E8FF', '#E8F4FD']
 const TILTS = [-2.2, 1.6, 1.2, -2.6, -1.4, 2.2, 2.6, -1, -1.8, 1.4]
 
 type Vars = React.CSSProperties & Record<`--${string}`, string>
@@ -17,19 +19,37 @@ export function StoryWishes({ theme, buyer, ctx }: Props<'story.wishes'>) {
   const active = ctx.active
   const mine = buyer.wishes.filter((w) => w.trim())
   const wishes = mine.length ? mine : theme.suggestions.filter((w) => w.trim())
+  const pareja = theme.look === 'pareja'
+  const colors = pareja ? LOVE_NOTES : NOTE_COLORS
 
   return (
-    <Stage bg="linear-gradient(180deg, #4FC3F7 0%, #6FB6EE 50%, #9BC4F0 100%)">
+    <Stage
+      bg={
+        pareja
+          ? 'linear-gradient(180deg, #F7798A 0%, #F4607E 50%, #E8405A 100%)'
+          : 'linear-gradient(180deg, #4FC3F7 0%, #6FB6EE 50%, #9BC4F0 100%)'
+      }
+      className={pareja ? 'is-pareja' : ''}
+    >
       <div className="rb-bg">
-        <i className="rb-cloud" style={{ left: '-20%', top: '4%', width: '70%', height: '16%' }} />
-        <i
-          className="rb-cloud"
-          style={{ right: '-24%', top: '38%', width: '80%', height: '18%' }}
-        />
-        <i
-          className="rb-cloud"
-          style={{ left: '-10%', bottom: '2%', width: '90%', height: '16%' }}
-        />
+        {pareja ? (
+          <Bokeh seed={14} count={12} colors={['#FFFFFF', '#FFCCD5']} blur={10} maxOpacity={0.35} />
+        ) : (
+          <>
+            <i
+              className="rb-cloud"
+              style={{ left: '-20%', top: '4%', width: '70%', height: '16%' }}
+            />
+            <i
+              className="rb-cloud"
+              style={{ right: '-24%', top: '38%', width: '80%', height: '18%' }}
+            />
+            <i
+              className="rb-cloud"
+              style={{ left: '-10%', bottom: '2%', width: '90%', height: '16%' }}
+            />
+          </>
+        )}
       </div>
 
       <div className="rb-body">
@@ -85,7 +105,7 @@ export function StoryWishes({ theme, buyer, ctx }: Props<'story.wishes'>) {
                 className={`rb-note ${last ? 'is-last' : ''}`}
                 style={
                   {
-                    '--c': last ? '#F4607E' : NOTE_COLORS[i % NOTE_COLORS.length]!,
+                    '--c': last ? (pareja ? '#2A2433' : '#F4607E') : colors[i % colors.length]!,
                     '--tape': `${-tilt}deg`,
                   } as Vars
                 }

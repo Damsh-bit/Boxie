@@ -47,10 +47,16 @@ test('comprar, personalizar, bloquear y abrir el regalo en otro dispositivo', as
   await expect(page.locator('#editor-de')).toHaveValue('Leandro')
 
   await page.locator('#editor-para').fill('Sofía')
+  // Pareja (pantallas de Ribbly): la carta, una foto de sus momentos y la anécdota.
   await page.getByRole('button', { name: /^Dedicatoria/ }).click()
   await page.locator('#m-dedicatoria-text').fill('Gracias por cada risa.')
-  await page.locator('#m-dedicatoria-photo').setInputFiles(FOTO)
-  await expect(page.locator('#seccion-dedicatoria img[alt="Foto elegida"]')).toBeVisible()
+  await page.getByRole('button', { name: /^Sus mejores momentos/ }).click()
+  await page
+    .locator('#seccion-momentos')
+    .getByRole('button', { name: /Agregar momento/ })
+    .click()
+  await page.locator('#m-momentos-moments-0-photo').setInputFiles(FOTO)
+  await expect(page.locator('#seccion-momentos img[alt="Foto elegida"]')).toBeVisible()
   await page.getByRole('button', { name: /^Anécdota/ }).click()
   await page.locator('#m-anecdota-photo').setInputFiles(OTRA_FOTO)
   await expect(page.locator('#seccion-anecdota img[alt="Foto elegida"]')).toBeVisible()
@@ -69,12 +75,12 @@ test('comprar, personalizar, bloquear y abrir el regalo en otro dispositivo', as
 
   await page.getByRole('button', { name: 'Regalar', exact: true }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Bloquear y regalar' }).click()
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('¡Boxie lista!')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('¡Ribbly lista!')
   await expect(page.getByText(giftUrl)).toBeVisible()
 
   // Bloqueada: el editor ya no edita, muestra el link.
   await page.goto('/editor')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('¡Boxie lista!')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('¡Ribbly lista!')
   await expect(page.locator('#editor-para')).toHaveCount(0)
 
   // El destinatario, en su celular, sin usuario ni clave: abre la tapa y recorre.

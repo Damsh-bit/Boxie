@@ -1,6 +1,7 @@
 import type { z } from 'zod'
 import { buyerSlides, type ParsedThemeConfig } from '../config'
 import { missingRequired, type MissingField } from '../fields'
+import { slideEditorInfo } from '../labels'
 import { slideDefinitions, type SlideKind } from '../schemas'
 import type { SlideDefinition, SummaryIcon } from '../types'
 import type { EditorDraft } from './draft'
@@ -57,14 +58,15 @@ export function editorModules(
 
   for (const slide of buyerSlides(config)) {
     const definition: SlideDefinition = slideDefinitions[slide.kind]
+    const info = slideEditorInfo(slide)
     modules.push({
       id: slide.key,
       kind: 'slide',
       slideKey: slide.key,
       slideKind: slide.kind,
       previewIndex: config.slides.indexOf(slide),
-      title: definition.editor?.title ?? definition.summary?.title ?? definition.label,
-      intro: definition.editor?.intro ?? definition.description,
+      title: info.title,
+      intro: info.intro,
       icon: definition.summary?.icon ?? 'sparkles',
     })
   }

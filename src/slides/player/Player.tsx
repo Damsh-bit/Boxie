@@ -14,6 +14,7 @@ import {
 import type { ParsedSlide, ParsedThemeConfig } from '../config'
 import type { BuyerPhoto } from '../fields'
 import { slideComponents } from '../registry'
+import { slideSummary } from '../labels'
 import { buildVars } from '../ribbly/vars'
 import { slideDefinitions } from '../schemas'
 import type { SlideContext } from '../types'
@@ -128,7 +129,7 @@ export function Player({
   const summaries = useMemo(
     () =>
       config.slides.flatMap((s) => {
-        const summary = slideDefinitions[s.kind].summary
+        const summary = slideSummary(s)
         return summary ? [{ key: s.key, ...summary }] : []
       }),
     [config.slides],

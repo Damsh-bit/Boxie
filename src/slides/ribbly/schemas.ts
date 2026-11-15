@@ -18,6 +18,34 @@ import type { SlideDefinition } from '../types'
 const FRAME = { background: 'none', fullScreen: true } as const
 const FRAME_LIGHT = { ...FRAME, chrome: 'dark' } as const
 
+/** Las ocasiones que tienen su estilo propio (colores, escenas, adornos). */
+export const LOOKS = [
+  { value: 'cumple', label: 'Cumpleaños' },
+  { value: 'pareja', label: 'Pareja' },
+] as const
+export type Look = (typeof LOOKS)[number]['value']
+
+/**
+ * Lo que tienen todas las pantallas: el estilo de la ocasión y cómo se llama
+ * la pantalla en esta temática (src/slides/labels.ts). Vacío = el del tipo.
+ */
+function screen(look: Look = 'cumple') {
+  return {
+    look: field.select('Estilo', LOOKS, {
+      default: look,
+      advanced: true,
+      help: 'Colores, fondos y adornos de la ocasión.',
+    }),
+    screenTitle: field.text('Nombre de la pantalla', {
+      max: 30,
+      advanced: true,
+      help: 'En el repaso final y en el editor. Vacío = el de siempre.',
+    }),
+    editorTitle: field.text('Título en el editor', { max: 40, advanced: true }),
+    editorIntro: field.textarea('Explicación en el editor', { max: 240, advanced: true }),
+  }
+}
+
 // ── 01 · Intro ──────────────────────────────────────────────────────────────
 
 const introBrand = {
@@ -25,6 +53,7 @@ const introBrand = {
   description: 'La marca sobre el cielo celeste, con guirnalda, globos y confeti.',
   category: 'intro',
   themeSchema: z.object({
+    ...screen(),
     tagline: field.text('Frase', { default: 'Una experiencia digital para vos.' }),
     hint: field.text('Indicación para deslizar', { default: 'Deslizá para comenzar', max: 40 }),
   }),
@@ -40,6 +69,7 @@ const coverCake = {
   description: 'El nombre, la torta con las velas de la edad y un toque para soplarlas.',
   category: 'intro',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Texto de arriba', { default: 'Hoy es un día especial para...' }),
     greeting: field.text('Saludo', { default: '¡Feliz cumple! 🎉', max: 40 }),
     cta: field.text('Botón', { default: '🎂 Tocá para soplar las velitas', max: 50 }),
@@ -88,6 +118,7 @@ const coverAge = {
   description: 'La edad en dorado bajo un haz de luz, con un deseo para empezar.',
   category: 'intro',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: 'EDICIÓN CUMPLE', max: 30 }),
     caption: field.text('Debajo del número', { default: 'vueltas al sol ☀️', max: 30 }),
     chip1: field.text('Chip 1', { default: '🎉 Hoy se festeja', max: 30 }),
@@ -121,6 +152,7 @@ const storyCard = {
   description: 'Un sobre que se abre tocando el sticker y deja ver la tarjeta escrita a mano.',
   category: 'story',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: 'PARA VOS', max: 30 }),
     title: field.text('Título', { default: 'Tu tarjeta de cumple', max: 40 }),
     subtitle: field.text('Subtítulo', { default: 'de {{de}}', max: 40 }),
@@ -163,6 +195,7 @@ const storyMoments = {
   description: 'Polaroids colgadas con broches: se pasan deslizando o tocando el año.',
   category: 'story',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: 'RECORRIDO', max: 30 }),
     title: field.text('Título', { default: 'Tus mejores momentos', max: 40 }),
     phrase: field.text('Frase', { default: 'Un año más de recuerdos lindos 📸', max: 60 }),
@@ -214,6 +247,7 @@ const mediaVideo = {
   description: 'El video de YouTube a pantalla completa, con controles propios.',
   category: 'media',
   themeSchema: z.object({
+    ...screen(),
     badge: field.text('Etiqueta de arriba', { default: 'YouTube · pantalla completa', max: 40 }),
     kicker: field.text('Etiqueta', { default: 'SU CANCIÓN', max: 30 }),
     defaultTitle: field.text('Título si no hay', { default: 'Tu canción', max: 40 }),
@@ -276,6 +310,7 @@ const mediaMix = {
   description: 'Una lista de playlists para festejar, estilo app de música.',
   category: 'media',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: 'PLAYLISTS PARA FESTEJAR', max: 40 }),
     title: field.text('Título', { default: 'Cumple Mix', max: 30 }),
     subtitle: field.text('Subtítulo', {
@@ -341,6 +376,7 @@ const gameQuiz = {
   description: 'Preguntas escritas por quien regala; si acierta todas, hay premio.',
   category: 'game',
   themeSchema: z.object({
+    ...screen(),
     ribbon: field.text('Cinta', { default: 'DESAFÍO DE CUMPLE', max: 30 }),
     title: field.text('Título', { default: '¿CUÁNTO SABÉS DE MÍ?', max: 30 }),
     chipQuestions: field.text('Chip de preguntas', { default: '🧠 {{total}} preguntas', max: 30 }),
@@ -416,6 +452,7 @@ const connectorPremiere = {
   description: 'Se abre el telón: pochoclos, marquesina y una entrada VIP a su nombre.',
   category: 'media',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: 'FUNCIÓN DE CUMPLE', max: 30 }),
     title: field.text('Título', { default: 'Prepará los pochoclos...', max: 40 }),
     subtitle: field.text('Subtítulo', { default: 'Hoy la peli la elegís vos 🎬', max: 50 }),
@@ -452,6 +489,7 @@ const mediaPoster = {
   description: 'Un póster a pantalla completa por cada recomendación, con solapas por plataforma.',
   category: 'media',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: 'RECOMENDADO PARA VOS', max: 40 }),
     watchLabel: field.text('Botón ver', { default: 'Ver ahora', max: 20 }),
     nextLabel: field.text('Botón siguiente', { default: 'Siguiente', max: 20 }),
@@ -505,6 +543,7 @@ const gameSlots = {
   description: 'Tres rodillos que frenan de a uno y siempre dan el premio mayor.',
   category: 'game',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: 'LLUVIA DE REGALOS', max: 30 }),
     title: field.text('Título', { default: '¡Tirá y ganá!', max: 30 }),
     machine: field.text('Nombre de la máquina', { default: 'RIBBLY SLOTS', max: 20 }),
@@ -581,6 +620,7 @@ const gameVouchers = {
   description: 'Una grilla de vales: cada uno se abre como un ticket y se canjea con un sello.',
   category: 'game',
   themeSchema: z.object({
+    ...screen(),
     title: field.text('Título', { default: 'VALES DE CUMPLE', max: 30 }),
     subtitle: field.text('Subtítulo', {
       default: 'Tocá un vale para abrirlo y canjearlo 🎁',
@@ -690,12 +730,20 @@ export const MAGAZINE_TONES = [
   { value: 'romantico', label: 'Romántico' },
 ] as const
 
+/** Bancos de textos de la revista (ribbly/magazine.ts). */
+export const MAGAZINE_BANKS = [
+  { value: 'cumple', label: 'Cumpleaños' },
+  { value: 'pareja', label: 'Pareja' },
+] as const
+
 const storyMagazine = {
   label: 'Ribbly · Revista',
   description:
     'Tapa editorial sobre papel. El texto sale de un banco de 100 variaciones según el vínculo y el tono.',
   category: 'story',
   themeSchema: z.object({
+    ...screen(),
+    bank: field.select('Banco de textos', MAGAZINE_BANKS, { default: 'cumple', advanced: true }),
     shareLabel: field.text('Botón compartir', { default: 'COMPARTIR STORY', max: 30 }),
     photoFromKind: field.text('Usar la primera foto de', {
       default: 'story.moments',
@@ -739,6 +787,7 @@ const storyWishes = {
   description: 'Notas pegadas con cinta, una por deseo, que aparecen de a una.',
   category: 'story',
   themeSchema: z.object({
+    ...screen(),
     title: field.text('Título', { default: 'deseos', max: 20 }),
     subtitle: field.text('Subtítulo', { default: 'para tus {{edad}}', max: 40 }),
     subtitleNoAge: field.text('Subtítulo sin edad', {
@@ -765,10 +814,11 @@ const storyWishes = {
     }),
   }),
   buyerSchema: z.object({
-    wishes: field.list('Deseos', field.text('Deseo', { max: 40 }), {
+    // Nombres neutros: la misma pantalla es "10 deseos" y "10 razones".
+    wishes: field.list('Notas', field.text('Nota', { max: 40 }), {
       max: 10,
-      itemLabel: 'Deseo #{n}',
-      help: 'Hasta 10, cortitos: van en notas pegadas con cinta.',
+      itemLabel: 'Nota #{n}',
+      help: 'Hasta 10, cortitas: van en notas pegadas con cinta.',
     }),
   }),
   frame: FRAME,
@@ -787,6 +837,7 @@ const reflectCandles = {
   description: 'Un momento a oscuras: quien recibe escribe sus deseos antes de soplar.',
   category: 'reflect',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: 'UN MOMENTO PARA VOS', max: 30 }),
     title1: field.text('Título · línea 1', { default: 'Antes de soplar', max: 30 }),
     title2: field.text('Título · línea 2', { default: 'las velitas…', max: 30 }),
@@ -825,6 +876,7 @@ const reflectCapsule = {
   description: 'Un frasco con papelitos y una carta para su yo del futuro.',
   category: 'reflect',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: 'CÁPSULA DEL TIEMPO', max: 30 }),
     title1: field.text('Título · línea 1', { default: 'Una carta para tu', max: 30 }),
     title2: field.text('Título · línea 2', { default: 'yo del futuro.', max: 30 }),
@@ -888,6 +940,7 @@ const gamePinata = {
   description: 'Tres toques rompen la piñata y cae un mensaje sobre el año que empieza.',
   category: 'game',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: 'TU AÑO NUEVO', max: 30 }),
     title: field.text('Título', { default: '¡Rompé la piñata!', max: 30 }),
     subtitle: field.text('Subtítulo', {
@@ -943,6 +996,7 @@ const storyMemory = {
   description: 'Tarjeta con foto y un recuerdo contado por quien regala, lista para Stories.',
   category: 'story',
   themeSchema: z.object({
+    ...screen(),
     defaultTitle: field.text('Título de ejemplo', {
       default: 'El cumple sorpresa del {{anio_anterior}}',
       max: 50,
@@ -979,6 +1033,7 @@ const outroRecap = {
   description: 'Tarjeta para compartir con las fotos, los números y el índice de la Ribbly.',
   category: 'outro',
   themeSchema: z.object({
+    ...screen(),
     kicker: field.text('Etiqueta', { default: '¡QUÉ FESTEJO!', max: 30 }),
     title: field.text('Título', { default: 'Todo lo que festejamos', max: 40 }),
     personChip: field.text('Chip de la persona', { default: '{{nombre}} · {{edad}} 🎂', max: 40 }),
@@ -1000,6 +1055,7 @@ const outroFinale = {
   description: 'El regalo sorpresa (si hay) y el ¡Feliz cumple! final, con repetir y regalar.',
   category: 'outro',
   themeSchema: z.object({
+    ...screen(),
     lastThing: field.text('Regalo · título', { default: 'Una última cosa...', max: 30 }),
     giftKicker: field.text('Regalo · rótulo', { default: 'TU REGALO SORPRESA', max: 30 }),
     giftNote: field.text('Regalo · nota', { default: 'Guardalo, es tuyo ✨', max: 40 }),
@@ -1031,6 +1087,10 @@ const outroFinale = {
       placeholder: 'Gift card para tu librería favorita 📚',
       help: 'Si cargás uno, antes del final aparece una caja que se abre con tu regalo.',
     }),
+    giftDetail: field.text('Detalle del regalo (opcional)', {
+      max: 50,
+      placeholder: 'Sábado · 21 h · Campo VIP 🎟️',
+    }),
     giftSignature: field.text('Firma del regalo', {
       max: 40,
       placeholder: 'de Juli y los chicos',
@@ -1043,6 +1103,314 @@ const outroFinale = {
     title: 'Regalo sorpresa',
     intro:
       'Opcional. Si hay un regalo de verdad (una gift card, una entrada), aparece en una caja antes del saludo final.',
+  },
+} satisfies SlideDefinition
+
+// ════════════════════════════════════════════════════════════════════════════
+// Pareja (base de pantallas de Pareja). Las que comparten estructura con las de
+// Cumpleaños son las mismas pantallas con `look: 'pareja'`; estas son propias.
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── 02 · Portada con regalo ─────────────────────────────────────────────────
+
+const coverGift = {
+  label: 'Ribbly · Portada con regalo',
+  description: 'Su nombre subrayado a mano y una caja de regalo que se abre al tocarla.',
+  category: 'intro',
+  themeSchema: z.object({
+    ...screen('pareja'),
+    kicker: field.text('Texto de arriba', { default: 'Este regalo especial es para...' }),
+    hint: field.text('Indicación', { default: '👆 Tocá para abrir', max: 40 }),
+    opened: field.text('Después de abrir', {
+      default: '¡Sorpresa! Deslizá para empezar',
+      max: 50,
+    }),
+    senderPrefix: field.text('Antes del remitente', { default: 'DE PARTE DE:', max: 30 }),
+  }),
+  buyerSchema: null,
+  frame: FRAME,
+  summary: { icon: 'gift', title: 'El inicio', text: 'Una sorpresa con tu nombre.' },
+} satisfies SlideDefinition
+
+// ── 03 · Love edition ───────────────────────────────────────────────────────
+
+const coverEdition = {
+  label: 'Ribbly · Edición especial',
+  description: 'Tapa de edición especial con su foto en una polaroid y una frase tuya.',
+  category: 'intro',
+  themeSchema: z.object({
+    ...screen('pareja'),
+    kicker: field.text('Etiqueta', { default: 'RIBBLY · EDICIÓN ESPECIAL', max: 40 }),
+    title: field.text('Título', { default: 'Love', max: 14 }),
+    subtitle: field.text('Debajo del título', { default: 'EDITION', max: 16 }),
+    wishLabel: field.text('Rótulo de la frase', { default: 'PENSADO EN SENTIMIENTOS', max: 40 }),
+    defaultWish: field.text('Frase si el comprador no escribe', {
+      default: 'Porque sos mi persona favorita.',
+      max: 90,
+    }),
+    defaultCaption: field.text('Pie de foto si no hay', { default: 'nosotros ♥', max: 30 }),
+    cta: field.text('Botón', { default: 'Empezar ahora →', max: 30 }),
+    photoFromKind: field.text('Si no hay foto, la primera de', {
+      default: 'story.moments',
+      advanced: true,
+    }),
+  }),
+  buyerSchema: z.object({
+    photo: field.photo('Su foto juntos', {
+      help: 'Va en una polaroid y, fuera de foco, de fondo. Si no subís una, va la primera de tus fotos.',
+    }),
+    caption: field.text('Pie de la foto', { max: 30, placeholder: 'nosotros ♥' }),
+    wish: field.text('Una frase para empezar', {
+      max: 80,
+      placeholder: 'Porque sos mi persona favorita.',
+    }),
+  }),
+  frame: FRAME,
+  summary: null,
+  editor: {
+    title: 'Edición especial',
+    intro:
+      'La tapa de su edición especial: una foto de ustedes en una polaroid y una frase tuya, firmada.',
+  },
+} satisfies SlideDefinition
+
+// ── 13 · Revista (pareja) ───────────────────────────────────────────────────
+
+export const LOVE_RELATIONS = [
+  { value: 'neutro', label: 'Prefiero no decir' },
+  { value: 'novia', label: 'Mi novia' },
+  { value: 'novio', label: 'Mi novio' },
+  { value: 'esposa', label: 'Mi esposa' },
+  { value: 'esposo', label: 'Mi esposo' },
+] as const
+
+export const LOVE_TONES = [
+  { value: 'cualquiera', label: 'El que mejor quede' },
+  { value: 'romantico', label: 'Romántico' },
+  { value: 'tierno', label: 'Tierno' },
+  { value: 'apasionado', label: 'Apasionado' },
+  { value: 'profundo', label: 'Profundo' },
+  { value: 'agradecido', label: 'Agradecido' },
+  { value: 'cotidiano', label: 'Cotidiano' },
+  { value: 'divertido', label: 'Divertido' },
+  { value: 'nostalgico', label: 'Nostálgico' },
+] as const
+
+/** La misma revista, con el banco de Pareja y sus vínculos. */
+const storyMagazineLove = {
+  ...storyMagazine,
+  label: 'Ribbly · Revista (pareja)',
+  themeSchema: z.object({
+    ...screen('pareja'),
+    bank: field.select('Banco de textos', MAGAZINE_BANKS, { default: 'pareja', advanced: true }),
+    shareLabel: field.text('Botón compartir', { default: 'COMPARTIR STORY', max: 30 }),
+    photoFromKind: field.text('Usar la primera foto de', {
+      default: 'story.moments',
+      advanced: true,
+    }),
+  }),
+  buyerSchema: z.object({
+    relation: field.select('¿Qué es para vos?', LOVE_RELATIONS, {
+      default: 'neutro',
+      help: 'Con esto elegimos un texto que les quede.',
+    }),
+    tone: field.select('Tono', LOVE_TONES, { default: 'cualquiera' }),
+    version: field.number('Versión del texto', {
+      min: 1,
+      max: 30,
+      default: 1,
+      help: 'Subí el número para probar otro texto con el mismo vínculo y tono.',
+    }),
+    ownText: field.textarea('O escribí el tuyo (opcional)', {
+      max: 320,
+      placeholder: 'Si escribís acá, reemplaza al texto de la revista.',
+    }),
+    photo: field.photo('Foto de la tapa (opcional)', {
+      help: 'Si no subís una, va la primera de tus fotos.',
+    }),
+  }),
+  summary: { icon: 'pen-tool', title: 'Revista', text: 'Una nota de tapa sobre vos.' },
+  editor: {
+    title: 'La revista',
+    intro:
+      'Una tapa de revista que habla de esa persona. Decinos qué es para vos y el tono: elegimos entre 100 textos.',
+  },
+} satisfies SlideDefinition
+
+// ── 15 · Gratitud ───────────────────────────────────────────────────────────
+
+const pauseQuestion = field.group('Pregunta', {
+  label: field.text('Rótulo', { max: 20 }),
+  line1: field.text('Pregunta · línea 1', { max: 40 }),
+  line2: field.text('Pregunta · final en cursiva', { max: 30 }),
+  placeholder: field.text('Ayuda', { max: 60 }),
+})
+
+const reflectPause = {
+  label: 'Ribbly · Gratitud',
+  description: 'Una pausa para respirar y tres preguntas de gratitud que responde quien recibe.',
+  category: 'reflect',
+  themeSchema: z.object({
+    ...screen('pareja'),
+    kicker: field.text('Etiqueta', { default: 'UN MOMENTO PARA VOS', max: 30 }),
+    title1: field.text('Título', { default: 'Pausa', max: 20 }),
+    title2: field.text('Título · cursiva', { default: 'un segundo.', max: 20 }),
+    subtitle: field.textarea('Texto', {
+      default:
+        'En la velocidad del día a día, a veces olvidamos valorar lo importante. Quiero invitarte a hacer un pequeño ejercicio de gratitud juntos.',
+      max: 200,
+    }),
+    breath: field.text('Respiración', { default: 'INHALÁ · EXHALÁ', max: 30 }),
+    cta: field.text('Botón', { default: 'Comenzar ✨', max: 30 }),
+    questions: field.list('Preguntas', pauseQuestion, {
+      min: 1,
+      max: 5,
+      itemLabel: 'Pregunta {n}',
+      default: [
+        {
+          label: 'EL MOMENTO',
+          line1: '¿Qué fue lo mejor que te pasó',
+          line2: 'este año?',
+          placeholder: 'Ese recuerdo que te saca una sonrisa…',
+        },
+        {
+          label: 'LA PERSONA',
+          line1: '¿Quién hizo tus días',
+          line2: 'más lindos?',
+          placeholder: 'Alguien que estuvo ahí…',
+        },
+        {
+          label: 'EL LOGRO',
+          line1: '¿Qué desafío',
+          line2: 'te animaste a superar?',
+          placeholder: 'Algo difícil que dejaste atrás…',
+        },
+      ],
+    }),
+    stepLabel: field.text('Progreso', { default: '✨ {{label}} · {{n}} DE {{total}}', max: 40 }),
+    nextLabel: field.text('Botón siguiente', { default: 'Siguiente →', max: 20, advanced: true }),
+    doneLabel: field.text('Botón del último', { default: 'Terminar ✨', max: 20 }),
+    outroTitle: field.text('Final · título', { default: 'Gracias.', max: 30 }),
+    outroText: field.text('Final · texto', {
+      default: 'Por regalarte este momento. Nunca dejes de agradecer.',
+      max: 100,
+    }),
+    againLabel: field.text('Botón ver respuestas', {
+      default: 'Ver mis respuestas',
+      max: 30,
+      advanced: true,
+    }),
+  }),
+  buyerSchema: null,
+  frame: FRAME,
+  summary: { icon: 'heart', title: 'Gratitud', text: 'Una pausa para valorar lo bueno.' },
+} satisfies SlideDefinition
+
+// ── 16 · Diario ─────────────────────────────────────────────────────────────
+
+const reflectDiary = {
+  label: 'Ribbly · Diario',
+  description: 'Una libreta sobre la mesa con su nombre: adentro escribe lo que quiere recordar.',
+  category: 'reflect',
+  themeSchema: z.object({
+    ...screen('pareja'),
+    kicker: field.text('Etiqueta', { default: 'JOURNALING', max: 30 }),
+    title1: field.text('Título', { default: 'Espacio', max: 20 }),
+    title2: field.text('Título · segunda línea', { default: 'libre.', max: 20 }),
+    subtitle: field.text('Texto', {
+      default: 'Despejá tu mente. Este es un lugar seguro para tus pensamientos más grandes.',
+      max: 120,
+    }),
+    phrase: field.text('Frase', { default: 'Escribir es aclarar.', max: 40 }),
+    coverLabel: field.text('Tapa', { default: 'Diario de {{nombre}}', max: 30 }),
+    openLabel: field.text('Botón', { default: '🖊️ Abrir mi diario', max: 30 }),
+    placeholder: field.textarea('Ayuda de la página', {
+      default: 'Querido diario: hoy…',
+      max: 120,
+    }),
+    listTitle: field.text('Título de la lista', {
+      default: 'Cosas que quiero recordar:',
+      max: 40,
+    }),
+    listPlaceholders: field.list('Ayudas de la lista', field.text('Ayuda', { max: 30 }), {
+      min: 1,
+      max: 5,
+      default: ['su risa', 'el café de la mañana', 'ese viaje'],
+    }),
+    photoCaption: field.text('Pie de la foto', { default: 'hoy ♥', max: 20 }),
+    photoFromKind: field.text('Foto: la primera de', {
+      default: 'story.moments',
+      advanced: true,
+    }),
+    closeLabel: field.text('Botón cerrar', { default: 'Cerrar', max: 20, advanced: true }),
+    saveLabel: field.text('Botón guardar', { default: 'Guardar en mi diario', max: 30 }),
+    savedLabel: field.text('Al guardar', { default: 'Guardado en tu diario ✨', max: 40 }),
+    editLabel: field.text('Botón con página escrita', {
+      default: '🖊️ Seguir escribiendo',
+      max: 30,
+      advanced: true,
+    }),
+  }),
+  buyerSchema: null,
+  frame: FRAME,
+  summary: { icon: 'pen-tool', title: 'Diario', text: 'Un espacio para escribir.' },
+} satisfies SlideDefinition
+
+// ── 17 · Fortuna ────────────────────────────────────────────────────────────
+
+const gameCookie = {
+  label: 'Ribbly · Galletita de la fortuna',
+  description: 'Tres galletitas bajo las estrellas: elige una, se parte y sale tu mensaje.',
+  category: 'game',
+  themeSchema: z.object({
+    ...screen('pareja'),
+    kicker: field.text('Arriba', { default: 'Todo pasa por algo...', max: 30 }),
+    title: field.text('Título', { default: 'Tu destino', max: 24 }),
+    subtitle: field.text('Texto', {
+      default: 'Elegí una galletita. Tu elección es la clave.',
+      max: 60,
+    }),
+    instinct: field.text('Abajo', { default: 'Tu instinto sabe cuál es ✨', max: 40 }),
+    labels: field.list('Rótulos de las galletitas', field.text('Rótulo', { max: 6 }), {
+      min: 3,
+      max: 3,
+      default: ['I', 'II', 'III'],
+      advanced: true,
+    }),
+    messageKicker: field.text('Rótulo del mensaje', { default: 'MENSAJE DEL UNIVERSO', max: 30 }),
+    messages: field.list('Banco de mensajes', field.text('Mensaje', { max: 140 }), {
+      min: 1,
+      max: 12,
+      itemLabel: 'Mensaje {n}',
+      help: 'Se usa uno si el comprador no escribe el suyo.',
+      default: [
+        'La suerte no es casualidad, es preparación encontrando oportunidad. Estás listo.',
+        'Lo que buscás también te está buscando. Mantené el corazón abierto.',
+        'Se viene un año de abrazos largos y planes que se cumplen.',
+        'Tu intuición es tu superpoder: si sentís que es por ahí, no lo dudes.',
+        'Lo mejor todavía no pasó. Y lo vas a vivir bien acompañado.',
+      ],
+    }),
+    closing1: field.text('Remate · línea 1', {
+      default: 'Tu instinto te trajo hasta acá.',
+      max: 50,
+    }),
+    closing2: field.text('Remate', { default: 'Confiá.', max: 20 }),
+    saveLabel: field.text('Botón', { default: 'Guardar mi fortuna', max: 30 }),
+  }),
+  buyerSchema: z.object({
+    message: field.textarea('Mensaje de la galletita', {
+      max: 140,
+      placeholder: 'La suerte no es casualidad, es preparación encontrando oportunidad.',
+      help: 'Lo que le espera, en una frase. Si lo dejás vacío elegimos uno.',
+    }),
+  }),
+  frame: FRAME,
+  summary: { icon: 'moon', title: 'Fortuna', text: 'Un mensaje del universo.' },
+  editor: {
+    title: 'Galletita de la fortuna',
+    intro:
+      'Elige una de tres galletitas, se parte y sale tu mensaje. Si no escribís uno, va uno de los nuestros.',
   },
 } satisfies SlideDefinition
 
@@ -1067,6 +1435,13 @@ export const ribblyDefinitions = {
   'story.memory': storyMemory,
   'outro.recap': outroRecap,
   'outro.finale': outroFinale,
+  // Pareja
+  'cover.gift': coverGift,
+  'cover.edition': coverEdition,
+  'story.magazine-love': storyMagazineLove,
+  'reflect.pause': reflectPause,
+  'reflect.diary': reflectDiary,
+  'game.cookie': gameCookie,
 } as const
 
 /** Contenido con el que arranca el editor del comprador en estas pantallas. */

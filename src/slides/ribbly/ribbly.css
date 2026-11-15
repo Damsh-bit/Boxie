@@ -617,6 +617,23 @@
   }
 }
 
+/* Lamparitas y estrellas que laten (Pareja). */
+.rb-bulb {
+  filter: drop-shadow(0 0 calc(var(--u) * 6) rgba(255, 210, 120, 0.9));
+  animation: rb-glow 2.4s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+@keyframes rb-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
 /* Todo el ambiente corre solo con la slide en pantalla. */
 .bx-slide.is-active .rb-rays,
 .bx-slide.is-active .rb-confetti i,
@@ -626,6 +643,7 @@
 .bx-slide.is-active .rb-balloon,
 .bx-slide.is-active .rb-beam,
 .bx-slide.is-active .rb-tap,
+.bx-slide.is-active .rb-bulb,
 .bx-slide.is-active .rb-loop {
   animation-play-state: running;
 }
@@ -639,6 +657,7 @@
   .rb-stage .rb-balloon,
   .rb-stage .rb-beam,
   .rb-stage .rb-tap,
+  .rb-stage .rb-bulb,
   .rb-stage .rb-loop {
     animation: none !important;
   }

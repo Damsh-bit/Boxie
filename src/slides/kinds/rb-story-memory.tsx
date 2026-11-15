@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { Heart, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText, Icon } from '@/ui/Icon'
-import { Burst, PartyScene } from '../ribbly/art'
+import { Burst, CoupleScene, PartyScene } from '../ribbly/art'
 import { Brand, Btn, Sheet, Stage, T, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { frames, Loop, spring } from './motion'
@@ -20,10 +20,18 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
   const title = buyer.title.trim() || fill(theme.defaultTitle, ctx.vars)
   const text = buyer.text.trim() || fill(theme.defaultText, ctx.vars)
 
-  const picture = photo ? <img src={photo} alt="" /> : <PartyScene />
+  const pareja = theme.look === 'pareja'
+  const picture = photo ? <img src={photo} alt="" /> : pareja ? <CoupleScene /> : <PartyScene />
 
   return (
-    <Stage bg="linear-gradient(180deg, #2B1B4E 0%, #5B2A6E 55%, #8E3A6E 100%)">
+    <Stage
+      bg={
+        pareja
+          ? 'linear-gradient(180deg, #6A8F55 0%, #9ABF7A 55%, #C9DDB0 100%)'
+          : 'linear-gradient(180deg, #2B1B4E 0%, #5B2A6E 55%, #8E3A6E 100%)'
+      }
+      className={pareja ? 'is-pareja' : ''}
+    >
       <div className="rb-bg">
         {/* La misma foto, fuera de foco, tiñe el fondo. */}
         <div className="rb-memory-blur">{picture}</div>

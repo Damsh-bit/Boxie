@@ -50,26 +50,51 @@ describe('temáticas iniciales (criterio de aceptación de la Fase 5)', () => {
     expect(result.success ? [] : result.issues).toEqual([])
   })
 
-  it('las tres tienen 20 slides; pareja y amistad, las del prototipo en el mismo orden', () => {
-    const categories = (seed: (typeof seeds)[number]) =>
-      readThemeConfig(seed.config).slides.map((slide) => slide.kind.split('.')[0])
-    for (const seed of seeds) expect(categories(seed)).toHaveLength(20)
-    expect(categories(pareja)).toEqual(categories(amistad))
+  it('las tres tienen 20 slides', () => {
+    for (const seed of seeds) expect(readThemeConfig(seed.config).slides).toHaveLength(20)
   })
 
   it('cumpleaños usa las 20 pantallas de la base de Ribbly', () => {
     const kinds = readThemeConfig(cumpleanos.config).slides.map((slide) => slide.kind)
-    expect(kinds).toEqual(Object.keys(ribblyDefinitions))
+    expect(kinds).toEqual(Object.keys(ribblyDefinitions).slice(0, 20))
     // Todas a pantalla completa y con su propio fondo.
     for (const slide of readThemeConfig(cumpleanos.config).slides) {
       expect(slide.frame).toMatchObject({ background: 'none', fullScreen: true })
     }
   })
 
+  it('pareja usa las pantallas de Ribbly: las compartidas con su estilo y las suyas', () => {
+    const slides = readThemeConfig(pareja.config).slides
+    expect(slides.every((s) => s.kind in ribblyDefinitions)).toBe(true)
+    expect(slides.map((s) => s.kind)).toEqual([
+      'intro.brand',
+      'cover.gift',
+      'cover.edition',
+      'story.card',
+      'story.moments',
+      'media.video',
+      'media.mix',
+      'game.quiz',
+      'connector.premiere',
+      'media.poster',
+      'game.slots',
+      'game.vouchers',
+      'story.magazine-love',
+      'story.wishes',
+      'reflect.pause',
+      'reflect.diary',
+      'game.cookie',
+      'story.memory',
+      'outro.recap',
+      'outro.finale',
+    ])
+    for (const slide of slides) expect((slide.props as { look: string }).look).toBe('pareja')
+  })
+
   it('cada una usa su portada y sus textos propios', () => {
     const cover = (slug: string) =>
       readThemeConfig(seeds.find((s) => s.slug === slug).config).slides[1]!.kind
-    expect(cover('pareja')).toBe('cover.recipient')
+    expect(cover('pareja')).toBe('cover.gift')
     expect(cover('amistad')).toBe('cover.friends')
     expect(cover('cumpleanos')).toBe('cover.cake')
   })
@@ -103,7 +128,8 @@ describe('validación de temáticas', () => {
 })
 
 describe('contenido del comprador', () => {
-  const config = readThemeConfig(pareja.config)
+  // Amistad conserva las pantallas del prototipo (dedicatoria con foto, razones, cuponera).
+  const config = readThemeConfig(amistad.config)
   const photo = { assetId: '6a9f3c1e-2b4d-4e8f-9a1b-3c5d7e9f1a2b' }
 
   it('un borrador incompleto se puede guardar', () => {

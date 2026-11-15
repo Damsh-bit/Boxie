@@ -1,25 +1,22 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
-import { Balloon, Bunting, Burst, Confetti, Stars } from '../ribbly/art'
+import { Balloon, Bokeh, Bow, Bunting, Burst, Confetti, Heart, Stars } from '../ribbly/art'
 import { Brand, Btn, Stage, T, u } from '../ribbly/ui'
 import { Appear, ease, frames, Loop, Pop, spring } from './motion'
 import type { Props } from './shared'
 
 type Step = 'box' | 'gift' | 'finale'
 
-const NIGHT = 'linear-gradient(180deg, #13224E 0%, #2B2F7E 55%, #3B2A6E 100%)'
-const SUNSET = 'linear-gradient(175deg, #F4607E 0%, #FA8A6E 50%, #FFB45C 100%)'
-
-/** Moño de la tapa. */
-function Bow() {
-  return (
-    <svg className="rb-bow" viewBox="0 0 86 44" aria-hidden>
-      <path d="M43 30 C22 2 2 4 6 22 C8 36 28 36 43 30 Z" fill="#F8627A" />
-      <path d="M43 30 C64 2 84 4 80 22 C78 36 58 36 43 30 Z" fill="#F44E63" />
-      <circle cx="43" cy="30" r="9" fill="#D63A55" />
-    </svg>
-  )
+const LOOK = {
+  cumple: {
+    night: 'linear-gradient(180deg, #13224E 0%, #2B2F7E 55%, #3B2A6E 100%)',
+    sunset: 'linear-gradient(175deg, #F4607E 0%, #FA8A6E 50%, #FFB45C 100%)',
+  },
+  pareja: {
+    night: 'linear-gradient(180deg, #2A1430 0%, #4A2A6E 55%, #3B1830 100%)',
+    sunset: 'linear-gradient(175deg, #C8305A 0%, #A82A4E 50%, #8E2A42 100%)',
+  },
 }
 
 /**
@@ -40,9 +37,11 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
   }
   const finale = step === 'finale'
   const opened = step === 'gift'
+  const pareja = theme.look === 'pareja'
+  const { night: NIGHT, sunset: SUNSET } = LOOK[pareja ? 'pareja' : 'cumple']
 
   return (
-    <Stage bg={NIGHT}>
+    <Stage bg={NIGHT} className={pareja ? 'is-pareja' : ''}>
       <motion.div
         className="rb-bg"
         style={{ background: SUNSET }}
@@ -50,14 +49,50 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
         animate={{ opacity: finale ? 1 : 0 }}
         transition={{ duration: 0.7 }}
       >
-        <Confetti seed={20} count={30} />
+        {pareja ? (
+          <>
+            <Bokeh
+              seed={20}
+              count={14}
+              colors={['#FFC56E', '#FFCCD5', '#FFFFFF']}
+              blur={9}
+              maxOpacity={0.4}
+            />
+            <svg
+              viewBox="0 0 390 120"
+              preserveAspectRatio="none"
+              aria-hidden
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                bottom: '24%',
+                width: '100%',
+                height: '16%',
+              }}
+            >
+              <path
+                d="M0 70 C90 30 200 100 390 40 V62 C220 118 100 52 0 92 Z"
+                fill="#fff"
+                opacity="0.9"
+              />
+              <path
+                d="M0 92 C100 52 220 118 390 62 V76 C230 130 110 70 0 108 Z"
+                fill="#FFE4E9"
+                opacity="0.6"
+              />
+            </svg>
+          </>
+        ) : (
+          <Confetti seed={20} count={30} />
+        )}
       </motion.div>
       {!finale && (
         <div className="rb-bg">
           <Stars seed={20} count={22} sparks={6} area={90} />
         </div>
       )}
-      {finale && <Bunting />}
+      {finale && !pareja && <Bunting />}
 
       <AnimatePresence mode="wait" initial={false}>
         {!finale ? (
@@ -146,6 +181,18 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
                         >
                           <EmojiText text={gift} />
                         </p>
+                        {buyer.giftDetail.trim() && (
+                          <p
+                            style={{
+                              fontSize: u(11.5),
+                              opacity: 0.85,
+                              marginTop: u(6),
+                              fontWeight: 500,
+                            }}
+                          >
+                            <EmojiText text={buyer.giftDetail} />
+                          </p>
+                        )}
                         <p
                           className="rb-caveat"
                           style={{
@@ -154,7 +201,7 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
                             textAlign: 'right',
                             fontWeight: 600,
                             fontSize: u(17),
-                            color: 'var(--rb-sol)',
+                            color: pareja ? '#FFCCD5' : 'var(--rb-sol)',
                           }}
                         >
                           {buyer.giftSignature.trim() || `de ${ctx.senderName}`}
@@ -217,18 +264,22 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4 }}
           >
-            <Balloon
-              color="#4FC3F7"
-              style={{ left: '7%', top: '41%', width: u(62) }}
-              duration={6.2}
-            />
-            <Balloon
-              color="#FFD35C"
-              style={{ right: '7%', top: '39%', width: u(68) }}
-              duration={7}
-              delay={-2.5}
-              tilt={4}
-            />
+            {!pareja && (
+              <>
+                <Balloon
+                  color="#4FC3F7"
+                  style={{ left: '7%', top: '41%', width: u(62) }}
+                  duration={6.2}
+                />
+                <Balloon
+                  color="#FFD35C"
+                  style={{ right: '7%', top: '39%', width: u(68) }}
+                  duration={7}
+                  delay={-2.5}
+                  tilt={4}
+                />
+              </>
+            )}
 
             <h2 className="rb-finale-title" style={{ marginTop: u(64) }}>
               <Pop as="span" active={active} delay={0.1} from={0.5} rotate={-8}>
@@ -249,6 +300,16 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
             </Appear>
 
             <div className="rb-grow">
+              {pareja && (
+                <Pop active={active} delay={0.65} from={0.3} style={{ marginBottom: u(28) }}>
+                  <Heart
+                    color="#F44E63"
+                    style={{ width: u(64), position: 'relative' }}
+                    duration={3.2}
+                    tilt={-4}
+                  />
+                </Pop>
+              )}
               <Appear active={active} delay={0.75}>
                 <Brand size={30} />
               </Appear>

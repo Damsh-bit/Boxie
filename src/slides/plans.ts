@@ -63,6 +63,12 @@ export const DEFAULT_KIND_TIER: Record<SlideKind, 1 | 2 | 3> = {
   'story.memory': 1,
   'outro.recap': 1,
   'outro.finale': 1,
+  'cover.gift': 1,
+  'cover.edition': 1,
+  'story.magazine-love': 1,
+  'reflect.pause': 1,
+  'reflect.diary': 1,
+  'game.cookie': 1,
 }
 
 /** Las slides que no pueden faltar en ningún plan (sin ellas no hay regalo). */

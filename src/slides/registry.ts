@@ -21,6 +21,11 @@ import { GamePinata } from './kinds/rb-game-pinata'
 import { GameQuiz } from './kinds/rb-game-quiz'
 import { GameSlots } from './kinds/rb-game-slots'
 import { GameVouchers } from './kinds/rb-game-vouchers'
+import { CoverEdition } from './kinds/rb-cover-edition'
+import { CoverGift } from './kinds/rb-cover-gift'
+import { GameCookie } from './kinds/rb-game-cookie'
+import { ReflectDiary } from './kinds/rb-reflect-diary'
+import { ReflectPause } from './kinds/rb-reflect-pause'
 import { IntroBrand } from './kinds/rb-intro-brand'
 import { MediaMix } from './kinds/rb-media-mix'
 import { MediaPoster } from './kinds/rb-media-poster'
@@ -97,6 +102,13 @@ export const slideComponents = {
   'story.memory': StoryMemory,
   'outro.recap': OutroRecap,
   'outro.finale': OutroFinale,
+  // Pareja
+  'cover.gift': CoverGift,
+  'cover.edition': CoverEdition,
+  'story.magazine-love': StoryMagazine,
+  'reflect.pause': ReflectPause,
+  'reflect.diary': ReflectDiary,
+  'game.cookie': GameCookie,
 } satisfies { [K in SlideKind]: ComponentType<Props<K>> }
 
 export const slideRegistry = Object.fromEntries(

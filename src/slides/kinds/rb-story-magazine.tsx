@@ -3,7 +3,7 @@ import { Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
 import type { BuyerPhoto } from '../fields'
-import { PartyScene } from '../ribbly/art'
+import { CoupleScene, PartyScene } from '../ribbly/art'
 import { pickMagazine } from '../ribbly/magazine'
 import { Brand, Btn, Sheet, slideOfKind, Stage, T, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
@@ -15,11 +15,18 @@ import type { Props } from './shared'
  * del banco de 100 variaciones según el vínculo y el tono que eligió quien
  * regala (o es el suyo, si lo escribió).
  */
-export function StoryMagazine({ theme, buyer, ctx }: Props<'story.magazine'>) {
+/** También es la revista de Pareja (`story.magazine-love`): cambian el banco y los vínculos. */
+export function StoryMagazine({
+  theme,
+  buyer,
+  ctx,
+}: Props<'story.magazine'> | Props<'story.magazine-love'>) {
+  const pareja = theme.look === 'pareja'
   const active = ctx.active
   const [sharing, setSharing] = useState(false)
 
   const text = pickMagazine({
+    bank: theme.bank,
     relation: buyer.relation,
     tone: buyer.tone,
     version: buyer.version,
@@ -39,7 +46,7 @@ export function StoryMagazine({ theme, buyer, ctx }: Props<'story.magazine'>) {
     ctx.resolveMedia(buyer.photo) ?? ctx.resolveMedia(moments?.find((m) => m.photo)?.photo)
 
   return (
-    <Stage bg="#FFF9EE">
+    <Stage bg={pareja ? '#FFFFFF' : '#FFF9EE'} className={pareja ? 'is-pareja' : ''}>
       <div className="rb-mag">
         <h2 className="rb-mag-title">
           {text.title.map((line, i) => (
@@ -79,7 +86,7 @@ export function StoryMagazine({ theme, buyer, ctx }: Props<'story.magazine'>) {
           </Appear>
 
           <Appear active={active} delay={0.8} y={30} className="rb-mag-photo">
-            {photo ? <img src={photo} alt="" /> : <PartyScene />}
+            {photo ? <img src={photo} alt="" /> : pareja ? <CoupleScene /> : <PartyScene />}
             <span
               style={{
                 position: 'absolute',

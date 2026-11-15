@@ -2,7 +2,7 @@ import { Music, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText, Icon } from '@/ui/Icon'
 import type { BuyerPhoto } from '../fields'
-import { Bunting, Confetti, SCENES } from '../ribbly/art'
+import { Bokeh, Bunting, Confetti, SCENES, SCENES_PAREJA } from '../ribbly/art'
 import { Brand, Btn, Sheet, slideOfKind, Stage, T, u, useStored } from '../ribbly/ui'
 import { Appear, Pop } from './motion'
 import type { QuizResult } from './rb-game-quiz'
@@ -15,6 +15,7 @@ import { shareOrCopy, type Props } from './shared'
  */
 export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
   const active = ctx.active
+  const pareja = theme.look === 'pareja'
   const [notice, setNotice] = useState<string | null>(null)
 
   const content = (kind: string) => {
@@ -62,11 +63,28 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
   }
 
   return (
-    <Stage bg="linear-gradient(180deg, #3B2A7E 0%, #6B3A8E 50%, #8ED0E8 100%)">
+    <Stage
+      bg={
+        pareja
+          ? 'linear-gradient(180deg, #F7798A 0%, #F4607E 50%, #E8405A 100%)'
+          : 'linear-gradient(180deg, #3B2A7E 0%, #6B3A8E 50%, #8ED0E8 100%)'
+      }
+      className={pareja ? 'is-pareja' : ''}
+    >
       <div className="rb-bg">
-        <Confetti seed={19} count={22} />
+        {pareja ? (
+          <Bokeh
+            seed={19}
+            count={12}
+            colors={['#FFFFFF', '#FFCCD5', '#FFC56E']}
+            blur={9}
+            maxOpacity={0.4}
+          />
+        ) : (
+          <Confetti seed={19} count={22} />
+        )}
       </div>
-      <Bunting />
+      {!pareja && <Bunting />}
 
       <div className="rb-body" style={{ paddingInline: u(18) }}>
         <Appear
@@ -97,7 +115,8 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
           <Appear active={active} delay={0.25} y={50} className="rb-recap">
             <div className="rb-collage">
               {[0, 1, 2].map((i) => {
-                const Scene = SCENES[(i + 2) % SCENES.length]!
+                const scenes = pareja ? SCENES_PAREJA : SCENES
+                const Scene = scenes[i % scenes.length]!
                 return (
                   <div key={i}>
                     {photos.length ? <img src={photos[i % photos.length]} alt="" /> : <Scene />}
@@ -128,7 +147,15 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
                   }}
                 >
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    <T text={ctx.vars.edad ? theme.personChip : '{{nombre}} 🎂'} ctx={ctx} />
+                    <T
+                      text={
+                        // Si el chip nombra la edad y no hay edad, solo el nombre.
+                        !ctx.vars.edad && theme.personChip.includes('{{edad}}')
+                          ? '{{nombre}} 🎂'
+                          : theme.personChip
+                      }
+                      ctx={ctx}
+                    />
                   </span>
                 </span>
               </div>

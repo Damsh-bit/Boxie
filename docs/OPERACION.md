@@ -50,6 +50,13 @@ npx supabase migration repair --status applied 20260925120000 20260925130000 202
 
 La base cambia solo por migraciones. Nunca desde el panel.
 
+**Temáticas de `supabase/seed/themes`:** la migración del catálogo solo las carga en una base
+nueva. En una base que ya existe, cuando un JSON cambia (por ejemplo, pantallas nuevas de una
+ocasión), se publica como versión nueva con `npm run themes:publish -- <slug…>`: sin `--apply` es un
+simulacro que muestra qué cambia; con `--apply` usa `publish_theme` (lo mismo que el botón
+"Publicar" del panel) y actualiza la ficha. Las Ribbly ya vendidas no cambian. Toma la base de
+`.env.local`: con la real, solo con el OK del dueño.
+
 **Región de Vercel:** las funciones tienen que estar al lado de la base, porque cada página del
 editor hace varias consultas. Con la base en `ca-central-1`, dejar el default (`iad1`, EE.UU. este);
 **no** pasarlas a `gru1` mientras la base siga en Canadá (cada consulta sumaría ~120 ms). Si algún

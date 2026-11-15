@@ -55,11 +55,16 @@ test('comprar, personalizar, bloquear y abrir el regalo en otro dispositivo', as
     .locator('#seccion-momentos')
     .getByRole('button', { name: /Agregar momento/ })
     .click()
+  // Las fotos se comprimen en el navegador y se suben a Storage: puede tardar.
   await page.locator('#m-momentos-moments-0-photo').setInputFiles(FOTO)
-  await expect(page.locator('#seccion-momentos img[alt="Foto elegida"]')).toBeVisible()
+  await expect(page.locator('#seccion-momentos img[alt="Foto elegida"]')).toBeVisible({
+    timeout: 15_000,
+  })
   await page.getByRole('button', { name: /^Anécdota/ }).click()
   await page.locator('#m-anecdota-photo').setInputFiles(OTRA_FOTO)
-  await expect(page.locator('#seccion-anecdota img[alt="Foto elegida"]')).toBeVisible()
+  await expect(page.locator('#seccion-anecdota img[alt="Foto elegida"]')).toBeVisible({
+    timeout: 15_000,
+  })
   await expect(page.getByRole('status').filter({ hasText: 'Guardado' })).toBeVisible({
     timeout: 10_000,
   })
@@ -85,8 +90,10 @@ test('comprar, personalizar, bloquear y abrir el regalo en otro dispositivo', as
   await expect(page.locator('#editor-para')).toHaveCount(0)
 
   // El destinatario, en su celular, sin usuario ni clave: abre la tapa y recorre.
+  // "Abrir mi regalo" son dos botones: la caja y el de texto (el último).
   await recipient.reload()
-  await recipient.getByRole('button', { name: 'Abrir mi regalo 🎁' }).click()
+  await expect(recipient.getByRole('heading', { level: 1 })).toHaveText('¡Sofía, tenés un regalo!')
+  await recipient.getByRole('button', { name: 'Abrir mi regalo', exact: true }).last().click()
   await recipient.getByRole('button', { name: 'Slide siguiente' }).click()
   await expect(recipient.locator('.bx-slide.is-active')).toContainText('Sofía')
   await otherDevice.close()

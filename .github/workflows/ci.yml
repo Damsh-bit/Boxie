@@ -68,7 +68,9 @@ jobs:
       - run: npm ci
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # La misma versión que la del proyecto (package.json). Con "latest" la
+          # acción consulta la API de GitHub y a veces corta por límite de pedidos.
+          version: 2.117.0
       - name: Supabase local (migraciones + catálogo inicial)
         run: |
           supabase start -x studio,imgproxy

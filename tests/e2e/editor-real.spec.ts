@@ -78,9 +78,10 @@ test('comprar, personalizar, bloquear y abrir el regalo en otro dispositivo', as
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('¡Ribbly lista!')
   await expect(page.getByText(giftUrl)).toBeVisible()
 
-  // Bloqueada: el editor ya no edita, muestra el link.
+  // Bloqueada: volver al editor cierra la sesión y lleva a la cuenta (sin
+  // usuario, a su login). Ya no se puede editar.
   await page.goto('/editor')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('¡Ribbly lista!')
+  await expect(page).toHaveURL(/\/cuenta\/login\?next=(%2F|\/)cuenta$/)
   await expect(page.locator('#editor-para')).toHaveCount(0)
 
   // El destinatario, en su celular, sin usuario ni clave: abre la tapa y recorre.

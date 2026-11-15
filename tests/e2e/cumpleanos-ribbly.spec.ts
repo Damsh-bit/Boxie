@@ -22,9 +22,17 @@ async function irHasta(page: Page, texto: string | RegExp) {
   await expect(activa(page).getByText(texto).first()).toBeVisible()
 }
 
-/** Los botones que laten nunca quedan "quietos" para Playwright: se fuerza el toque. */
-const tocar = (page: Page, nombre: string | RegExp) =>
-  activa(page).getByRole('button', { name: nombre }).first().click({ force: true })
+/**
+ * Toca un botón cuando terminó de entrar: si se toca mientras se mueve, el
+ * clic cae donde estaba antes. Los que laten en loop nunca quedan quietos:
+ * después de unos segundos se tocan igual.
+ */
+async function tocar(page: Page, nombre: string | RegExp) {
+  const boton = activa(page).getByRole('button', { name: nombre }).first()
+  await expect(boton).toBeVisible()
+  await boton.click({ trial: true, timeout: 2500 }).catch(() => {})
+  await boton.click({ force: true })
+}
 
 // Hay que pasar hasta 19 pantallas animadas: más margen que el de por defecto.
 test.describe.configure({ timeout: 90_000 })

@@ -57,12 +57,11 @@ export async function lockBoxieAction(): Promise<LockResult> {
     return { ok: false, error: TOO_FAST }
   }
   try {
-    const result = await lockForGifting(s)
-    if (result.ok) {
-      const cookieStore = await cookies()
-      cookieStore.delete(EDITOR_COOKIE)
-    }
-    return result
+    // La cookie no se borra acá: cambiar una cookie desde una acción hace que
+    // /editor se vuelva a renderizar y, sin sesión, tapaba "¡Ribbly lista!"
+    // (el link para mandar el regalo). La sesión se cierra cuando vuelve a
+    // entrar al editor (page.tsx → /editor/salir).
+    return await lockForGifting(s)
   } catch (error) {
     log.error('No se pudo bloquear la Boxie', error, { boxieId: s.boxieId })
     return { ok: false, error: 'No pudimos bloquear el regalo. Probá de nuevo en un rato.' }

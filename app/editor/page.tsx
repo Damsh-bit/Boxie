@@ -23,6 +23,17 @@ const ERRORS: Record<string, EditorMessageKind> = {
   link: 'bad-link',
   limite: 'rate',
   servidor: 'server',
+  vencido: 'expired',
+  reembolsado: 'refunded',
+}
+
+/**
+ * Cierra la sesión del editor y sigue a `next`. La página no puede borrar la
+ * cookie mientras se renderiza (Next lo prohíbe y tira error): lo hace la
+ * ruta /editor/salir.
+ */
+function closeSessionAndGo(next: string): never {
+  redirect(`/editor/salir?next=${encodeURIComponent(next)}` as Route)
 }
 
 export default async function EditorPage({ searchParams }: PageProps<'/editor'>) {
@@ -65,30 +76,17 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
     return <EditorMessage kind="server" />
   }
 
-  if (!data) {
-    cookieStore.delete(EDITOR_COOKIE)
-    return <EditorMessage kind="bad-link" />
-  }
+  if (!data) closeSessionAndGo('/editor?error=link')
 
-  // Si la Ribbly ya fue bloqueada para regalar: no se puede editar más
+  // Si la Ribbly ya fue bloqueada para regalar: no se puede editar más, y la
+  // ve en su cuenta ("Mis Regalos").
   if (data.availability === 'locked') {
-    cookieStore.delete(EDITOR_COOKIE)
     const customer = await getCustomerSession()
-    if (customer) {
-      redirect('/cuenta')
-    }
-    redirect('/cuenta/login?next=/cuenta' as Route)
+    closeSessionAndGo(customer ? '/cuenta' : '/cuenta/login?next=/cuenta')
   }
 
-  if (data.availability === 'expired') {
-    cookieStore.delete(EDITOR_COOKIE)
-    return <EditorMessage kind="expired" />
-  }
-
-  if (data.availability === 'refunded') {
-    cookieStore.delete(EDITOR_COOKIE)
-    return <EditorMessage kind="refunded" />
-  }
+  if (data.availability === 'expired') closeSessionAndGo('/editor?error=vencido')
+  if (data.availability === 'refunded') closeSessionAndGo('/editor?error=reembolsado')
 
   return (
     <>

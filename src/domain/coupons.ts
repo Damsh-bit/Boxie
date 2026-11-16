@@ -47,8 +47,9 @@ export function evaluateCoupon(coupon: Coupon | null, now: Date): CouponEvaluati
 
 /**
  * Descuento en centavos sobre un precio de lista. Se redondea hacia abajo al
- * peso entero: el total queda en pesos redondos y el descuento nunca supera lo
- * prometido. Nunca descuenta más que el precio.
+ * peso entero, excepto cuando el descuento es del 100% (o cubre el precio
+ * completo): en ese caso el total llega a cero exacto para habilitar el
+ * checkout gratuito. Nunca descuenta más que el precio.
  */
 export function couponDiscount(
   coupon: Pick<Coupon, 'kind' | 'value'>,
@@ -56,8 +57,12 @@ export function couponDiscount(
 ): Cents {
   const raw =
     coupon.kind === 'percent' ? (listPriceCents * Math.min(coupon.value, 100)) / 100 : coupon.value
+  // Si el descuento calculado cubre el precio completo, devolvemos el precio
+  // exacto (total = $0). De lo contrario redondeamos al peso entero para que
+  // el total siempre quede en pesos redondos.
+  if (raw >= listPriceCents) return listPriceCents
   const wholePesos = Math.floor(raw / 100) * 100
-  return Math.max(0, Math.min(wholePesos, listPriceCents))
+  return Math.max(0, wholePesos)
 }
 
 export function describeCoupon(coupon: Pick<Coupon, 'kind' | 'value'>): string {

@@ -113,6 +113,21 @@ export async function POST(request: Request) {
     )
     await saveAttribution(order.id, atribucion)
 
+    // Bypass para órdenes gratuitas (cupón 100% OFF u otro descuento total):
+    // Mercado Pago no acepta unit_price=0, así que procesamos directo como "free".
+    if (quote.totalCents === 0) {
+      const payment = await applyPaymentNotice({
+        orderId: order.id,
+        provider: 'free',
+        paymentId: `free-${Date.now()}`,
+        status: 'approved',
+        amountCents: 0,
+        currency: 'ARS',
+        source: 'checkout',
+      })
+      return NextResponse.json({ initPoint: payment.links?.editor || siteUrl('/editor') })
+    }
+
     // Bypass de desarrollo: si PAYMENTS_PROVIDER=fake, aprobamos la orden directo.
     if (provider === 'fake') {
       const payment = await applyPaymentNotice({

@@ -329,9 +329,13 @@ export function CheckoutForm({
               )}
               <Button type="submit" block size="lg" disabled={busy}>
                 <Lock className="size-4" aria-hidden />{' '}
-                {busy ? 'Redirigiendo...' : `Pagar ${formatARS(quote.totalCents)}`}
+                {busy
+                  ? 'Redirigiendo...'
+                  : quote.totalCents === 0
+                    ? 'Obtener gratis'
+                    : `Pagar ${formatARS(quote.totalCents)}`}
               </Button>
-              {currency === 'USD' && (
+              {currency === 'USD' && quote.totalCents > 0 && (
                 <p className="text-center text-xs text-neutral-500">
                   El cobro se procesará en Mercado Pago en pesos argentinos (
                   {formatARS(quote.totalCents)})

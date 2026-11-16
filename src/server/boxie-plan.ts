@@ -7,7 +7,7 @@ import { log } from './log'
 import { toPlan } from './mappers'
 
 /**
- * El plan que se compró para una Boxie. Define qué pantallas ve el editor y
+ * El plan que se compró para una Ribbly. Define qué pantallas ve el editor y
  * el regalo, cuántas fotos se suben, si se le puede poner clave y cuántos
  * días queda online. Sin plan (órdenes anteriores a los planes), todo.
  *

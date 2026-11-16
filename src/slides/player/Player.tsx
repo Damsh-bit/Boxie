@@ -50,7 +50,7 @@ export interface PlayerProps {
   slide?: number
   /** Entrar y salir animado (cuando se abre encima de otra pantalla). */
   animateIn?: boolean
-  /** Algo fijo debajo del teléfono (la barra de la Boxie de ejemplo). */
+  /** Algo fijo debajo del teléfono (la barra de la Ribbly de ejemplo). */
   footer?: ReactNode
   logoUrl?: string
 }
@@ -79,7 +79,7 @@ export function Player({
   slide,
   animateIn = false,
   footer,
-  logoUrl = '/brand/boxie-logo.png',
+  logoUrl = '/brand/ribbly-logo.png',
 }: PlayerProps) {
   const count = config.slides.length
   const [selected, setSelected] = useState(() => Math.max(slide ?? initialSlide, 0))

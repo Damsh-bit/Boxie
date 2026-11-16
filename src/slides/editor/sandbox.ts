@@ -4,7 +4,7 @@ import type { EditorDraft } from './draft'
 
 /**
  * Editor de prueba: el mismo editor, guardando en el navegador. Sirve para
- * probar cómo se personaliza una Boxie antes de comprarla y para mostrar el
+ * probar cómo se personaliza una Ribbly antes de comprarla y para mostrar el
  * producto en la demo sin base de datos. Nada sale de la computadora.
  *
  * Las fotos (ya comprimidas) se guardan como data URL en localStorage. Si no

@@ -18,7 +18,7 @@ import { SponsorBand } from '@/ui/sponsors/SponsorUnits'
 import { FinalCta } from './_home/FinalCta'
 import { Hero } from './_home/Hero'
 import { HowItWorks } from './_home/HowItWorks'
-import { InsideBoxie } from './_home/InsideBoxie'
+import { InsideRibbly } from './_home/InsideRibbly'
 import { OccasionMarquee } from './_home/OccasionMarquee'
 import { Pricing } from './_home/Pricing'
 import { Mark, SectionHeading } from './_home/primitives'
@@ -26,7 +26,7 @@ import { Reaction } from './_home/Reaction'
 import { StickyBuyBar } from './_home/StickyBuyBar'
 import { themeEmoji, type HomeTheme } from './_home/theme-look'
 import { ThemeShowcase } from './_home/ThemeShowcase'
-import { WhyBoxie } from './_home/WhyBoxie'
+import { WhyRibbly } from './_home/WhyRibbly'
 import { Faq } from './ayuda/Faq'
 
 export const dynamic = 'force-dynamic'
@@ -93,11 +93,21 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       url: '/',
       type: 'website',
-      images: sf.themes[0]
-        ? [{ url: sf.themes[0].listing.images[0]!, alt: 'Un regalo de Ribbly' }]
-        : [],
+      images: [
+        {
+          url: '/brand/ribbly-social.png',
+          width: 1200,
+          height: 630,
+          alt: 'Ribbly · Regalos digitales que emocionan',
+        },
+      ],
     },
-    twitter: { card: 'summary_large_image', title: TITLE, description },
+    twitter: {
+      card: 'summary_large_image',
+      title: TITLE,
+      description,
+      images: ['/brand/ribbly-social.png'],
+    },
   }
 }
 
@@ -117,7 +127,7 @@ function structuredData(sf: Storefront, faqs: FaqItem[]) {
         '@id': `${url}/#organizacion`,
         name: sf.business.name,
         url,
-        logo: absolute('/brand/boxie-logo.png'),
+        logo: absolute('/brand/ribbly-logo.png'),
         email: site.emails.hello,
         sameAs: [sf.business.instagram?.url ?? site.social.instagram],
         contactPoint: {
@@ -233,7 +243,7 @@ export default async function HomePage() {
         occasions={occasionsOf(sf.themes)}
         maxScreens={sf.maxScreens}
       />
-      <InsideBoxie
+      <InsideRibbly
         photos={photos}
         exampleHref={exampleHref}
         maxScreens={sf.maxScreens}
@@ -258,7 +268,7 @@ export default async function HomePage() {
         editorHref={editorHref}
         salesPaused={sf.salesPaused}
       />
-      <WhyBoxie passwordByPlan={sf.plans.some((p) => !p.allowPassword)} />
+      <WhyRibbly passwordByPlan={sf.plans.some((p) => !p.allowPassword)} />
 
       <section aria-label="Aliados de Ribbly" className="px-4 pb-16 sm:px-8 sm:pb-20">
         <Reveal>

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-/** Manifest web: nombre, colores e ícono al agregar Boxie a la pantalla de inicio. */
+/** Manifest web: nombre, colores e ícono al agregar Ribbly a la pantalla de inicio. */
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Ribbly · Regalos digitales que emocionan',
@@ -13,8 +13,14 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#F44E63',
     lang: 'es-AR',
     icons: [
-      { src: '/icon.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+      { src: '/brand/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/brand/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      {
+        src: '/brand/icon-maskable-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
     ],
   }
 }

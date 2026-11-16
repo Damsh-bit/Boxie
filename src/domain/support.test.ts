@@ -63,7 +63,7 @@ describe('nuevo ticket', () => {
     message: 'No me llegó el mail del editor',
   }
 
-  it('limpia los textos y normaliza el código de la Boxie', () => {
+  it('limpia los textos y normaliza el código de la Ribbly', () => {
     const parsed = NewTicketSchema.parse({ ...valid, boxieCode: 'k7m2-q9xd' })
     expect(parsed.name).toBe('Sofía')
     expect(parsed.boxieCode).toBe('K7M2Q9XD')
@@ -85,7 +85,7 @@ describe('nuevo ticket', () => {
   })
 
   it('el contexto técnico tiene tope y no acepta campos de más', () => {
-    const context = { url: 'https://boxie.test/checkout', viewport: '375x812' }
+    const context = { url: 'https://ribbly.test/checkout', viewport: '375x812' }
     expect(NewTicketSchema.parse({ ...valid, context }).context).toEqual(context)
     expect(NewTicketSchema.safeParse({ ...valid, context: { cookie: 'x' } }).success).toBe(false)
   })
@@ -168,7 +168,7 @@ describe('lectura y tiempos', () => {
     const counts = supportCounts(
       [
         ticket(),
-        ticket({ status: 'pending', assignee: 'lean@boxie.test', agentReadAt: ago(0.5) }),
+        ticket({ status: 'pending', assignee: 'lean@ribbly.test', agentReadAt: ago(0.5) }),
         ticket({ status: 'open', lastCustomerMessageAt: ago(30), agentReadAt: ago(1) }),
         ticket({ status: 'closed' }),
       ],
@@ -202,7 +202,7 @@ describe('lo que ve el cliente', () => {
     ]
     expect(customerMessages(messages).map((m) => m.id)).toEqual(['1'])
     const view = toCustomerTicket(
-      ticket({ assignee: 'lean@boxie.test', context: { url: '/x' } }),
+      ticket({ assignee: 'lean@ribbly.test', context: { url: '/x' } }),
     ) as unknown as Record<string, unknown>
     expect(view.assignee).toBeUndefined()
     expect(view.context).toBeUndefined()

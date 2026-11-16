@@ -34,7 +34,7 @@ export interface TicketDetail {
   ticket: SupportTicket
   messages: SupportMessage[]
   history: SupportTicket[]
-  /** La Boxie vinculada (por el código que escribió el cliente). */
+  /** La Ribbly vinculada (por el código que escribió el cliente). */
   boxie: {
     id: string
     code: string
@@ -50,7 +50,7 @@ export interface TicketDetail {
   orders: Pick<AdminOrder, 'id' | 'status' | 'amountCents' | 'createdAt' | 'providerStatus'>[]
 }
 
-/** Abre una consulta: conversación completa, historial del cliente y su Boxie; la marca leída. */
+/** Abre una consulta: conversación completa, historial del cliente y su Ribbly; la marca leída. */
 export async function openTicket(ticketId: string) {
   return runAction<TicketDetail>(options, ({ repo }) =>
     translate(async () => {

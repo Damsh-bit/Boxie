@@ -82,7 +82,7 @@ interface Props {
 }
 
 const EMPTY_LISTING: ThemeListing = {
-  title: 'Boxie de',
+  title: 'Ribbly de',
   highlight: '',
   subtitle: '',
   cardDescription: '',
@@ -194,7 +194,7 @@ export function ThemeEditor({
     const ok = await confirm({
       icon: 'cohete',
       title: `¿Publicar la versión ${next}?`,
-      description: `${config.slides.length} pantallas. Las compras nuevas usan esta versión; las Boxies ya vendidas no cambian.${theme.status === 'draft' ? ' La temática pasa a estar a la venta.' : ''}`,
+      description: `${config.slides.length} pantallas. Las compras nuevas usan esta versión; las Ribblys ya vendidas no cambian.${theme.status === 'draft' ? ' La temática pasa a estar a la venta.' : ''}`,
       confirm: 'Publicar',
     })
     if (!ok) return

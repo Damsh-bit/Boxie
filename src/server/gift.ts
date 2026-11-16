@@ -19,7 +19,7 @@ import { hashToken, isWellFormedToken } from './security/tokens'
 /**
  * El regalo: /g/<token>. El token es la credencial (docs/ARQUITECTURA.md
  * §3.3) y se resuelve siempre en el servidor. En el prototipo el link buscaba
- * la Boxie en el localStorage del destinatario, donde nunca estaba.
+ * la Ribbly en el localStorage del destinatario, donde nunca estaba.
  */
 
 /** Las fotos del regalo se firman por unas horas: alcanza para recorrerlo entero. */
@@ -58,7 +58,7 @@ export const findGift = cache(async (token: string): Promise<Gift | null> => {
     recipientName: row.recipient_name,
     senderName: row.sender_name,
     expiresAt: row.expires_at,
-    themeName: row.order?.theme?.name ?? 'Boxie',
+    themeName: row.order?.theme?.name ?? 'Ribbly',
     versionId: row.theme_version_id,
     orderId: row.order_id,
     passwordHash: row.gift_password_hash,
@@ -168,7 +168,7 @@ export async function registerGiftOpen(boxieId: string): Promise<void> {
 }
 
 // ── Clave opcional ──────────────────────────────────────────────────────────
-// Quien sabe la clave recibe una cookie firmada para esa Boxie; si el
+// Quien sabe la clave recibe una cookie firmada para esa Ribbly; si el
 // comprador cambia la clave, la cookie deja de valer.
 
 const ACCESS_MAX_AGE_SECONDS = 30 * 24 * 60 * 60

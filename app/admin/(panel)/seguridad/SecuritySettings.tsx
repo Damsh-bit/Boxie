@@ -102,14 +102,14 @@ export function SecuritySettings({ initialStatus }: { initialStatus: TotpStatus 
   }
 
   const downloadBackupCodes = () => {
-    const text = `Boxie - Códigos de Respaldo 2FA\nFecha: ${new Date().toLocaleDateString()}\n\n${backupCodes.join(
+    const text = `Ribbly - Códigos de Respaldo 2FA\nFecha: ${new Date().toLocaleDateString()}\n\n${backupCodes.join(
       '\n',
     )}\n\nCada código se puede utilizar solo una vez.`
     const blob = new Blob([text], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `boxie-backup-codes-${Date.now()}.txt`
+    a.download = `ribbly-backup-codes-${Date.now()}.txt`
     a.click()
     URL.revokeObjectURL(url)
   }

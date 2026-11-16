@@ -20,7 +20,7 @@ export function SchemaNotice() {
             Hasta aplicar la migración{' '}
             <code className="rounded bg-white px-1">20260927120000_marketing.sql</code> no se
             guardan campañas, inversión ni el origen de las visitas. Lo que sale de las ventas
-            (costo por venta combinado, economía de una Boxie, LTV) ya se ve.
+            (costo por venta combinado, economía de una Ribbly, LTV) ya se ve.
           </p>
         </div>
         <Link

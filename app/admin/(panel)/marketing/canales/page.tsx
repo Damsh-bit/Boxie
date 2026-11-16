@@ -73,7 +73,7 @@ export default async function ChannelsPage({
     .map((r) => r.channel)
   const series = channelSeries(input, range, bucket, model, top, idx)
 
-  // Primer clic contra último: quién presenta Boxie y quién cierra la venta.
+  // Primer clic contra último: quién presenta Ribbly y quién cierra la venta.
   const first = channelPerformance(input, range, 'first', idx).rows
   const last = channelPerformance(input, range, 'last', idx).rows
   const compared = [...new Set([...first, ...last].map((r) => r.channel))]

@@ -55,7 +55,7 @@ function writeFlag(key: string, on: boolean) {
 /**
  * El botón de ayuda: fijo abajo a la izquierda en todo el sitio, el editor y
  * el editor de prueba (no en el regalo). Abre un chat para mandar una
- * consulta sobre una Boxie, un error o un pago, y seguir la conversación con
+ * consulta sobre una Ribbly, un error o un pago, y seguir la conversación con
  * el equipo en vivo.
  *
  * Se acomoda encima de lo que esté fijo abajo: el aviso de demo (`--dock`) y
@@ -65,7 +65,7 @@ export function SupportWidget({
   hint,
   nudge = true,
 }: {
-  /** Lo que sabe la página (el código de la Boxie en el editor). */
+  /** Lo que sabe la página (el código de la Ribbly en el editor). */
   hint?: { boxieCode?: string; topic?: SupportTopic }
   /** El saludo de "¿Necesitás ayuda?" la primera vez (en escritorio). */
   nudge?: boolean

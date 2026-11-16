@@ -1,6 +1,6 @@
-# Boxie Digital
+# Ribbly
 
-Regalos digitales interactivos: el comprador personaliza una Boxie (una experiencia tipo historias) y el
+Regalos digitales interactivos: el comprador personaliza una Ribbly (una experiencia tipo historias) y el
 destinatario la abre desde el celular con un link.
 
 Reescritura del prototipo `Damsh-bit/boxiedigital` según el
@@ -28,12 +28,12 @@ cp .env.example .env.local   # dejar DEMO_MODE=1
 npm run dev
 ```
 
-Abrir <http://localhost:3000> y, para ver una Boxie completa, <http://localhost:3000/ejemplo/pareja>.
+Abrir <http://localhost:3000> y, para ver una Ribbly completa, <http://localhost:3000/ejemplo/pareja>.
 El editor del comprador se prueba en <http://localhost:3000/ejemplo/pareja/personalizar> (modo
 prueba: guarda en el navegador).
 
-El panel de administración está en <http://localhost:3000/admin> (en demo: `admin@boxie.demo` /
-`boxie-admin`, con un año de ventas de muestra). Las consultas del botón de ayuda del sitio se
+El panel de administración está en <http://localhost:3000/admin> (en demo: `admin@ribbly.demo` /
+`ribbly-admin`, con un año de ventas de muestra). Las consultas del botón de ayuda del sitio se
 atienden en <http://localhost:3000/admin/soporte> (en demo trae conversaciones de muestra).
 
 **Con Supabase local** (necesita Docker):
@@ -44,7 +44,7 @@ npx supabase status          # copiar API URL, anon key y service_role key a .en
 npm run dev
 ```
 
-Con `PAYMENTS_PROVIDER=fake`, `POST /api/dev/boxies` crea una Boxie pagada y devuelve los links
+Con `PAYMENTS_PROVIDER=fake`, `POST /api/dev/boxies` crea una Ribbly pagada y devuelve los links
 del editor y del regalo (ver [docs/OPERACION.md](docs/OPERACION.md#editor-y-regalo)).
 
 ## Scripts

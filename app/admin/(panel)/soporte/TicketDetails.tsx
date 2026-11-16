@@ -99,7 +99,7 @@ export function TicketDetails({
         </div>
       ) : (
         <>
-          <Section title="La Boxie">
+          <Section title="La Ribbly">
             {detail.boxie ? (
               <div className="space-y-2 text-sm">
                 <p className="flex items-center gap-2">
@@ -128,10 +128,10 @@ export function TicketDetails({
                   )}
                 </p>
                 <Link
-                  href={`/admin/boxies/${detail.boxie.id}` as Route}
+                  href={`/admin/ribblys/${detail.boxie.id}` as Route}
                   className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"
                 >
-                  Ver la Boxie y sus acciones <ExternalLink className="size-3.5" aria-hidden />
+                  Ver la Ribbly y sus acciones <ExternalLink className="size-3.5" aria-hidden />
                 </Link>
               </div>
             ) : ticket.boxieCode ? (
@@ -143,7 +143,7 @@ export function TicketDetails({
                 , pero no existe: puede estar mal copiado.
               </p>
             ) : (
-              <p className="text-sm text-neutral-500">No dejó código de Boxie.</p>
+              <p className="text-sm text-neutral-500">No dejó código de Ribbly.</p>
             )}
           </Section>
 

@@ -68,11 +68,11 @@ const CONNECT_STEPS = [
 
 const FIRST_RUN_CHECKS = [
   'Planes y precio base (Configuración) con los precios de venta reales.',
-  'Una compra real de punta a punta: la orden en Ventas con su plan, la Boxie en Boxies y el mail del editor en la casilla.',
+  'Una compra real de punta a punta: la orden en Ventas con su plan, la Ribbly en Ribblys y el mail del editor en la casilla.',
   'Reembolsar esa compra en Mercado Pago y marcarla en Ventas: el regalo deja de abrirse.',
   'Invitar a alguien del equipo y activar la cuenta desde el mail.',
   'Abrir una consulta desde el botón de ayuda y responderla desde Soporte.',
-  'Borrar las órdenes, Boxies y clientes de prueba antes de abrir la venta.',
+  'Borrar las órdenes, Ribblys y clientes de prueba antes de abrir la venta.',
 ]
 
 export default async function SystemPage() {

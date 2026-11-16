@@ -106,7 +106,7 @@ export default async function DashboardPage({ searchParams }: PageProps<'/admin'
             {repo.mode === 'demo' && <NeedsDb what="orders, boxies, coupons, themes" />}
           </span>
         }
-        title="Así viene Boxie"
+        title="Así viene Ribbly"
         description={
           today.today > 0
             ? `Hoy van ${today.today} ${today.today === 1 ? 'venta' : 'ventas'} (${formatARS(today.todayCents)}); ayer fueron ${today.yesterday}.`
@@ -271,7 +271,7 @@ export default async function DashboardPage({ searchParams }: PageProps<'/admin'
             delay={0.24}
           />
           <Stat
-            label="Boxies creadas"
+            label="Ribblys creadas"
             value={k.boxiesCreated}
             delta={delta(k.boxiesCreated, p.boxiesCreated)}
             icon={<Gift />}

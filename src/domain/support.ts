@@ -98,7 +98,7 @@ export interface SupportTicket {
   customerEmail: string
   /** Código que escribió el cliente (8 caracteres, sin guion). */
   boxieCode: string | null
-  /** La Boxie y la orden, si el código existe (solo lo ve el equipo). */
+  /** La Ribbly y la orden, si el código existe (solo lo ve el equipo). */
   boxieId: string | null
   orderId: string | null
   /** Mail del admin que lo tiene asignado. */
@@ -122,7 +122,7 @@ export interface SupportMessage {
   id: string
   ticketId: string
   author: MessageAuthor
-  /** "Sofi" (cliente) · "Lean · Boxie" (equipo) · "Boxie" (sistema). */
+  /** "Sofi" (cliente) · "Lean · Ribbly" (equipo) · "Ribbly" (sistema). */
   authorName: string
   body: string
   /** Nota interna del equipo: el cliente nunca la ve. */

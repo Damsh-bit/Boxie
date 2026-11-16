@@ -168,10 +168,10 @@ export function Hero({
       >
         <motion.div style={{ x: markMouseX, y: markMouseY }}>
           <Image
-            src="/brand/boxie-mark.png"
+            src="/brand/ribbly-mark.png"
             alt=""
-            width={532}
-            height={679}
+            width={418}
+            height={516}
             priority
             className="h-auto w-full opacity-20 md:opacity-45"
           />
@@ -471,7 +471,7 @@ function BouncyWord({ word }: { word: string }) {
 }
 
 /**
- * "+500 Boxies regaladas" con las iniciales de quienes compraron hace poco.
+ * "+500 Ribblys regaladas" con las iniciales de quienes compraron hace poco.
  * Solo aparece cuando las ventas reales pasan el mínimo (content/social-proof).
  */
 function SoldCount({

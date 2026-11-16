@@ -6,7 +6,7 @@ const B = '22222222-2222-4222-8222-222222222222'
 const C = '33333333-3333-4333-8333-333333333333'
 
 describe('traer lo armado en la prueba', () => {
-  it('una Boxie recién comprada está sin tocar', () => {
+  it('una Ribbly recién comprada está sin tocar', () => {
     expect(isUntouched({ recipientName: '', senderName: 'Lean', slides: {} })).toBe(true)
     expect(
       isUntouched({ recipientName: '', senderName: '', slides: { tapa: { titulo: 'Hola' } } }),

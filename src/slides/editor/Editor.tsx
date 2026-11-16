@@ -40,7 +40,7 @@ export interface EditorProps {
   mode: 'live' | 'sandbox'
   config: ParsedThemeConfig
   theme: { name: string; slug: string }
-  /** Código de soporte de la Boxie (editor real). */
+  /** Código de soporte de la Ribbly (editor real). */
   code: string | null
   /** Hasta cuándo se puede editar (editor real). */
   editableUntil: string | null
@@ -251,11 +251,11 @@ export function Editor({
           >
             <header className="sticky top-0 z-40 border-b border-neutral-200/70 bg-white/85 backdrop-blur-xl">
               <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4">
-                <Link href="/" className="shrink-0" aria-label="Boxie Digital, inicio">
-                  <img src="/brand/boxie-logo.png" alt="Ribbly" className="h-7 w-auto" />
+                <Link href="/" className="shrink-0" aria-label="Ribbly, inicio">
+                  <img src="/brand/ribbly-logo.png" alt="Ribbly" className="h-10 w-auto" />
                 </Link>
                 <div className="min-w-0 flex-1 border-l border-neutral-200 pl-3">
-                  <p className="truncate text-sm font-semibold text-ink">Boxie {theme.name}</p>
+                  <p className="truncate text-sm font-semibold text-ink">Ribbly {theme.name}</p>
                   <p className="truncate text-xs text-neutral-500">
                     {isSandbox ? 'Modo prueba' : code ? `Código ${formatBoxieCode(code)}` : ''}
                   </p>
@@ -280,7 +280,7 @@ export function Editor({
                       style={{ verticalAlign: '-0.25em', marginRight: '0.3em' }}
                     />
                     <strong>Modo prueba:</strong> se guarda en este navegador. Si la comprás desde
-                    acá, lo que armes pasa a tu Boxie.
+                    acá, lo que armes pasa a tu Ribbly.
                   </p>
                   <a
                     href={`/checkout?tematica=${theme.slug}${draft.recipientName.trim() ? `&para=${encodeURIComponent(draft.recipientName.trim())}` : ''}`}
@@ -318,10 +318,10 @@ export function Editor({
                   className="rounded-3xl bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] sm:p-8"
                 >
                   <p className="text-xs font-bold tracking-widest text-brand uppercase">
-                    {isSandbox ? 'Probá cómo se personaliza' : 'Tu Boxie'}
+                    {isSandbox ? 'Probá cómo se personaliza' : 'Tu Ribbly'}
                   </p>
                   <h1 className="mt-1 font-display text-3xl leading-tight font-bold text-ink">
-                    Personalizá tu Boxie {theme.name}
+                    Personalizá tu Ribbly {theme.name}
                   </h1>
                   <p className="mt-2 leading-relaxed text-neutral-600">
                     Completá cada parte a tu ritmo: se guarda sola. Cuando esté como querés, la
@@ -555,7 +555,7 @@ const cardIn = {
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: ease.out } },
 }
 
-/** "Regalar": cuando la Boxie está completa, late para invitar al último paso. */
+/** "Regalar": cuando la Ribbly está completa, late para invitar al último paso. */
 function GiftButton({
   ready,
   size = 'md',
@@ -731,7 +731,7 @@ function SaveIndicator({
           <span
             className={cn(base, 'text-green-700')}
             role="status"
-            title={sandbox ? 'Se guarda en este navegador' : 'Se guarda en tu Boxie'}
+            title={sandbox ? 'Se guarda en este navegador' : 'Se guarda en tu Ribbly'}
           >
             <svg viewBox="0 0 24 24" className="size-4" fill="none" aria-hidden>
               <motion.path

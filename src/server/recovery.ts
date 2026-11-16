@@ -7,8 +7,8 @@ import { editorAccessEmail, giftReadyEmail } from './mail/templates'
 import { decryptToken, generateToken, hashToken } from './security/tokens'
 
 /**
- * "Perdí el link de mi Boxie": el comprador pone su mail y le reenviamos el
- * acceso de sus Boxies vigentes. La que todavía se edita recibe un link de
+ * "Perdí el link de mi Ribbly": el comprador pone su mail y le reenviamos el
+ * acceso de sus Ribblys vigentes. La que todavía se edita recibe un link de
  * edición nuevo (el viejo se guarda solo hasheado, así que reenviar es rotar:
  * el anterior deja de funcionar); la que ya se regaló, el link del regalo.
  *
@@ -16,7 +16,7 @@ import { decryptToken, generateToken, hashToken } from './security/tokens'
  * así nadie puede averiguar quién compró. El límite de pedidos lo pone la ruta.
  */
 
-/** Las Boxies más nuevas primero; más que esto no tiene sentido en un solo pedido. */
+/** Las Ribblys más nuevas primero; más que esto no tiene sentido en un solo pedido. */
 const MAX_BOXIES = 5
 
 /** `ilike` sin comodines: el mail se busca tal cual, sin importar mayúsculas. */
@@ -66,7 +66,7 @@ export async function resendAccessByEmail(email: string): Promise<{ sent: number
         if (rotateError) throw new Error(rotateError.message)
         const mail = editorAccessEmail({
           buyerName: order.buyer_name,
-          themeName: order.theme?.name ?? 'Boxie',
+          themeName: order.theme?.name ?? 'Ribbly',
           editorUrl: siteUrl(`/editor/${token}`),
           code: boxie.code,
           expiresAt: new Date(boxie.expires_at),
@@ -91,8 +91,8 @@ export async function resendAccessByEmail(email: string): Promise<{ sent: number
       }
       sent += 1
     } catch (sendError) {
-      // Una Boxie que falla no frena las otras.
-      log.error('No se pudo reenviar el acceso de una Boxie', sendError, { boxieId: boxie.id })
+      // Una Ribbly que falla no frena las otras.
+      log.error('No se pudo reenviar el acceso de una Ribbly', sendError, { boxieId: boxie.id })
     }
   }
   return { sent }

@@ -15,7 +15,7 @@ const ENTITY: Record<string, { label: string; tone: Tone }> = {
   plan: { label: 'Plan', tone: 'violet' },
   coupon: { label: 'Cupón', tone: 'info' },
   order: { label: 'Venta', tone: 'good' },
-  boxie: { label: 'Boxie', tone: 'warning' },
+  boxie: { label: 'Ribbly', tone: 'warning' },
   settings: { label: 'Configuración', tone: 'dark' },
   expense: { label: 'Gasto', tone: 'neutral' },
   affiliate: { label: 'Afiliado', tone: 'violet' },

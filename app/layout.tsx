@@ -8,6 +8,9 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { fontVariables } from './fonts'
 import './globals.css'
 
+/** La "tarjeta social" del manual de marca: el logo, la frase y Rib. */
+const SHARE_IMAGE = '/brand/ribbly-social.png'
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
@@ -21,7 +24,16 @@ export const metadata: Metadata = {
     siteName: 'Ribbly',
     locale: 'es_AR',
     type: 'website',
+    images: [
+      {
+        url: SHARE_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Ribbly · Regalos digitales que emocionan',
+      },
+    ],
   },
+  twitter: { card: 'summary_large_image', images: [SHARE_IMAGE] },
   formatDetection: { telephone: false },
 }
 

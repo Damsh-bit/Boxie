@@ -5,7 +5,7 @@ import { initialDraft, type EditorDraft } from './draft'
 
 /**
  * "Traer lo que armaste en la prueba": lo que alguien armó en el editor de
- * prueba (guardado en el navegador) pasa a la Boxie que compró. Así pagar es
+ * prueba (guardado en el navegador) pasa a la Ribbly que compró. Así pagar es
  * el último paso de algo que ya quiere regalar, y no empieza de cero.
  *
  * Las fotos de la prueba viven como data URL en el navegador: se suben de a
@@ -14,7 +14,7 @@ import { initialDraft, type EditorDraft } from './draft'
  * quedan vacías para cargarlas de nuevo.
  */
 
-/** ¿La Boxie comprada está sin tocar? (sin pantallas guardadas ni fotos). */
+/** ¿La Ribbly comprada está sin tocar? (sin pantallas guardadas ni fotos). */
 export function isUntouched(content: BuyerContent): boolean {
   return Object.keys(content.slides ?? {}).length === 0 && collectAssetIds(content).length === 0
 }
@@ -67,7 +67,7 @@ export interface ImportResult {
 }
 
 /**
- * Sube las fotos de la prueba y arma el borrador para la Boxie comprada (con
+ * Sube las fotos de la prueba y arma el borrador para la Ribbly comprada (con
  * las pantallas de su plan: lo que no entra en el plan no se trae).
  */
 export async function importSandboxDraft(opts: {

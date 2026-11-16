@@ -141,7 +141,7 @@ export async function getCustomerPortalData(
 
   const orderIds = ordersData.map((o) => o.id)
 
-  // 2. Obtener Boxies correspondientes
+  // 2. Obtener Ribblys correspondientes
   const { data: boxiesData, error: boxieError } = await db
     .from('boxies')
     .select(
@@ -151,7 +151,7 @@ export async function getCustomerPortalData(
     .order('created_at', { ascending: false })
 
   if (boxieError) {
-    throw new Error(`Error al leer Boxies del cliente: ${boxieError.message}`)
+    throw new Error(`Error al leer Ribblys del cliente: ${boxieError.message}`)
   }
 
   const boxies: CustomerBoxieItem[] = []
@@ -160,7 +160,7 @@ export async function getCustomerPortalData(
 
   for (const b of boxiesData ?? []) {
     const order = ordersData.find((o) => o.id === b.order_id)
-    const themeName = (order?.theme as { name?: string } | null)?.name || 'Boxie Digital'
+    const themeName = (order?.theme as { name?: string } | null)?.name || 'Ribbly'
 
     const isLocked = Boolean(b.locked_at)
     const isOpened = (b.open_count ?? 0) > 0 || Boolean(b.first_opened_at)
@@ -191,7 +191,7 @@ export async function getCustomerPortalData(
     }
 
     // Link de acceso a edición
-    const editUrl = `${base}/cuenta/boxies/${b.id}/editar`
+    const editUrl = `${base}/cuenta/ribblys/${b.id}/editar`
 
     boxies.push({
       id: b.id,
@@ -310,7 +310,7 @@ export async function getOrRotateEditorUrl(
     .ilike('orders.buyer_email', escapeIlike(email))
     .maybeSingle()
 
-  if (!boxie) throw new Error('No tenés permiso para acceder a esta Boxie.')
+  if (!boxie) throw new Error('No tenés permiso para acceder a esta Ribbly.')
 
   const base = siteUrl()
   const token = generateToken()
@@ -361,7 +361,7 @@ export async function getCustomerHeroContext(customerEmail: string): Promise<Cus
     ? {
         id: draftBoxie.id,
         recipientName: draftBoxie.recipient_name || 'tu regalo',
-        editUrl: `${base}/cuenta/boxies/${draftBoxie.id}/editar`,
+        editUrl: `${base}/cuenta/ribblys/${draftBoxie.id}/editar`,
       }
     : null
 

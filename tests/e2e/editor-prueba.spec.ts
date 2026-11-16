@@ -15,7 +15,7 @@ const title = (name: string) => ({ name, exact: true, level: 1 }) as const
 
 test('se personaliza, se revisa y se "regala" sin comprar', async ({ page }) => {
   await page.goto('/ejemplo/pareja/personalizar')
-  await expect(page.getByRole('heading', title('Personalizá tu Boxie Pareja'))).toBeVisible()
+  await expect(page.getByRole('heading', title('Personalizá tu Ribbly Pareja'))).toBeVisible()
 
   await page.locator('#editor-para').fill('Sofía')
   await page.locator('#editor-de').fill('Lean')
@@ -87,5 +87,5 @@ test('se llega desde la ficha de la temática', async ({ page }) => {
   await page.goto('/tematicas/cumpleanos')
   await page.getByRole('link', { name: /Probá cómo se personaliza/ }).click()
   await expect(page).toHaveURL(/\/ejemplo\/cumpleanos\/personalizar$/)
-  await expect(page.getByRole('heading', title('Personalizá tu Boxie Cumpleaños'))).toBeVisible()
+  await expect(page.getByRole('heading', title('Personalizá tu Ribbly Cumpleaños'))).toBeVisible()
 })

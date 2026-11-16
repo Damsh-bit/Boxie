@@ -18,7 +18,7 @@ import { demoDb, mutateDemoDb, resetDemoDb } from './store'
 /**
  * El panel sobre la base de demo (en memoria). Respeta las mismas reglas que
  * la base real: versiones inmutables, no se borra una temática con ventas,
- * un reembolso cambia la orden y la Boxie juntas, etc.
+ * un reembolso cambia la orden y la Ribbly juntas, etc.
  */
 
 const now = () => new Date().toISOString()
@@ -75,7 +75,7 @@ function findTheme(db: DemoDb, id: string): DemoTheme {
 
 function findBoxie(db: DemoDb, id: string): AdminBoxie {
   const boxie = db.boxies.find((b) => b.id === id)
-  if (!boxie) throw new AdminRepoError('La Boxie no existe.', 'not_found')
+  if (!boxie) throw new AdminRepoError('La Ribbly no existe.', 'not_found')
   return boxie
 }
 
@@ -377,7 +377,7 @@ export const demoRepo: AdminRepo = {
     })
   },
 
-  // ── Ventas y Boxies ───────────────────────────────────────────────────────
+  // ── Ventas y Ribblys ───────────────────────────────────────────────────────
 
   async getOrder(id) {
     const db = demoDb()
@@ -458,7 +458,7 @@ export const demoRepo: AdminRepo = {
         'boxie.update',
         'boxie',
         id,
-        `Corrigió los nombres de la Boxie ${boxie.code}`,
+        `Corrigió los nombres de la Ribbly ${boxie.code}`,
       )
     })
   },
@@ -471,14 +471,14 @@ export const demoRepo: AdminRepo = {
       boxie.expiresAt = addDays(new Date(base), days).toISOString()
       if (boxie.status === 'expired') boxie.status = 'active'
       boxie.updatedAt = now()
-      audit(db, actor, 'boxie.extend', 'boxie', id, `Extendió ${days} días la Boxie ${boxie.code}`)
+      audit(db, actor, 'boxie.extend', 'boxie', id, `Extendió ${days} días la Ribbly ${boxie.code}`)
     })
   },
 
   async unlockBoxie(id, actor) {
     mutateDemoDb((db) => {
       const boxie = findBoxie(db, id)
-      if (!boxie.lockedAt) throw new AdminRepoError('La Boxie no está bloqueada.', 'conflict')
+      if (!boxie.lockedAt) throw new AdminRepoError('La Ribbly no está bloqueada.', 'conflict')
       if (boxie.status === 'refunded') throw new AdminRepoError('Está reembolsada.', 'conflict')
       boxie.lockedAt = null
       // Vuelve a tener 7 días para editar, como mínimo.
@@ -492,7 +492,7 @@ export const demoRepo: AdminRepo = {
         'boxie.unlock',
         'boxie',
         id,
-        `Desbloqueó la Boxie ${boxie.code} para que el comprador la corrija`,
+        `Desbloqueó la Ribbly ${boxie.code} para que el comprador la corrija`,
       )
     })
   },
@@ -513,7 +513,7 @@ export const demoRepo: AdminRepo = {
         'boxie.resend',
         'boxie',
         id,
-        `Reenvió el mail ${kind === 'access' ? 'del editor' : 'del regalo'} de la Boxie ${boxie.code} (demo: no sale ningún mail)`,
+        `Reenvió el mail ${kind === 'access' ? 'del editor' : 'del regalo'} de la Ribbly ${boxie.code} (demo: no sale ningún mail)`,
       )
     })
   },

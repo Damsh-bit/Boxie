@@ -203,7 +203,7 @@ export default async function OrdersPage({ searchParams }: PageProps<'/admin/ven
       </Card>
       {query.estado === 'revisar' && (
         <p className="mt-4 text-sm text-neutral-600">
-          Un pago con monto distinto al de la orden no crea la Boxie (la base lo frena). Revisá en{' '}
+          Un pago con monto distinto al de la orden no crea la Ribbly (la base lo frena). Revisá en{' '}
           <Link
             href="https://www.mercadopago.com.ar/activities"
             className="font-semibold text-brand hover:underline"

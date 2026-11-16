@@ -22,7 +22,7 @@ export function ContactForm() {
   const [error, setError] = useState('')
   const [sentTo, setSentTo] = useState({ name: '', email: '' })
   const [area, setArea] = useState('')
-  // Para una Boxie o un problema técnico, el chat de soporte es más rápido (y queda el historial).
+  // Para una Ribbly o un problema técnico, el chat de soporte es más rápido (y queda el historial).
   const chatFirst = area === 'ayuda' || area === 'reclamos'
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -139,7 +139,7 @@ export function ContactForm() {
                   <div className="mt-3 flex flex-col gap-3 rounded-2xl bg-brand-soft p-4 text-sm text-ink sm:flex-row sm:items-center">
                     <MessagesSquare className="size-5 shrink-0 text-brand" aria-hidden />
                     <p className="flex-1">
-                      Para tu Boxie o un error, el <strong>chat de soporte</strong> es más rápido y
+                      Para tu Ribbly o un error, el <strong>chat de soporte</strong> es más rápido y
                       queda todo en un mismo lugar.
                     </p>
                     <SupportButton

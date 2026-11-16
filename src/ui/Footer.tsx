@@ -72,11 +72,11 @@ export function Footer({ contact }: { contact: BusinessContact }) {
       >
         <StaggerItem>
           <Image
-            src="/brand/boxie-logo.png"
+            src="/brand/ribbly-logo-white.png"
             alt={contact.name}
-            width={120}
-            height={42}
-            className="mx-auto mb-5 h-auto w-[120px] brightness-0 invert md:mx-0"
+            width={92}
+            height={62}
+            className="mx-auto mb-5 h-[62px] w-auto md:mx-0"
           />
           <p className="mb-5 text-sm leading-relaxed text-neutral-400">{site.tagline}</p>
           <p className="mb-2 flex items-center justify-center gap-2 text-sm text-neutral-300 md:justify-start">

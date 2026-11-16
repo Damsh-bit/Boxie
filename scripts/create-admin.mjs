@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * Crea el primer administrador de Boxie.
+ * Crea el primer administrador de Ribbly.
  *
  * Uso:
  *   node scripts/create-admin.mjs [email] [password] [nombre] [rol]
  *
- * Defaults: admin@boxie.demo / boxie-admin / Administrador / owner
+ * El mail y la clave son obligatorios y no pueden ser los de la demo
+ * (@ribbly.demo / ribbly-admin, ni los viejos de Boxie). Nombre y rol: Administrador / owner.
  *
  * Requiere en el entorno (o en .env.local):
  *   NEXT_PUBLIC_SUPABASE_URL
@@ -75,9 +76,9 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(EMAIL)) {
   process.exit(1)
 }
 
-if (EMAIL.endsWith('@boxie.demo')) {
+if (EMAIL.endsWith('@ribbly.demo') || EMAIL.endsWith('@boxie.demo')) {
   console.error(
-    '\n❌ Error de seguridad: No se permite crear administradores con dominio de demo (@boxie.demo).',
+    '\n❌ Error de seguridad: No se permite crear administradores con dominio de demo (@ribbly.demo).',
   )
   console.error('Utilizá un correo corporativo o personal real.\n')
   process.exit(1)
@@ -90,13 +91,14 @@ if (PASSWORD.length < 12) {
 }
 
 if (
+  PASSWORD.toLowerCase().includes('ribbly-admin') ||
   PASSWORD.toLowerCase().includes('boxie-admin') ||
   PASSWORD.toLowerCase() === 'admin' ||
   PASSWORD.toLowerCase() === 'password' ||
   PASSWORD.toLowerCase() === '12345678'
 ) {
   console.error(
-    '\n❌ Error de seguridad: No podés utilizar la clave por defecto de demo ("boxie-admin") ni claves triviales.\n',
+    '\n❌ Error de seguridad: No podés utilizar la clave por defecto de demo ("ribbly-admin") ni claves triviales.\n',
   )
   process.exit(1)
 }
@@ -120,7 +122,7 @@ function hashPassword(password) {
 
 // -- Main --
 console.log()
-console.log('Boxie - Crear administrador (public.users)')
+console.log('Ribbly - Crear administrador (public.users)')
 console.log(`  Proyecto : ${SUPABASE_URL}`)
 console.log(`  Email    : ${EMAIL}`)
 console.log(`  Nombre   : ${NAME}`)

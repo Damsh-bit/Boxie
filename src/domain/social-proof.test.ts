@@ -38,7 +38,7 @@ describe('prueba social', () => {
   })
 
   it('descarta lo que no parece un nombre', () => {
-    for (const bad of ['', 'x', 'Test', 'PRUEBA', 'asdf', 'aaaa', '123', 'j.p.', 'Admin Boxie'])
+    for (const bad of ['', 'x', 'Test', 'PRUEBA', 'asdf', 'aaaa', '123', 'j.p.', 'Admin Ribbly'])
       expect(firstNameOf(bad), bad).toBeNull()
   })
 

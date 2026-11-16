@@ -30,15 +30,15 @@ describe('whatsapp', () => {
 
 describe('instagram', () => {
   it('saca la cuenta de cualquier forma de escribirla', () => {
-    expect(instagramHandle('@boxie.app')).toBe('boxie.app')
-    expect(instagramHandle('Boxie.App')).toBe('boxie.app')
-    expect(instagramHandle('https://www.instagram.com/boxie.app/')).toBe('boxie.app')
-    expect(instagramHandle('instagram.com/boxie_app?igsh=abc')).toBe('boxie_app')
+    expect(instagramHandle('@ribbly.app')).toBe('ribbly.app')
+    expect(instagramHandle('Ribbly.App')).toBe('ribbly.app')
+    expect(instagramHandle('https://www.instagram.com/ribbly.app/')).toBe('ribbly.app')
+    expect(instagramHandle('instagram.com/ribbly_app?igsh=abc')).toBe('ribbly_app')
   })
 
   it('rechaza lo que no es una cuenta', () => {
     expect(instagramHandle('')).toBeNull()
-    expect(instagramHandle('boxie app')).toBeNull()
+    expect(instagramHandle('ribbly app')).toBeNull()
     expect(instagramHandle('@'.padEnd(40, 'x'))).toBeNull()
   })
 })
@@ -47,13 +47,13 @@ describe('businessContact', () => {
   it('deja afuera los canales vacíos o inválidos', () => {
     const contact = businessContact({
       name: '  ',
-      supportEmail: ' ayuda@boxie.test ',
+      supportEmail: ' ayuda@ribbly.test ',
       whatsapp: '',
       instagram: 'no es una cuenta',
     })
     expect(contact).toEqual({
-      name: 'Boxie Digital',
-      supportEmail: 'ayuda@boxie.test',
+      name: 'Ribbly',
+      supportEmail: 'ayuda@ribbly.test',
       whatsapp: null,
       instagram: null,
     })
@@ -62,10 +62,10 @@ describe('businessContact', () => {
   it('muestra el número como se cargó y linkea al número limpio', () => {
     const contact = businessContact(
       {
-        name: 'Boxie',
-        supportEmail: 'ayuda@boxie.test',
+        name: 'Ribbly',
+        supportEmail: 'ayuda@ribbly.test',
         whatsapp: '+54 9 11 5555-0100',
-        instagram: '@boxie.app',
+        instagram: '@ribbly.app',
       },
       'Hola',
     )
@@ -74,8 +74,8 @@ describe('businessContact', () => {
       url: 'https://wa.me/5491155550100?text=Hola',
     })
     expect(contact.instagram).toEqual({
-      handle: '@boxie.app',
-      url: 'https://instagram.com/boxie.app',
+      handle: '@ribbly.app',
+      url: 'https://instagram.com/ribbly.app',
     })
   })
 })

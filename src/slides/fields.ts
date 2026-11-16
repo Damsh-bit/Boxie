@@ -32,7 +32,7 @@ export interface FieldMeta {
   label: string
   help?: string
   placeholder?: string
-  /** Solo para el comprador: tiene que estar completo para poder bloquear la Boxie. */
+  /** Solo para el comprador: tiene que estar completo para poder bloquear la Ribbly. */
   required?: boolean
   options?: readonly { value: string; label: string }[]
   /** Listas: rótulo de cada ítem, `{n}` se reemplaza por el número. */
@@ -235,7 +235,7 @@ export interface MissingField {
 
 /**
  * Campos marcados como obligatorios que están vacíos. Es la regla del bloqueo:
- * los borradores se guardan incompletos, pero no se puede regalar una Boxie a
+ * los borradores se guardan incompletos, pero no se puede regalar una Ribbly a
  * la que le falta, por ejemplo, la foto de la dedicatoria.
  */
 export function missingRequired(

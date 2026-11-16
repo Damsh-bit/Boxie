@@ -92,7 +92,7 @@ export interface SupportRepo {
   updateTicket(id: string, patch: TicketPatch): Promise<SupportTicket>
   /** Lo que cambió desde `since` (ISO): tickets tocados y mensajes nuevos. */
   changesSince(since: string, scope: { ticketIds?: string[] }): Promise<SupportChanges>
-  /** La Boxie de un código (para vincular el ticket; el cliente nunca ve el resultado). */
+  /** La Ribbly de un código (para vincular el ticket; el cliente nunca ve el resultado). */
   findBoxieByCode(code: string): Promise<{ boxieId: string; orderId: string } | null>
   /** Tickets anteriores del mismo mail (el panel muestra el historial del cliente). */
   ticketsByEmail(email: string): Promise<SupportTicket[]>

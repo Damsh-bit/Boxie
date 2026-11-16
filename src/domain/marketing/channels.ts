@@ -1,5 +1,5 @@
 /**
- * Canales de adquisición: de dónde llega la gente que compra una Boxie.
+ * Canales de adquisición: de dónde llega la gente que compra una Ribbly.
  *
  * Cada visita (y cada venta) se clasifica en un canal a partir de su origen
  * (utm_source / utm_medium, el sitio que la mandó o el identificador de clic
@@ -76,7 +76,7 @@ export const CHANNELS: ChannelInfo[] = [
     id: 'regalos',
     label: 'Regalos recibidos',
     kind: 'owned',
-    hint: 'Personas que recibieron una Boxie y compraron desde el final del regalo (boca en boca).',
+    hint: 'Personas que recibieron una Ribbly y compraron desde el final del regalo (boca en boca).',
   },
   {
     id: 'social',
@@ -171,7 +171,7 @@ export interface SourceMedium {
 
 /**
  * El canal de un origen. Las reglas siguen la convención de Google Analytics
- * (agrupación de canales por defecto), adaptada a cómo vende Boxie: las
+ * (agrupación de canales por defecto), adaptada a cómo vende Ribbly: las
  * campañas etiquetadas mandan; sin etiquetas, decide el sitio que mandó la
  * visita.
  */
@@ -197,7 +197,7 @@ export function classifyChannel({ source, medium }: SourceMedium): ChannelId {
   )
     return 'email'
   if (/whatsapp/.test(s) || /whatsapp/.test(m) || s === 'wa') return 'whatsapp'
-  if (m === 'regalo' || s === 'boxie') return 'regalos'
+  if (m === 'regalo' || s === 'ribbly' || s === 'boxie') return 'regalos'
 
   if (paid) return 'otros'
   if (SOCIAL_SOURCE.test(s) || m === 'social' || m === 'social-network' || m === 'bio')

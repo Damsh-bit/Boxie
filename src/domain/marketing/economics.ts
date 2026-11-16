@@ -4,7 +4,7 @@ import type { AdminAffiliate, AdminOrder, FinanceSettings } from '../admin/types
 import type { Cents } from '../money'
 
 /**
- * Economía unitaria: qué pasa con la plata de UNA Boxie vendida, del precio
+ * Economía unitaria: qué pasa con la plata de UNA Ribbly vendida, del precio
  * de lista a la ganancia, y cuánto se puede pagar para conseguir esa venta.
  *
  *   precio de lista
@@ -16,9 +16,9 @@ import type { Cents } from '../money'
  *   − comisión de afiliados (promedio por venta)
  *   = margen de contribución  ← lo máximo que se puede pagar por una venta (CPA de equilibrio)
  *   − costo de adquisición (publicidad por venta)
- *   = ganancia por Boxie
+ *   = ganancia por Ribbly
  *   − parte de los gastos fijos
- *   = resultado neto por Boxie
+ *   = resultado neto por Ribbly
  */
 
 export interface UnitInput {
@@ -111,7 +111,7 @@ export function unitEconomics(input: UnitInput): UnitEconomics {
       label: 'Costo de entrega',
       cents: -costs.variableCents,
       kind: 'minus',
-      hint: 'Storage de fotos, mails y ancho de banda de cada Boxie.',
+      hint: 'Storage de fotos, mails y ancho de banda de cada Ribbly.',
     },
     {
       key: 'affiliate',
@@ -136,7 +136,7 @@ export function unitEconomics(input: UnitInput): UnitEconomics {
     },
     {
       key: 'profit',
-      label: 'Ganancia por Boxie',
+      label: 'Ganancia por Ribbly',
       cents: profit,
       kind: 'subtotal',
       hint: 'Lo que deja cada venta después de pagar la publicidad.',
@@ -150,7 +150,7 @@ export function unitEconomics(input: UnitInput): UnitEconomics {
     },
     {
       key: 'net',
-      label: 'Resultado neto por Boxie',
+      label: 'Resultado neto por Ribbly',
       cents: net,
       kind: 'result',
       hint: 'Lo que queda de verdad de cada venta.',

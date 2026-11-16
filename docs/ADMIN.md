@@ -1,20 +1,20 @@
 # Panel de administración
 
-El centro de control de Boxie para los dueños y el equipo: ventas, rentabilidad, temáticas,
+El centro de control de Ribbly para los dueños y el equipo: ventas, rentabilidad, temáticas,
 planes, cupones, soporte y el trabajo del día a día. Vive en **`/admin`** (o en el subdominio que
 diga `ADMIN_HOST`).
 
-En producción corre sobre la base real (proyecto Supabase `Boxie`); los deploys de preview y el
+En producción corre sobre la base real (proyecto Supabase `Ribbly`); los deploys de preview y el
 desarrollo local pueden correr en **modo demo** (`DEMO_MODE=1`), sobre datos de muestra (un año de
 ventas simuladas) donde lo que se cambia se ve en la tienda. Es el mismo panel en los dos casos (ver
 [Conectar Supabase](#conectar-supabase)).
 
 ## Entrar
 
-| Entorno              | Cómo se entra                                                                                                      |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Demo (`DEMO_MODE=1`) | Usuario de muestra: `admin@boxie.demo` / `boxie-admin`. Se cambian con `ADMIN_DEMO_EMAIL` y `ADMIN_DEMO_PASSWORD`. |
-| Con Supabase         | Mail y clave propios del panel (`users.password_hash`, scrypt); la cuenta tiene que tener un rol.                  |
+| Entorno              | Cómo se entra                                                                                                        |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Demo (`DEMO_MODE=1`) | Usuario de muestra: `admin@ribbly.demo` / `ribbly-admin`. Se cambian con `ADMIN_DEMO_EMAIL` y `ADMIN_DEMO_PASSWORD`. |
+| Con Supabase         | Mail y clave propios del panel (`users.password_hash`, scrypt); la cuenta tiene que tener un rol.                    |
 
 Al equipo se lo suma desde **Equipo**: la invitación llega por mail con un link a `/admin/activar`
 (vence en 48 h) donde cada uno elige su clave; si el mail no sale, el link se copia desde el panel.
@@ -31,37 +31,37 @@ fallidos de login se limitan por IP y por mail.
 
 ## Secciones
 
-| Sección           | Para qué                                                                                                                                                                                                             |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Resumen**       | Facturación vs. el período anterior, meta del mes con proyección, KPIs, temáticas y planes que más venden, embudo, alertas, movimientos y cupones.                                                                   |
-| **Finanzas**      | Estado de resultados (cobrado → comisiones → impuestos → contribución → gastos fijos → resultado), mes a mes, rentabilidad por temática y por plan, gastos fijos, punto de equilibrio y simulador "¿qué pasa si…?".  |
-| **Analítica**     | Embudo con lo que se pierde en cada paso, checkouts vs. ventas, mapa de calor por día y hora, conversión por temática, tiempos del regalo, cupones y recompra por cohorte.                                           |
-| **Marketing**     | Pauta, canales y campañas: inversión, CPA, CAC, ROAS, POAS, MER, LTV:CAC, economía de una venta, calendario comercial, planificador de presupuesto y herramientas (links UTM, A/B). Ver [Marketing](#marketing).     |
-| **Soporte**       | Las consultas de los clientes (botón de ayuda del sitio): chat en vivo, notas internas, estados, prioridad, asignación, respuestas rápidas y los datos del cliente (su Boxie, sus compras). Ver [Soporte](#soporte). |
-| **Ventas**        | Todas las órdenes (se paguen o no) con filtros, exportación a CSV y detalle con el historial de pagos, lo que dejó la venta y el reembolso.                                                                          |
-| **Boxies**        | Buscador de soporte (código `K7M2-Q9XD`, mail o destinatario) y detalle: módulos completos, vista previa del regalo, extender, desbloquear, reenviar mails y corregir nombres.                                       |
-| **Clientes**      | Las órdenes agrupadas por mail: recurrentes, nuevos, top 5 %, los que no compraron (con un mail listo para recuperarlos) y exportación.                                                                              |
-| **Cupones**       | Alta y edición, estados (activo, programado, agotado, vencido, pausado), uso con tope, vista previa del descuento por plan y la oferta de la ficha.                                                                  |
-| **Afiliados**     | Códigos de creadores y comercios, comisión y lo que hay que liquidar cada mes.                                                                                                                                       |
-| **Temáticas**     | El catálogo. Cada temática tiene su editor: módulos (orden, textos, marco, plan), grilla de planes, ficha de la tienda, paleta y versiones, con la vista previa del regalo real.                                     |
-| **Generador**     | Se pega una lista de ocasiones y cada temática se arma sola (ver [Generador](#generador)).                                                                                                                           |
-| **Planes**        | Los niveles de precio y qué incluye cada uno (ver [Planes](#planes)).                                                                                                                                                |
-| **Tareas**        | Tablero kanban del equipo (por hacer, haciendo, hecho).                                                                                                                                                              |
-| **Actividad**     | Bitácora: cada cambio del panel queda registrado con quién y cuándo.                                                                                                                                                 |
-| **Equipo**        | Administradores, roles e invitaciones (solo el dueño).                                                                                                                                                               |
-| **Configuración** | Precio base, vida del regalo, oferta, pausar ventas, costos por venta, meta mensual y datos del negocio.                                                                                                             |
-| **Sistema**       | Qué está conectado y qué falta, verificado en vivo: cada tabla y columna que usa cada sección, y las variables del deploy.                                                                                           |
+| Sección           | Para qué                                                                                                                                                                                                              |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Resumen**       | Facturación vs. el período anterior, meta del mes con proyección, KPIs, temáticas y planes que más venden, embudo, alertas, movimientos y cupones.                                                                    |
+| **Finanzas**      | Estado de resultados (cobrado → comisiones → impuestos → contribución → gastos fijos → resultado), mes a mes, rentabilidad por temática y por plan, gastos fijos, punto de equilibrio y simulador "¿qué pasa si…?".   |
+| **Analítica**     | Embudo con lo que se pierde en cada paso, checkouts vs. ventas, mapa de calor por día y hora, conversión por temática, tiempos del regalo, cupones y recompra por cohorte.                                            |
+| **Marketing**     | Pauta, canales y campañas: inversión, CPA, CAC, ROAS, POAS, MER, LTV:CAC, economía de una venta, calendario comercial, planificador de presupuesto y herramientas (links UTM, A/B). Ver [Marketing](#marketing).      |
+| **Soporte**       | Las consultas de los clientes (botón de ayuda del sitio): chat en vivo, notas internas, estados, prioridad, asignación, respuestas rápidas y los datos del cliente (su Ribbly, sus compras). Ver [Soporte](#soporte). |
+| **Ventas**        | Todas las órdenes (se paguen o no) con filtros, exportación a CSV y detalle con el historial de pagos, lo que dejó la venta y el reembolso.                                                                           |
+| **Ribblys**       | Buscador de soporte (código `K7M2-Q9XD`, mail o destinatario) y detalle: módulos completos, vista previa del regalo, extender, desbloquear, reenviar mails y corregir nombres.                                        |
+| **Clientes**      | Las órdenes agrupadas por mail: recurrentes, nuevos, top 5 %, los que no compraron (con un mail listo para recuperarlos) y exportación.                                                                               |
+| **Cupones**       | Alta y edición, estados (activo, programado, agotado, vencido, pausado), uso con tope, vista previa del descuento por plan y la oferta de la ficha.                                                                   |
+| **Afiliados**     | Códigos de creadores y comercios, comisión y lo que hay que liquidar cada mes.                                                                                                                                        |
+| **Temáticas**     | El catálogo. Cada temática tiene su editor: módulos (orden, textos, marco, plan), grilla de planes, ficha de la tienda, paleta y versiones, con la vista previa del regalo real.                                      |
+| **Generador**     | Se pega una lista de ocasiones y cada temática se arma sola (ver [Generador](#generador)).                                                                                                                            |
+| **Planes**        | Los niveles de precio y qué incluye cada uno (ver [Planes](#planes)).                                                                                                                                                 |
+| **Tareas**        | Tablero kanban del equipo (por hacer, haciendo, hecho).                                                                                                                                                               |
+| **Actividad**     | Bitácora: cada cambio del panel queda registrado con quién y cuándo.                                                                                                                                                  |
+| **Equipo**        | Administradores, roles e invitaciones (solo el dueño).                                                                                                                                                                |
+| **Configuración** | Precio base, vida del regalo, oferta, pausar ventas, costos por venta, meta mensual y datos del negocio.                                                                                                              |
+| **Sistema**       | Qué está conectado y qué falta, verificado en vivo: cada tabla y columna que usa cada sección, y las variables del deploy.                                                                                            |
 
-Atajo: **Ctrl/⌘ K** abre el buscador (secciones, acciones y búsqueda directa de Boxies y clientes).
+Atajo: **Ctrl/⌘ K** abre el buscador (secciones, acciones y búsqueda directa de Ribblys y clientes).
 
 ### Roles
 
-| Rol           | Puede                                                                                  |
-| ------------- | -------------------------------------------------------------------------------------- |
-| Dueño         | Todo, incluido el equipo y restablecer la demo.                                        |
-| Administrador | Todo menos el equipo.                                                                  |
-| Editor        | Resumen, temáticas, generador, tareas y actividad.                                     |
-| Soporte       | Resumen, soporte, ventas, Boxies (reembolsos, reenvíos), clientes, tareas y actividad. |
+| Rol           | Puede                                                                                   |
+| ------------- | --------------------------------------------------------------------------------------- |
+| Dueño         | Todo, incluido el equipo y restablecer la demo.                                         |
+| Administrador | Todo menos el equipo.                                                                   |
+| Editor        | Resumen, temáticas, generador, tareas y actividad.                                      |
+| Soporte       | Resumen, soporte, ventas, Ribblys (reembolsos, reenvíos), clientes, tareas y actividad. |
 
 El menú muestra solo lo que el rol puede usar, y las acciones lo verifican en el servidor
 (`runAction` con `roles`). En la base, solo el dueño escribe en `users` y siempre queda uno.
@@ -70,7 +70,7 @@ El menú muestra solo lo que el rol puede usar, y las acciones lo verifican en e
 
 Las consultas que los clientes abren con el **botón de ayuda** (abajo a la izquierda en todo el
 sitio, en el editor y en el editor de prueba; no en el regalo). El cliente elige el tema (su
-Boxie, un error, un pago u otra cosa), deja su nombre, su mail y, si es sobre una Boxie, el código
+Ribbly, un error, un pago u otra cosa), deja su nombre, su mail y, si es sobre una Ribbly, el código
 (el panel la vincula sola). En un reporte de error se suma, con su permiso, la página, el
 navegador y el tamaño de pantalla.
 
@@ -90,7 +90,7 @@ conversación, datos del cliente) y una por vez en el celular:
   con la consulta; se puede reasignar.
 - **Prioridad y atrasadas:** los pagos entran con prioridad alta. Una consulta se marca
   **atrasada** si espera al equipo más de 2 h (urgente), 8 h (alta), 24 h (normal) o 48 h (baja).
-- **Datos del cliente:** su Boxie (código, temática, plan, si ya la regaló y el link a la Boxie
+- **Datos del cliente:** su Ribbly (código, temática, plan, si ya la regaló y el link a la Ribbly
   para reenviar mails o extenderla), sus compras con ese mail, sus consultas anteriores, el
   dispositivo del error y los tiempos (primera respuesta, calificación 👍/👎).
 
@@ -149,7 +149,7 @@ en la tienda, nunca en el panel, el editor ni el regalo) y `META_CAPI_TOKEN` (el
 cada compra acreditada, `Purchase` con `event_id = compra-<código>`, valor, temática y el mail y
 teléfono cifrados con SHA-256). `META_TEST_EVENT_CODE` sirve para probar en el Administrador de
 eventos. ⚠️ **Antes de activarlos, actualizar la Política de Privacidad**
-(`src/content/legal.tsx`, "Uso de la Información"): hoy dice que Boxie no comparte datos con
+(`src/content/legal.tsx`, "Uso de la Información"): hoy dice que Ribbly no comparte datos con
 terceros para fines publicitarios.
 
 **La pauta en Finanzas.** La inversión de las campañas se suma sola como gasto de "Marketing y
@@ -182,10 +182,10 @@ En la tienda:
   orden guarda el plan.
 - El editor y el regalo muestran solo las pantallas del plan comprado; el tope de fotos, la clave y
   los días online salen del plan.
-- `/ejemplo/<temática>?plan=<plan>` muestra la Boxie de ejemplo de ese plan.
+- `/ejemplo/<temática>?plan=<plan>` muestra la Ribbly de ejemplo de ese plan.
 
 **Sin planes cargados, todo funciona como antes** (un precio base). Los regalos vendidos no cambian
-nunca: cada Boxie apunta a la versión de la temática que se vendió y a su plan.
+nunca: cada Ribbly apunta a la versión de la temática que se vendió y a su plan.
 
 ## Generador
 
@@ -281,8 +281,8 @@ hay que recorrerlo a mano):
 - [ ] `Resumen`, `Finanzas` y `Analítica` cargan (con pocas órdenes, casi en cero).
 - [ ] Crear un plan, un cupón y un gasto; editarlos; verlos en `Actividad`.
 - [ ] Generar una temática, publicarla y verla en la tienda.
-- [ ] Una compra de prueba (sandbox): la orden aparece en `Ventas` con su plan; la Boxie en `Boxies`.
-- [ ] Reenviar el mail del editor desde la Boxie (rota el link) y probar el link nuevo.
+- [ ] Una compra de prueba (sandbox): la orden aparece en `Ventas` con su plan; la Ribbly en `Ribblys`.
+- [ ] Reenviar el mail del editor desde la Ribbly (rota el link) y probar el link nuevo.
 - [ ] Reembolsar la orden de prueba: el regalo deja de abrirse.
 
 ## Pendientes y próximos pasos

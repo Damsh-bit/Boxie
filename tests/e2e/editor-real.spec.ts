@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 
 /**
  * El circuito real del regalo, contra Supabase local (CI): una compra pagada
- * con el proveedor falso crea la Boxie; el comprador entra con su link,
+ * con el proveedor falso crea la Ribbly; el comprador entra con su link,
  * personaliza, sube fotos a Storage, bloquea, y el destinatario abre el regalo
  * desde otro dispositivo (Sprint 3, docs/ARQUITECTURA.md §5).
  */
@@ -99,7 +99,7 @@ test('comprar, personalizar, bloquear y abrir el regalo en otro dispositivo', as
   await otherDevice.close()
 })
 
-test('un link de edición inventado no abre ninguna Boxie', async ({ page }) => {
+test('un link de edición inventado no abre ninguna Ribbly', async ({ page }) => {
   await page.goto('/editor/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
   await expect(page).toHaveURL(/\/editor\?error=link$/)
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ese link no funciona')

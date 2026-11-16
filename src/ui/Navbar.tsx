@@ -104,12 +104,12 @@ export function Navbar({ session }: { session?: { name: string; avatarUrl?: stri
               transition={spring.bouncy}
             >
               <Image
-                src="/brand/boxie-logo.png"
+                src="/brand/ribbly-logo.png"
                 alt="Ribbly"
-                width={129}
-                height={45}
+                width={74}
+                height={52}
                 priority
-                className="h-[45px] w-auto"
+                className="h-[52px] w-auto"
               />
             </motion.span>
           </Link>

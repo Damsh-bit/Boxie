@@ -14,7 +14,7 @@ import { PseudoQr } from './PseudoQr'
 
 /**
  * La portada de /marcas: el título y un selector de rubro. La maqueta de la
- * derecha muestra cómo sería la Boxie de ese rubro (con la marca, la campaña
+ * derecha muestra cómo sería la Ribbly de ese rubro (con la marca, la campaña
  * y sus módulos). Va pasando sola hasta que alguien elige uno.
  */
 export function BrandsHero() {

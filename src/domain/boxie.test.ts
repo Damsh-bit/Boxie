@@ -46,7 +46,7 @@ describe('editorAvailability', () => {
     expect(editorAvailability(boxie({ lockedAt: NOW }), NOW)).toBe('locked')
   })
 
-  it('una Boxie sin bloquear cuya ventana de edición pasó está vencida', () => {
+  it('una Ribbly sin bloquear cuya ventana de edición pasó está vencida', () => {
     expect(editorAvailability(boxie({ expiresAt: new Date(NOW.getTime() - day) }), NOW)).toBe(
       'expired',
     )

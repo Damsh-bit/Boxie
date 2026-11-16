@@ -197,7 +197,7 @@ export default async function CustomersPage({ searchParams }: PageProps<'/admin/
               <ul className="space-y-2">
                 {recentAbandoned.map((c) => {
                   const first = c.name.split(' ')[0]
-                  const body = `¡Hola ${first}! Vimos que empezaste a armar una Boxie y no llegaste a terminar la compra.${offer ? ` Te dejamos el cupón ${offer.code} para que la completes con descuento.` : ''} Si tuviste algún problema con el pago, respondé este mail y te ayudamos.`
+                  const body = `¡Hola ${first}! Vimos que empezaste a armar una Ribbly y no llegaste a terminar la compra.${offer ? ` Te dejamos el cupón ${offer.code} para que la completes con descuento.` : ''} Si tuviste algún problema con el pago, respondé este mail y te ayudamos.`
                   return (
                     <li
                       key={c.email}

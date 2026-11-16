@@ -4,7 +4,7 @@
  * "regalo de cumpleaños", "regalo a distancia", "regalo para mi novia") sin
  * repetirlo de más.
  *
- * El precio de la Boxie NO vive acá: sale del catálogo (el mismo que cobra el
+ * El precio de la Ribbly NO vive acá: sale del catálogo (el mismo que cobra el
  * checkout). Los precios de los otros regalos del comparador son valores de
  * referencia ficticios, para mostrar la diferencia; se ajustan a mano.
  */
@@ -88,7 +88,7 @@ export const marqueeWords = [
 ]
 
 /**
- * Lo que trae una Boxie (las pestañas con demos jugables). `kind` es la
+ * Lo que trae una Ribbly (las pestañas con demos jugables). `kind` es la
  * pantalla del regalo que la muestra: con planes, la home dice desde qué plan
  * viene (las fotos arrancan con la dedicatoria, que va en todos).
  */
@@ -185,8 +185,12 @@ export const giftComparisons = [
  * Cupón de bienvenida de la sección de precio. El descuento que se muestra
  * sale del cupón real (`getStorefront`): si en el panel se pausa, vence o se
  * borra, la home deja de ofrecerlo.
+ *
+ * Se ofrece el primero que esté vigente: RIBBLY10 apenas exista en el panel,
+ * y mientras tanto el BOXIE10 de antes de la marca nueva (pausarlo cuando
+ * RIBBLY10 ya esté creado).
  */
-export const welcomeCoupon = { code: 'BOXIE10' } as const
+export const welcomeCoupon = { codes: ['RIBBLY10', 'BOXIE10'] } as const
 
 export interface FaqItem {
   question: string

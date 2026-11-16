@@ -19,7 +19,7 @@ const SPARKLES = [
 /**
  * La tapa del regalo: quien lo recibe lo "abre" con un toque. Además de la
  * emoción del momento, ese toque cuenta como interacción con la página: los
- * navegadores recién ahí dejan sonar la canción de la Boxie.
+ * navegadores recién ahí dejan sonar la canción de la Ribbly.
  */
 export function GiftIntro({
   recipientName,

@@ -40,7 +40,7 @@ export function metaCapiEnabled(): boolean {
   return Boolean(e.META_CAPI_TOKEN && e.NEXT_PUBLIC_META_PIXEL_ID)
 }
 
-/** Manda "Purchase" de la Boxie recién creada (event_id = "compra-<código>"). */
+/** Manda "Purchase" de la Ribbly recién creada (event_id = "compra-<código>"). */
 export async function reportPurchaseToMeta(boxieId: string): Promise<void> {
   if (!metaCapiEnabled()) return
   const e = env()

@@ -7,7 +7,7 @@
  * solo (más o menos capítulos, principios o datos).
  *
  * Los números de la página NO viven acá: salen del catálogo y de las ventas
- * (temáticas publicadas, sorpresas por Boxie, días online, Boxies regaladas).
+ * (temáticas publicadas, sorpresas por Ribbly, días online, Ribblys regaladas).
  */
 
 export interface Founder {
@@ -16,7 +16,7 @@ export interface Founder {
   /** Iniciales del avatar mientras no haya foto. */
   initials: string
   role: string
-  /** De qué se ocupa en Boxie, en pocas palabras. */
+  /** De qué se ocupa en Ribbly, en pocas palabras. */
   focus: string
   /** Color del avatar (uno de la marca). */
   color: string
@@ -130,7 +130,7 @@ export const principles = [
   },
 ]
 
-/** El pase de abordar de la portada: de dónde sale y a dónde llega una Boxie. */
+/** El pase de abordar de la portada: de dónde sale y a dónde llega una Ribbly. */
 export const boardingPass = {
   from: { code: 'BUE', city: 'Buenos Aires', who: 'Vos' },
   to: { code: 'MAD', city: 'Madrid', who: 'Tu persona' },

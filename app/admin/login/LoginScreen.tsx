@@ -64,7 +64,7 @@ export function LoginScreen({
           transition={{ duration: 0.7, ease: ease.out }}
         >
           <Link href="/" className="mb-10 inline-block lg:hidden" aria-label="Ribbly">
-            <Image src="/brand/boxie-logo.png" alt="Ribbly" width={110} height={38} priority />
+            <Image src="/brand/ribbly-logo.png" alt="Ribbly" width={74} height={52} priority />
           </Link>
 
           {state.requires2FA ? (
@@ -166,7 +166,7 @@ export function LoginScreen({
               </motion.span>
               <h1 className="font-display text-4xl font-bold text-ink">Entrar al panel</h1>
               <p className="mt-2 text-neutral-600">
-                El centro de control de Boxie: ventas, temáticas, planes y todo el negocio.
+                El centro de control de Ribbly: ventas, temáticas, planes y todo el negocio.
               </p>
 
               <form action={action} className="mt-8 space-y-5">
@@ -317,14 +317,7 @@ function BrandPanel() {
       />
       <div className="relative flex h-full flex-col justify-between p-12 text-white xl:p-16">
         <Link href="/" aria-label="Ribbly" className="w-fit">
-          <Image
-            src="/brand/boxie-logo.png"
-            alt="Ribbly"
-            width={130}
-            height={45}
-            priority
-            className="brightness-0 invert"
-          />
+          <Image src="/brand/ribbly-logo-white.png" alt="Ribbly" width={89} height={60} priority />
         </Link>
 
         <Stagger immediate step={0.12} delay={0.2} className="max-w-md">

@@ -41,7 +41,7 @@ update public.themes t
   )
 
   return `-- ════════════════════════════════════════════════════════════════════════════
--- Boxie · Catálogo inicial
+-- Ribbly · Catálogo inicial
 --
 -- GENERADO por scripts/build-theme-migration.ts a partir de
 -- supabase/seed/themes/*.json. No editar a mano.
@@ -57,7 +57,7 @@ ${blocks.join('\n\n')}
 -- LOQUIEROYA25 otorgaba 50%: se corrige al 25% que promete su nombre.
 
 insert into public.coupons (code, kind, value, description) values
-  ('BOXIE10', 'percent', 10, 'Cupón general'),
+  ('RIBBLY10', 'percent', 10, 'Cupón general'),
   ('PAREJA20', 'percent', 20, 'Temática Pareja'),
   ('INFLUENCER50', 'percent', 50, 'Influencers (revisar tope de usos)'),
   ('LOQUIEROYA25', 'percent', 25, 'Oferta de urgencia de la ficha de producto'),

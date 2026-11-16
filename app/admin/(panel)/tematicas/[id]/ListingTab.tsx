@@ -160,7 +160,7 @@ export function ListingTab({
         <Card>
           <h3 className="mb-4 font-semibold text-ink">Tarjeta y página de producto</h3>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Antes del nombre" htmlFor="l-title" hint='"Boxie para", "Boxie de"…'>
+            <Field label="Antes del nombre" htmlFor="l-title" hint='"Ribbly para", "Ribbly de"…'>
               <Input
                 id="l-title"
                 value={listing.title}

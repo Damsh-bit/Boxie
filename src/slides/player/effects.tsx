@@ -218,7 +218,7 @@ export function GradientDrift({
   )
 }
 
-/** Mosaico de logos de Boxie de fondo (trivia y cuponera), que deriva despacio en diagonal. */
+/** Mosaico de logos de Ribbly de fondo (trivia y cuponera), que deriva despacio en diagonal. */
 export function LogoPattern({ logoUrl, count = 60 }: { logoUrl: string; count?: number }) {
   const calm = useReducedMotion()
   return (

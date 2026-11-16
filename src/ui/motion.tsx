@@ -14,7 +14,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { cn } from './cn'
 
 /**
- * Sistema de movimiento de Boxie (framer-motion).
+ * Sistema de movimiento de Ribbly (framer-motion).
  *
  * Todo lo que se mueve en el sitio, el editor y el regalo sale de estas
  * curvas y resortes, así la marca se siente igual en todos lados. Reglas:

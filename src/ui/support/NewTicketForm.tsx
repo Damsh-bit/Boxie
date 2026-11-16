@@ -49,7 +49,7 @@ export interface NewTicketDefaults {
 
 /**
  * Abrir una consulta: los datos para responder (nombre y mail), el código de
- * la Boxie si es sobre una, el mensaje y, en un error, el detalle técnico de
+ * la Ribbly si es sobre una, el mensaje y, en un error, el detalle técnico de
  * la página (con permiso).
  */
 export function NewTicketForm({

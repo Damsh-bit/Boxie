@@ -81,7 +81,7 @@ export function EditorMessage({
     <div className="flex min-h-dvh flex-col items-center bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] px-5 py-12">
       <Reveal y={-12}>
         <Link href="/" aria-label="Ribbly, inicio">
-          <Image src="/brand/boxie-logo.png" alt="Ribbly" width={129} height={45} priority />
+          <Image src="/brand/ribbly-logo.png" alt="Ribbly" width={80} height={56} priority />
         </Link>
       </Reveal>
       <MessageCard emoji={copy.emoji} title={copy.title} className="mt-10">

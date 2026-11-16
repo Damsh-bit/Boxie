@@ -43,7 +43,7 @@ function isDismissed(code: string) {
 }
 
 /**
- * Arriba del editor recién comprado: "Tenés una Boxie a medio armar en la
+ * Arriba del editor recién comprado: "Tenés una Ribbly a medio armar en la
  * prueba, ¿la traemos?". Sube las fotos, guarda y vuelve a abrir el editor
  * con todo cargado.
  */

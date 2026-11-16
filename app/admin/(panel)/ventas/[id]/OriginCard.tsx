@@ -68,7 +68,7 @@ function Step({
 }
 
 /**
- * De dónde vino la compra: el primer origen (cómo conoció Boxie) y el último
+ * De dónde vino la compra: el primer origen (cómo conoció Ribbly) y el último
  * (el que la cerró), con la campaña si corresponde. Un cupón de campaña
  * manda sobre el último clic.
  */

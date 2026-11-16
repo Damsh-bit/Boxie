@@ -21,7 +21,7 @@ const Body = z.object({
     .regex(/^[a-z0-9-]{1,60}$/)
     .optional(),
   nombre: z.string().min(2).max(120).default('Comprador de Prueba'),
-  email: z.email().default('prueba@boxie.test'),
+  email: z.email().default('prueba@ribbly.test'),
 })
 
 function enabled() {
@@ -73,12 +73,15 @@ export async function POST(request: Request) {
     source: 'checkout',
   })
   if (!result.created || !result.links) {
-    return NextResponse.json({ error: `No se creó la Boxie (${result.outcome}).` }, { status: 500 })
+    return NextResponse.json(
+      { error: `No se creó la Ribbly (${result.outcome}).` },
+      { status: 500 },
+    )
   }
 
   const boxie = unwrap(
     await serviceDb().from('boxies').select('code').eq('id', result.boxieId!).single(),
-    'Boxie de prueba',
+    'Ribbly de prueba',
   )
   return NextResponse.json({
     code: formatBoxieCode(boxie.code),

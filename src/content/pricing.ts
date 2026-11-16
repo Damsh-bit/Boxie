@@ -49,7 +49,7 @@ export const moduleGroups: ModuleGroup[] = [
 
 export const OTHER_GROUP = { id: 'otros', label: 'Más sorpresas', emoji: 'destellos' }
 
-/** Qué hace cada módulo, para quien está armando su Boxie. */
+/** Qué hace cada módulo, para quien está armando su Ribbly. */
 export const moduleBlurbs: Partial<Record<SlideKind, string>> = {
   'story.intro': 'Stickers animados que la reciben al abrirla.',
   'story.dedication': 'Tu carta, con foto, que se abre como un sobre.',

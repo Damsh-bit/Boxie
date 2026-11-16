@@ -20,7 +20,7 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Centro de ayuda',
   description:
-    'Preguntas frecuentes sobre Boxie: cómo comprar, personalizar y regalar, planes, pagos, privacidad y cómo hablar con soporte.',
+    'Preguntas frecuentes sobre Ribbly: cómo comprar, personalizar y regalar, planes, pagos, privacidad y cómo hablar con soporte.',
   alternates: { canonical: '/ayuda' },
 }
 
@@ -64,7 +64,7 @@ export default async function HelpPage() {
     {
       href: '/galeria',
       icon: 'regalo',
-      title: 'Elegir una Boxie',
+      title: 'Elegir una Ribbly',
       text: 'Todas las temáticas',
     },
   ]

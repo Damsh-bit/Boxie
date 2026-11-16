@@ -143,7 +143,7 @@ export default async function FinancePage({ searchParams }: PageProps<'/admin/fi
                   kind: 'minus',
                 },
                 {
-                  label: `Costo de entrega (${formatARS(s.variableCostCents)} por Boxie)`,
+                  label: `Costo de entrega (${formatARS(s.variableCostCents)} por Ribbly)`,
                   value: -pnl.variableCents,
                   kind: 'minus',
                 },
@@ -224,7 +224,7 @@ export default async function FinancePage({ searchParams }: PageProps<'/admin/fi
                     formatPercent(effectiveGatewayRate(s, avgTicket || 499_000), 2),
                   ],
                   ['Impuestos sobre ventas', formatBps(s.taxBps)],
-                  ['Costo de entrega por Boxie', formatARS(s.variableCostCents)],
+                  ['Costo de entrega por Ribbly', formatARS(s.variableCostCents)],
                   ['Gastos fijos por mes (hoy)', formatARS(fixedMonthly)],
                   ['Meta mensual', formatARS(s.monthlyGoalCents)],
                   ['Proyección del mes', formatARS(Math.round(month.projectedCents / 100) * 100)],

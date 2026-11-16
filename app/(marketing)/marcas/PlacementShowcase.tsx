@@ -162,7 +162,7 @@ export function PlacementShowcase() {
   )
 }
 
-/** Un vaso de café con la faja de Boxie y el QR. */
+/** Un vaso de café con la faja de Ribbly y el QR. */
 function CupMockup() {
   return (
     <div className="relative mx-auto flex h-[360px] w-full max-w-[340px] items-end justify-center">

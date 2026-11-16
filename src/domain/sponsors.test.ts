@@ -20,7 +20,7 @@ function sponsor(overrides: Partial<Sponsor> = {}): Sponsor {
     kind: 'local',
     stage: 'activo',
     tagline: 'El café de la esquina',
-    offer: 'Con tu café, una Boxie de regalo',
+    offer: 'Con tu café, una Ribbly de regalo',
     description: '',
     emoji: '☕',
     logoUrl: null,

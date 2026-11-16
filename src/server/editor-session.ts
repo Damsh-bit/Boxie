@@ -6,7 +6,7 @@ import { expiresIn, sign, verify, type SignedPayload } from './security/signed'
  * Sesión del editor (docs/ARQUITECTURA.md §3.3): el link del mail
  * (/editor/<token>) se canjea por una cookie firmada httpOnly y la URL queda
  * limpia (/editor). El navegador guarda la cookie pero no la puede fabricar;
- * el servidor la valida en cada pedido, nunca le cree al cliente qué Boxie
+ * el servidor la valida en cada pedido, nunca le cree al cliente qué Ribbly
  * está editando (en el prototipo alcanzaba con escribir otro ID en
  * localStorage).
  */

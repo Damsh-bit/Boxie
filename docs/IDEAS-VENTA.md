@@ -1,4 +1,4 @@
-# Ideas para vender más Boxies (y que comprar sea más fácil)
+# Ideas para vender más Ribblys (y que comprar sea más fácil)
 
 Análisis del 28/09/2026 recorriendo la tienda como un cliente desde el celular (home → ficha de la
 temática → checkout → Mercado Pago → editor → regalo) y mirando los números del panel de Marketing.
@@ -9,7 +9,7 @@ Cada idea dice **qué problema resuelve**, **qué hacer** y una estimación de i
 Lo que ya funciona bien y conviene cuidar:
 
 - La home vende desde la primera pantalla: el armador "¿Para quién es?" con vista previa, la cinta
-  de compras reales con Mercado Pago y "+3.000 Boxies regaladas".
+  de compras reales con Mercado Pago y "+3.000 Ribblys regaladas".
 - La ficha explica los planes con lo que incluye cada uno en esa temática y tiene barra de compra
   fija en el celular.
 - Después de pagar, Mercado Pago devuelve directo al editor (sin pasar por un mail).
@@ -23,9 +23,9 @@ Lo que encontré en el recorrido:
 | 2   | En el celular el checkout arranca con "¿Cómo funciona?" (toda la pantalla) y el total queda al final, debajo del formulario. | Checkout         | ✅ Resuelto (28/09)     |
 | 3   | El botón de pagar queda gris hasta tildar los términos, sin explicar por qué.                                                | Checkout         | ✅ Resuelto (28/09)     |
 | 4   | El teléfono es obligatorio aunque el acceso llega por mail.                                                                  | Checkout         | ✅ Ahora es opcional    |
-| 5   | "QUIERO MI BOXIE CON DESCUENTO" se corta en pantallas chicas.                                                                | Ficha            | ✅ Resuelto (28/09)     |
+| 5   | "QUIERO MI RIBBLY CON DESCUENTO" se corta en pantallas chicas.                                                               | Ficha            | ✅ Resuelto (28/09)     |
 | 6   | Un cupón que llega en un link (anuncio, creadora) solo se aplicaba si el link iba directo al checkout.                       | Toda la tienda   | ✅ Se guarda una semana |
-| 7   | Lo que armaron en "Probá cómo se personaliza" no pasa a la Boxie comprada: después de pagar empiezan de cero.                | Editor de prueba | ✅ Se trae al comprar   |
+| 7   | Lo que armaron en "Probá cómo se personaliza" no pasa a la Ribbly comprada: después de pagar empiezan de cero.               | Editor de prueba | ✅ Se trae al comprar   |
 | 8   | El botón flotante de ayuda tapa parte de los botones de compra y del total en el celular.                                    | Toda la tienda   | Pendiente (idea 13)     |
 | 9   | El regalo termina y no invita a regalar: quien lo recibe (alguien que acaba de emocionarse) no tiene cómo hacer uno.         | Regalo `/g/…`    | ✅ Tarjeta al final     |
 | 10  | Las compras abandonadas solo se recuperan a mano (Clientes → "abandonaron").                                                 | Post-checkout    | Pendiente (idea 4)      |
@@ -37,11 +37,11 @@ Lo que encontré en el recorrido:
 ### Ahora (más impacto, poco o mediano esfuerzo)
 
 **1. "Armala gratis, pagala cuando esté lista".** ✅ _Hecho (28/09): al abrir el editor de una
-Boxie recién comprada, si en ese navegador hay una prueba de la misma temática, aparece "Traer lo
+Ribbly recién comprada, si en ese navegador hay una prueba de la misma temática, aparece "Traer lo
 que armé" (textos y fotos, que se suben en ese momento). El editor de prueba tiene "Comprarla" a
-mano y al final dice que lo armado pasa a la Boxie. Falta: que la home y la ficha lleven primero
+mano y al final dice que lo armado pasa a la Ribbly. Falta: que la home y la ficha lleven primero
 a armarla._ Hoy el editor de prueba guarda en el navegador y
-se descarta. Si al pagar la Boxie nace con lo que ya armaron (textos y fotos), el pago pasa a ser
+se descarta. Si al pagar la Ribbly nace con lo que ya armaron (textos y fotos), el pago pasa a ser
 el último paso de algo que ya quieren regalar (efecto IKEA: lo que uno arma vale más). Qué hacer:
 en el editor real, si el borrador está vacío y hay uno de prueba de la misma temática, ofrecer
 "Traer lo que armaste" (las fotos se suben en ese momento). En la ficha y en la home, el botón
@@ -49,18 +49,18 @@ principal puede pasar a ser "Empezar a armarla" y el de pago aparecer arriba del
 ("Pagar y guardar"). _Impacto alto · esfuerzo medio._
 
 **2. Checkout en un paso.** Con Mercado Pago Checkout Bricks (o el botón de billetera) se paga sin
-salir de Boxie: tarjeta, dinero en cuenta y cuotas en la misma pantalla. Menos redirecciones =
+salir de Ribbly: tarjeta, dinero en cuenta y cuotas en la misma pantalla. Menos redirecciones =
 menos pagos abandonados (hoy 1 de cada 3 pagos iniciados no se completa en la demo). Sumar
-`statement_descriptor: "BOXIE"` (el resumen de la tarjeta dice qué se compró: menos
+`statement_descriptor: "RIBBLY"` (el resumen de la tarjeta dice qué se compró: menos
 desconocimientos) y excluir los medios en efectivo (Rapipago/Pago Fácil) para un regalo que se
 quiere al instante. _Impacto alto · esfuerzo medio._
 
 **3. El regalo como canal de venta (loop viral).** ✅ _Hecho (28/09): al llegar a la última
-pantalla del regalo aparece "¿Te emocionó?" con "Responderle con una Boxie" y "Regalar a otra
+pantalla del regalo aparece "¿Te emocionó?" con "Responderle con una Ribbly" y "Regalar a otra
 persona", con el cupón de bienvenida si está vigente. Se mide como el canal "Regalos
 recibidos"._ Al final del regalo, una pantalla: "¿Te gustó?
-Regalale una Boxie a alguien" y "Respondé con una Boxie a {quien te la regaló}", con un cupón de
-bienvenida y links etiquetados (`utm_source=boxie&utm_medium=regalo`: se mide solo en Marketing ›
+Regalale una Ribbly a alguien" y "Respondé con una Ribbly a {quien te la regaló}", con un cupón de
+bienvenida y links etiquetados (`utm_source=ribbly&utm_medium=regalo`: se mide solo en Marketing ›
 Canales). Cada regalo abierto es alguien que acaba de vivir el producto. _Impacto alto · esfuerzo
 bajo._
 
@@ -79,7 +79,7 @@ en Marketing › Herramientas › Medición. _Impacto alto · esfuerzo bajo-medi
 ### Próximo (profundizan el valor por cliente)
 
 **6. Programar la entrega.** "Que le llegue el 18 de octubre a las 9:00": el regalo se bloquea hoy
-y Boxie manda el link por mail o WhatsApp en la fecha elegida. Saca la ansiedad de "me voy a
+y Ribbly manda el link por mail o WhatsApp en la fecha elegida. Saca la ansiedad de "me voy a
 olvidar" y permite comprar con anticipación (las fechas fuertes se venden antes). _Impacto alto ·
 esfuerzo medio._
 
@@ -92,9 +92,9 @@ Sofi". Con el cupón de aniversario que ya existe, la recompra sube sin pauta. _
 días, ofrecer "Pasá a Premium por la diferencia ($ 3.000)" sin salir del editor. Se vende en el
 momento en que la persona siente que le falta algo. _Impacto medio · esfuerzo medio._
 
-**9. Boxie colaborativa (regalo de grupo).** Un link para que amigos, compañeros o la familia suban
-fotos y mensajes a la misma Boxie (Día del Amigo, Día del Maestro, despedidas, egresados). Sube el
-ticket y cada colaborador conoce Boxie (más loop viral). _Impacto alto · esfuerzo alto._
+**9. Ribbly colaborativa (regalo de grupo).** Un link para que amigos, compañeros o la familia suban
+fotos y mensajes a la misma Ribbly (Día del Amigo, Día del Maestro, despedidas, egresados). Sube el
+ticket y cada colaborador conoce Ribbly (más loop viral). _Impacto alto · esfuerzo alto._
 
 **10. Urgencia honesta en vez de la oferta a los 15 segundos.** ✅ _En parte (28/09): la ficha
 muestra la próxima fecha real del calendario ("Día de la Madre en 20 días · llega al instante").
@@ -106,7 +106,7 @@ de convertir igual o mejor, evita problemas con la normativa de defensa del cons
 urgencias engañosas. _Impacto medio · esfuerzo bajo._
 
 **11. Packs y "comprá 2" para fechas grupales.** Día del Amigo, Día del Maestro, Navidad: "3
-Boxies Esencial por $ 8.990". Un solo pago, tres links para editar. _Impacto medio · esfuerzo
+Ribblys Esencial por $ 8.990". Un solo pago, tres links para editar. _Impacto medio · esfuerzo
 medio._
 
 **12. Reseñas y reacciones reales en la ficha.** Videos cortos de reacciones (con permiso) y
@@ -120,7 +120,7 @@ barra de compra o un total a la vista (ya existe `useBottomBar` para la barra de
 también en la home, la ficha y el checkout).
 
 **14. El ejemplo con su nombre.** ✅ _Hecho (28/09)._ "Ver ejemplo" desde el armador de la home puede abrir el ejemplo
-con el nombre escrito ("Así se vería la Boxie de Sofi"): es la vista previa más convincente.
+con el nombre escrito ("Así se vería la Ribbly de Sofi"): es la vista previa más convincente.
 
 **15. Landings por búsqueda.** Una página por intención ("regalo para mi novia a distancia",
 "regalo de último momento", "regalo para el Día de la Madre") generadas con el Generador y

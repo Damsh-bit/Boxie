@@ -25,7 +25,7 @@ const { demoDb, resetDemoDb } = await import('../admin/demo/store')
 const flush = async () => {
   while (pending.length) await pending.shift()!()
 }
-const actor = { email: 'soporte@boxie.demo', name: 'Lean Soporte' }
+const actor = { email: 'soporte@ribbly.demo', name: 'Lean Soporte' }
 
 function newTicket(overrides: Record<string, unknown> = {}) {
   return service.createTicket({
@@ -71,7 +71,7 @@ describe('abrir una consulta', () => {
     expect(team.replyTo).toBe('sofi@ejemplo.com')
   })
 
-  it('vincula la Boxie del código para el equipo, sin mostrársela al cliente', async () => {
+  it('vincula la Ribbly del código para el equipo, sin mostrársela al cliente', async () => {
     const boxie = demoDb().boxies[0]!
     const { conversation } = await newTicket({ boxieCode: boxie.code.toLowerCase() })
     const agentView = await (await supportRepo()).getTicket(conversation.ticket.id)
@@ -194,7 +194,7 @@ describe('estados', () => {
     await service.agentUpdate(actor, {
       ticketId: conversation.ticket.id,
       priority: 'urgente',
-      assignee: 'socio@boxie.demo',
+      assignee: 'socio@ribbly.demo',
     })
     await flush()
     expect(demoDb().audit[0]).toMatchObject({

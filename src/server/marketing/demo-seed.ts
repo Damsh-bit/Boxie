@@ -168,7 +168,7 @@ export function seedMarketing(db: DemoDb, now = new Date()): DemoMarketing {
       utm: 'meta-remarketing',
       startsOn: arDayKey(addDays(now, -345)),
       audience: 'Visitaron una temática o el checkout en los últimos 14 días y no compraron',
-      notes: 'Anuncio dinámico con la temática que miraron + recordatorio del cupón BOXIE10.',
+      notes: 'Anuncio dinámico con la temática que miraron + recordatorio del cupón RIBBLY10.',
     },
     {
       ...META,
@@ -306,7 +306,7 @@ export function seedMarketing(db: DemoDb, now = new Date()): DemoMarketing {
   campaign(
     9,
     {
-      name: 'Google · Marca "Boxie"',
+      name: 'Google · Marca "Ribbly"',
       channel: 'google',
       objective: 'marca',
       utm: 'google-marca',
@@ -318,7 +318,7 @@ export function seedMarketing(db: DemoDb, now = new Date()): DemoMarketing {
       source: 'google',
       medium: 'cpc',
       contents: ['marca'],
-      terms: ['boxie', 'boxie digital', 'boxie regalo'],
+      terms: ['ribbly', 'ribbly regalo', 'regalo ribbly'],
       pull: 5,
       startRate: 0.1,
       landing: 'home',
@@ -391,7 +391,7 @@ export function seedMarketing(db: DemoDb, now = new Date()): DemoMarketing {
       startsOn: dayOffset(-330),
       coupon: 'INFLUENCER50',
       audience: 'Creadoras de 10 a 80 mil seguidores (parejas, lifestyle, manualidades)',
-      notes: 'La inversión es el valor de las Boxies regaladas + el fee de las que cobran.',
+      notes: 'La inversión es el valor de las Ribblys regaladas + el fee de las que cobran.',
     },
     {
       source: 'instagram',
@@ -471,7 +471,7 @@ export function seedMarketing(db: DemoDb, now = new Date()): DemoMarketing {
       utm: 'email-aniversarios',
       startsOn: dayOffset(-300),
       coupon: 'PAREJA20',
-      audience: 'Clientes que regalaron una Boxie de pareja hace 11 meses',
+      audience: 'Clientes que regalaron una Ribbly de pareja hace 11 meses',
       notes: 'Automático: "se viene su aniversario" con PAREJA20.',
     },
     {

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 /**
- * La Boxie de ejemplo usa el mismo player que el regalo real: sirve de
+ * La Ribbly de ejemplo usa el mismo player que el regalo real: sirve de
  * prueba de humo de que una temática publicada se renderiza completa.
  */
 
@@ -11,7 +11,7 @@ for (const [slug, portada] of [
   // Cumpleaños usa las pantallas nuevas de Ribbly (portada con la torta).
   ['cumpleanos', 'Hoy es un día especial para...'],
 ] as const) {
-  test(`la Boxie de ejemplo de ${slug} se recorre con los botones`, async ({ page }) => {
+  test(`la Ribbly de ejemplo de ${slug} se recorre con los botones`, async ({ page }) => {
     await page.goto(`/ejemplo/${slug}`)
     const activa = page.locator('.bx-slide.is-active')
     await expect(activa).toContainText('Una experiencia digital para vos.')

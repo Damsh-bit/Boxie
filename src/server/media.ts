@@ -5,7 +5,7 @@ import { log } from './log'
 /**
  * Fotos del comprador en Supabase Storage (bucket privado boxie-media). Se
  * leen solo con URLs firmadas que arma el servidor; la ruta de cada foto es
- * boxies/<id de la Boxie>/<id de la foto>.<ext> (la base lo exige).
+ * boxies/<id de la Ribbly>/<id de la foto>.<ext> (la base lo exige).
  */
 
 export const BOXIE_MEDIA_BUCKET = 'boxie-media'
@@ -39,7 +39,7 @@ export function boxiePhotoPath(boxieId: string, assetId: string, mime: ImageMime
   return `boxies/${boxieId}/${assetId}.${IMAGE_EXTENSION[mime]}`
 }
 
-/** URLs firmadas (assetId → URL) de las fotos de una Boxie. */
+/** URLs firmadas (assetId → URL) de las fotos de una Ribbly. */
 export async function signedMediaUrls(
   boxieId: string,
   expiresInSeconds: number,
@@ -54,7 +54,7 @@ export async function signedMediaUrls(
     if (onlyIds.length === 0) return {}
     query = query.in('id', onlyIds)
   }
-  const rows = unwrap(await query, 'fotos de la Boxie')
+  const rows = unwrap(await query, 'fotos de la Ribbly')
   if (rows.length === 0) return {}
 
   const { data, error } = await serviceDb()
@@ -85,7 +85,7 @@ export async function pruneUnusedMedia(boxieId: string, keep: string[]): Promise
       .select('id, path')
       .eq('owner_type', 'boxie')
       .eq('owner_id', boxieId),
-    'fotos de la Boxie',
+    'fotos de la Ribbly',
   )
   const unused = rows.filter((r) => !keep.includes(r.id))
   if (unused.length === 0) return 0

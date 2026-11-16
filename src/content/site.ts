@@ -58,7 +58,7 @@ export function siteUrl(): string {
   )
 }
 
-/** Cómo funciona una Boxie, de la compra al regalo (home y checkout). */
+/** Cómo funciona una Ribbly, de la compra al regalo (home y checkout). */
 export const howItWorks = [
   {
     icon: 'bag',

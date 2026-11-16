@@ -1,6 +1,6 @@
 /**
  * El cotizador de /precios: a partir de lo que alguien quiere que tenga su
- * Boxie (módulos, fotos, días online, clave) calcula el plan más barato que lo
+ * Ribbly (módulos, fotos, días online, clave) calcula el plan más barato que lo
  * trae y por qué. No inventa precios: el plan es uno de los que se venden y
  * el checkout cobra ese plan (con el cupón, calculado en el servidor).
  *

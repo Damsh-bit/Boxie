@@ -379,7 +379,7 @@ export function alerts(input: {
       id: 'amount-mismatch',
       level: 'critical',
       title: `${mismatch.length} ${mismatch.length === 1 ? 'pago' : 'pagos'} con monto distinto`,
-      detail: 'Se cobró un monto que no coincide con la orden: la Boxie no se creó. Revisalos.',
+      detail: 'Se cobró un monto que no coincide con la orden: la Ribbly no se creó. Revisalos.',
       href: '/admin/ventas?estado=revisar',
     })
 
@@ -395,9 +395,9 @@ export function alerts(input: {
     out.push({
       id: 'closing-editors',
       level: 'serious',
-      title: `${closing.length} ${closing.length === 1 ? 'Boxie vence' : 'Boxies vencen'} sin regalarse`,
+      title: `${closing.length} ${closing.length === 1 ? 'Ribbly vence' : 'Ribblys vencen'} sin regalarse`,
       detail: 'Se pagaron pero nunca se bloquearon, y la ventana de edición cierra en 5 días.',
-      href: '/admin/boxies?estado=por-vencer',
+      href: '/admin/ribblys?estado=por-vencer',
     })
 
   const pendingToday = input.orders.filter(

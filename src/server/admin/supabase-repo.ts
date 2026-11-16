@@ -297,11 +297,11 @@ async function loadBoxies(orders: AdminOrder[], versions: VersionRow[], plans: P
     db()
       .from('boxies')
       .select(BOXIE_COLUMNS)
-      .then((r) => unwrap(r, 'Boxies')),
+      .then((r) => unwrap(r, 'Ribblys')),
     db()
       .from('admin_boxie_stats')
       .select('*')
-      .then((r) => unwrap(r, 'estadísticas de Boxies')),
+      .then((r) => unwrap(r, 'estadísticas de Ribblys')),
   ])
   const statsById = new Map(stats.map((s) => [s.boxie_id, s]))
   const orderById = new Map(orders.map((o) => [o.id, o]))
@@ -320,9 +320,9 @@ async function loadBoxies(orders: AdminOrder[], versions: VersionRow[], plans: P
 async function findBoxieRow(id: string) {
   const row = unwrapMaybe(
     await db().from('boxies').select(`${BOXIE_COLUMNS}, gift_token_enc`).eq('id', id).maybeSingle(),
-    'Boxie',
+    'Ribbly',
   )
-  if (!row) throw new AdminRepoError('La Boxie no existe.', 'not_found')
+  if (!row) throw new AdminRepoError('La Ribbly no existe.', 'not_found')
   return row
 }
 
@@ -712,7 +712,7 @@ export const supabaseRepo: AdminRepo = {
     await audit(actor, 'theme.delete', 'theme', id, `Borró el borrador "${theme.name}"`)
   },
 
-  // ── Ventas y Boxies ───────────────────────────────────────────────────────
+  // ── Ventas y Ribblys ───────────────────────────────────────────────────────
 
   async getOrder(id) {
     const row = unwrapMaybe(
@@ -733,7 +733,7 @@ export const supabaseRepo: AdminRepo = {
         .select(BOXIE_COLUMNS)
         .eq('order_id', id)
         .maybeSingle()
-        .then((r) => unwrapMaybe(r, 'Boxie')),
+        .then((r) => unwrapMaybe(r, 'Ribbly')),
       db()
         .from('themes')
         .select('*')
@@ -799,10 +799,10 @@ export const supabaseRepo: AdminRepo = {
       throw new AdminRepoError('Solo se reembolsa una orden pagada.', 'conflict')
     const boxie = unwrapMaybe(
       await db().from('boxies').select('id').eq('order_id', id).maybeSingle(),
-      'Boxie',
+      'Ribbly',
     )
     if (boxie) {
-      // Orden, Boxie y evento de pago juntos, en la base.
+      // Orden, Ribbly y evento de pago juntos, en la base.
       const { error } = await db().rpc('admin_refund_boxie', { p_boxie_id: boxie.id })
       check(error, 'Reembolso')
     } else {
@@ -815,7 +815,7 @@ export const supabaseRepo: AdminRepo = {
   async getBoxie(id) {
     const row = unwrapMaybe(
       await db().from('boxies').select(BOXIE_COLUMNS).eq('id', id).maybeSingle(),
-      'Boxie',
+      'Ribbly',
     )
     if (!row) return null
     const [orderRow, version, plans, stats, content] = await Promise.all([
@@ -880,13 +880,13 @@ export const supabaseRepo: AdminRepo = {
       .from('boxies')
       .update({ recipient_name: names.recipientName, sender_name: names.senderName })
       .eq('id', id)
-    check(error, 'Boxie')
+    check(error, 'Ribbly')
     await audit(
       actor,
       'boxie.update',
       'boxie',
       id,
-      `Corrigió los nombres de la Boxie ${boxie.code}`,
+      `Corrigió los nombres de la Ribbly ${boxie.code}`,
     )
   },
 
@@ -901,13 +901,13 @@ export const supabaseRepo: AdminRepo = {
         ...(boxie.status === 'expired' ? { status: 'active' as const } : {}),
       })
       .eq('id', id)
-    check(error, 'Boxie')
-    await audit(actor, 'boxie.extend', 'boxie', id, `Extendió ${days} días la Boxie ${boxie.code}`)
+    check(error, 'Ribbly')
+    await audit(actor, 'boxie.extend', 'boxie', id, `Extendió ${days} días la Ribbly ${boxie.code}`)
   },
 
   async unlockBoxie(id, actor) {
     const boxie = await findBoxieRow(id)
-    if (!boxie.locked_at) throw new AdminRepoError('La Boxie no está bloqueada.', 'conflict')
+    if (!boxie.locked_at) throw new AdminRepoError('La Ribbly no está bloqueada.', 'conflict')
     if (boxie.status === 'refunded') throw new AdminRepoError('Está reembolsada.', 'conflict')
     const { error } = await db()
       .from('boxies')
@@ -918,13 +918,13 @@ export const supabaseRepo: AdminRepo = {
         ).toISOString(),
       })
       .eq('id', id)
-    check(error, 'Boxie')
+    check(error, 'Ribbly')
     await audit(
       actor,
       'boxie.unlock',
       'boxie',
       id,
-      `Desbloqueó la Boxie ${boxie.code} para que el comprador la corrija`,
+      `Desbloqueó la Ribbly ${boxie.code} para que el comprador la corrija`,
     )
   },
 
@@ -946,7 +946,7 @@ export const supabaseRepo: AdminRepo = {
         .from('boxies')
         .update({ edit_token_hash: hashToken(token), access_email_sent_at: now() })
         .eq('id', id)
-      check(error, 'Boxie')
+      check(error, 'Ribbly')
       const mail = editorAccessEmail({
         buyerName: order.buyer_name,
         themeName: order.theme.name,
@@ -986,7 +986,7 @@ export const supabaseRepo: AdminRepo = {
       'boxie.resend',
       'boxie',
       id,
-      `Reenvió el mail ${kind === 'access' ? 'del editor' : 'del regalo'} de la Boxie ${boxie.code}`,
+      `Reenvió el mail ${kind === 'access' ? 'del editor' : 'del regalo'} de la Ribbly ${boxie.code}`,
     )
   },
 

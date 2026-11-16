@@ -55,7 +55,7 @@ export async function GET(request: Request) {
   return new Response(csv, {
     headers: {
       'content-type': 'text/csv; charset=utf-8',
-      'content-disposition': `attachment; filename="boxie-clientes-${new Date().toISOString().slice(0, 10)}.csv"`,
+      'content-disposition': `attachment; filename="ribbly-clientes-${new Date().toISOString().slice(0, 10)}.csv"`,
       'cache-control': 'private, no-store',
     },
   })

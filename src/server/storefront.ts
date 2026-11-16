@@ -57,7 +57,7 @@ export interface Storefront {
   recommended: StorePlan | null
   /** El precio más bajo: el "desde" del sitio. */
   priceFromCents: number
-  /** Pantallas de la Boxie más completa (el plan más alto en la temática más larga). */
+  /** Pantallas de la Ribbly más completa (el plan más alto en la temática más larga). */
   maxScreens: number
   /** Días online del regalo: el mínimo y el máximo entre los planes. */
   lifetimeDays: { min: number; max: number }
@@ -151,11 +151,14 @@ export function screenRows(plans: Plan[], configs: ParsedThemeConfig[]): ScreenR
 /** El cupón de bienvenida, si existe y está vigente (también lo ofrece el final del regalo). */
 export async function welcomeOffer(): Promise<WelcomeOffer | null> {
   try {
-    const found = await findCoupon(WELCOME.code)
-    const evaluation = evaluateCoupon(found, new Date())
-    return evaluation.ok
-      ? { code: evaluation.coupon.code, discount: describeCoupon(evaluation.coupon) }
-      : null
+    const now = new Date()
+    for (const code of WELCOME.codes) {
+      const evaluation = evaluateCoupon(await findCoupon(code), now)
+      if (evaluation.ok) {
+        return { code: evaluation.coupon.code, discount: describeCoupon(evaluation.coupon) }
+      }
+    }
+    return null
   } catch (error) {
     log.warn('No se pudo validar el cupón de bienvenida: no se muestra', {
       error: error instanceof Error ? error.message : String(error),

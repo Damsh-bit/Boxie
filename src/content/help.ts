@@ -19,7 +19,7 @@ export interface HelpContext {
   maxPhotos: number
   /** Algún plan no permite clave. */
   passwordByPlan: boolean
-  /** El cupón de bienvenida vigente ("BOXIE10 · 10% OFF"), si hay. */
+  /** El cupón de bienvenida vigente ("RIBBLY10 · 10% OFF"), si hay. */
   welcome: { code: string; discount: string } | null
 }
 

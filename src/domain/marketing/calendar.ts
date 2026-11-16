@@ -117,7 +117,7 @@ const RULES: EventRule[] = [
     leadDays: 7,
     importance: 1,
     theme: null,
-    idea: 'Regalo grupal del curso: una Boxie con fotos y mensajes de todos.',
+    idea: 'Regalo grupal del curso: una Ribbly con fotos y mensajes de todos.',
   },
   {
     id: 'primavera',

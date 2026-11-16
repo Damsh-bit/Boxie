@@ -14,7 +14,7 @@ import { avatarGradient, type HomeTheme } from './theme-look'
 const EVERY = 4800
 
 /**
- * La cinta de compras de la portada: "María acaba de comprar una Boxie · para
+ * La cinta de compras de la portada: "María acaba de comprar una Ribbly · para
  * su mejor amiga · con Mercado Pago", una por vez y sin repetir hasta dar la
  * vuelta. Se frena con el mouse encima, fuera de pantalla y con la pestaña en
  * segundo plano; las horas siguen corriendo mientras la página está abierta.

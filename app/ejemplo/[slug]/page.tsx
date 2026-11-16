@@ -20,7 +20,7 @@ export async function generateMetadata({
     : {}
 }
 
-/** Una Boxie de ejemplo con la temática publicada: lo que recibe el destinatario (por plan, si se pide). */
+/** Una Ribbly de ejemplo con la temática publicada: lo que recibe el destinatario (por plan, si se pide). */
 export default async function ExamplePage({ params, searchParams }: PageProps<'/ejemplo/[slug]'>) {
   const theme = await getPublishedTheme((await params).slug)
   if (!theme) notFound()

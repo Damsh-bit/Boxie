@@ -68,7 +68,7 @@ function post(
       author,
       author === 'agent' ? 'Lean · Boxie' : 'Sofía',
       body,
-      author === 'agent' ? 'lean@boxie.test' : null,
+      author === 'agent' ? 'lean@ribbly.test' : null,
       opts.internal ?? false,
       opts.status ?? null,
     ],

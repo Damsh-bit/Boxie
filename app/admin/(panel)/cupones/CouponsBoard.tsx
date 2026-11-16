@@ -416,7 +416,7 @@ function CouponCard({
 }
 
 function randomCode() {
-  const words = ['REGALO', 'BOXIE', 'SORPRESA', 'MIMO', 'FESTEJO', 'AMOR', 'AMIGO']
+  const words = ['REGALO', 'RIBBLY', 'SORPRESA', 'MIMO', 'FESTEJO', 'AMOR', 'AMIGO']
   const word = words[Math.floor(Math.random() * words.length)]!
   return `${word}${Math.floor(10 + Math.random() * 40)}`
 }

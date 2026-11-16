@@ -158,7 +158,7 @@ function Card({ theme }: { theme: ThemeCard }) {
       await confirm({
         title: `¿Archivar "${theme.name}"?`,
         description:
-          'Sale de la tienda. Las Boxies ya vendidas siguen funcionando igual (usan su versión).',
+          'Sale de la tienda. Las Ribblys ya vendidas siguen funcionando igual (usan su versión).',
         confirm: 'Archivar',
         icon: 'envio',
       })
@@ -256,7 +256,7 @@ function Card({ theme }: { theme: ThemeCard }) {
                 onSelect: () => window.open(`/tematicas/${theme.slug}`, '_blank'),
               },
               {
-                label: 'Ver la Boxie de ejemplo',
+                label: 'Ver la Ribbly de ejemplo',
                 icon: <ExternalLink />,
                 disabled: theme.status !== 'published',
                 onSelect: () => window.open(`/ejemplo/${theme.slug}`, '_blank'),

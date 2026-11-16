@@ -25,15 +25,15 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   cambio de estado van en la misma transacción (`apply_payment`), así un error a mitad de camino no
   deja el aviso marcado como procesado.
 - **La orden guarda la versión de la temática vigente al comprar.** Lo que se vendió queda fijo.
-- **Un pago por un monto distinto al calculado no crea la Boxie** (queda marcado para revisar).
-- **Los tokens de las Boxies no se exponen ni al panel**: permisos por columna además de RLS.
+- **Un pago por un monto distinto al calculado no crea la Ribbly** (queda marcado para revisar).
+- **Los tokens de las Ribblys no se exponen ni al panel**: permisos por columna además de RLS.
 
 ## Acceso
 
 - **El link del regalo se guarda hasheado y además cifrado** (AES-256-GCM, clave fuera de la base),
   para poder volver a mostrárselo al comprador sin guardarlo en claro. El de edición se guarda solo
   hasheado: reenviarlo lo rota.
-- **60 días desde el bloqueo, no desde la compra** (pregunta abierta 2 del documento). Una Boxie que se
+- **60 días desde el bloqueo, no desde la compra** (pregunta abierta 2 del documento). Una Ribbly que se
   compra con anticipación no pierde días. Sin bloquear, se edita hasta 60 días desde la compra. Los
   textos legales se actualizaron: **revisarlos con quien corresponda**.
 - **Regalo sin clave, con clave opcional** (pregunta abierta 1, como recomendaba el documento).
@@ -59,11 +59,11 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
 - **Vista previa en vivo con el player real**: lo que se escribe se ve en el celular de al lado, en
   la slide del módulo que se está editando.
 - **Guardado automático**, sin botón. El guardado es una función SQL (`save_boxie_content`) que
-  rechaza editar una Boxie bloqueada, vencida o reembolsada aunque la app tenga un bug.
+  rechaza editar una Ribbly bloqueada, vencida o reembolsada aunque la app tenga un bug.
 - **Fotos comprimidas en el navegador** (WebP, 1600 px; JPEG si el navegador no encodea WebP): una
   foto de celular de 4 MB queda en unos cientos de KB. El servidor valida el formato real por los
   primeros bytes (no el tipo que declara el navegador) y la guarda en el bucket privado. Se ven
-  solo con URLs firmadas. Tope de 30 fotos por Boxie en la base; al bloquear se borran las
+  solo con URLs firmadas. Tope de 30 fotos por Ribbly en la base; al bloquear se borran las
   reemplazadas.
 - **Sesión del editor:** el link del mail se canjea por una cookie firmada `httpOnly` limitada a
   `/editor`, y la URL queda limpia. La cookie lleva una huella del token de edición: si se reenvía
@@ -74,7 +74,7 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   que arman la vista previa de WhatsApp no cuentan como aperturas. La clave opcional se valida en el
   servidor y da una cookie firmada por regalo (cambiar la clave la invalida). Cada regalo tiene su
   imagen de Open Graph con el nombre de quien lo recibe.
-- **El alta de la Boxie al aprobarse un pago ya está** (`applyPaymentNotice`: tokens, Boxie y mail
+- **El alta de la Ribbly al aprobarse un pago ya está** (`applyPaymentNotice`: tokens, Ribbly y mail
   con el link del editor). El webhook de Mercado Pago solo va a tener que validar la firma, consultar
   el pago y llamarla. En desarrollo y E2E la llama `/api/dev/boxies` con el proveedor falso.
 
@@ -120,7 +120,7 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   fotos que se desliza con el dedo, flecha en los `<select>`, "Cómo funciona" en la home,
   "Faltan N datos" lleva al primero que falta, "Empezar de nuevo" con confirmación propia (no
   `window.confirm`), revisión final como hoja deslizable en el celular, esqueleto mientras carga
-  el editor de prueba y la barra de la Boxie de ejemplo debajo del teléfono (antes tapaba las
+  el editor de prueba y la barra de la Ribbly de ejemplo debajo del teléfono (antes tapaba las
   flechas).
 - **Bug corregido:** si se escribía mientras subía una foto, al terminar la subida se perdía lo
   escrito (el cambio se aplicaba sobre el borrador de cuando empezó). Ahora los cambios que
@@ -133,7 +133,7 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   comparador → beneficios → preguntas → cierre. Barra de compra fija en el celular entre la
   portada y el cierre. Los componentes viven en `app/(marketing)/_home/` y los textos en
   `src/content/home.ts`.
-- **El celular de la portada es una Boxie de muestra que se abre sola** (`HeroPreview` +
+- **El celular de la portada es una Ribbly de muestra que se abre sola** (`HeroPreview` +
   `hero-scenes.tsx`): portada con el nombre → fotos → dedicatoria → canción → trivia → regalo
   final, como historias. Se toca (izquierda vuelve, derecha sigue, mantener apretado pausa) y los
   juegos se juegan de verdad; si nadie toca, la trivia y la caja se juegan solas con un dedo
@@ -149,7 +149,7 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
 - **Sin reseñas ni cifras inventadas:** la charla de WhatsApp está rotulada "Recreación de ejemplo"
   y los números son del producto (20 pantallas, días online, 0 apps). Cuando haya reseñas reales,
   van en esa sección. La única excepción son los ejemplos de relleno de la cinta de compras (abajo).
-- **Prueba social en la portada:** la cinta "María acaba de comprar una Boxie · con Mercado Pago"
+- **Prueba social en la portada:** la cinta "María acaba de comprar una Ribbly · con Mercado Pago"
   (`_home/PurchaseTicker.tsx`) lee las ventas pagadas de los últimos 14 días
   (`src/server/social-proof.ts`, con la clave de servicio, a lo sumo cada 5 minutos por
   instancia): del servidor sale solo el nombre de pila, la temática y hace cuánto, nunca apellido,
@@ -158,7 +158,7 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
   pedido explícito del dueño) con horarios escalonados y en otro orden en cada visita; con 8 o más
   dejan de salir solos, `examplesUntil: 0` los apaga y con las ventas pausadas nunca salen. Ojo:
   compras inventadas pueden leerse como publicidad engañosa (Ley 24.240, DNU 274/2019): apagarlos
-  apenas haya ventas. El contador "+N Boxies regaladas" es solo con ventas reales y aparece desde
+  apenas haya ventas. El contador "+N Ribblys regaladas" es solo con ventas reales y aparece desde
   100 (redondeado para abajo). La cinta se frena con el mouse encima, fuera de pantalla y con la
   pestaña oculta. La fila de confianza lleva el logo de Mercado Pago y "Hecho en Argentina" (lo que
   decía la etiqueta que reemplazó la cinta).
@@ -176,7 +176,7 @@ que se decidió al bajarlo a código, sobre todo donde se aparta del documento.
 - El ícono de regalo "flotaba" con la animación de las partículas (mismo nombre) y desaparecía.
 - Las secuencias con timers arrancaban una slide antes de verse; el video de la canción empezaba a
   sonar sobre la dedicatoria.
-- "Tus respuestas se han guardado" / "Entrada guardada en tu Boxie": no se guardaba nada. Se cambió
+- "Tus respuestas se han guardado" / "Entrada guardada en tu Ribbly": no se guardaba nada. Se cambió
   el texto.
 - El swipe no convivía con las listas scrolleables (playlists, cuponera): ahora primero scrollea.
 
@@ -214,7 +214,7 @@ Detalle de uso en [ADMIN.md](ADMIN.md). Lo que se decidió:
 ## El sitio lee el panel (vidriera)
 
 - **Un solo resumen por pedido, `getStorefront()`** (`src/server/storefront.ts`): planes, precio
-  "desde", días online por plan, pantallas de la Boxie más completa, desde qué plan viene cada
+  "desde", días online por plan, pantallas de la Ribbly más completa, desde qué plan viene cada
   pantalla, cupón de bienvenida, datos del negocio y ventas pausadas. La home, la galería,
   /precios y la ayuda leen de ahí: ningún número queda fijo en el código ("20 pantallas", "60
   días", "10% OFF") y nunca se promete algo distinto de lo que cobra el checkout o entrega el
@@ -236,7 +236,7 @@ Detalle de uso en [ADMIN.md](ADMIN.md). Lo que se decidió:
 - **La tienda (anon) ya no puede leer la rentabilidad**: con la clave pública se podía pedir
   `settings` entera (meta de facturación, comisiones, costos). La migración de soporte le deja a
   anon solo las columnas públicas.
-- **"Entrar a mi Boxie" recupera el acceso de verdad** (la ayuda lo prometía y no existía): se
+- **"Entrar a mi Ribbly" recupera el acceso de verdad** (la ayuda lo prometía y no existía): se
   reenvía el link de edición (rotado) o el del regalo, responde siempre igual y enseguida (el
   envío sigue con `after()`), así no sirve para averiguar quién compró.
 - **Páginas nuevas:** /precios (planes y comparación pantalla por pantalla), /soporte, 404 con
@@ -247,7 +247,7 @@ Detalle de uso en [ADMIN.md](ADMIN.md). Lo que se decidió:
 Detalle de uso en [ADMIN.md](ADMIN.md#soporte). Lo que se decidió:
 
 - **Tickets con chat, no un formulario de contacto.** El botón de ayuda (abajo a la izquierda, en
-  el sitio, el editor y el editor de prueba; no en el regalo) abre una consulta sobre una Boxie,
+  el sitio, el editor y el editor de prueba; no en el regalo) abre una consulta sobre una Ribbly,
   un error, un pago u otra cosa, y la conversación sigue ahí. El formulario de contacto queda
   para ventas, prensa y trabajo.
 - **Sin cuentas: cada consulta tiene un token** (192 bits; en la base, el hash y una copia
@@ -300,10 +300,10 @@ Detalle de uso en [ADMIN.md](ADMIN.md#soporte). Lo que se decidió:
   lo que sale de las ventas; la ruta de visitas y el origen de la orden no hacen nada y el checkout
   sigue.
 - **Píxel de Meta y API de conversiones, apagados:** están hechos pero se activan solo con sus
-  variables. La Política de Privacidad hoy dice que Boxie no comparte datos con terceros para
+  variables. La Política de Privacidad hoy dice que Ribbly no comparte datos con terceros para
   publicidad: activarlos sin cambiarla la contradice. La decisión es del dueño.
 - **El nombre de quien recibe viaja** (`?para=`) de la home a la ficha, el checkout y el editor, y
-  lo armado en el editor de prueba se puede traer a la Boxie comprada: no se pide dos veces lo que
+  lo armado en el editor de prueba se puede traer a la Ribbly comprada: no se pide dos veces lo que
   la persona ya hizo. Ideas priorizadas en `docs/IDEAS-VENTA.md`.
 
 ## Pantallas de Ribbly (Cumpleaños)
@@ -362,6 +362,35 @@ size`) y todo se mide en `--u`, un píxel del diseño (390 × 760) escalado al t
   nuevas. En una base que ya existe (producción), las dos siguen con sus pantallas anteriores
   hasta publicar una versión nueva. Amistad conserva las del prototipo, y es la que usan los
   tests del editor que necesitan dedicatoria con foto, razones y cuponera.
+
+## Marca Ribbly (antes Boxie)
+
+- **Todo lo que se ve dice Ribbly:** sitio, editor, regalo, portal, panel, mails, soporte y los
+  datos de la demo. El producto es "una Ribbly" y el plural, "Ribblys".
+- **Archivos de marca** en `public/brand/`, sacados del kit oficial (`Ribbly_Marca.zip`, manual
+  de marca de 12 páginas): `ribbly-logo.png` (wordmark a color, fondos claros),
+  `ribbly-logo-white.png` (fondos oscuros o de color: footer, panel, login; nunca el de color
+  invertido con filtros, que deja un halo por la sombra), `ribbly-mark.png` / `-white.png`
+  (isotipo; el blanco también es la máscara de `.rb-mark`), `rib.png` (el personaje) y
+  `ribbly-social.png` (la "tarjeta social" del manual, imagen por defecto al compartir).
+- **Íconos:** `app/favicon.ico` (16/32/48), `app/icon.png` y los del manifest
+  (`public/brand/icon-*.png`, con uno _maskable_) son la R blanca sobre coral del "Ícono de app"
+  del manual; `app/apple-icon.png` va a sangre porque iOS redondea solo. En el kit, los archivos
+  12 y 13 tienen los nombres cruzados: la R blanca sobre coral es `12_Icono-App_Coral-sobre-blanco`.
+- **Tamaño del logo:** el wordmark es casi cuadrado (la R grande, "ibbly" chico), así que va más
+  alto que el de Boxie (52 px en la barra) para que "ibbly" se lea. El manual pide 24 px de mínimo.
+- **Nombre interno:** la base sigue llamando `boxies` a los regalos (tablas, columnas
+  `boxie_id`, funciones como `lock_boxie`, el bucket de fotos) y el código que la refleja también
+  (`boxieId`, `AdminBoxie`, cookies y claves de `localStorage` como `boxie_editor`). Renombrarlo
+  pide una migración en producción y no lo ve nadie de afuera; cambiar las cookies y claves
+  cerraría sesiones y borraría borradores. Las rutas que se ven en la barra del navegador sí
+  cambiaron (`/admin/ribblys`, `/cuenta/ribblys/…`), con redirecciones desde las viejas porque los
+  mails ya enviados tienen links de edición con `/cuenta/boxies/…`.
+- **Cupón de bienvenida:** la portada ofrece el primero vigente entre `RIBBLY10` y `BOXIE10`; así
+  la oferta no se corta mientras `RIBBLY10` no exista en el panel. Las bases nuevas ya traen
+  `RIBBLY10`.
+- **Demo:** el usuario del panel pasa a `admin@ribbly.demo` / `ribbly-admin`. `create-admin` y el
+  chequeo de claves débiles siguen rechazando también los valores de Boxie.
 
 ## Modo demo
 

@@ -13,7 +13,7 @@ import { themeHref } from './helpers'
 import type { GalleryTheme } from './types'
 
 /**
- * "¿Qué Boxie elegir?": cada temática con su guía (la del panel) es una
+ * "¿Qué Ribbly elegir?": cada temática con su guía (la del panel) es una
  * pestaña; al elegirla se ve para qué momento va, sus ocasiones y la foto.
  * En el celular las pestañas se deslizan de costado.
  */

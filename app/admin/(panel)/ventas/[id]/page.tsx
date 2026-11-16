@@ -68,7 +68,7 @@ export default async function OrderPage({ params }: PageProps<'/admin/ventas/[id
       ? ([
           {
             at: boxie.createdAt,
-            title: `Boxie ${formatBoxieCode(boxie.code)} creada`,
+            title: `Ribbly ${formatBoxieCode(boxie.code)} creada`,
             icon: 'gift',
             tone: 'brand',
           },
@@ -277,7 +277,7 @@ export default async function OrderPage({ params }: PageProps<'/admin/ventas/[id
 
           {boxie ? (
             <Card>
-              <CardHeader icon={<Gift />} title="La Boxie" />
+              <CardHeader icon={<Gift />} title="La Ribbly" />
               <p className="font-mono text-2xl font-semibold tracking-wider text-ink">
                 {formatBoxieCode(boxie.code)}
               </p>
@@ -291,19 +291,19 @@ export default async function OrderPage({ params }: PageProps<'/admin/ventas/[id
                 de {boxie.senderName || '—'}
               </p>
               <Link
-                href={`/admin/boxies/${boxie.id}` as Route}
+                href={`/admin/ribblys/${boxie.id}` as Route}
                 className="mt-4 inline-flex h-9 items-center rounded-full bg-ink px-4 text-sm font-semibold text-white transition-colors hover:bg-ink/85"
               >
-                Ver la Boxie
+                Ver la Ribbly
               </Link>
             </Card>
           ) : (
             <Card>
-              <CardHeader icon={<Gift />} title="La Boxie" />
+              <CardHeader icon={<Gift />} title="La Ribbly" />
               <p className="text-sm text-neutral-600">
                 {order.status === 'pending'
-                  ? 'Todavía no hay Boxie: se crea cuando se aprueba el pago.'
-                  : 'Esta orden no generó una Boxie.'}
+                  ? 'Todavía no hay Ribbly: se crea cuando se aprueba el pago.'
+                  : 'Esta orden no generó una Ribbly.'}
               </p>
             </Card>
           )}

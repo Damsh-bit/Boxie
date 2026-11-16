@@ -26,7 +26,7 @@ async function loadTickets(): Promise<SupportTicket[] | null> {
 
 /**
  * La bandeja de soporte: las consultas de los clientes, la conversación en
- * vivo y lo que hace falta para responder (su Boxie, sus compras, el detalle
+ * vivo y lo que hace falta para responder (su Ribbly, sus compras, el detalle
  * técnico de un error).
  */
 export default async function SupportPage({ searchParams }: PageProps<'/admin/soporte'>) {

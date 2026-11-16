@@ -233,7 +233,7 @@ export function GalleryCard({
                     <ArrowRight className="size-4" aria-hidden />
                   </motion.span>
                 </span>
-                {/* Encima del link de la tarjeta: lleva a la Boxie de ejemplo. */}
+                {/* Encima del link de la tarjeta: lleva a la Ribbly de ejemplo. */}
                 <Link
                   href={exampleHref(theme.slug, plan)}
                   className="relative z-10 inline-flex items-center gap-1.5 rounded-full bg-paper/70 px-3 py-1.5 text-xs font-bold text-ink transition-colors hover:bg-ink hover:text-white"

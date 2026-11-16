@@ -123,7 +123,7 @@ export function ReviewDialog({
             <p className="mb-2 font-bold">Antes de confirmar</p>
             <ul className="list-disc space-y-1 pl-5">
               <li>
-                La Boxie se <strong>bloquea</strong> y ya <strong>no se puede editar</strong>.
+                La Ribbly se <strong>bloquea</strong> y ya <strong>no se puede editar</strong>.
               </li>
               <li>
                 El regalo queda disponible <strong>{lifetimeDays} días</strong>, hasta el {until}.

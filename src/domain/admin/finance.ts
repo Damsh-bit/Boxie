@@ -5,7 +5,7 @@ import type { AdminOrder, Expense, ExpenseCategory, FinanceSettings } from './ty
 /**
  * Rentabilidad. Cada venta deja el monto cobrado menos la comisión de la
  * pasarela (con su IVA), los impuestos sobre la facturación y un costo
- * variable por Boxie. Lo que queda es la contribución; de ahí salen los gastos
+ * variable por Ribbly. Lo que queda es la contribución; de ahí salen los gastos
  * fijos (hosting, publicidad, herramientas) y el resultado.
  *
  * Todo en centavos enteros: los porcentajes se aplican y se redondean por venta.

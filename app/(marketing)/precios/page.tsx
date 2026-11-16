@@ -157,7 +157,7 @@ export default async function PricingPage({ searchParams }: PageProps<'/precios'
     : [
         {
           slug: '',
-          name: 'Boxie',
+          name: 'Ribbly',
           tagline: '',
           color: '#F44E63',
           highlighted: true,

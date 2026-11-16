@@ -293,7 +293,7 @@ export function OrderReceiptCard({ order }: { order: CustomerOrderReceipt }) {
                       href={
                         order.boxie.status === 'ready' && order.boxie.giftUrl
                           ? (order.boxie.giftUrl as Route)
-                          : (`/cuenta/boxies/${order.boxie.id}/editar` as Route)
+                          : (`/cuenta/ribblys/${order.boxie.id}/editar` as Route)
                       }
                       target={
                         order.boxie.status === 'ready' && order.boxie.giftUrl ? '_blank' : undefined

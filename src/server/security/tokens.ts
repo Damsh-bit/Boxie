@@ -58,7 +58,7 @@ export interface IssuedTokens {
   editHash: string
 }
 
-/** Tokens nuevos para una Boxie. Los crudos solo existen en memoria y en el mail. */
+/** Tokens nuevos para una Ribbly. Los crudos solo existen en memoria y en el mail. */
 export function issueBoxieTokens(encryptionKey: string): IssuedTokens {
   const gift = generateToken()
   const edit = generateToken()

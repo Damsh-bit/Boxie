@@ -124,7 +124,7 @@ export async function createTicket(
   const token = generateToken()
   const link = input.boxieCode
     ? await repo.findBoxieByCode(input.boxieCode).catch((error: unknown) => {
-        log.warn('Soporte: no se pudo buscar la Boxie del código', { error: String(error) })
+        log.warn('Soporte: no se pudo buscar la Ribbly del código', { error: String(error) })
         return null
       })
     : null
@@ -375,7 +375,7 @@ export async function agentReply(actor: Actor, raw: unknown) {
         ...supportReplyEmail({
           name: ticket.customerName,
           number: ticket.number,
-          agentName: `${agentName(actor)} de Boxie`,
+          agentName: `${agentName(actor)} de Ribbly`,
           message: input.body,
           url: await linkFor(ticket.id),
         }),
@@ -409,7 +409,7 @@ export async function agentUpdate(actor: Actor, raw: unknown) {
       const posted = await repo.postMessage({
         ticketId: before.id,
         author: 'system',
-        authorName: 'Boxie',
+        authorName: 'Ribbly',
         body: note,
         status: patch.status,
       })

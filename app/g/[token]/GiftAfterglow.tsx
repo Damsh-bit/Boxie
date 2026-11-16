@@ -18,7 +18,7 @@ function wasDismissed(): boolean {
 }
 
 /**
- * Al terminar el regalo: "¿Te emocionó? Respondele con una Boxie". Quien lo
+ * Al terminar el regalo: "¿Te emocionó? Respondele con una Ribbly". Quien lo
  * recibe acaba de vivir el producto; esto le da el camino para regalar uno
  * (a quien se lo mandó o a otra persona), con el cupón de bienvenida si está
  * vigente. Los links van etiquetados (utm_medium=regalo): en Marketing se ven

@@ -11,7 +11,7 @@ const MediaUrl = z
   .refine((v) => v.startsWith('/') || /^https:\/\//.test(v), 'URL https o ruta del sitio')
 
 export const ThemeListingSchema = z.object({
-  title: z.string().max(40).default('Boxie para'),
+  title: z.string().max(40).default('Ribbly para'),
   highlight: z.string().max(40),
   subtitle: z.string().max(160).default(''),
   cardDescription: z.string().max(200).default(''),

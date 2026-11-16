@@ -49,7 +49,7 @@ export function useInboxAlerts(unread: number) {
     return () => cancelAnimationFrame(frame)
   }, [])
 
-  // "(3) Soporte · Panel Boxie" mientras haya consultas sin leer.
+  // "(3) Soporte · Panel Ribbly" mientras haya consultas sin leer.
   useEffect(() => {
     const base = document.title.replace(/^\(\d+\) /, '')
     document.title = unread > 0 ? `(${unread}) ${base}` : base

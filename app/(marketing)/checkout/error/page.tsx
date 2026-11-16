@@ -20,7 +20,7 @@ export default async function ErrorPage({ searchParams }: PageProps<'/checkout/e
             : 'Hubo un problema al procesar el pago. No se hizo ningún cobro: podés volver a intentarlo.'}
         </p>
         <ResultActions
-          primary={{ href: '/galeria', label: 'Volver a elegir mi Boxie' }}
+          primary={{ href: '/galeria', label: 'Volver a elegir mi Ribbly' }}
           support={{
             topic: 'pago',
             label: '¿Te cobraron igual? Escribinos',

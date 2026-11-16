@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { useCalm } from '@/ui/motion'
 
 /**
- * La cinta de los tipos de Boxie a los que vamos (Gamer, Cine, Eventos…).
+ * La cinta de los tipos de Ribbly a los que vamos (Gamer, Cine, Eventos…).
  * Corre en el compositor; con "reducir movimiento" queda quieta.
  */
 export function FutureMarquee({ items }: { items: string[] }) {

@@ -24,12 +24,12 @@ import { Magnetic, Mark, PhoneFrame, SectionHeading } from './primitives'
 const STEP_SECONDS = 7
 
 /**
- * "Qué trae una Boxie": pestañas con demos jugables dentro de un celular.
+ * "Qué trae una Ribbly": pestañas con demos jugables dentro de un celular.
  * Pasan solas como historias (con su barrita de progreso) hasta que la
  * persona toca una pestaña o juega con una demo; con el mouse encima del
  * celular se frenan, y fuera de pantalla no corren.
  */
-export function InsideBoxie({
+export function InsideRibbly({
   photos,
   exampleHref,
   maxScreens,
@@ -37,7 +37,7 @@ export function InsideBoxie({
 }: {
   photos: string[]
   exampleHref: Route
-  /** Pantallas de la Boxie más completa (sale del catálogo). */
+  /** Pantallas de la Ribbly más completa (sale del catálogo). */
   maxScreens: number
   /** Las sorpresas que no vienen en el plan más simple: desde qué plan están. */
   fromPlan?: Partial<Record<ExperienceId, string>>

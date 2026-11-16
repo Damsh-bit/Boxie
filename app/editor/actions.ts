@@ -8,8 +8,8 @@ import { log } from '@/server/log'
 import { rateLimit } from '@/server/rate-limit'
 
 /**
- * Acciones del editor. La Boxie sale siempre de la cookie firmada: el
- * navegador nunca dice qué Boxie está editando.
+ * Acciones del editor. La Ribbly sale siempre de la cookie firmada: el
+ * navegador nunca dice qué Ribbly está editando.
  */
 
 const GENERIC = 'No pudimos guardar. Probá de nuevo en un rato.'
@@ -63,7 +63,7 @@ export async function lockBoxieAction(): Promise<LockResult> {
     // entrar al editor (page.tsx → /editor/salir).
     return await lockForGifting(s)
   } catch (error) {
-    log.error('No se pudo bloquear la Boxie', error, { boxieId: s.boxieId })
+    log.error('No se pudo bloquear la Ribbly', error, { boxieId: s.boxieId })
     return { ok: false, error: 'No pudimos bloquear el regalo. Probá de nuevo en un rato.' }
   }
 }

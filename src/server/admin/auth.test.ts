@@ -17,7 +17,7 @@ describe('login del panel en modo demo', () => {
     vi.stubEnv('VERCEL', '1')
     vi.stubEnv('ADMIN_DEMO_PASSWORD', '')
     expect(demoCredentials().locked).toBe(true)
-    await expect(authenticateAdmin('admin@boxie.demo', 'boxie-admin')).resolves.toEqual({
+    await expect(authenticateAdmin('admin@ribbly.demo', 'ribbly-admin')).resolves.toEqual({
       ok: false,
       error: DEMO_LOCKED_MESSAGE,
     })
@@ -28,7 +28,7 @@ describe('login del panel en modo demo', () => {
     vi.stubEnv('VERCEL', '1')
     vi.stubEnv('ADMIN_DEMO_PASSWORD', 'una-clave-larga-propia')
     expect(demoCredentials()).toMatchObject({ isDefault: false, locked: false })
-    await expect(authenticateAdmin('admin@boxie.demo', 'boxie-admin')).resolves.toMatchObject({
+    await expect(authenticateAdmin('admin@ribbly.demo', 'ribbly-admin')).resolves.toMatchObject({
       ok: false,
       error: 'Mail o clave incorrectos.',
     })

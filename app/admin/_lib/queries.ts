@@ -4,7 +4,7 @@ import type { AdminBoxie, AdminOrder } from '@/domain/admin/types'
 import { parseBoxieCode } from '@/domain/boxie'
 
 /**
- * Filtros de las listas del panel (ventas, Boxies), compartidos por las
+ * Filtros de las listas del panel (ventas, Ribblys), compartidos por las
  * páginas y la exportación a CSV. Con la base conectada se traducen a
  * consultas; las reglas son las mismas.
  */

@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { SUPPORT_ROLES, runAction } from '../../_lib/action'
 
-const paths = (id: string) => ['/admin', '/admin/boxies', `/admin/boxies/${id}`, '/admin/ventas']
+const paths = (id: string) => ['/admin', '/admin/ribblys', `/admin/ribblys/${id}`, '/admin/ventas']
 const Id = z.string().min(1).max(64)
 
 export async function updateBoxieNames(id: string, recipientName: string, senderName: string) {

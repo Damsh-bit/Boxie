@@ -68,7 +68,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<'/admin/
     }))
     .sort((a, b) => b.revenue - a.revenue)
 
-  // Tiempos del ciclo del regalo (Boxies creadas en el período).
+  // Tiempos del ciclo del regalo (Ribblys creadas en el período).
   const boxies = data.boxies.filter((b) => inRange(b.createdAt, range))
   const toLock = boxies.flatMap((b) =>
     b.lockedAt ? [(Date.parse(b.lockedAt) - Date.parse(b.createdAt)) / HOUR] : [],

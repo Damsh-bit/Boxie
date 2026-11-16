@@ -1,5 +1,5 @@
 /**
- * El nombre de quien recibe la Boxie, tal como lo escriben en la home o llega
+ * El nombre de quien recibe la Ribbly, tal como lo escriben en la home o llega
  * en un link (?para=Sofi): sin caracteres raros ni espacios de más.
  */
 export function cleanRecipient(value: string | string[] | null | undefined): string {
@@ -11,7 +11,7 @@ export function cleanRecipient(value: string | string[] | null | undefined): str
     .slice(0, 40)
 }
 
-/** "Quiero la Boxie de Sofi" solo si el nombre es corto (si no, el botón se rompe). */
+/** "Quiero la Ribbly de Sofi" solo si el nombre es corto (si no, el botón se rompe). */
 export function shortRecipient(name: string, max = 12): string | null {
   return name && name.length <= max ? name : null
 }

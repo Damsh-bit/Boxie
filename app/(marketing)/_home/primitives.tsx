@@ -114,7 +114,7 @@ export function SectionHeading({
   )
 }
 
-/** Un celular: el marco de las vistas previas de Boxie. */
+/** Un celular: el marco de las vistas previas de Ribbly. */
 export function PhoneFrame({
   children,
   className,

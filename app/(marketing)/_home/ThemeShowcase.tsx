@@ -17,7 +17,7 @@ import type { HomeTheme } from './theme-look'
 const MotionLink = motion.create(Link)
 
 /**
- * "¿A quién querés emocionar hoy?": elegís la ocasión y se destaca la Boxie
+ * "¿A quién querés emocionar hoy?": elegís la ocasión y se destaca la Ribbly
  * que mejor le va (las otras se apagan un poco). Las temáticas son un
  * carrusel con imán: con el dedo en el celular, con flechas en la
  * computadora cuando hay más de las que entran (el panel publica las que

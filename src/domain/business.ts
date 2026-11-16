@@ -1,7 +1,7 @@
 /**
  * Datos de contacto del negocio (los carga el panel en Configuración). Reglas
  * puras para mostrarlos: el panel guarda el texto tal como lo escribe una
- * persona ("+54 9 11 5555-0100", "@boxie.app"), el sitio necesita links que
+ * persona ("+54 9 11 5555-0100", "@ribbly.app"), el sitio necesita links que
  * funcionen.
  */
 
@@ -45,7 +45,7 @@ export function whatsappUrl(input: string, text?: string): string | null {
   return `https://wa.me/${number}${text ? `?text=${encodeURIComponent(text)}` : ''}`
 }
 
-/** "@boxie.app" · "boxie.app" · "https://instagram.com/boxie.app/" → "boxie.app". */
+/** "@ribbly.app" · "ribbly.app" · "https://instagram.com/ribbly.app/" → "ribbly.app". */
 export function instagramHandle(input: string): string | null {
   const trimmed = input.trim()
   if (!trimmed) return null
@@ -58,7 +58,7 @@ export function businessContact(info: BusinessInfo, whatsappText?: string): Busi
   const number = whatsappUrl(info.whatsapp, whatsappText)
   const handle = instagramHandle(info.instagram)
   return {
-    name: info.name.trim() || 'Boxie Digital',
+    name: info.name.trim() || 'Ribbly',
     supportEmail: info.supportEmail.trim(),
     whatsapp: number ? { display: info.whatsapp.trim(), url: number } : null,
     instagram: handle ? { handle: `@${handle}`, url: `https://instagram.com/${handle}` } : null,

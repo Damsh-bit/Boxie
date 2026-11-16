@@ -33,13 +33,13 @@ import { DEFAULT_DEMO_EMAIL } from '../token'
  * Datos de demostración del panel: un año de ventas simuladas, con la forma
  * que tendría el negocio real (crecimiento, fines de semana, San Valentín, Día
  * del Amigo, Día de la Madre, Navidad), clientes que vuelven, cupones,
- * reembolsos y Boxies en todos sus estados.
+ * reembolsos y Ribblys en todos sus estados.
  *
  * Es determinístico (misma semilla, mismos datos) y termina siempre "ahora".
  * Ningún dato es de una persona real: los mails son @ejemplo.com.
  */
 
-export const DEMO_DB_VERSION = 8
+export const DEMO_DB_VERSION = 9 // 9: datos de muestra con la marca Ribbly (cupón RIBBLY10, mails @ribbly.demo)
 
 export interface DemoThemeVersion {
   id: string
@@ -539,7 +539,7 @@ function seedCoupons(): (AdminCoupon & { weight: number })[] {
     ...p,
   })
   return [
-    c(1, 'BOXIE10', 10, { weight: 30, description: 'Bienvenida: la home lo ofrece a todos.' }),
+    c(1, 'RIBBLY10', 10, { weight: 30, description: 'Bienvenida: la home lo ofrece a todos.' }),
     c(2, 'PAREJA20', 20, { weight: 8, description: 'Campaña de aniversarios.' }),
     c(3, 'INFLUENCER50', 50, {
       weight: 3,
@@ -597,7 +597,7 @@ function seedAffiliates(): AdminAffiliate[] {
       commissionBps: 0,
       active: true,
       email: 'colaboraciones@ejemplo.com',
-      notes: 'Canje: la creadora recibe Boxies gratis a cambio de contenido.',
+      notes: 'Canje: la creadora recibe Ribblys gratis a cambio de contenido.',
       createdAt: '2025-11-01T15:00:00.000Z',
     },
     {
@@ -679,7 +679,7 @@ function seedTeam(): AdminUser[] {
     },
     {
       id: 'a0a1e7f4-1c2d-4e5f-8a9b-000000000002',
-      email: 'socio@boxie.demo',
+      email: 'socio@ribbly.demo',
       name: 'Socio',
       role: 'admin',
       pending: false,
@@ -688,7 +688,7 @@ function seedTeam(): AdminUser[] {
     },
     {
       id: 'a0a1e7f4-1c2d-4e5f-8a9b-000000000003',
-      email: 'soporte@boxie.demo',
+      email: 'soporte@ribbly.demo',
       name: 'Soporte',
       role: 'support',
       pending: false,
@@ -697,7 +697,7 @@ function seedTeam(): AdminUser[] {
     },
     {
       id: 'a0a1e7f4-1c2d-4e5f-8a9b-000000000004',
-      email: 'contenido@boxie.demo',
+      email: 'contenido@ribbly.demo',
       name: 'Contenido',
       role: 'editor',
       pending: true,
@@ -734,12 +734,12 @@ function seedTasks(now: Date): AdminTask[] {
       description:
         'Crear el proyecto, aplicar las migraciones (incluida admin_backoffice) y cargar el primer admin. Ver Sistema → Conexiones.',
       tags: ['infra'],
-      assignee: 'socio@boxie.demo',
+      assignee: 'socio@ribbly.demo',
     }),
     t(2, 'Webhook de Mercado Pago con firma', 'doing', 'alta', {
       description: 'Validar x-signature, consultar el pago y llamar a applyPaymentNotice.',
       tags: ['pagos'],
-      assignee: 'socio@boxie.demo',
+      assignee: 'socio@ribbly.demo',
       dueOn: inDays(7),
     }),
     t(3, 'Campaña Día de la Madre (18/10)', 'doing', 'alta', {
@@ -752,7 +752,7 @@ function seedTasks(now: Date): AdminTask[] {
     t(4, 'Revisar y publicar la temática Gamer', 'todo', 'media', {
       description: 'Salió del generador. Cambiar la trivia por preguntas de Counter-Strike.',
       tags: ['temáticas'],
-      assignee: 'contenido@boxie.demo',
+      assignee: 'contenido@ribbly.demo',
     }),
     t(5, 'Navidad lista antes del 1/12', 'todo', 'media', {
       tags: ['temáticas', 'marketing'],
@@ -761,7 +761,7 @@ function seedTasks(now: Date): AdminTask[] {
     t(6, 'Revisar textos legales con el contador', 'todo', 'baja', { tags: ['legal'] }),
     t(7, 'Responder mails de soporte de la semana', 'done', 'media', {
       tags: ['soporte'],
-      assignee: 'soporte@boxie.demo',
+      assignee: 'soporte@ribbly.demo',
     }),
     t(8, 'Subir precio del plan Clásica', 'done', 'media', {
       description: 'De $3.990 a $4.990 (abril).',
@@ -1194,7 +1194,7 @@ function seedAudit(now: Date, rng: Rng, themes: DemoTheme[]): AuditEntry[] {
   return [
     entry(
       2,
-      'soporte@boxie.demo',
+      'soporte@ribbly.demo',
       'boxie.resend',
       'boxie',
       null,
@@ -1210,7 +1210,7 @@ function seedAudit(now: Date, rng: Rng, themes: DemoTheme[]): AuditEntry[] {
     ),
     entry(
       28,
-      'contenido@boxie.demo',
+      'contenido@ribbly.demo',
       'theme.generate',
       'theme',
       theme('navidad'),
@@ -1226,7 +1226,7 @@ function seedAudit(now: Date, rng: Rng, themes: DemoTheme[]): AuditEntry[] {
     ),
     entry(
       74,
-      'contenido@boxie.demo',
+      'contenido@ribbly.demo',
       'theme.generate',
       'theme',
       theme('gamer'),
@@ -1234,7 +1234,7 @@ function seedAudit(now: Date, rng: Rng, themes: DemoTheme[]): AuditEntry[] {
     ),
     entry(
       96,
-      'socio@boxie.demo',
+      'socio@ribbly.demo',
       'settings.update',
       'settings',
       null,
@@ -1250,15 +1250,15 @@ function seedAudit(now: Date, rng: Rng, themes: DemoTheme[]): AuditEntry[] {
     ),
     entry(
       260,
-      'soporte@boxie.demo',
+      'soporte@ribbly.demo',
       'boxie.extend',
       'boxie',
       null,
-      'Extendió 15 días una Boxie a pedido del comprador',
+      'Extendió 15 días una Ribbly a pedido del comprador',
     ),
     entry(
       410,
-      'socio@boxie.demo',
+      'socio@ribbly.demo',
       'order.refund',
       'order',
       null,

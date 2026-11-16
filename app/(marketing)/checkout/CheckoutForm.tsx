@@ -310,7 +310,7 @@ export function CheckoutForm({
               >
                 Política de Privacidad
               </Link>
-              . Entiendo que la Boxie es digital, que se edita hasta que la bloqueo para regalar y
+              . Entiendo que la Ribbly es digital, que se edita hasta que la bloqueo para regalar y
               que el regalo queda disponible {giftLifetimeDays} días desde ese momento.
             </span>
           </label>
@@ -362,7 +362,7 @@ export function CheckoutForm({
                 Probar cómo se personaliza
               </ButtonLink>
               <ButtonLink href={exampleHref} variant="secondary" block>
-                Ver cómo queda una Boxie {theme.name}
+                Ver cómo queda una Ribbly {theme.name}
               </ButtonLink>
             </div>
           )}
@@ -384,7 +384,7 @@ export function CheckoutForm({
           </div>
           <div>
             <h3 className="text-lg font-semibold">
-              Boxie {theme.name}
+              Ribbly {theme.name}
               {quote.plan && <span className="text-brand"> · {quote.plan.name}</span>}
             </h3>
             {recipient && (

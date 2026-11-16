@@ -73,7 +73,7 @@ function benefits(passwordByPlan: boolean): Benefit[] {
 }
 
 /** Por qué una Ribbly: grilla tipo bento. Cada ícono tiene su gesto propio al pasar el mouse. */
-export function WhyBoxie({ passwordByPlan = false }: { passwordByPlan?: boolean }) {
+export function WhyRibbly({ passwordByPlan = false }: { passwordByPlan?: boolean }) {
   return (
     <section
       id="por-que"

@@ -125,7 +125,7 @@ const touch = (p: Partial<Touch> = {}): Touch => ({
 })
 
 describe('canales', () => {
-  it('clasifica los orígenes como Google Analytics, adaptado a Boxie', () => {
+  it('clasifica los orígenes como Google Analytics, adaptado a Ribbly', () => {
     expect(classifyChannel({ source: 'ig', medium: 'paid_social' })).toBe('meta')
     expect(classifyChannel({ source: 'facebook', medium: 'cpc' })).toBe('meta')
     expect(classifyChannel({ source: 'google', medium: 'cpc' })).toBe('google')

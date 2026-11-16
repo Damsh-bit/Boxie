@@ -348,8 +348,8 @@ function SlideRow({
                     const ok = await confirm({
                       title: `¿Quitar "${def?.label ?? slide.key}"?`,
                       description: def?.buyerSchema
-                        ? 'Es un módulo que completa el comprador: desaparece del editor en la próxima versión. Las Boxies ya vendidas no cambian.'
-                        : 'Sale de la temática en la próxima versión. Las Boxies ya vendidas no cambian.',
+                        ? 'Es un módulo que completa el comprador: desaparece del editor en la próxima versión. Las Ribblys ya vendidas no cambian.'
+                        : 'Sale de la temática en la próxima versión. Las Ribblys ya vendidas no cambian.',
                       confirm: 'Quitar',
                       danger: true,
                     })

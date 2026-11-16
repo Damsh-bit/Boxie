@@ -1,9 +1,9 @@
 /**
- * Textos de "Boxie para marcas" (/marcas) y de los espacios de sponsor del
+ * Textos de "Ribbly para marcas" (/marcas) y de los espacios de sponsor del
  * sitio mientras no hay un aliado activo en ese lugar (la invitación a
  * sumarse).
  *
- * Los rubros son EJEMPLOS de hacia dónde va Boxie (una Boxie para cada rubro,
+ * Los rubros son EJEMPLOS de hacia dónde va Ribbly (una Ribbly para cada rubro,
  * con sus módulos): las marcas y campañas que aparecen son inventadas y se
  * presentan como ejemplos, no como clientes.
  */
@@ -20,7 +20,7 @@ export interface Industry {
   campaign: string
   /** Módulos pensados para el rubro. */
   modules: string[]
-  /** Cómo llega la Boxie a la gente. */
+  /** Cómo llega la Ribbly a la gente. */
   channel: string
 }
 

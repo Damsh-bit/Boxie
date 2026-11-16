@@ -44,7 +44,7 @@ interface QuoteResult {
 }
 
 /**
- * El cotizador: elegís la temática y lo que querés que tenga tu Boxie
+ * El cotizador: elegís la temática y lo que querés que tenga tu Ribbly
  * (juegos, recuerdos, fotos, días online, clave) y te dice en qué plan
  * entra, por qué y cuánto sale. El precio con cupón lo calcula el servidor
  * (el mismo que cobra el checkout).

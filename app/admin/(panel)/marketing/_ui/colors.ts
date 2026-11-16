@@ -5,7 +5,7 @@ import { SERIES } from '../../../_ui/palette'
  * Color de cada canal en los gráficos de Marketing. Sigue al canal, nunca a
  * su puesto en un ranking (Meta es siempre coral, Google siempre azul…). Hay
  * seis colores de serie validados: los seis canales que más pesan en una
- * tienda como Boxie tienen el suyo y el resto se agrupa en "Otros" (gris).
+ * tienda como Ribbly tienen el suyo y el resto se agrupa en "Otros" (gris).
  * Vive aparte de los componentes de cliente para que los Server Components
  * lo puedan usar.
  */

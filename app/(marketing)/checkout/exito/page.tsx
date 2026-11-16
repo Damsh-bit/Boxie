@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 /**
- * Cuando la Boxie ya se había creado en un intento anterior (el pago es
+ * Cuando la Ribbly ya se había creado en un intento anterior (el pago es
  * idempotente): el acceso está en el mail.
  */
 export default function ExitoPage() {

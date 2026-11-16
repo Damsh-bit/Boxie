@@ -187,7 +187,7 @@ describe('gastos, tareas y bitácora', () => {
     await asAdmin(() =>
       db.query(
         `insert into public.admin_audit_log (actor_id, actor_email, action, entity, summary)
-         values ($1, 'admin@boxie.test', 'coupon.create', 'coupon', 'Creó un cupón')`,
+         values ($1, 'admin@ribbly.test', 'coupon.create', 'coupon', 'Creó un cupón')`,
         [seed.adminId],
       ),
     )
@@ -195,7 +195,7 @@ describe('gastos, tareas y bitácora', () => {
       asAdmin(() =>
         db.query(
           `insert into public.admin_audit_log (actor_id, actor_email, action, entity, summary)
-           values ($1, 'otro@boxie.test', 'x', 'x', 'A nombre de otro')`,
+           values ($1, 'otro@ribbly.test', 'x', 'x', 'A nombre de otro')`,
           [seed.userId],
         ),
       ),
@@ -272,7 +272,7 @@ describe('equipo y configuración', () => {
   it('solo el dueño suma gente al equipo', async () => {
     await asAdmin(() =>
       db.query(
-        `insert into public.users (user_id, email, name, role) values ($1, 'nadie@boxie.test', 'Nadie', 'support')`,
+        `insert into public.users (user_id, email, name, role) values ($1, 'nadie@ribbly.test', 'Nadie', 'support')`,
         [seed.userId],
       ),
     )

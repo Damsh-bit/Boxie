@@ -459,7 +459,7 @@ function SponsorSheet({ sponsor, onClose }: { sponsor: SponsorInput | null; onCl
             label="Propuesta (lo que más se ve)"
             htmlFor="s-offer"
             error={fields.offer}
-            hint="Ej.: Con tu café, una Boxie de regalo para quien quieras"
+            hint="Ej.: Con tu café, una Ribbly de regalo para quien quieras"
           >
             <Input
               id="s-offer"

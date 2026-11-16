@@ -36,7 +36,7 @@ test('la home muestra las temáticas publicadas, empezando por el catálogo inic
 
 test('la ficha muestra el precio de la base y el link a la Ribbly de ejemplo', async ({ page }) => {
   await page.goto('/tematicas/cumpleanos')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Boxie de Cumpleaños')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ribbly de Cumpleaños')
   await expect(page.locator('[aria-live="polite"]')).toHaveText(/\$\s?\d{1,3}(\.\d{3})*/)
   await expect(page.getByRole('link', { name: /Ver cómo queda una Ribbly/ })).toHaveAttribute(
     'href',

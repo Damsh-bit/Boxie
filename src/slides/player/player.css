@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   Boxie · Player
+   Ribbly · Player
 
    CSS propio del player (docs/ARQUITECTURA.md §2.4), portado de
    src/styles/Editor.css del prototipo. Diferencias deliberadas:
@@ -101,7 +101,7 @@
   }
 }
 
-/* Lo que va fijo debajo del teléfono (la barra de la Boxie de ejemplo). */
+/* Lo que va fijo debajo del teléfono (la barra de la Ribbly de ejemplo). */
 .bx-footer {
   flex: none;
   width: 100%;

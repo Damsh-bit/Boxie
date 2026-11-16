@@ -69,10 +69,10 @@ export async function createTestDb(): Promise<TestDb> {
  */
 export async function seedBasics(db: TestDb) {
   const [admin] = await db.query<{ id: string }>(
-    `insert into auth.users (email) values ('admin@boxie.test') returning id`,
+    `insert into auth.users (email) values ('admin@ribbly.test') returning id`,
   )
   const [buyerUser] = await db.query<{ id: string }>(
-    `insert into auth.users (email) values ('nadie@boxie.test') returning id`,
+    `insert into auth.users (email) values ('nadie@ribbly.test') returning id`,
   )
   await db.query(`insert into public.users (user_id, role) values ($1, 'owner')`, [admin!.id])
 

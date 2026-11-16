@@ -12,7 +12,7 @@ const NOW = new Date('2026-10-15T12:00:00-03:00')
 function coupon(overrides: Partial<Coupon> = {}): Coupon {
   return {
     id: 'c1',
-    code: 'BOXIE10',
+    code: 'RIBBLY10',
     kind: 'percent',
     value: 10,
     active: true,

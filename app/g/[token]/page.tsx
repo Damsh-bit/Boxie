@@ -91,7 +91,7 @@ function GiftMessage({ gift }: { gift: Gift }) {
           className="mt-8 block opacity-80 transition-opacity hover:opacity-100"
           aria-label="Ribbly"
         >
-          <Image src="/brand/boxie-logo.png" alt="Ribbly" width={103} height={36} />
+          <Image src="/brand/ribbly-logo.png" alt="Ribbly" width={63} height={44} />
         </Link>
       </Reveal>
     </div>

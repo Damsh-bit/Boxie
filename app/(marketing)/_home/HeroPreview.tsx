@@ -35,7 +35,7 @@ import {
 import { PhoneFrame, useMouseParallax, useTilt } from './primitives'
 import { lookOf, type HomeTheme } from './theme-look'
 
-/** Las pantallas de la Boxie de muestra, en orden, y cuánto dura cada una. */
+/** Las pantallas de la Ribbly de muestra, en orden, y cuánto dura cada una. */
 const SCENES = [
   { id: 'portada', label: 'Portada', emoji: 'regalo', seconds: 4.2, light: false },
   { id: 'fotos', label: 'Fotos', emoji: 'camara', seconds: 4.8, light: false },
@@ -62,7 +62,7 @@ const CHIPS: { scene: SceneId; className: string; depth: number; float: number; 
     { scene: 'sorpresa', className: `${LEFT} top-[78%]`, depth: 12, float: 6, delay: 1.3 },
   ]
 
-/** Segundos sin tocar nada para que la Boxie vuelva a pasar sola. */
+/** Segundos sin tocar nada para que la Ribbly vuelva a pasar sola. */
 const RESUME_SECONDS = 9
 
 /** La parte de la izquierda de la pantalla que vuelve atrás (como en las historias). */
@@ -110,7 +110,7 @@ const slide = {
 }
 
 /**
- * Una Boxie de muestra que se abre en el celular de la portada. Pasa sola
+ * Una Ribbly de muestra que se abre en el celular de la portada. Pasa sola
  * como una historia (portada con el nombre, fotos, dedicatoria, canción,
  * trivia y el regalo del final) y se puede tocar: la izquierda vuelve, la
  * derecha sigue, mantener apretado pausa y los juegos se juegan de verdad.

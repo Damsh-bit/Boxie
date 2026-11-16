@@ -169,7 +169,7 @@ export default async function ProfitabilityPage({
           </span>
         }
         title="Rentabilidad"
-        description="Qué queda de cada Boxie después de la pasarela, los impuestos, los afiliados y la publicidad, cuánto se puede pagar por una venta y cuánto deja un cliente en el tiempo."
+        description="Qué queda de cada Ribbly después de la pasarela, los impuestos, los afiliados y la publicidad, cuánto se puede pagar por una venta y cuánto deja un cliente en el tiempo."
         actions={
           <>
             <RangePicker {...ctx.picker} />

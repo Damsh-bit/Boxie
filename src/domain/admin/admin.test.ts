@@ -142,7 +142,7 @@ describe('finanzas', () => {
     expect(c.contributionCents).toBe(499_000 - 37_978 - 17_465 - 3_000)
   })
 
-  it('una Boxie gratis igual cuesta entregarla', () => {
+  it('una Ribbly gratis igual cuesta entregarla', () => {
     expect(saleCosts(0, settings).contributionCents).toBe(-3_000)
   })
 
@@ -240,7 +240,12 @@ describe('métricas', () => {
       order(),
       order({ status: 'pending' }),
       order({ status: 'cancelled' }),
-      order({ couponId: 'c1', couponCode: 'BOXIE10', discountCents: 49_900, amountCents: 449_100 }),
+      order({
+        couponId: 'c1',
+        couponCode: 'RIBBLY10',
+        discountCents: 49_900,
+        amountCents: 449_100,
+      }),
     ]
     const k = kpis(orders, [], range)
     expect(k.sales).toBe(2)
@@ -304,7 +309,7 @@ describe('métricas', () => {
     expect(summary.abandoned).toBe(1)
   })
 
-  it('avisa de pagos con monto distinto y de Boxies que vencen sin regalarse', () => {
+  it('avisa de pagos con monto distinto y de Ribblys que vencen sin regalarse', () => {
     const list = alerts({
       orders: [order({ providerStatus: 'amount_mismatch', status: 'pending' })],
       boxies: [boxie({ expiresAt: '2026-09-27T12:00:00.000Z' })],

@@ -744,7 +744,7 @@ export function daysToPurchase(input: MarketingInput, range: DateRange, idx = bu
 /**
  * Ventas en las que cada canal participó sin cerrar: fue el primer toque y
  * la venta la cerró otro. Muestra el valor de los canales que "presentan"
- * Boxie (la prospección, las redes) y que el último clic no ve.
+ * Ribbly (la prospección, las redes) y que el último clic no ve.
  */
 export function assistedByChannel(
   input: MarketingInput,

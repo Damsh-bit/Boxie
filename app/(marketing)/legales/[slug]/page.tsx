@@ -52,7 +52,7 @@ export default async function LegalPage({ params }: PageProps<'/legales/[slug]'>
           })}
         </p>
         <hr className="my-6 border-neutral-100" />
-        <div className="prose-boxie">{doc.body}</div>
+        <div className="prose-ribbly">{doc.body}</div>
       </Reveal>
     </div>
   )

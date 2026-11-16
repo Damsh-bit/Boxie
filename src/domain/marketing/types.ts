@@ -14,7 +14,7 @@ export const CAMPAIGN_OBJECTIVES: { value: CampaignObjective; label: string; hin
   {
     value: 'ventas',
     label: 'Ventas',
-    hint: 'Prospección: gente nueva que todavía no conoce Boxie.',
+    hint: 'Prospección: gente nueva que todavía no conoce Ribbly.',
   },
   {
     value: 'remarketing',
@@ -23,7 +23,7 @@ export const CAMPAIGN_OBJECTIVES: { value: CampaignObjective; label: string; hin
   },
   { value: 'trafico', label: 'Tráfico', hint: 'Llevar visitas a una temática o a la home.' },
   { value: 'alcance', label: 'Alcance', hint: 'Que la marca se vea: reproducciones y alcance.' },
-  { value: 'marca', label: 'Marca', hint: 'Búsquedas con el nombre "Boxie".' },
+  { value: 'marca', label: 'Marca', hint: 'Búsquedas con el nombre "Ribbly".' },
 ]
 
 /** Lo que se guarda: borrador, activa o pausada. Terminada y programada salen de las fechas. */
@@ -92,7 +92,7 @@ export const ATTRIBUTION_MODELS: { value: AttributionModel; label: string; hint:
   {
     value: 'first',
     label: 'Primer clic',
-    hint: 'La venta es del origen por el que la persona conoció Boxie (el que la descubrió).',
+    hint: 'La venta es del origen por el que la persona conoció Ribbly (el que la descubrió).',
   },
   {
     value: 'linear',

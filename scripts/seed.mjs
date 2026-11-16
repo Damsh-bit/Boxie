@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Boxie · Data Seeder para Demo y Desarrollo
+ * Ribbly · Data Seeder para Demo y Desarrollo
  *
  * Puebla la base de datos de Supabase con datos ficticios realistas para trabajar
  * y presentar la demo completa:
@@ -13,7 +13,7 @@
  *  - Tablero Kanban de tareas
  *  - Bitácora de auditoría (audit log)
  *  - Historial de órdenes de compra con eventos de pago
- *  - Boxies activas, bloqueadas y abiertas con tokens cifrados (AES-256-GCM)
+ *  - Ribblys activas, bloqueadas y abiertas con tokens cifrados (AES-256-GCM)
  *  - Contenido de slides en boxie_content
  *
  * Uso:
@@ -192,7 +192,7 @@ const DESTINATARIOS = [
 
 async function runSeed() {
   console.log('\n========================================')
-  console.log('✨  Boxie · Sembrando datos ficticios')
+  console.log('✨  Ribbly · Sembrando datos ficticios')
   console.log('========================================\n')
 
   // 1. Configuración (settings)
@@ -205,7 +205,7 @@ async function runSeed() {
       gateway_vat_bps: 2100, // 21%
       gateway_fixed_cents: 0,
       tax_bps: 350, // 3,5% IIBB
-      variable_cost_cents: 2500, // $25 costo x boxie
+      variable_cost_cents: 2500, // $25 costo x Ribbly
       business_name: 'Ribbly',
       support_email: 'ayuda@ribbly.com.ar',
       whatsapp: '+54 9 11 5555-0100',
@@ -298,8 +298,8 @@ async function runSeed() {
       code: 'INFLUENCERS',
       commission_bps: 0,
       active: true,
-      email: 'colaboraciones@boxie.demo',
-      notes: 'Canje: la creadora recibe Boxies gratis a cambio de contenido.',
+      email: 'colaboraciones@ribbly.demo',
+      notes: 'Canje: la creadora recibe Ribblys gratis a cambio de contenido.',
     },
     {
       id: 'e1a1e7f4-1c2d-4e5f-8a9b-000000000002',
@@ -307,7 +307,7 @@ async function runSeed() {
       code: 'SOFI',
       commission_bps: 1500, // 15%
       active: true,
-      email: 'sofideco@boxie.demo',
+      email: 'sofideco@ribbly.demo',
       notes: 'Comisión del 15% por venta con su código. Se liquida el 5 de cada mes.',
     },
     {
@@ -316,7 +316,7 @@ async function runSeed() {
       code: 'VIOLETAS',
       commission_bps: 1000, // 10%
       active: false,
-      email: 'violetas@boxie.demo',
+      email: 'violetas@ribbly.demo',
       notes: 'Prueba piloto presencial (pausada).',
     },
   ]
@@ -332,7 +332,7 @@ async function runSeed() {
   const couponsData = [
     {
       id: '49456f9e-734d-409a-be1e-f5501efad4c5',
-      code: 'BOXIE10',
+      code: 'RIBBLY10',
       kind: 'percent',
       value: 10,
       active: true,
@@ -405,43 +405,43 @@ async function runSeed() {
   console.log('\n👥  Configurando equipo y usuarios de prueba...')
   const teamUsers = [
     {
-      email: 'admin@boxie.demo',
-      password: 'boxie-admin',
+      email: 'admin@ribbly.demo',
+      password: 'ribbly-admin',
       name: 'Administrador',
       role: 'owner',
       phone: '+54 9 11 5555-0101',
     },
     {
-      email: 'socio@boxie.demo',
-      password: 'boxie-socio',
+      email: 'socio@ribbly.demo',
+      password: 'ribbly-socio',
       name: 'Santiago Martínez',
       role: 'admin',
       phone: '+54 9 11 5555-0102',
     },
     {
-      email: 'soporte@boxie.demo',
-      password: 'boxie-soporte',
+      email: 'soporte@ribbly.demo',
+      password: 'ribbly-soporte',
       name: 'Lucía Fernández',
       role: 'support',
       phone: '+54 9 11 5555-0103',
     },
     {
-      email: 'contenido@boxie.demo',
-      password: 'boxie-contenido',
+      email: 'contenido@ribbly.demo',
+      password: 'ribbly-contenido',
       name: 'Martín Gómez',
       role: 'editor',
       phone: '+54 9 11 5555-0104',
     },
     {
       email: 'sofia.lopez@ejemplo.com',
-      password: 'boxie-demo-123',
+      password: 'ribbly-demo-123',
       name: 'Sofía López',
       role: null, // Cliente común
       phone: '+54 9 11 4444-1122',
     },
     {
       email: 'fede.diaz@ejemplo.com',
-      password: 'boxie-demo-123',
+      password: 'ribbly-demo-123',
       name: 'Federico Díaz',
       role: null, // Cliente común
       phone: '+54 9 11 4444-3344',
@@ -598,7 +598,7 @@ async function runSeed() {
         'Comprobar que los webhooks con firmas secretas impacten correctamente en tiempo real.',
       status: 'doing',
       priority: 'alta',
-      assignee: 'socio@boxie.demo',
+      assignee: 'socio@ribbly.demo',
       tags: ['pagos', 'infra'],
       due_on: inDays(5),
       position: 0,
@@ -609,7 +609,7 @@ async function runSeed() {
       description: 'Revisar cupón MAMA15 y coordinar pauta en Meta Ads con fotos de prueba.',
       status: 'doing',
       priority: 'alta',
-      assignee: 'admin@boxie.demo',
+      assignee: 'admin@ribbly.demo',
       tags: ['marketing'],
       due_on: inDays(12),
       position: 1,
@@ -620,7 +620,7 @@ async function runSeed() {
       description: 'Diseñar la paleta festiva y armar las preguntas de la trivia familiar.',
       status: 'todo',
       priority: 'media',
-      assignee: 'contenido@boxie.demo',
+      assignee: 'contenido@ribbly.demo',
       tags: ['temáticas'],
       due_on: inDays(45),
       position: 0,
@@ -632,7 +632,7 @@ async function runSeed() {
         'Pedir permiso a compradores con comentarios positivos para la página de inicio.',
       status: 'todo',
       priority: 'baja',
-      assignee: 'soporte@boxie.demo',
+      assignee: 'soporte@ribbly.demo',
       tags: ['soporte', 'marketing'],
       due_on: null,
       position: 1,
@@ -643,7 +643,7 @@ async function runSeed() {
       description: 'Incrementar el cupo de fotos a 15 y habilitar pantalla de cuponera.',
       status: 'done',
       priority: 'media',
-      assignee: 'admin@boxie.demo',
+      assignee: 'admin@ribbly.demo',
       tags: ['planes'],
       due_on: null,
       position: 0,
@@ -654,7 +654,7 @@ async function runSeed() {
       description: 'Aplicar migraciones y unificar tabla de perfiles de usuario.',
       status: 'done',
       priority: 'alta',
-      assignee: 'socio@boxie.demo',
+      assignee: 'socio@ribbly.demo',
       tags: ['infra'],
       due_on: null,
       position: 1,
@@ -671,35 +671,35 @@ async function runSeed() {
   console.log('\n📜  Registrando eventos en la bitácora de auditoría...')
   const auditEntries = [
     {
-      actor_email: 'admin@boxie.demo',
+      actor_email: 'admin@ribbly.demo',
       action: 'plan.update',
       entity: 'plan',
       entity_id: 'b0a1e7f4-1c2d-4e5f-8a9b-000000000002',
       summary: 'Actualizó los beneficios del plan Clásica',
     },
     {
-      actor_email: 'socio@boxie.demo',
+      actor_email: 'socio@ribbly.demo',
       action: 'settings.update',
       entity: 'settings',
       entity_id: null,
       summary: 'Ajustó la meta mensual a $2.500.000 ARS',
     },
     {
-      actor_email: 'soporte@boxie.demo',
+      actor_email: 'soporte@ribbly.demo',
       action: 'boxie.resend',
       entity: 'boxie',
       entity_id: null,
       summary: 'Reenvió el link del editor a comprador por WhatsApp',
     },
     {
-      actor_email: 'admin@boxie.demo',
+      actor_email: 'admin@ribbly.demo',
       action: 'coupon.create',
       entity: 'coupon',
       entity_id: 'd1a1e7f4-1c2d-4e5f-8a9b-000000000007',
       summary: 'Creó el cupón programado MAMA15 para el Día de la Madre',
     },
     {
-      actor_email: 'contenido@boxie.demo',
+      actor_email: 'contenido@ribbly.demo',
       action: 'theme.publish',
       entity: 'theme',
       entity_id: 'a46e94ab-6846-429b-a057-63d830f5e97e',
@@ -720,8 +720,8 @@ async function runSeed() {
     console.log(`✔  Bitácora ya contiene ${auditCount} eventos`)
   }
 
-  // 9. Órdenes, Pagos y Boxies
-  console.log('\n🎁  Generando historial de ventas, órdenes y Boxies...')
+  // 9. Órdenes, Pagos y Ribblys
+  console.log('\n🎁  Generando historial de ventas, órdenes y Ribblys...')
 
   // Obtener temáticas reales
   const { data: themes } = await supabase
@@ -859,7 +859,7 @@ async function runSeed() {
       })
     }
 
-    // Crear Boxie si la orden fue pagada o reembolsada
+    // Crear Ribbly si la orden fue pagada o reembolsada
     if (status === 'paid' || status === 'refunded') {
       const code = generateCode(usedCodes)
       const rawGiftToken = generateToken()
@@ -872,7 +872,7 @@ async function runSeed() {
       const recipientName = randomItem(DESTINATARIOS)
       const senderName = firstName
 
-      // Tiempos de ciclo de vida de la Boxie
+      // Tiempos de ciclo de vida de la Ribbly
       const isLocked = chance(0.75)
       const lockedAt = isLocked
         ? new Date(paidAt.getTime() + randomBetween(1, 48) * 3600_000)
@@ -947,7 +947,7 @@ async function runSeed() {
   }
 
   console.log(`✔  ${createdOrders} órdenes de compra creadas`)
-  console.log(`✔  ${createdBoxies} Boxies registradas con códigos y tokens criptográficos`)
+  console.log(`✔  ${createdBoxies} Ribblys registradas con códigos y tokens criptográficos`)
   console.log(`✔  Contenido en boxie_content cargado para boxies completadas`)
 
   console.log('\n========================================')

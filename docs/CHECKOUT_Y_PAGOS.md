@@ -1,6 +1,6 @@
 # Flujo de Checkout, Pasarela de Pago y Guía de Testing
 
-Este documento describe el flujo completo de compra, integración con la pasarela de pago (Mercado Pago), aprovisionamiento de la Boxie y los pasos detallados para testear cada escenario en local.
+Este documento describe el flujo completo de compra, integración con la pasarela de pago (Mercado Pago), aprovisionamiento de la Ribbly y los pasos detallados para testear cada escenario en local.
 
 ---
 
@@ -34,7 +34,7 @@ sequenceDiagram
     MP->>Navegador: Redirige a back_url (GET /api/checkout/return)
     Navegador->>Servidor: GET /api/checkout/return?payment_id=...&external_reference=...
     Servidor->>MP: getPayment(paymentId) para verificar estado real
-    Servidor->>DB: Transición a 'paid' + aprovisiona Boxie + genera tokens
+    Servidor->>DB: Transición a 'paid' + aprovisiona Ribbly + genera tokens
     Servidor->>Navegador: Redirige a /editor/<token> (setea cookie de sesión y va a /editor)
 ```
 
@@ -64,7 +64,7 @@ Temáticas disponibles por defecto:
 
 Cupones de prueba iniciales:
 
-- `BOXIE10` (10% de descuento)
+- `RIBBLY10` (10% de descuento; en la base real sigue `BOXIE10` hasta crear `RIBBLY10` en el panel)
 - `PAREJA20` (20% de descuento)
 
 ---
@@ -130,7 +130,7 @@ DEMO_MODE=
 
 - Al aprobarse el pago, Mercado Pago redirige a:
   `http://localhost:3000/api/checkout/return?payment_id=...&external_reference=...`
-- El backend valida el pago con la API de MP, crea la Boxie y redirige a `/editor/<token>`.
+- El backend valida el pago con la API de MP, crea la Ribbly y redirige a `/editor/<token>`.
 - La ruta de canje guarda la cookie de sesión firmada `boxie_editor` y te deja en:
   `http://localhost:3000/editor`
 - En la consola del servidor verás la notificación del email de compra emitido (o enviado por Resend si tenés configurada `RESEND_API_KEY`).
@@ -147,7 +147,7 @@ Si querés probar la experiencia de personalización en el editor, subida de fot
    ```
    Con esto, **"Ir a pagar"** en el checkout aprueba la orden sin pasar por Mercado Pago y te lleva
    directo al editor. En producción `fake` se rechaza.
-2. O, sin pasar por el checkout, ejecutá una llamada POST para aprovisionar una Boxie pagada al instante:
+2. O, sin pasar por el checkout, ejecutá una llamada POST para aprovisionar una Ribbly pagada al instante:
 
    **En PowerShell:**
 
@@ -164,7 +164,7 @@ Si querés probar la experiencia de personalización en el editor, subida de fot
    ```
 
 3. La respuesta JSON devuelve:
-   - `code`: Código alfanumérico de la Boxie.
+   - `code`: Código alfanumérico de la Ribbly.
    - `editorUrl`: Link directo para abrir el editor (`http://localhost:3000/editor/<token>`).
    - `giftUrl`: Link del regalo para el destinatario (`http://localhost:3000/g/<token>`).
 
@@ -173,7 +173,7 @@ Si querés probar la experiencia de personalización en el editor, subida de fot
 ### Webhook de Mercado Pago
 
 El endpoint activo está en `/api/webhooks/mercadopago`. Se configura en Mercado Pago Developers → Tus integraciones → Webhooks
-con la URL completa del sitio (ej. `https://boxiedigital.com.ar/api/webhooks/mercadopago`) y el **Secreto de firma** va en la variable `MP_WEBHOOK_SECRET`.
+con la URL completa del sitio (ej. `https://ribbly.com.ar/api/webhooks/mercadopago`) y el **Secreto de firma** va en la variable `MP_WEBHOOK_SECRET`.
 Cada notificación valida la firma HMAC-SHA256 (`x-signature`), consulta el estado del pago con la API de Mercado Pago y aplica la orden con idempotencia mediante `applyPaymentNotice({ source: 'webhook' })`.
 
 ---

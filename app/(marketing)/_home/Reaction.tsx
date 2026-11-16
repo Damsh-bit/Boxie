@@ -22,13 +22,13 @@ const CHAT: Message[] = [
 /**
  * El momento de abrirla: una charla de WhatsApp que se escribe sola cuando
  * entra en pantalla (con "escribiendo…" y los tildes que se ponen azules), al
- * lado de los números de la Boxie, que cuentan al aparecer.
+ * lado de los números de la Ribbly, que cuentan al aparecer.
  */
 export function Reaction({
   maxScreens,
   lifetimeDays,
 }: {
-  /** Pantallas de la Boxie más completa y días online (salen del catálogo y los planes). */
+  /** Pantallas de la Ribbly más completa y días online (salen del catálogo y los planes). */
   maxScreens: number
   lifetimeDays: { min: number; max: number }
 }) {

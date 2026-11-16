@@ -110,8 +110,8 @@ export const NAV: NavGroup[] = [
         roles: SUPPORT,
       },
       {
-        href: '/admin/boxies',
-        label: 'Boxies',
+        href: '/admin/ribblys',
+        label: 'Ribblys',
         icon: Gift,
         hint: 'Buscar por código, mail o destinatario; soporte',
         roles: SUPPORT,

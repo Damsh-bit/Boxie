@@ -150,7 +150,7 @@ export default async function MarketingPage({ searchParams }: PageProps<'/admin/
           </span>
         }
         title="Marketing"
-        description="Cuánto se invierte en publicidad, cuánto trae y cuánto cuesta cada venta. Todo con los costos reales de una Boxie."
+        description="Cuánto se invierte en publicidad, cuánto trae y cuánto cuesta cada venta. Todo con los costos reales de una Ribbly."
         actions={
           <>
             <RangePicker {...ctx.picker} />

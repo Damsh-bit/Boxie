@@ -12,8 +12,8 @@ import type { DemoDb, DemoSupport } from '../admin/demo/seed'
 /**
  * Conversaciones de muestra para el panel en modo demo: una bandeja creíble
  * (resueltas, esperando al cliente, sin leer, una atrasada y una nota
- * interna), con horarios relativos a "ahora". Las de "Mi Boxie" están
- * vinculadas a Boxies y compradores de la demo. Ningún dato es real.
+ * interna), con horarios relativos a "ahora". Las de "Mi Ribbly" están
+ * vinculadas a Ribblys y compradores de la demo. Ningún dato es real.
  */
 
 interface Line {
@@ -31,7 +31,7 @@ interface Scenario {
   status: SupportStatus
   priority: SupportPriority
   subject: string
-  /** Vincular a una Boxie de la demo: sin bloquear o ya regalada. */
+  /** Vincular a una Ribbly de la demo: sin bloquear o ya regalada. */
   boxie?: 'editing' | 'locked'
   customer?: { name: string; email: string }
   assignee?: string
@@ -52,7 +52,7 @@ const SCENARIOS: Scenario[] = [
     priority: 'normal',
     subject: 'No me llegó el mail para editar mi Ribbly',
     boxie: 'editing',
-    assignee: 'soporte@boxie.demo',
+    assignee: 'soporte@ribbly.demo',
     rating: 'good',
     readByAgent: true,
     lines: [
@@ -77,7 +77,7 @@ const SCENARIOS: Scenario[] = [
     priority: 'alta',
     subject: 'Me figura el pago como pendiente',
     customer: { name: 'Martina Gómez', email: 'martina.gomez@ejemplo.com' },
-    assignee: 'socio@boxie.demo',
+    assignee: 'socio@ribbly.demo',
     readByAgent: true,
     lines: [
       {
@@ -100,7 +100,7 @@ const SCENARIOS: Scenario[] = [
     priority: 'normal',
     subject: 'Cuando toco "Subir foto" en el iPhone no pasa nada',
     boxie: 'editing',
-    assignee: 'soporte@boxie.demo',
+    assignee: 'soporte@ribbly.demo',
     readByAgent: true,
     context: {
       url: '/editor',
@@ -147,13 +147,13 @@ const SCENARIOS: Scenario[] = [
     topic: 'otro',
     status: 'open',
     priority: 'normal',
-    subject: '¿Hacen Boxies para empresas?',
+    subject: '¿Hacen Ribblys para empresas?',
     customer: { name: 'Julián Ferreyra', email: 'rrhh@empresa-ejemplo.com' },
     lines: [
       {
         ago: 27 * H,
         author: 'customer',
-        body: '¿Hacen Boxies personalizadas para empresas? Somos 40 personas y queremos regalar una para fin de año.',
+        body: '¿Hacen Ribblys personalizadas para empresas? Somos 40 personas y queremos regalar una para fin de año.',
       },
     ],
   },
@@ -163,7 +163,7 @@ const SCENARIOS: Scenario[] = [
     priority: 'alta',
     subject: 'El regalo le pide una clave y no le puse ninguna',
     boxie: 'locked',
-    assignee: 'socio@boxie.demo',
+    assignee: 'socio@ribbly.demo',
     readByAgent: true,
     lines: [
       {
@@ -176,7 +176,7 @@ const SCENARIOS: Scenario[] = [
         author: 'agent',
         agent: 'Socio',
         internal: true,
-        body: 'Revisé la Boxie: tiene clave. Seguro la cargó sin querer en el editor. Le paso cómo verla.',
+        body: 'Revisé la Ribbly: tiene clave. Seguro la cargó sin querer en el editor. Le paso cómo verla.',
       },
     ],
   },
@@ -202,7 +202,7 @@ const id = (kind: number, n: number) =>
 
 export function seedSupport(db: DemoDb, now = new Date()): DemoSupport {
   const at = (minutes: number) => new Date(now.getTime() - minutes * 60_000).toISOString()
-  // Boxies de la demo para vincular: una en edición y una ya regalada, con su comprador.
+  // Ribblys de la demo para vincular: una en edición y una ya regalada, con su comprador.
   const active = db.boxies.filter((b) => b.status === 'active')
   const pick = {
     editing: active.filter((b) => !b.lockedAt),
@@ -240,7 +240,7 @@ export function seedSupport(db: DemoDb, now = new Date()): DemoSupport {
             ? customer.name.split(' ')[0]!
             : line.author === 'agent'
               ? line.agent!
-              : 'Boxie',
+              : 'Ribbly',
         body: line.body,
         internal: line.internal ?? false,
         createdAt: line.createdAt,

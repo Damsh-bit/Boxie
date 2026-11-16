@@ -1,7 +1,7 @@
 import type { PurchaseExample } from '@/domain/social-proof'
 
 /**
- * La cinta de compras de la portada ("María acaba de comprar una Boxie").
+ * La cinta de compras de la portada ("María acaba de comprar una Ribbly").
  *
  * Muestra las ventas reales de los últimos `windowDays` días (solo el nombre
  * de pila, la temática y hace cuánto). Mientras sean menos de
@@ -14,7 +14,7 @@ export const socialProof = {
   examplesUntil: 8,
   /** Compras que pasan por la cinta antes de volver a empezar. */
   max: 24,
-  /** El contador "+500 Boxies regaladas" aparece recién desde esta cantidad de ventas. */
+  /** El contador "+500 Ribblys regaladas" aparece recién desde esta cantidad de ventas. */
   soldFrom: 100,
 }
 

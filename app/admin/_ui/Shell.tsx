@@ -216,7 +216,7 @@ function Sidebar({
   return (
     <>
       <div className="relative flex h-20 shrink-0 items-center px-5">
-        <Link href="/admin" className="flex items-center gap-3" aria-label="Boxie, panel">
+        <Link href="/admin" className="flex items-center gap-3" aria-label="Ribbly, panel">
           <AnimatePresence mode="popLayout" initial={false}>
             {collapsed ? (
               <motion.span
@@ -227,7 +227,7 @@ function Sidebar({
                 transition={spring.bouncy}
                 className="ml-1.5 block"
               >
-                <Image src="/brand/boxie-mark.png" alt="Boxie" width={31} height={40} />
+                <Image src="/brand/ribbly-mark-white.png" alt="Ribbly" width={32} height={40} />
               </motion.span>
             ) : (
               <motion.span
@@ -238,7 +238,7 @@ function Sidebar({
                 transition={{ duration: 0.25, ease: ease.out }}
                 className="flex items-center gap-2.5"
               >
-                <Image src="/brand/boxie-logo.png" alt="Ribbly" width={98} height={34} />
+                <Image src="/brand/ribbly-logo-white.png" alt="Ribbly" width={65} height={44} />
                 <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold tracking-widest text-white/70 uppercase">
                   Admin
                 </span>
@@ -410,7 +410,7 @@ function Topbar({
           <Menu className="size-5" aria-hidden />
         </button>
         <Link href="/admin" className="lg:hidden" aria-label="Ribbly, panel">
-          <Image src="/brand/boxie-logo.png" alt="Ribbly" width={80} height={28} />
+          <Image src="/brand/ribbly-logo.png" alt="Ribbly" width={54} height={38} />
         </Link>
 
         <motion.button
@@ -421,7 +421,7 @@ function Topbar({
           aria-label="Buscar (Ctrl K)"
         >
           <Search className="size-4 shrink-0" aria-hidden />
-          <span className="hidden sm:inline">Buscar Boxie, cliente o sección…</span>
+          <span className="hidden sm:inline">Buscar Ribbly, cliente o sección…</span>
           <kbd className="ml-auto hidden rounded-md border border-line bg-canvas px-1.5 py-0.5 font-sans text-[11px] text-neutral-500 sm:inline">
             Ctrl K
           </kbd>

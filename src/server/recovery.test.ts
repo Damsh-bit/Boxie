@@ -17,7 +17,7 @@ const state = vi.hoisted(() => ({
 
 vi.mock('./env', () => ({
   env: () => ({ TOKEN_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString('base64') }),
-  siteUrl: (path: string) => `https://boxie.test${path}`,
+  siteUrl: (path: string) => `https://ribbly.test${path}`,
 }))
 
 vi.mock('./db/client', () => {
@@ -68,12 +68,12 @@ describe('recuperar el acceso', () => {
   })
 
   it('sin compras con ese mail no manda nada', async () => {
-    expect(await resendAccessByEmail('nadie@boxie.test')).toEqual({ sent: 0 })
+    expect(await resendAccessByEmail('nadie@ribbly.test')).toEqual({ sent: 0 })
     expect(devOutbox()).toHaveLength(0)
     expect(state.filters).toContainEqual({
       table: 'orders',
       op: 'ilike',
-      args: ['buyer_email', 'nadie@boxie.test'],
+      args: ['buyer_email', 'nadie@ribbly.test'],
     })
   })
 
@@ -121,7 +121,7 @@ describe('recuperar el acceso', () => {
     expect(await resendAccessByEmail('leandro@example.com')).toEqual({ sent: 1 })
     const [mail] = devOutbox()
     expect(mail!.subject).toBe('El regalo para Sofía está listo')
-    expect(mail!.text).toContain(`https://boxie.test/g/${gift}`)
+    expect(mail!.text).toContain(`https://ribbly.test/g/${gift}`)
     expect(mail!.text).toContain('Le pusiste una clave')
     expect(state.updates).toHaveLength(0)
   })

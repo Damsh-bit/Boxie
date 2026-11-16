@@ -12,10 +12,10 @@ import { RowLink } from '../../_ui/RowLink'
 import { CountUp } from '../../_ui/Stat'
 import { BOXIE_STAGE, boxieStage, type BoxieStage } from '../../_ui/status'
 
-export const metadata: Metadata = { title: 'Boxies' }
+export const metadata: Metadata = { title: 'Ribblys' }
 
-export default async function BoxiesPage({ searchParams }: PageProps<'/admin/boxies'>) {
-  await requireAdmin('/admin/boxies')
+export default async function BoxiesPage({ searchParams }: PageProps<'/admin/ribblys'>) {
+  await requireAdmin('/admin/ribblys')
   const params = await searchParams
   const repo = await adminRepo()
   const data = await repo.dataset()
@@ -47,12 +47,12 @@ export default async function BoxiesPage({ searchParams }: PageProps<'/admin/box
             Soporte {repo.mode === 'demo' && <NeedsDb what="boxies, boxie_content" />}
           </span>
         }
-        title="Boxies"
+        title="Ribblys"
         description="Cada regalo vendido. Buscá por código (K7M2-Q9XD), mail del comprador o nombre de quien lo recibe."
       />
 
       <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Mini label="Boxies en total" value={data.boxies.length} />
+        <Mini label="Ribblys en total" value={data.boxies.length} />
         <Mini label="Regaladas y vigentes" value={alive.length} />
         <Mini
           label="Se abrieron"
@@ -84,7 +84,7 @@ export default async function BoxiesPage({ searchParams }: PageProps<'/admin/box
         {items.length === 0 ? (
           <EmptyState
             icon={<Gift />}
-            title={q ? `Nada coincide con “${q}”` : 'No hay Boxies en este estado'}
+            title={q ? `Nada coincide con “${q}”` : 'No hay Ribblys en este estado'}
             text="El código tiene 8 caracteres (con o sin guion). También sirve el mail del comprador."
           />
         ) : (
@@ -120,7 +120,7 @@ export default async function BoxiesPage({ searchParams }: PageProps<'/admin/box
                   const stage = BOXIE_STAGE[stageOf(b)]
                   const order = orders.get(b.orderId)
                   return (
-                    <RowLink key={b.id} href={`/admin/boxies/${b.id}`} index={i}>
+                    <RowLink key={b.id} href={`/admin/ribblys/${b.id}`} index={i}>
                       <td className="px-6 py-3 font-mono font-semibold tracking-wide text-ink">
                         {formatBoxieCode(b.code)}
                       </td>
@@ -172,7 +172,7 @@ export default async function BoxiesPage({ searchParams }: PageProps<'/admin/box
           </div>
         )}
         <div className="border-t border-line">
-          <Pagination page={page} pages={pages} total={total} label="Boxies" />
+          <Pagination page={page} pages={pages} total={total} label="Ribblys" />
         </div>
       </Card>
     </>

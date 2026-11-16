@@ -31,7 +31,7 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: ease.out } },
 }
 
-/** La Boxie ya está bloqueada: el link para mandar y cómo mandarlo. */
+/** La Ribbly ya está bloqueada: el link para mandar y cómo mandarlo. */
 export function GiftReady({
   sandbox,
   recipientName,

@@ -9,7 +9,7 @@ import { spring } from './motion'
 
 const MotionLink = motion.create(Link)
 
-/** Tarjeta de "¿Qué Boxie elegir?": se levanta y el ícono salta al pasar el mouse. */
+/** Tarjeta de "¿Qué Ribbly elegir?": se levanta y el ícono salta al pasar el mouse. */
 export function GuideCard({
   href,
   emoji,

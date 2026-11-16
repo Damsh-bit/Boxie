@@ -141,7 +141,7 @@ export interface FinanceSettings {
   gatewayFixedCents: Cents
   /** Impuestos sobre la facturación (Ingresos Brutos, etc.), en puntos básicos. */
   taxBps: number
-  /** Costo variable por Boxie entregada (storage, mails, ancho de banda). */
+  /** Costo variable por Ribbly entregada (storage, mails, ancho de banda). */
   variableCostCents: Cents
   /** Meta de facturación mensual (para el tablero). */
   monthlyGoalCents: Cents
@@ -208,7 +208,7 @@ export const ADMIN_ROLES: { value: AdminRole; label: string; description: string
     label: 'Editor de contenido',
     description: 'Temáticas, planes y generador.',
   },
-  { value: 'support', label: 'Soporte', description: 'Ventas, Boxies y clientes.' },
+  { value: 'support', label: 'Soporte', description: 'Ventas, Ribblys y clientes.' },
 ]
 
 export interface AdminUser {

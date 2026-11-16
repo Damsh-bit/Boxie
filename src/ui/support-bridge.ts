@@ -9,7 +9,7 @@ export type SupportTopic = 'boxie' | 'error' | 'pago' | 'otro'
 
 export interface OpenSupportDetail {
   topic?: SupportTopic
-  /** Código de la Boxie ("K7M2-Q9XD"), si se sabe. */
+  /** Código de la Ribbly ("K7M2-Q9XD"), si se sabe. */
   boxieCode?: string
   /** Un primer mensaje sugerido. */
   message?: string

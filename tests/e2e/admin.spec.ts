@@ -11,8 +11,8 @@ test.skip(process.env.DEMO_MODE !== '1', 'El panel se prueba en modo demo')
 async function login(page: Page, next = '/admin') {
   await page.goto(next)
   await expect(page).toHaveURL(/\/admin\/login/)
-  await page.getByLabel('Mail').fill('admin@boxie.demo')
-  await page.getByLabel('Clave', { exact: true }).fill('boxie-admin')
+  await page.getByLabel('Mail').fill('admin@ribbly.demo')
+  await page.getByLabel('Clave', { exact: true }).fill('ribbly-admin')
   await page.getByRole('button', { name: 'Entrar' }).click()
   // La primera vez el servidor arma los datos de muestra (un año de ventas): puede tardar.
   await page.waitForURL((url) => !url.pathname.startsWith('/admin/login'), { timeout: 30_000 })
@@ -21,7 +21,7 @@ async function login(page: Page, next = '/admin') {
 test('sin sesión el panel lleva al login y una clave mala se rechaza', async ({ page }) => {
   await page.goto('/admin/finanzas')
   await expect(page).toHaveURL(/\/admin\/login\?next=%2Fadmin%2Ffinanzas/)
-  await page.getByLabel('Mail').fill('admin@boxie.demo')
+  await page.getByLabel('Mail').fill('admin@ribbly.demo')
   await page.getByLabel('Clave', { exact: true }).fill('otra-clave')
   await page.getByRole('button', { name: 'Entrar' }).click()
   await expect(page.getByText('Mail o clave incorrectos.')).toBeVisible({ timeout: 15_000 })
@@ -36,7 +36,7 @@ test('entra y vuelve a la página que pidió', async ({ page }) => {
 
 test('el tablero muestra la facturación y las alertas', async ({ page }) => {
   await login(page)
-  await expect(page.getByRole('heading', { name: 'Así viene Boxie', level: 1 })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Así viene Ribbly', level: 1 })).toBeVisible()
   await expect(page.getByText(/Facturación · últimos 30 días/)).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Para revisar' })).toBeVisible()
 })
@@ -61,11 +61,11 @@ test('la ficha de la tienda vende por plan y el checkout cobra el plan elegido',
   await expect(plans.getByRole('radio')).toHaveCount(3)
   await plans.getByRole('radio', { name: /Premium/ }).click()
   await page
-    .getByRole('link', { name: /Quiero mi Boxie/ })
+    .getByRole('link', { name: /Quiero mi Ribbly/ })
     .first()
     .click()
   await expect(page).toHaveURL(/plan=premium/)
-  await expect(page.getByRole('heading', { name: /Boxie Pareja · Premium/ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Ribbly Pareja · Premium/ })).toBeVisible()
 })
 
 test('una temática nueva se publica desde el panel y aparece en la tienda', async ({ page }) => {

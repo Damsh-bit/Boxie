@@ -834,8 +834,8 @@ function RequestButton({
 }) {
   const wanted = query.trim()
   const message = wanted
-    ? `¡Hola! Busqué "${wanted}" en la galería y no encontré una Boxie. ¿La pueden sumar?`
-    : '¡Hola! Me gustaría una Boxie para esta ocasión: '
+    ? `¡Hola! Busqué "${wanted}" en la galería y no encontré una Ribbly. ¿La pueden sumar?`
+    : '¡Hola! Me gustaría una Ribbly para esta ocasión: '
   return (
     <ButtonLink
       href={supportPageHref({ topic: 'otro', message })}
@@ -878,7 +878,7 @@ function FilterSheet({
 }) {
   const { formatPrice } = useCurrency()
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title="Filtrá las Boxies">
+    <Modal open={open} onOpenChange={onOpenChange} title="Filtrá las Ribblys">
       <div className="mt-6 space-y-7 text-left">
         {categories.length > 1 && (
           <SheetGroup title="¿Para quién es?">

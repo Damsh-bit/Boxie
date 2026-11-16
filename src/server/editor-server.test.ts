@@ -6,7 +6,7 @@ import { sign } from './security/signed'
 const SECRET = 'x'.repeat(48)
 
 beforeAll(() => {
-  vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://boxie.test')
+  vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://ribbly.test')
   vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://supabase.test')
   vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'anon')
   vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'service')
@@ -19,7 +19,7 @@ describe('sesión del editor', () => {
   const boxieId = '0f3c9a4e-2b7d-4c1e-9a8b-3d2e1f0a9b8c'
   const editHash = 'a'.repeat(64)
 
-  it('la cookie firmada lleva la Boxie y la huella del token de edición', () => {
+  it('la cookie firmada lleva la Ribbly y la huella del token de edición', () => {
     const session = readEditorSession(issueEditorSession(boxieId, editHash))
     expect(session).toMatchObject({ purpose: 'editor', boxieId, fp: editorFingerprint(editHash) })
   })
@@ -64,7 +64,7 @@ describe('fotos', () => {
     expect(sniffImage(new Uint8Array())).toBeNull()
   })
 
-  it('cada foto vive en la carpeta de su Boxie', () => {
+  it('cada foto vive en la carpeta de su Ribbly', () => {
     expect(boxiePhotoPath('b1', 'f1', 'image/webp')).toBe('boxies/b1/f1.webp')
     expect(boxiePhotoPath('b1', 'f2', 'image/jpeg')).toBe('boxies/b1/f2.jpg')
   })

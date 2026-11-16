@@ -25,7 +25,7 @@ vi.mock('../db/client', () => ({
 
 describe('2FA / TOTP Server Module', () => {
   it('genera un secreto TOTP cifrado y un código QR válido', async () => {
-    const setup = await startTotpSetup('user-123', 'admin@boxie.digital')
+    const setup = await startTotpSetup('user-123', 'admin@ribbly.test')
 
     expect(setup.secret).toHaveLength(32)
     expect(setup.setupToken).toBeDefined()

@@ -37,7 +37,7 @@ const STEPS: { icon: IconName; title: string; text: string }[] = [
  * mail después de pagar (ya no hay "ID + clave" como en el prototipo); si se
  * perdió, se pide de nuevo con el mail de la compra.
  */
-export default function MyBoxiePage() {
+export default function MyRibblyPage() {
   return (
     <div className="overflow-x-clip bg-[linear-gradient(180deg,#fff0f3_0%,#ffffff_45%)] pb-24">
       <PageIntro

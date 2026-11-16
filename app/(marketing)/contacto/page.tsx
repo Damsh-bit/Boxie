@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Contacto',
   description:
-    'Escribinos: ayuda con tu Boxie por chat, ventas, prensa o cualquier consulta. Te respondemos rápido.',
+    'Escribinos: ayuda con tu Ribbly por chat, ventas, prensa o cualquier consulta. Te respondemos rápido.',
   alternates: { canonical: '/contacto' },
 }
 
@@ -69,7 +69,7 @@ export default async function ContactPage() {
                 <Icon name="mensaje" size={30} /> Chat de soporte
               </p>
               <p className="mt-1 text-sm text-white/70">
-                Para tu Boxie, un pago o un error del sitio. Te responde una persona y te avisamos
+                Para tu Ribbly, un pago o un error del sitio. Te responde una persona y te avisamos
                 por mail cuando hay respuesta.
               </p>
               <SupportButton className="mt-4 w-full sm:w-auto" size="md">

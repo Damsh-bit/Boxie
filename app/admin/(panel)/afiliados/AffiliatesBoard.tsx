@@ -73,7 +73,7 @@ export function AffiliatesBoard({ rows }: { rows: Row[] }) {
           <EmptyState
             icon={<Handshake />}
             title="Todavía no hay afiliados"
-            text="Sumá a creadores o comercios que recomienden Boxie con su propio cupón."
+            text="Sumá a creadores o comercios que recomienden Ribbly con su propio cupón."
           />
         </Card>
       ) : (

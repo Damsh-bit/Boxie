@@ -100,7 +100,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
     setShowForm(true)
   }
 
-  // Encontrar agasajados de Boxies que todavía no tienen recordatorio
+  // Encontrar agasajados de Ribblys que todavía no tienen recordatorio
   const existingNames = new Set(
     (data.specialDates || []).map((d) => d.recipientName.trim().toLowerCase()),
   )
@@ -176,7 +176,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
         </div>
       </div>
 
-      {/* Lista de Boxies */}
+      {/* Lista de Ribblys */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-xl font-bold text-ink">Tus Regalos</h2>
@@ -325,7 +325,7 @@ export function CustomerDashboard({ name, data }: { name: string; data: Customer
 
                   {/* Si está en edición, permitir continuar editando */}
                   {boxie.status === 'draft' && (
-                    <Link href={`/cuenta/boxies/${boxie.id}/editar` as Route}>
+                    <Link href={`/cuenta/ribblys/${boxie.id}/editar` as Route}>
                       <Button size="sm" variant="secondary" className="gap-1.5 text-xs">
                         <Edit3 className="size-3.5" /> Seguir editando
                       </Button>

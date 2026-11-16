@@ -167,7 +167,7 @@ export function SettingsForm({
               <PercentInput id="s-tax" bps={values.taxBps} onChange={(v) => set('taxBps', v)} />
             </Field>
             <Field
-              label="Costo de entregar una Boxie"
+              label="Costo de entregar una Ribbly"
               htmlFor="s-var"
               error={fields.variableCostCents}
               hint="Storage, mails, ancho de banda"

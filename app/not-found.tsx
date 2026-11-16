@@ -19,11 +19,11 @@ export default function NotFound() {
         <div className="mx-auto flex h-[90px] w-[90%] max-w-6xl items-center">
           <Link href="/" aria-label="Ribbly, inicio">
             <Image
-              src="/brand/boxie-logo.png"
+              src="/brand/ribbly-logo.png"
               alt="Ribbly"
-              width={129}
-              height={45}
-              className="h-[45px] w-auto"
+              width={74}
+              height={52}
+              className="h-[52px] w-auto"
             />
           </Link>
         </div>

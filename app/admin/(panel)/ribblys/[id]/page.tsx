@@ -16,11 +16,11 @@ import { Badge, Card, CardHeader, KeyValue, NeedsDb, Progress } from '../../../_
 import { BOXIE_STAGE, boxieStage } from '../../../_ui/status'
 import { BoxieActions, BoxiePreview } from './BoxieClient'
 
-export const metadata: Metadata = { title: 'Boxie' }
+export const metadata: Metadata = { title: 'Ribbly' }
 
-export default async function BoxiePage({ params }: PageProps<'/admin/boxies/[id]'>) {
+export default async function BoxiePage({ params }: PageProps<'/admin/ribblys/[id]'>) {
   const { id } = await params
-  await requireAdmin(`/admin/boxies/${id}`)
+  await requireAdmin(`/admin/ribblys/${id}`)
   const repo = await adminRepo()
   const [detail, plans] = await Promise.all([repo.getBoxie(id), repo.listPlans()])
   if (!detail) notFound()
@@ -52,16 +52,16 @@ export default async function BoxiePage({ params }: PageProps<'/admin/boxies/[id
   return (
     <div>
       <Link
-        href="/admin/boxies"
+        href="/admin/ribblys"
         className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-neutral-500 transition-colors hover:text-ink"
       >
-        <ArrowLeft className="size-4" aria-hidden /> Boxies
+        <ArrowLeft className="size-4" aria-hidden /> Ribblys
       </Link>
 
       <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="mb-1 flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-brand uppercase">
-            {theme?.name ?? 'Boxie'} · {plan?.name ?? 'sin plan'}
+            {theme?.name ?? 'Ribbly'} · {plan?.name ?? 'sin plan'}
             {repo.mode === 'demo' && <NeedsDb what="boxies, boxie_content, media_assets" />}
           </p>
           <h1 className="font-mono text-4xl font-semibold tracking-wider text-ink">

@@ -18,7 +18,7 @@ export interface HomeTheme {
   priceLabel: string
 }
 
-/** Lo que cuenta la Boxie de muestra del celular de la portada, pantalla por pantalla. */
+/** Lo que cuenta la Ribbly de muestra del celular de la portada, pantalla por pantalla. */
 export interface ThemeStory {
   /** El pie de las dos fotos. */
   captions: [string, string]

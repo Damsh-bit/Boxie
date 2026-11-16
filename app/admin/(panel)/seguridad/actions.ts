@@ -133,6 +133,7 @@ export async function changePasswordAction(
 
   const lower = newPassword.toLowerCase()
   if (
+    lower.includes('ribbly-admin') ||
     lower.includes('boxie-admin') ||
     lower === 'password' ||
     lower === '123456789012' ||

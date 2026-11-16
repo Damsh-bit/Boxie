@@ -1,11 +1,11 @@
 /**
- * Ciclo de vida de una Boxie.
+ * Ciclo de vida de una Ribbly.
  *
  *   pago aprobado ──► editable ──(bloquear)──► regalo disponible ──► vencido
  *                        │                          │
  *                        └────────── reembolsada ◄──┘
  *
- * El vencimiento se calcula al leer (no depende de un cron): una Boxie cuyo
+ * El vencimiento se calcula al leer (no depende de un cron): una Ribbly cuyo
  * `expiresAt` pasó está vencida aunque su estado guardado siga en `active`.
  * Antes del bloqueo, `expiresAt` es el fin de la ventana de edición; después,
  * el fin de la vida del regalo (60 días desde que se bloquea, configurable).

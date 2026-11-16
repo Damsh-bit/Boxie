@@ -73,7 +73,7 @@ export function PhotoField({ id, value, onChange, media, disabled, describedBy }
   if (!media) {
     return (
       <p className="rounded-2xl bg-neutral-50 p-4 text-sm text-neutral-500">
-        Las fotos se cargan desde el editor de la Boxie.
+        Las fotos se cargan desde el editor de la Ribbly.
       </p>
     )
   }

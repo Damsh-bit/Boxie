@@ -5,22 +5,22 @@
 Todas documentadas en [`.env.example`](../.env.example). En Vercel van en _Settings → Environment
 Variables_; nunca en el repo.
 
-| Variable                                                    | Dónde se consigue                                                                                      |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API                                                                      |
-| `SUPABASE_SERVICE_ROLE_KEY`                                 | Idem (secreta: solo servidor)                                                                          |
-| `SESSION_SECRET`, `TOKEN_ENCRYPTION_KEY`                    | `openssl rand -base64 32` (una distinta por entorno)                                                   |
-| `MP_ACCESS_TOKEN`                                           | Mercado Pago → Tus integraciones → Credenciales (el **nuevo**, rotado)                                 |
-| `MP_WEBHOOK_SECRET`                                         | Mercado Pago → Tus integraciones → Webhooks                                                            |
-| `RESEND_API_KEY`                                            | Resend, con el dominio verificado (DKIM)                                                               |
-| `ADMIN_DEMO_EMAIL`, `ADMIN_DEMO_PASSWORD`                   | Solo en modo demo: el usuario del panel (si no, el de muestra)                                         |
-| `NEXT_PUBLIC_SITE_URL`                                      | El dominio con https (`https://www.boxiedigital.com.ar`): sin https, Mercado Pago no devuelve al sitio |
+| Variable                                                    | Dónde se consigue                                                                            |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API                                                            |
+| `SUPABASE_SERVICE_ROLE_KEY`                                 | Idem (secreta: solo servidor)                                                                |
+| `SESSION_SECRET`, `TOKEN_ENCRYPTION_KEY`                    | `openssl rand -base64 32` (una distinta por entorno)                                         |
+| `MP_ACCESS_TOKEN`                                           | Mercado Pago → Tus integraciones → Credenciales (el **nuevo**, rotado)                       |
+| `MP_WEBHOOK_SECRET`                                         | Mercado Pago → Tus integraciones → Webhooks                                                  |
+| `RESEND_API_KEY`                                            | Resend, con el dominio verificado (DKIM)                                                     |
+| `ADMIN_DEMO_EMAIL`, `ADMIN_DEMO_PASSWORD`                   | Solo en modo demo: el usuario del panel (si no, el de muestra)                               |
+| `NEXT_PUBLIC_SITE_URL`                                      | El dominio con https (`https://ribbly.com.ar`): sin https, Mercado Pago no devuelve al sitio |
 
 Qué está cargado y qué falta en cada deploy se ve en el panel, en **Sistema**.
 
 ## Supabase: primera vez
 
-> **Estado (28/09/2026):** el proyecto `Boxie` existe (región `ca-central-1`, Canadá) y tiene
+> **Estado (28/09/2026):** el proyecto `Ribbly` existe (región `ca-central-1`, Canadá) y tiene
 > aplicado todo lo de las 10 migraciones; producción ya corre contra él. Pero su historial
 > (`supabase_migrations`) no coincide con el repo: no registra `admin_backoffice`,
 > `users_password_hash` ni `marketing`, registra `support` con otra versión (`20260926002926`) y
@@ -74,14 +74,14 @@ día la base se muda a `sa-east-1` (São Paulo), entonces sí `gru1`.
 
 ## Editor y regalo
 
-| Ruta                               | Qué es                                                                    |
-| ---------------------------------- | ------------------------------------------------------------------------- |
-| `/editor/<token>`                  | El link del mail. Se canjea por una cookie firmada y redirige a `/editor` |
-| `/editor`                          | El editor del comprador (sin cookie: explica cómo entrar)                 |
-| `/editor/foto`                     | Subida de fotos (POST, con la cookie del editor)                          |
-| `/g/<token>`                       | El regalo. Sin clave, salvo que el comprador le ponga una                 |
-| `/ejemplo/<temática>/personalizar` | El mismo editor en modo prueba: guarda en el navegador, no compra nada    |
-| `/api/dev/boxies`                  | Solo con `PAYMENTS_PROVIDER=fake` (desarrollo y E2E): crea una Boxie paga |
+| Ruta                               | Qué es                                                                     |
+| ---------------------------------- | -------------------------------------------------------------------------- |
+| `/editor/<token>`                  | El link del mail. Se canjea por una cookie firmada y redirige a `/editor`  |
+| `/editor`                          | El editor del comprador (sin cookie: explica cómo entrar)                  |
+| `/editor/foto`                     | Subida de fotos (POST, con la cookie del editor)                           |
+| `/g/<token>`                       | El regalo. Sin clave, salvo que el comprador le ponga una                  |
+| `/ejemplo/<temática>/personalizar` | El mismo editor en modo prueba: guarda en el navegador, no compra nada     |
+| `/api/dev/boxies`                  | Solo con `PAYMENTS_PROVIDER=fake` (desarrollo y E2E): crea una Ribbly paga |
 
 Para probar el editor real en local (con Supabase levantado y `PAYMENTS_PROVIDER=fake`):
 
@@ -126,7 +126,7 @@ Los límites de pedidos (contacto, checkout, editor, fotos, clave del regalo, so
 memoria de cada instancia: frenan lo obvio. Para límites globales, activar reglas de rate limiting
 en el Firewall de Vercel sobre `/api/*`, `/editor/*`, `/g/*` y `/soporte/*`.
 
-Cada Boxie admite hasta 30 fotos (lo exige la base) y el plan comprado puede bajar ese tope; al
+Cada Ribbly admite hasta 30 fotos (lo exige la base) y el plan comprado puede bajar ese tope; al
 bloquearla se borran las que se reemplazaron.
 
 ## Checklist de seguridad (Sprint 0)

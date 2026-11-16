@@ -13,7 +13,7 @@ import { issueBoxieTokens } from './security/tokens'
  * desarrollo o acción del admin). La transacción vive en la base
  * (apply_payment: idempotente por proveedor, pago y estado); acá se generan
  * los tokens —la clave de cifrado no está en la base— y, si el pago creó la
- * Boxie, se manda el mail con el link del editor.
+ * Ribbly, se manda el mail con el link del editor.
  *
  * Los tokens crudos solo existen en memoria durante este pedido y en el mail.
  */
@@ -36,7 +36,7 @@ export interface PaymentOutcome {
   outcome: string
   boxieId: string | null
   created: boolean
-  /** Solo si esta llamada creó la Boxie. */
+  /** Solo si esta llamada creó la Ribbly. */
   links: { editor: string; gift: string } | null
 }
 
@@ -83,7 +83,7 @@ async function sendEditorAccess(boxieId: string, editorUrl: string) {
       .select('code, expires_at, order:orders(buyer_name, buyer_email, theme:themes(name))')
       .eq('id', boxieId)
       .single(),
-    'Boxie recién creada',
+    'Ribbly recién creada',
   )
   const mail = editorAccessEmail({
     buyerName: boxie.order.buyer_name,

@@ -123,7 +123,7 @@ export interface AdminRepo {
   /** Solo borradores sin ventas; lo demás se archiva. */
   deleteTheme(id: string, actor: Actor): Promise<void>
 
-  // Ventas y Boxies
+  // Ventas y Ribblys
   getOrder(id: string): Promise<OrderDetail | null>
   refundOrder(id: string, actor: Actor): Promise<void>
   getBoxie(id: string): Promise<BoxieDetail | null>

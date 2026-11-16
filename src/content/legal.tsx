@@ -7,7 +7,7 @@ import { site } from './site'
  *
  * PENDIENTE (dueño del producto, con asesoramiento legal): completar los datos
  * entre corchetes en src/content/site.ts y revisar el punto de vigencia, que
- * cambió respecto del prototipo: los 60 días corren desde que la Boxie se
+ * cambió respecto del prototipo: los 60 días corren desde que la Ribbly se
  * bloquea para regalar, no desde la compra (docs/DECISIONES.md).
  */
 

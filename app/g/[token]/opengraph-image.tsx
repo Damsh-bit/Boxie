@@ -6,7 +6,7 @@ import { findGift } from '@/server/gift'
 
 /**
  * La tarjeta del link en WhatsApp (docs/ARQUITECTURA.md §2.1): el canal de
- * Boxie es WhatsApp y sus robots no ejecutan JavaScript, así que la imagen
+ * Ribbly es WhatsApp y sus robots no ejecutan JavaScript, así que la imagen
  * se arma en el servidor con el nombre de quien recibe el regalo.
  */
 
@@ -21,7 +21,7 @@ export default async function GiftCard({ params }: { params: Promise<{ token: st
   const recipient = ready ? gift.recipientName.trim() : ''
   const sender = ready ? gift.senderName.trim() : ''
 
-  const mark = await readFile(join(process.cwd(), 'public', 'brand', 'boxie-mark.png'))
+  const mark = await readFile(join(process.cwd(), 'public', 'brand', 'ribbly-mark.png'))
   const markSrc = `data:image/png;base64,${mark.toString('base64')}`
 
   return new ImageResponse(
@@ -49,7 +49,7 @@ export default async function GiftCard({ params }: { params: Promise<{ token: st
           flexShrink: 0,
         }}
       >
-        <img src={markSrc} width={150} height={191} alt="" />
+        <img src={markSrc} width={150} height={185} alt="" />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 70, color: 'white' }}>
         <div style={{ fontSize: 34, fontWeight: 600, opacity: 0.9, letterSpacing: 2 }}>RIBBLY</div>

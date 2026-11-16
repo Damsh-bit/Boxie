@@ -879,7 +879,7 @@ const reflectJournal = {
       default: '"Escribir es la forma más pura de escuchar lo que tu mente tiene para decir."',
       max: 240,
     }),
-    // El prototipo decía "Entrada guardada en tu Boxie": no se guardaba.
+    // El prototipo decía "Entrada guardada en tu Ribbly": no se guardaba.
     outroBadge: field.text('Sello final', { default: 'Un pensamiento para vos' }),
   }),
   buyerSchema: null,
@@ -978,7 +978,7 @@ export function isSlideKind(kind: string): kind is SlideKind {
 
 /**
  * Contenido inicial del editor del comprador: las sugerencias de la temática
- * (como hacía el prototipo al elegir el tipo de Boxie).
+ * (como hacía el prototipo al elegir el tipo de Ribbly).
  */
 export function initialBuyerProps(
   kind: SlideKind,

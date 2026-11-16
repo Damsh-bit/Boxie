@@ -107,7 +107,7 @@ export function UnitExplorer({
               hint={pesos(u.contributionCents)}
             />
             <Metric
-              label="Ganancia por Boxie"
+              label="Ganancia por Ribbly"
               value={pesos(u.profitCents)}
               hint={
                 u.chargedCents
@@ -166,7 +166,7 @@ export function UnitExplorer({
 /**
  * Cascada horizontal: cada costo es un tramo que "come" parte del precio,
  * y los subtotales vuelven a la base. Se ve de un vistazo a dónde se va la
- * plata de una Boxie.
+ * plata de una Ribbly.
  */
 function waterfallBars(lines: UnitLine[]) {
   const bars: { line: UnitLine; from: number; to: number }[] = []
@@ -188,7 +188,7 @@ function Waterfall({ lines, base, max }: { lines: UnitLine[]; base: number; max:
   const top = Math.max(max, 1)
   const bars = waterfallBars(lines)
   return (
-    <ol className="space-y-1.5" aria-label="De precio de lista a resultado por Boxie">
+    <ol className="space-y-1.5" aria-label="De precio de lista a resultado por Ribbly">
       {bars.map(({ line, from, to }, i) => {
         const strong = line.kind !== 'minus'
         const color =

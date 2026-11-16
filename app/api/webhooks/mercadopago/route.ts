@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
  * Health check para validar conectividad desde herramientas externas o monitoreo.
  */
 export async function GET() {
-  return NextResponse.json({ status: 'ok', service: 'boxie-mercadopago-webhook' })
+  return NextResponse.json({ status: 'ok', service: 'ribbly-mercadopago-webhook' })
 }
 
 /**

@@ -3,8 +3,8 @@ import { COUPON_CODE_PATTERN } from './coupons'
 import { arDayKey } from './admin/range'
 
 /**
- * Sponsors: marcas y comercios aliados de Boxie (una cafetería que regala una
- * Boxie con su café, una marca que arma una campaña, un evento). Cada uno pasa
+ * Sponsors: marcas y comercios aliados de Ribbly (una cafetería que regala una
+ * Ribbly con su café, una marca que arma una campaña, un evento). Cada uno pasa
  * por un recorrido (contacto → conversación → activo) y, mientras está
  * activo y dentro de sus fechas, aparece en los lugares del sitio que eligió.
  *
@@ -42,7 +42,7 @@ export const SPONSOR_PLACEMENT_LABELS: Record<SponsorPlacement, string> = {
   home: 'Portada',
   galeria: 'Galería (tarjeta entre las temáticas)',
   precios: 'Precios',
-  marcas: 'Boxie para marcas (aliados)',
+  marcas: 'Ribbly para marcas (aliados)',
 }
 
 /** Qué le interesa a quien escribe desde /marcas (y lo que se anota en el panel). */
@@ -51,7 +51,7 @@ export type SponsorInterest = (typeof SPONSOR_INTERESTS)[number]
 
 export const SPONSOR_INTEREST_LABELS: Record<SponsorInterest, string> = {
   sponsor: 'Ser sponsor en la web',
-  cobranding: 'Una Boxie con mi marca',
+  cobranding: 'Una Ribbly con mi marca',
   campana: 'Una campaña o una fecha',
   corporativo: 'Regalos para clientes o equipo',
 }
@@ -60,9 +60,9 @@ export interface PublicSponsor {
   id: string
   name: string
   kind: SponsorKind
-  /** Frase corta ("El café de la esquina, ahora con Boxie"). */
+  /** Frase corta ("El café de la esquina, ahora con Ribbly"). */
   tagline: string
-  /** La propuesta para quien compra ("Con tu café, una Boxie de regalo"). */
+  /** La propuesta para quien compra ("Con tu café, una Ribbly de regalo"). */
   offer: string
   description: string
   emoji: string

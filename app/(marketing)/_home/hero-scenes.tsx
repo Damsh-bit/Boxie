@@ -19,8 +19,8 @@ import { useTimers } from './demos'
 import { lookOf, themeGradient, type HomeTheme, type ThemeStory } from './theme-look'
 
 /**
- * Las pantallas de la Boxie de muestra del celular de la portada. Son
- * maquetas livianas (no usan el player) que cuentan una Boxie de punta a
+ * Las pantallas de la Ribbly de muestra del celular de la portada. Son
+ * maquetas livianas (no usan el player) que cuentan una Ribbly de punta a
  * punta: portada, fotos, dedicatoria, canción, un juego y el regalo final.
  * Todo lo que no se toca deja pasar el clic al celular (que avanza como una
  * historia); lo que se toca lleva `data-hero-interactive`.
@@ -31,11 +31,11 @@ export interface SceneProps {
   story: ThemeStory
   /** El nombre que se escribió en el armador o el de ejemplo. */
   name: string
-  /** La Boxie pasa sola: los juegos se juegan solos si nadie los toca. */
+  /** La Ribbly pasa sola: los juegos se juegan solos si nadie los toca. */
   auto: boolean
   /** Dónde está el mouse sobre el celular, de -0.5 a 0.5 (0 es el centro). */
   pointer: { x: MotionValue<number>; y: MotionValue<number> }
-  /** La persona tocó algo: la Boxie deja de pasar sola por un rato. */
+  /** La persona tocó algo: la Ribbly deja de pasar sola por un rato. */
   onInteract(): void
   /** Volver a la portada. */
   onRestart(): void
@@ -76,7 +76,7 @@ function Eyebrow({
   )
 }
 
-/** Un dedo fantasma que "toca" cuando la Boxie se juega sola. */
+/** Un dedo fantasma que "toca" cuando la Ribbly se juega sola. */
 function TapHint({ className }: { className?: string }) {
   return (
     <motion.span

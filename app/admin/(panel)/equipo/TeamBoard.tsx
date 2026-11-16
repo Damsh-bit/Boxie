@@ -20,7 +20,7 @@ const ACCESS: Record<AdminRole, string[]> = {
   owner: ['Todo el panel', 'Equipo y roles', 'Restablecer la demo'],
   admin: ['Todo el panel', 'Finanzas, precios y cupones'],
   editor: ['Temáticas, generador', 'Tareas y actividad'],
-  support: ['Ventas, Boxies y clientes', 'Reembolsos y reenvíos'],
+  support: ['Ventas, Ribblys y clientes', 'Reembolsos y reenvíos'],
 }
 
 export function TeamBoard({
@@ -160,7 +160,7 @@ export function TeamBoard({
         description={
           inviteUrlResult
             ? 'Le enviamos un correo con el link de activación. También podés copiarlo acá abajo.'
-            : 'Le llega un mail de Boxie para crear su contraseña y activar su cuenta.'
+            : 'Le llega un mail de Ribbly para crear su contraseña y activar su cuenta.'
         }
         footer={
           inviteUrlResult ? (

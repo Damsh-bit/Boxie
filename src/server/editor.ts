@@ -41,7 +41,7 @@ import { decryptToken, hashToken, isWellFormedToken } from './security/tokens'
 /**
  * El editor del comprador, del lado del servidor. Cada operación parte de la
  * sesión firmada (nunca de un ID que mande el navegador), revalida que la
- * Boxie se pueda editar y valida el contenido contra el registro de slides.
+ * Ribbly se pueda editar y valida el contenido contra el registro de slides.
  */
 
 /** Las fotos se ven en el editor con URLs firmadas que duran un rato. */
@@ -52,9 +52,9 @@ export const SESSION_EXPIRED =
   'Tu sesión del editor venció. Volvé a entrar con el link que te mandamos por mail.'
 
 const NOT_EDITABLE: Record<Exclude<EditorAvailability, 'editable'>, string> = {
-  locked: 'Esta Boxie ya se bloqueó para regalar: no se puede editar más.',
-  expired: 'El plazo para editar esta Boxie venció.',
-  refunded: 'Esta Boxie fue reembolsada.',
+  locked: 'Esta Ribbly ya se bloqueó para regalar: no se puede editar más.',
+  expired: 'El plazo para editar esta Ribbly venció.',
+  refunded: 'Esta Ribbly fue reembolsada.',
 }
 
 const BOXIE_COLUMNS =
@@ -77,7 +77,7 @@ type BoxieRow = {
 
 // ── Entrada al editor ───────────────────────────────────────────────────────
 
-/** El link del mail: token → Boxie. Null si no existe (o está mal formado). */
+/** El link del mail: token → Ribbly. Null si no existe (o está mal formado). */
 export async function findBoxieByEditToken(
   token: string,
 ): Promise<{ boxieId: string; editTokenHash: string } | null> {
@@ -88,16 +88,16 @@ export async function findBoxieByEditToken(
       .select('id, edit_token_hash')
       .eq('edit_token_hash', hashToken(token))
       .maybeSingle(),
-    'Boxie por token de edición',
+    'Ribbly por token de edición',
   )
   return row ? { boxieId: row.id, editTokenHash: row.edit_token_hash } : null
 }
 
-/** La Boxie de la sesión, si la sesión sigue valiendo (el token no se rotó). */
+/** La Ribbly de la sesión, si la sesión sigue valiendo (el token no se rotó). */
 async function sessionBoxie(session: EditorSession): Promise<BoxieRow | null> {
   const row = unwrapMaybe(
     await serviceDb().from('boxies').select(BOXIE_COLUMNS).eq('id', session.boxieId).maybeSingle(),
-    'Boxie de la sesión',
+    'Ribbly de la sesión',
   )
   if (!row || editorFingerprint(row.edit_token_hash) !== session.fp) return null
   return row
@@ -111,7 +111,7 @@ async function versionConfig(versionId: string): Promise<ParsedThemeConfig> {
   return readThemeConfig(row.config)
 }
 
-/** La temática de la Boxie recortada al plan que se compró (y el plan, para sus límites). */
+/** La temática de la Ribbly recortada al plan que se compró (y el plan, para sus límites). */
 async function boxieConfig(boxie: Pick<BoxieRow, 'theme_version_id' | 'order_id'>) {
   const [config, plan] = await Promise.all([
     versionConfig(boxie.theme_version_id),
@@ -123,7 +123,7 @@ async function boxieConfig(boxie: Pick<BoxieRow, 'theme_version_id' | 'order_id'
 async function storedContent(boxie: BoxieRow): Promise<BuyerContent> {
   const rows = unwrap(
     await serviceDb().from('boxie_content').select('slide_key, props').eq('boxie_id', boxie.id),
-    'contenido de la Boxie',
+    'contenido de la Ribbly',
   )
   return {
     recipientName: boxie.recipient_name,
@@ -166,7 +166,7 @@ export async function loadEditor(session: EditorSession): Promise<EditorData | n
       .select('buyer_email, theme:themes(name, slug)')
       .eq('id', boxie.order_id)
       .single()
-      .then((r) => unwrap(r, 'orden de la Boxie')),
+      .then((r) => unwrap(r, 'orden de la Ribbly')),
     boxieConfig(boxie),
     storedContent(boxie),
     signedMediaUrls(boxie.id, EDITOR_MEDIA_TTL_SECONDS),
@@ -178,7 +178,7 @@ export async function loadEditor(session: EditorSession): Promise<EditorData | n
     code: boxie.code,
     availability,
     expiresAt: boxie.expires_at,
-    theme: { name: order.theme?.name ?? 'Boxie', slug: order.theme?.slug ?? '' },
+    theme: { name: order.theme?.name ?? 'Ribbly', slug: order.theme?.slug ?? '' },
     config,
     content,
     media,
@@ -192,7 +192,7 @@ export async function loadEditor(session: EditorSession): Promise<EditorData | n
 
 type Guard = { ok: true; boxie: BoxieRow } | { ok: false; error: string }
 
-/** Sesión válida y Boxie todavía editable. */
+/** Sesión válida y Ribbly todavía editable. */
 async function editableBoxie(session: EditorSession): Promise<Guard> {
   const boxie = await sessionBoxie(session)
   if (!boxie) return { ok: false, error: SESSION_EXPIRED }
@@ -215,7 +215,7 @@ export async function saveDraft(session: EditorSession, input: unknown): Promise
     return { ok: false, error: `Hay datos que no pudimos guardar: ${parsed.issues[0]}` }
   }
 
-  // Solo fotos de esta Boxie: una referencia a la foto de otra no se guarda.
+  // Solo fotos de esta Ribbly: una referencia a la foto de otra no se guarda.
   const assetIds = collectAssetIds(parsed.data)
   if (assetIds.length > 0) {
     const owned = unwrap(
@@ -276,7 +276,7 @@ export async function uploadPhoto(
       ok: false,
       error: plan
         ? `Tu plan ${plan.name} permite hasta ${maxPhotos} fotos.`
-        : 'Llegaste al máximo de fotos de esta Boxie.',
+        : 'Llegaste al máximo de fotos de esta Ribbly.',
     }
   }
 
@@ -378,7 +378,7 @@ export async function lockForGifting(session: EditorSession): Promise<LockResult
 
   const locked = unwrap(
     await serviceDb().rpc('lock_boxie', { p_boxie_id: boxie.id }),
-    'bloquear Boxie',
+    'bloquear Ribbly',
   )
   const giftUrl = giftUrlOf(boxie)
 
@@ -401,7 +401,7 @@ async function sendGiftReady(boxie: BoxieRow, giftUrl: string, expiresAt: string
       .select('buyer_name, buyer_email')
       .eq('id', boxie.order_id)
       .single(),
-    'orden de la Boxie',
+    'orden de la Ribbly',
   )
   const fresh = unwrap(
     await serviceDb()
@@ -409,7 +409,7 @@ async function sendGiftReady(boxie: BoxieRow, giftUrl: string, expiresAt: string
       .select('recipient_name, gift_password_hash')
       .eq('id', boxie.id)
       .single(),
-    'Boxie bloqueada',
+    'Ribbly bloqueada',
   )
   const mail = giftReadyEmail({
     buyerName: order.buyer_name,

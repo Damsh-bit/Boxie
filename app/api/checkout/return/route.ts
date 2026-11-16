@@ -54,12 +54,12 @@ export async function GET(request: Request) {
       raw: payment as unknown as Json,
     })
 
-    // Pago aprobado y Boxie recién creada → directo al editor.
+    // Pago aprobado y Ribbly recién creada → directo al editor.
     if (outcome.created && outcome.links) {
       return redirect(new URL(outcome.links.editor).pathname)
     }
 
-    // Aprobado pero Boxie ya existía (doble redirect, pago repetido idempotente).
+    // Aprobado pero Ribbly ya existía (doble redirect, pago repetido idempotente).
     if (payment.status === 'approved') {
       return redirect('/checkout/exito')
     }

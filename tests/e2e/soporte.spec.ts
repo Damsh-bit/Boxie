@@ -48,7 +48,7 @@ test('el cliente abre una consulta, la retoma y sigue escribiendo', async ({ pag
   await expect(page.getByRole('button', { name: new RegExp(message.slice(0, 30)) })).toBeVisible()
 })
 
-test('un código de Boxie mal escrito se explica antes de enviar', async ({ page }) => {
+test('un código de Ribbly mal escrito se explica antes de enviar', async ({ page }) => {
   await page.goto('/galeria')
   await openWidget(page)
   const dialog = page.getByRole('dialog', { name: 'Ayuda de Ribbly' })
@@ -95,8 +95,8 @@ test.describe('bandeja del equipo', () => {
     const team = await browser.newContext()
     const admin = await team.newPage()
     await admin.goto(`${new URL(page.url()).origin}/admin/soporte`)
-    await admin.getByLabel('Mail').fill('admin@boxie.demo')
-    await admin.getByLabel('Clave', { exact: true }).fill('boxie-admin')
+    await admin.getByLabel('Mail').fill('admin@ribbly.demo')
+    await admin.getByLabel('Clave', { exact: true }).fill('ribbly-admin')
     await admin.getByRole('button', { name: 'Entrar' }).click()
     await admin.waitForURL(/\/admin\/soporte/, { timeout: 30_000 })
 

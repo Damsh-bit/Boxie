@@ -40,8 +40,8 @@ export interface PreAuthSession extends SignedPayload, AdminIdentity {
   remember: boolean
 }
 
-export const DEFAULT_DEMO_EMAIL = 'admin@boxie.demo'
-export const DEFAULT_DEMO_PASSWORD = 'boxie-admin'
+export const DEFAULT_DEMO_EMAIL = 'admin@ribbly.demo'
+export const DEFAULT_DEMO_PASSWORD = 'ribbly-admin'
 
 /**
  * Secreto de firma. SESSION_SECRET si está (el mismo de las otras cookies);
@@ -53,7 +53,7 @@ export function adminSecret(): string {
   if (configured && configured.length >= 32) return configured
   if (isDemo()) {
     const password = process.env.ADMIN_DEMO_PASSWORD?.trim() || DEFAULT_DEMO_PASSWORD
-    return createHash('sha256').update(`boxie-admin-demo:${password}`).digest('base64url')
+    return createHash('sha256').update(`ribbly-admin-demo:${password}`).digest('base64url')
   }
   throw new Error('Falta SESSION_SECRET: el panel no puede firmar sesiones.')
 }

@@ -56,11 +56,11 @@ export const CAPABILITIES: Capability[] = [
     uses: 'orders · payment_events · admin_refund_boxie()',
     migration: '20260922120000_core_schema',
     needs: [{ table: 'orders' }, { table: 'payment_events' }],
-    note: 'Reembolso: la plata se devuelve en Mercado Pago; la base marca orden y Boxie.',
+    note: 'Reembolso: la plata se devuelve en Mercado Pago; la base marca orden y Ribbly.',
   },
   {
-    section: 'Boxies',
-    href: '/admin/boxies',
+    section: 'Ribblys',
+    href: '/admin/ribblys',
     uses: 'boxies · boxie_content · media_assets',
     migration: '20260923120000_editor',
     needs: [{ table: 'boxies' }, { table: 'boxie_content' }, { table: 'media_assets' }],
@@ -372,7 +372,7 @@ export function connections({
   const db: Connection = {
     id: 'db',
     name: 'Base de datos (Supabase)',
-    what: 'Órdenes, Boxies, temáticas y todo lo del panel',
+    what: 'Órdenes, Ribblys, temáticas y todo lo del panel',
     state: demo ? 'demo' : !supabase ? 'missing' : 'ok',
     detail: demo
       ? 'Modo demo: el panel usa datos de muestra.'
@@ -466,7 +466,7 @@ export function connections({
       what: 'Quién puede entrar',
       state: defaultAdmin ? 'warning' : 'ok',
       detail: defaultAdmin
-        ? 'Se entra con el usuario de muestra (admin@boxie.demo). En un deploy esa clave no sirve: sin ADMIN_DEMO_PASSWORD el panel queda cerrado.'
+        ? 'Se entra con el usuario de muestra (admin@ribbly.demo). En un deploy esa clave no sirve: sin ADMIN_DEMO_PASSWORD el panel queda cerrado.'
         : demo
           ? 'Usuario de demo con clave propia (ADMIN_DEMO_PASSWORD).'
           : 'Clave propia del panel (scrypt) en users, con roles. El equipo entra por invitación (/admin/activar).',

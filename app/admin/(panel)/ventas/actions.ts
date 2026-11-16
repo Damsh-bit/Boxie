@@ -7,7 +7,7 @@ export async function refundOrder(id: string) {
   return runAction(
     {
       roles: SUPPORT_ROLES,
-      revalidate: ['/admin', '/admin/ventas', `/admin/ventas/${id}`, '/admin/boxies'],
+      revalidate: ['/admin', '/admin/ventas', `/admin/ventas/${id}`, '/admin/ribblys'],
     },
     async ({ repo, actor }) => {
       await repo.refundOrder(z.string().min(1).max(64).parse(id), actor)

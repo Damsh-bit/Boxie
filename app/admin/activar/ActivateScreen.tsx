@@ -36,9 +36,9 @@ export function ActivateScreen({
         transition={{ duration: 0.6, ease: ease.out }}
       >
         <div className="mb-8 text-center">
-          <Link href="/" className="inline-block" aria-label="Boxie">
+          <Link href="/" className="inline-block" aria-label="Ribbly">
             <span className="font-display text-3xl font-black tracking-tight text-ink">
-              Boxie<span className="text-brand">.</span>
+              Ribbly<span className="text-brand">.</span>
             </span>
           </Link>
           <div className="mt-4 flex items-center justify-center gap-1.5 text-xs font-semibold tracking-wider text-brand uppercase">

@@ -20,7 +20,7 @@ export default async function GeneratorPage() {
           </span>
         }
         title="Generador de temáticas"
-        description="Pegá una lista de ocasiones y cada Boxie se arma sola: textos, paleta, fotos, juegos y qué incluye cada plan. Después las revisás y publicás."
+        description="Pegá una lista de ocasiones y cada Ribbly se arma sola: textos, paleta, fotos, juegos y qué incluye cada plan. Después las revisás y publicás."
       />
       <Generator plans={activePlans(plans)} existingSlugs={themes.map((t) => t.slug)} />
     </>

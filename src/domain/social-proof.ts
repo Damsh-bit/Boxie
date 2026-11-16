@@ -1,5 +1,5 @@
 /**
- * Prueba social de la portada: la cinta de "María acaba de comprar una Boxie"
+ * Prueba social de la portada: la cinta de "María acaba de comprar una Ribbly"
  * y el contador de regalos. Todo sale de ventas reales (solo el nombre de
  * pila, la temática y hace cuánto); los ejemplos de `content/social-proof`
  * solo completan la cinta mientras las ventas recientes son pocas.
@@ -22,7 +22,7 @@ export interface PurchaseEvent {
 export interface SocialProof {
   /** La cinta de compras, de la más nueva a la más vieja. */
   events: PurchaseEvent[]
-  /** Boxies vendidas, redondeado a un número redondo ("+500"). null mientras sean pocas. */
+  /** Ribblys vendidas, redondeado a un número redondo ("+500"). null mientras sean pocas. */
   sold: number | null
 }
 
@@ -50,6 +50,7 @@ const NOT_NAMES = new Set([
   'probando',
   'admin',
   'demo',
+  'ribbly',
   'boxie',
   'asd',
   'asdf',
@@ -163,7 +164,7 @@ export function timeAgo(minutes: number): string {
 const MILESTONES = [100, 200, 300, 500, 750, 1_000, 1_500, 2_000, 3_000, 5_000, 7_500, 10_000]
 
 /**
- * Cuántas Boxies se regalaron, redondeado para abajo a un número redondo
+ * Cuántas Ribblys se regalaron, redondeado para abajo a un número redondo
  * ("+500"). null mientras sean menos de `from`: un contador chico resta.
  */
 export function soldMilestone(total: number, from: number): number | null {

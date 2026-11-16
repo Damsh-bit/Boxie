@@ -79,7 +79,7 @@ const strip = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCa
 
 /**
  * Buscador rápido (Ctrl/⌘ K): secciones, acciones y búsqueda directa de
- * Boxies (por código, mail o destinatario) y clientes.
+ * Ribblys (por código, mail o destinatario) y clientes.
  */
 export function CommandPalette({
   open,
@@ -114,10 +114,10 @@ export function CommandPalette({
       ? [
           {
             id: 'buscar-boxie',
-            label: `Buscar "${q}" en Boxies`,
+            label: `Buscar "${q}" en Ribblys`,
             hint: 'Código, mail del comprador o destinatario',
             icon: Gift,
-            href: `/admin/boxies?q=${encodeURIComponent(q)}` as Route,
+            href: `/admin/ribblys?q=${encodeURIComponent(q)}` as Route,
             group: 'Buscar',
           },
           {
@@ -202,7 +202,7 @@ export function CommandPalette({
                         go(commands[active])
                       }
                     }}
-                    placeholder="Sección, acción, código de Boxie o mail…"
+                    placeholder="Sección, acción, código de Ribbly o mail…"
                     className="h-16 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-neutral-400"
                     aria-label="Buscar"
                     role="combobox"

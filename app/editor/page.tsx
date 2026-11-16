@@ -61,7 +61,7 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
         redirect(heroCtx.draft.editUrl as Route)
       }
       // Si no tiene borradores pendientes, lo llevamos a sus regalos ("Mis Regalos",
-      // /cuenta: /cuenta/boxies no tiene página propia, solo /cuenta/boxies/[id]).
+      // /cuenta: /cuenta/ribblys no tiene página propia, solo /cuenta/ribblys/[id]).
       redirect('/cuenta')
     }
     return <EditorMessage kind={(typeof error === 'string' && ERRORS[error]) || 'no-session'} />
@@ -102,7 +102,7 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
         allowPassword={data.allowPassword}
         locked={null}
       />
-      {/* El botón de ayuda ya sabe de qué Boxie se trata. */}
+      {/* El botón de ayuda ya sabe de qué Ribbly se trata. */}
       <SupportWidget hint={{ boxieCode: data.code, topic: 'boxie' }} nudge={false} />
     </>
   )

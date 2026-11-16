@@ -17,7 +17,7 @@ import { Emoji, EmojiText, Icon } from '@/ui/Icon'
 import { ease, spring, useCalm } from '@/ui/motion'
 
 /**
- * Versiones jugables y livianas de las slides de una Boxie, para la home. No
+ * Versiones jugables y livianas de las slides de una Ribbly, para la home. No
  * usan el player: son maquetas que se sienten como la real (mismos colores,
  * misma letra redondeada) y que se pueden tocar.
  */

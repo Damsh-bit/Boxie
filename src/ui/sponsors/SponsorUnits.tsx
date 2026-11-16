@@ -289,7 +289,7 @@ function SponsorBandLive({ sponsor, className }: { sponsor: PublicSponsor; class
   )
   return (
     <motion.aside
-      aria-label={`Aliado de Boxie: ${sponsor.name}`}
+      aria-label={`Aliado de Ribbly: ${sponsor.name}`}
       className={cn(
         'relative isolate mx-auto flex max-w-5xl flex-col items-start gap-5 overflow-hidden rounded-[32px] p-6 text-white sm:flex-row sm:items-center sm:p-8',
         className,

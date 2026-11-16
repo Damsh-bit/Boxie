@@ -9,7 +9,7 @@ import { ease } from '@/ui/motion'
 import { Badge, Card, EmptyState } from '../../../_ui/primitives'
 
 /**
- * Historial de versiones publicadas. Son inmutables: cada Boxie vendida
+ * Historial de versiones publicadas. Son inmutables: cada Ribbly vendida
  * apunta a la suya, así que editar la temática nunca cambia un regalo ya
  * vendido. Una versión vieja se puede traer como borrador y republicar.
  */

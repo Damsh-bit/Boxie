@@ -158,7 +158,7 @@ export default async function CampaignsPage({
             </li>
             <li className="rounded-2xl bg-canvas p-4">
               <p className="font-semibold text-ink">3. Con el modelo elegido</p>
-              Último clic premia a la que cerró; primer clic, a la que presentó Boxie; repartido,
+              Último clic premia a la que cerró; primer clic, a la que presentó Ribbly; repartido,
               mitad y mitad.
             </li>
           </ol>

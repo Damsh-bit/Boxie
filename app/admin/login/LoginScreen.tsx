@@ -20,6 +20,7 @@ import { Button, Nudge } from '@/ui/Button'
 import { Field, Input } from '@/ui/form'
 import { ease, Float, Notice, spring, Spinner, Stagger, StaggerItem } from '@/ui/motion'
 import { login, submit2FA, type LoginState } from './actions'
+import { ForgotPasswordModal } from './ForgotPasswordModal'
 
 export function LoginScreen({
   next,
@@ -42,6 +43,8 @@ export function LoginScreen({
     email: '',
   })
   const [show, setShow] = useState(false)
+  const [showForgot, setShowForgot] = useState(false)
+  const [defaultResetEmail, setDefaultResetEmail] = useState('')
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
 
@@ -184,7 +187,26 @@ export function LoginScreen({
                     aria-invalid={state.error ? true : undefined}
                   />
                 </Field>
-                <Field label="Clave" htmlFor="password">
+                <Field
+                  label={
+                    <span className="flex items-center justify-between">
+                      <span>Clave</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          setDefaultResetEmail(emailRef.current?.value || state.email || '')
+                          setShowForgot(true)
+                        }}
+                        className="text-xs font-semibold text-brand normal-case transition-colors hover:text-brand-dark hover:underline"
+                      >
+                        ¿Olvidaste tu clave?
+                      </button>
+                    </span>
+                  }
+                  htmlFor="password"
+                >
                   <div className="relative">
                     <Input
                       ref={passwordRef}
@@ -291,6 +313,15 @@ export function LoginScreen({
             </Link>
             .
           </p>
+
+          <ForgotPasswordModal
+            open={showForgot}
+            onOpenChange={setShowForgot}
+            demo={demo}
+            hint={hint}
+            defaultEmail={defaultResetEmail}
+            onFillDemo={fillDemo}
+          />
         </motion.div>
       </div>
     </div>

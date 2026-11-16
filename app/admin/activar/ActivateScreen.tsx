@@ -13,6 +13,7 @@ export function ActivateScreen({
   token,
   user,
   currentUserEmail,
+  isReset = false,
 }: {
   token: string
   user: {
@@ -21,6 +22,7 @@ export function ActivateScreen({
     roleLabel: string
   }
   currentUserEmail?: string
+  isReset?: boolean
 }) {
   const [state, action, pending] = useActionState<ActivateState, FormData>(activateAccount, {
     error: null,
@@ -43,12 +45,18 @@ export function ActivateScreen({
           </Link>
           <div className="mt-4 flex items-center justify-center gap-1.5 text-xs font-semibold tracking-wider text-brand uppercase">
             <Sparkles className="size-3.5" />
-            <span>Invitación al equipo</span>
+            <span>{isReset ? 'Recuperación de cuenta' : 'Invitación al equipo'}</span>
           </div>
           <h1 className="mt-2 text-2xl font-bold text-ink sm:text-3xl">¡Hola, {user.name}!</h1>
           <p className="mt-2 text-sm text-neutral-600">
-            Te sumaron con el rol de <strong className="text-ink">{user.roleLabel}</strong>. Elegí
-            una contraseña para activar tu acceso.
+            {isReset ? (
+              'Elegí una nueva contraseña para restablecer el acceso a tu cuenta.'
+            ) : (
+              <>
+                Te sumaron con el rol de <strong className="text-ink">{user.roleLabel}</strong>.
+                Elegí una contraseña para activar tu acceso.
+              </>
+            )}
           </p>
         </div>
 
@@ -58,13 +66,16 @@ export function ActivateScreen({
 
             {currentUserEmail && currentUserEmail.toLowerCase() !== user.email.toLowerCase() && (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
-                Tenés una sesión abierta como <strong>{currentUserEmail}</strong>. Al activar esta
-                cuenta, entrarás automáticamente como <strong>{user.email}</strong>.
+                Tenés una sesión abierta como <strong>{currentUserEmail}</strong>. Al{' '}
+                {isReset ? 'restablecer la' : 'activar esta'} cuenta, entrarás automáticamente como{' '}
+                <strong>{user.email}</strong>.
               </div>
             )}
 
             <div className="rounded-2xl bg-canvas p-3.5 text-xs text-neutral-600">
-              <span className="font-medium text-neutral-500">Cuenta a activar:</span>{' '}
+              <span className="font-medium text-neutral-500">
+                {isReset ? 'Cuenta a restablecer:' : 'Cuenta a activar:'}
+              </span>{' '}
               <strong className="text-ink">{user.email}</strong>
             </div>
 
@@ -119,12 +130,12 @@ export function ActivateScreen({
               {pending ? (
                 <>
                   <Spinner className="mr-2" />
-                  Activando acceso...
+                  {isReset ? 'Guardando contraseña...' : 'Activando acceso...'}
                 </>
               ) : (
                 <>
                   <ShieldCheck className="size-4" />
-                  Activar cuenta y entrar
+                  {isReset ? 'Restablecer contraseña y entrar' : 'Activar cuenta y entrar'}
                   <ArrowRight className="size-4" />
                 </>
               )}

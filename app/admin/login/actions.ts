@@ -111,3 +111,65 @@ export async function submit2FA(_prev: LoginState, form: FormData): Promise<Logi
   log.info('Login con 2FA completado', { email: result.identity.email })
   redirect(safeNext(form.get('next')) as Route)
 }
+
+export interface ResetPasswordState {
+  error: string | null
+  success: boolean
+  message: string | null
+  isDemo?: boolean
+}
+
+export async function requestPasswordReset(
+  _prev: ResetPasswordState,
+  form: FormData,
+): Promise<ResetPasswordState> {
+  const email = String(form.get('email') ?? '')
+    .slice(0, 254)
+    .trim()
+  if (!email || !email.includes('@')) {
+    return { error: 'Ingresá un correo electrónico válido.', success: false, message: null }
+  }
+
+  const ip = clientIp(await headers())
+  const byIp = `admin-reset-fail:${ip}`
+  const byEmail = `admin-reset-fail:${email.toLowerCase()}`
+  const span = { windowMs: 15 * 60_000 }
+  if (isRateLimited(byIp, { limit: 5, ...span }) || isRateLimited(byEmail, { limit: 3, ...span })) {
+    return {
+      error: 'Demasiadas solicitudes. Esperá unos minutos y probá de nuevo.',
+      success: false,
+      message: null,
+    }
+  }
+
+  if (isDemoMode()) {
+    return {
+      error: null,
+      success: true,
+      isDemo: true,
+      message: 'En modo demo no se envían correos reales. Podés ingresar con la cuenta de muestra.',
+    }
+  }
+
+  try {
+    const { sendPasswordResetEmail } = await import('@/server/admin/invite')
+    const res = await sendPasswordResetEmail(email)
+    if (!res.ok && res.error) {
+      rateLimit(byIp, { limit: 5, ...span })
+      return { error: res.error, success: false, message: null }
+    }
+    return {
+      error: null,
+      success: true,
+      message:
+        'Si el correo está registrado como administrador, recibirás un enlace para restablecer tu contraseña. Revisá tu bandeja de entrada o spam.',
+    }
+  } catch (err) {
+    log.error('Error al solicitar restablecimiento de clave', { error: err })
+    return {
+      error: 'Ocurrió un error inesperado al enviar el correo. Probá nuevamente en unos minutos.',
+      success: false,
+      message: null,
+    }
+  }
+}

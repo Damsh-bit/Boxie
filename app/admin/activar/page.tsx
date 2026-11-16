@@ -6,17 +6,23 @@ import { getAdminSession } from '@/server/admin/session'
 import { Button } from '@/ui/Button'
 import { ActivateScreen } from './ActivateScreen'
 
-export const metadata: Metadata = { title: 'Activar cuenta de equipo' }
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const { type } = await searchParams
+  return {
+    title: type === 'reset' ? 'Restablecer contraseña' : 'Activar cuenta de equipo',
+  }
+}
+
 export const dynamic = 'force-dynamic'
 
 interface PageProps {
-  searchParams: Promise<{ token?: string }>
+  searchParams: Promise<{ token?: string; type?: string }>
 }
 
 export default async function ActivatePage({ searchParams }: PageProps) {
-  const { token } = await searchParams
+  const { token, type } = await searchParams
   if (!token) {
-    return <InvalidInviteMessage error="No se proporcionó ningún token de activación." />
+    return <InvalidInviteMessage error="No se proporcionó ningún token de acceso." />
   }
 
   const details = await getInviteDetails(token)
@@ -27,7 +33,12 @@ export default async function ActivatePage({ searchParams }: PageProps) {
   const currentSession = await getAdminSession()
 
   return (
-    <ActivateScreen token={token} user={details.user} currentUserEmail={currentSession?.email} />
+    <ActivateScreen
+      token={token}
+      user={details.user}
+      currentUserEmail={currentSession?.email}
+      isReset={type === 'reset'}
+    />
   )
 }
 

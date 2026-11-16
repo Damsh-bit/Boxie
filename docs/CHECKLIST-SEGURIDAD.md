@@ -1,4 +1,4 @@
-# Boxie · Checklist de Seguridad y Plan de Lanzamiento
+# Ribbly · Checklist de Seguridad y Plan de Lanzamiento
 
 **Documento operativo de seguimiento.**  
 Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seguridad-2026-09-28.md`).
@@ -11,16 +11,8 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
 
 ### ⚠️ Pendientes Críticos para Go-Live
 
-- [ ] **P0.1 · Crear cuenta Owner real y borrar usuario demo**
-  - **Dónde:** Terminal local y Panel Web (`/admin`).
-  - **Acción:**
-    1. Ejecutar con `.env.local` apuntando a producción:
-       ```bash
-       npm run admin:create <tu-mail-real> <clave-segura-16+-caracteres> <TuNombre> owner
-       ```
-    2. Ingresar a `https://www.boxiedigital.com.ar/admin` con esa cuenta.
-    3. Ir a **Equipo** y eliminar definitivamente al usuario `admin@boxie.demo`.
-  - **Verificación adicional:** Confirmar si el mail `zaxloro02@gmail.com` (que figura en la bitácora histórica de actividad) es legítimo del equipo.
+- [x] **P0.1 · Crear cuenta Owner real y borrar usuario demo [COMPLETADO · 02/10/2026]**
+  - **Acción:** Cuenta Owner real creada, usuario demo `admin@boxie.demo` eliminado del equipo e invitaciones enviadas a los usuarios reales desde `/admin/equipo`.
 
 - [ ] **P0.2 · Configurar / Rotar `SESSION_SECRET` y `TOKEN_ENCRYPTION_KEY` en Vercel**
   - **Dónde:** Dashboard de Vercel (_Settings → Environment Variables_).
@@ -71,7 +63,7 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
   - **Acción:** 2FA TOTP blindado con secretos cifrados AES-256-GCM en base de datos, 8 códigos de respaldo con quema de un solo uso, tolerancia horaria de ±90s, retención de preAuthToken y pantalla `/admin/seguridad` para cambio de clave con feedback visual.
 
 - [x] **P1.5 · Configurar envío de Mails en Producción (Resend) [COMPLETADO / VERIFICADO]**
-  - **Acción:** Dominio `boxiedigital.com.ar` configurado y verificado en Resend con registros DNS (SPF, DKIM, DMARC). Remitente activo `Boxie <hola@boxiedigital.com.ar>`, reply-to `ayuda@boxiedigital.com.ar` y prueba de envío exitosa realizada a `zaxloro02@gmail.com` (ID: `01a0ed39-6a12-7759-b22f-510cbe7c4109`).
+  - **Acción:** Dominio `ribbly.com.ar` configurado y verificado en Resend con registros DNS (SPF, DKIM, DMARC). Remitente activo `Ribbly <regalos@ribbly.com.ar>`, reply-to `soporte@ribbly.com.ar` y prueba de envío exitosa realizada a `santiago.n.almiron@gmail.com` (ID: `01a0fd11-1985-7149-bbfc-68205c9bc17f`).
 
 ---
 
@@ -95,7 +87,7 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
 
 - [ ] **P1.10 · Subdominio exclusivo del Panel**
   - **Dónde:** DNS y Vercel.
-  - **Acción:** Configurar `admin.boxiedigital.com.ar` y activar la variable `ADMIN_HOST` para aislar el panel de administración del tráfico del dominio principal.
+  - **Acción:** Configurar `admin.ribbly.com.ar` y activar la variable `ADMIN_HOST` para aislar el panel de administración del tráfico del dominio principal.
 
 ---
 

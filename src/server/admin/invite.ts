@@ -5,7 +5,7 @@ import { serviceDb, escapeIlike } from '../db/client'
 import { siteUrl } from '../env'
 import { log } from '../log'
 import { sendMail } from '../mail/send'
-import { teamInviteEmail } from '../mail/templates'
+import { adminPasswordResetEmail, teamInviteEmail } from '../mail/templates'
 import { generateToken, hashToken } from '../security/tokens'
 import { hashPassword } from './password'
 import type { Actor } from './repo'
@@ -289,4 +289,66 @@ export async function activateMemberAccount(token: string, password: string) {
       fp: adminPasswordFingerprint(passwordHash),
     },
   }
+}
+
+/**
+ * Envía un correo con token para restablecer la contraseña de un miembro del equipo de administración.
+ */
+export async function sendPasswordResetEmail(
+  emailInput: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const email = emailInput.toLowerCase().trim()
+  if (!email) return { ok: false, error: 'Ingresá un correo electrónico válido.' }
+
+  const db = serviceDb()
+  const { data: user, error } = await (db.from('users') as any)
+    .select('user_id, email, name, role')
+    .eq('email', email)
+    .maybeSingle()
+
+  if (error) {
+    log.error('Error al buscar usuario para restablecer contraseña', error)
+  }
+
+  // Por seguridad, si el usuario no existe o no tiene rol de admin, no arrojamos error
+  // para evitar enumeración de correos electrónicos.
+  if (!user || !user.role) {
+    return { ok: true }
+  }
+
+  const token = generateToken()
+  const tokenHash = hashToken(token)
+  const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000) // Válido por 2 horas
+
+  const { error: updateError } = await (db.from('users') as any)
+    .update({
+      invite_token_hash: tokenHash,
+      invite_expires_at: expiresAt.toISOString(),
+    })
+    .eq('user_id', user.user_id)
+
+  if (updateError) {
+    log.error('Error al guardar token de restablecimiento de contraseña', updateError)
+    return { ok: false, error: 'No se pudo generar el enlace de recuperación.' }
+  }
+
+  const resetUrl = siteUrl(`/admin/activar?token=${token}&type=reset`)
+
+  try {
+    await sendMail({
+      to: email,
+      tag: 'admin-password-reset',
+      ...adminPasswordResetEmail({
+        name: user.name || 'Administrador',
+        resetUrl,
+        expiresAt,
+      }),
+    })
+  } catch (err) {
+    log.error('Error al enviar email de recuperación de contraseña', err)
+    return { ok: false, error: 'No se pudo enviar el correo de recuperación.' }
+  }
+
+  log.info('Correo de recuperación de contraseña enviado', { email })
+  return { ok: true }
 }

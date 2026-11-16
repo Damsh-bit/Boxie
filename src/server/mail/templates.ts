@@ -285,6 +285,40 @@ Este enlace vence el ${dateAR(p.expiresAt)}.
   }
 }
 
+export function adminPasswordResetEmail(p: {
+  name: string
+  resetUrl: string
+  expiresAt: Date
+}): MailContent {
+  const first = p.name.trim().split(/\s+/)[0] ?? ''
+  const html = layout({
+    preheader: 'Enlace para restablecer tu contraseña de administrador',
+    reason:
+      'Recibís este mail porque se solicitó restablecer la contraseña de tu cuenta de administrador en Ribbly.',
+    body: `<p style="font-size:20px;font-weight:bold;margin:0 0 12px">¡Hola${first ? `, ${esc(first)}` : ''}!</p>
+<p>Recibimos una solicitud para restablecer la contraseña de acceso al panel de administración de Ribbly.</p>
+<p>Para elegir tu nueva contraseña, hacé clic en el siguiente botón:</p>
+${button(p.resetUrl, 'Restablecer mi contraseña')}
+<p style="font-size:14px;color:#6b6272">Este enlace es personal y vence el <strong>${dateAR(p.expiresAt)}</strong>.</p>
+<p style="font-size:14px;color:#6b6272">Si no solicitaste este cambio, podés ignorar este correo de forma segura.</p>`,
+  })
+  const text = `¡Hola${first ? `, ${first}` : ''}!
+
+Recibimos una solicitud para restablecer la contraseña de acceso al panel de administración de Ribbly.
+
+Para elegir tu nueva contraseña, ingresá al siguiente enlace:
+${p.resetUrl}
+
+Este enlace vence el ${dateAR(p.expiresAt)}.
+Si no solicitaste este cambio, podés ignorar este correo.
+`
+  return {
+    subject: 'Restablecer contraseña de administrador · Ribbly',
+    html,
+    text,
+  }
+}
+
 /** Avisa al comprador en el momento exacto en que el agasajado abre el regalo por primera vez. */
 export function giftOpenedEmail(p: {
   recipientName: string

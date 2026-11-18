@@ -86,9 +86,9 @@ export function ActivateScreen({
                   name="password"
                   type={show ? 'text' : 'password'}
                   required
-                  minLength={8}
+                  minLength={12}
                   maxLength={200}
-                  placeholder="Mínimo 8 caracteres"
+                  placeholder="Mínimo 12 caracteres"
                   className="pr-10"
                   autoFocus
                 />
@@ -110,7 +110,7 @@ export function ActivateScreen({
                 name="confirm"
                 type={show ? 'text' : 'password'}
                 required
-                minLength={8}
+                minLength={12}
                 maxLength={200}
                 placeholder="Repetí tu contraseña"
               />

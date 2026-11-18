@@ -27,8 +27,11 @@ export function LoginScreen({
   demo,
   hint,
   locked,
+  notice = null,
 }: {
   next: string
+  /** Aviso informativo (por ejemplo, después de restablecer la clave). */
+  notice?: string | null
   demo: boolean
   hint: { email: string; password: string } | null
   /** Demo publicada sin clave propia: se explica por qué no se puede entrar. */
@@ -171,6 +174,15 @@ export function LoginScreen({
               <p className="mt-2 text-neutral-600">
                 El centro de control de Ribbly: ventas, temáticas, planes y todo el negocio.
               </p>
+
+              {notice && (
+                <p
+                  role="status"
+                  className="mt-6 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
+                >
+                  {notice}
+                </p>
+              )}
 
               <form action={action} className="mt-8 space-y-5">
                 <input type="hidden" name="next" value={next} />

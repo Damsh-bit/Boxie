@@ -38,6 +38,26 @@ export interface CustomerSession {
   avatarUrl?: string
 }
 
+/**
+ * Cómo se puede haber probado que el mail es de quien entra. El portal da
+ * acceso a los regalos de las órdenes con ese mail (links del regalo y del
+ * editor), así que solo valen los métodos que pasan por la casilla o por un
+ * proveedor que verifica el mail. `password` no: con la confirmación de mail
+ * apagada en Supabase, cualquiera podía hacer signUp() con la clave pública y
+ * el mail de un comprador.
+ */
+const TRUSTED_AMR = new Set(['otp', 'magiclink', 'oauth', 'email/signup', 'invite', 'recovery'])
+
+export function hasTrustedLogin(amr: unknown): boolean {
+  if (!Array.isArray(amr) || amr.length === 0) return false
+  return amr.every(
+    (entry) =>
+      entry &&
+      typeof entry === 'object' &&
+      TRUSTED_AMR.has(String((entry as { method?: unknown }).method)),
+  )
+}
+
 /** Obtiene el usuario autenticado actual o null si no inició sesión */
 export async function getCustomerSession(): Promise<CustomerSession | null> {
   const supabase = await createCustomerSupabase()
@@ -45,7 +65,11 @@ export async function getCustomerSession(): Promise<CustomerSession | null> {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user || !user.email) return null
+  if (!user || !user.email || user.is_anonymous || !user.email_confirmed_at) return null
+
+  // getUser() valida el token contra Supabase; los claims dicen cómo se entró.
+  const { data: claimsData } = await supabase.auth.getClaims()
+  if (!claimsData || !hasTrustedLogin(claimsData.claims.amr)) return null
 
   const name =
     user.user_metadata?.full_name ||

@@ -119,13 +119,26 @@ export async function POST(request: Request) {
       const payment = await applyPaymentNotice({
         orderId: order.id,
         provider: 'free',
-        paymentId: `free-${Date.now()}`,
+        paymentId: `free-${order.id}`,
         status: 'approved',
         amountCents: 0,
         currency: 'ARS',
         source: 'checkout',
       })
-      return NextResponse.json({ initPoint: payment.links?.editor || siteUrl('/editor') })
+      if (!payment.created || !payment.links) {
+        // El cupón se quedó sin cupo entre la cotización y la compra (u otro rechazo).
+        log.warn('Orden gratuita no entregada', { orderId: order.id, outcome: payment.outcome })
+        return NextResponse.json(
+          {
+            error:
+              payment.outcome === 'coupon_exhausted'
+                ? 'Ese cupón ya alcanzó su límite de usos.'
+                : 'No pudimos completar la compra. Probá de nuevo.',
+          },
+          { status: 409 },
+        )
+      }
+      return NextResponse.json({ initPoint: payment.links.editor })
     }
 
     // Bypass de desarrollo: si PAYMENTS_PROVIDER=fake, aprobamos la orden directo.

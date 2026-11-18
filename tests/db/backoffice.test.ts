@@ -308,3 +308,35 @@ describe('equipo y configuración', () => {
     ])
   })
 })
+
+describe('admin por JWT sin MFA de Supabase (auditoría 17/11)', () => {
+  // Un admin que entra al portal de clientes con Google o magic link recibe un
+  // JWT aal1: no puede usar privilegios de admin por la API REST.
+  const asAdminAal1 = <T>(fn: () => Promise<T>) =>
+    db.as('authenticated', seed.adminId, fn, { aal: 'aal1' })
+
+  it('no lee órdenes ni el equipo', async () => {
+    await createOrder(db, seed)
+    expect(await asAdminAal1(() => db.query(`select * from public.orders`))).toHaveLength(0)
+    expect(await asAdminAal1(() => db.query(`select * from public.users`))).toHaveLength(0)
+    const [me] = await asAdminAal1(() =>
+      db.query<{ role: string | null }>(`select public.admin_role() as role`),
+    )
+    expect(me!.role).toBeNull()
+  })
+
+  it('no puede crear cupones ni cambiar la configuración', async () => {
+    await expect(
+      asAdminAal1(() =>
+        db.query(
+          `insert into public.coupons (code, kind, value) values ('GRATIS', 'percent', 100)`,
+        ),
+      ),
+    ).rejects.toThrow(/row-level security/)
+    await asAdminAal1(() => db.query(`update public.settings set base_price_cents = 100`))
+    const [settings] = await db.query<{ base_price_cents: number }>(
+      `select base_price_cents from public.settings`,
+    )
+    expect(settings!.base_price_cents).toBe(1500000)
+  })
+})

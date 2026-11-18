@@ -11,6 +11,14 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
 
 ### ⚠️ Pendientes Críticos para Go-Live
 
+- [ ] **P0.6 · Auditoría 17/11/2026: acciones fuera del código** (`docs/Ribbly-auditoria-seguridad-2026-11-17.md`)
+  - **Dónde:** Supabase y Vercel.
+  - **Acción:**
+    1. Supabase → Authentication → Email: activar **"Confirm email"** (C1: tomar regalos ajenos desde `/cuenta`).
+    2. Decidir el portal de clientes: con "Allow new users to sign up" apagado (P0.3), un comprador nuevo no puede entrar a `/cuenta`. Si se quiere el portal, activarlo (seguro con el punto 1).
+    3. Aplicar la migración `20261117120000_security_hardening.sql` en producción (`supabase db push`). Cierra H1 (admin por JWT sin 2FA) y M1 (tope de cupones).
+    4. Vercel: cargar `CRON_SECRET` (sin ella los recordatorios responden 503) y confirmar `MP_WEBHOOK_SECRET`.
+
 - [x] **P0.1 · Crear cuenta Owner real y borrar usuario demo [COMPLETADO · 02/10/2026]**
   - **Acción:** Cuenta Owner real creada, usuario demo `admin@boxie.demo` eliminado del equipo e invitaciones enviadas a los usuarios reales desde `/admin/equipo`.
 
@@ -24,7 +32,7 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
     2. Asegurarse de que `TOKEN_ENCRYPTION_KEY` en Vercel coincida con la clave usada para cifrar los secretos en la base de datos (2FA, gift tokens).
     3. Hacer redeploy en Vercel para que las variables entren en vigencia e invaliden sesiones residuales.
 
-- [ ] **P0.4 · Pasar repositorios a Privados y revocar token MP**
+- [x] **P0.4 · Pasar repositorios a Privados y revocar token MP**
   - **Dónde:** GitHub y Mercado Pago Developers.
   - **Acción:**
     1. En Mercado Pago Developers (_Tus integraciones → Credenciales_), confirmar que cualquier token expuesto previamente esté revocado y reemplazado por credenciales de producción.
@@ -97,9 +105,9 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
   - Configurar encabezados CSP en `next.config.ts` (comenzando en modo `Report-Only`), autorizando exclusivamente Mercado Pago, Meta Pixel, Supabase Storage, Sentry y YouTube.
 - [ ] **P2.2 · Permisos estrictos en DB (Defensa en Profundidad)**
   - Revocar permisos directos de `SELECT` e `INSERT` al rol `anon` en tablas privadas y revocar lectura de columnas sensibles al rol `authenticated`.
-- [ ] **P2.3 · Control atómico de topes de cupones**
+- [x] **P2.3 · Control atómico de topes de cupones [COMPLETADO · 17/11/2026, falta aplicar la migración]**
   - En `apply_payment`, verificar `used_count < max_uses` de forma estrictamente atómica para evitar colisiones en cupones de alta concurrencia.
-- [ ] **P2.4 · Sanitización de retorno de Mercado Pago**
+- [x] **P2.4 · Sanitización de retorno de Mercado Pago [COMPLETADO · 17/11/2026: `payment_id` numérico y `external_reference` UUID; queda minimizar `payment_events.raw`]**
   - Validar formato numérico de `payment_id` en `/api/checkout/return` y evitar registrar datos personales de clientes en los logs.
 - [ ] **P2.5 · Principio de mínimo privilegio en el Panel**
   - Restringir la exportación de bases de clientes y reembolsos exclusivamente a usuarios con rol `owner` y `admin`.

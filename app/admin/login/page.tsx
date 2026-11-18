@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function LoginPage({ searchParams }: PageProps<'/admin/login'>) {
   if (await getAdminSession()) redirect('/admin')
-  const { next } = await searchParams
+  const { next, clave } = await searchParams
   const demo = isDemoMode()
   const creds = demo ? demoCredentials() : null
   return (
@@ -21,6 +21,11 @@ export default async function LoginPage({ searchParams }: PageProps<'/admin/logi
         creds?.isDefault && !creds.locked ? { email: creds.email, password: creds.password } : null
       }
       locked={creds?.locked ? DEMO_LOCKED_MESSAGE : null}
+      notice={
+        clave === 'restablecida'
+          ? 'Listo, guardamos tu clave nueva. Entrá con ella y el código de tu app de autenticación.'
+          : null
+      }
     />
   )
 }

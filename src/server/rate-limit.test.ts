@@ -22,3 +22,20 @@ describe('límite de pedidos', () => {
     expect(isRateLimited(key, opts, 1_000 + 60_001)).toBe(false)
   })
 })
+
+describe('muchas claves distintas', () => {
+  it('no resetean el límite de una clave que ya está frenada', () => {
+    const now = 1_000_000
+    const key = 'admin-login-fail:victima@ribbly.test'
+    for (let i = 0; i < 5; i++) rateLimit(key, { limit: 5, windowMs: 15 * 60_000 }, now)
+    expect(isRateLimited(key, { limit: 5, windowMs: 15 * 60_000 }, now)).toBe(true)
+
+    // Un atacante manda pedidos con 12.000 mails distintos para llenar el mapa.
+    for (let i = 0; i < 12_000; i++) {
+      rateLimit(`recover:mail:${i}@spam.test`, { limit: 3, windowMs: 60 * 60_000 }, now + 1)
+    }
+    // Cada espacio de nombres tiene su propio mapa: llenar `recover` no toca el login.
+    rateLimit(key, { limit: 5, windowMs: 15 * 60_000 }, now + 2)
+    expect(isRateLimited(key, { limit: 5, windowMs: 15 * 60_000 }, now + 2)).toBe(true)
+  })
+})

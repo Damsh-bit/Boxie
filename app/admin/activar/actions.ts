@@ -24,8 +24,8 @@ export async function activateAccount(
     return { error: 'Token de activación ausente o inválido.' }
   }
 
-  if (password.length < 8) {
-    return { error: 'La contraseña debe tener al menos 8 caracteres.' }
+  if (password.length < 12) {
+    return { error: 'La contraseña debe tener al menos 12 caracteres.' }
   }
 
   if (password !== confirm) {
@@ -40,6 +40,12 @@ export async function activateAccount(
   const result = await activateMemberAccount(token, password)
   if (!result.ok) {
     return { error: result.error }
+  }
+
+  if (result.requires2FA) {
+    // El link del mail prueba acceso a la casilla, no al segundo factor.
+    log.info('Clave restablecida; se pide login con 2FA', { email: result.identity.email })
+    redirect('/admin/login?clave=restablecida' as Route)
   }
 
   const { value, maxAge } = issueAdminSession(result.identity, false, false)

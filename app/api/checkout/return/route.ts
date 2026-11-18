@@ -6,6 +6,9 @@ import { applyPaymentNotice, type PaymentStatus } from '@/server/payments'
 
 export const dynamic = 'force-dynamic'
 
+const MP_ID = /^\d{1,20}$/
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 /**
  * Back URL que Mercado Pago llama al terminar el pago (success, failure, pending).
  * Verifica el estado real con la API de MP (no confía en los query-params del redirect),
@@ -26,6 +29,11 @@ export async function GET(request: Request) {
   const redirect = (path: string) => NextResponse.redirect(`${origin}${path}`)
 
   if (!paymentId || !externalRef) {
+    return redirect('/checkout/error?razon=sin-datos')
+  }
+  // El id va a la URL de la API de MP con nuestro token: solo dígitos (nada de
+  // "../" para pegarle a otro endpoint). La referencia es nuestro UUID de orden.
+  if (!MP_ID.test(paymentId) || !UUID.test(externalRef)) {
     return redirect('/checkout/error?razon=sin-datos')
   }
 

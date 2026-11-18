@@ -84,7 +84,9 @@ export interface MpPayment {
 
 /** Consulta el estado real de un pago. Siempre verificar en vez de confiar en query-params. */
 export function getPayment(paymentId: string | number): Promise<MpPayment> {
-  return mpFetch<MpPayment>(`/v1/payments/${paymentId}`)
+  const id = String(paymentId)
+  if (!/^\d{1,20}$/.test(id)) throw new Error('Id de pago de Mercado Pago inválido')
+  return mpFetch<MpPayment>(`/v1/payments/${id}`)
 }
 
 // ─── Verificación de Webhooks ────────────────────────────────────────────────

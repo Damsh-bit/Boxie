@@ -85,6 +85,10 @@ export async function POST(request: Request) {
   if (!dataId) {
     return NextResponse.json({ status: 'ignored', reason: 'missing data id' }, { status: 200 })
   }
+  // Los ids de pago de MP son numéricos; cualquier otra cosa no va a la URL de la API.
+  if (!/^\d{1,20}$/.test(dataId)) {
+    return NextResponse.json({ status: 'ignored', reason: 'invalid data id' }, { status: 200 })
+  }
 
   // 3. Consultar a la API de Mercado Pago el estado real del pago
   try {

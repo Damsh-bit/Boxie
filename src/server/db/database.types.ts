@@ -1438,6 +1438,10 @@ export type Database = {
         Args: never
         Returns: boolean
       }
+      jwt_is_aal2: {
+        Args: never
+        Returns: boolean
+      }
       lock_boxie: {
         Args: {
           p_boxie_id: string

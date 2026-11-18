@@ -11,7 +11,12 @@ export type Role = 'anon' | 'authenticated' | 'service_role'
 export interface TestDb {
   pg: PGlite
   /** Ejecuta `fn` con el rol de la API indicado (y el usuario `sub`, si hay). */
-  as<T>(role: Role, sub: string | null, fn: () => Promise<T>): Promise<T>
+  as<T>(
+    role: Role,
+    sub: string | null,
+    fn: () => Promise<T>,
+    options?: { aal?: 'aal1' | 'aal2' },
+  ): Promise<T>
   query<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T[]>
   close(): Promise<void>
 }
@@ -43,14 +48,19 @@ export async function createTestDb(): Promise<TestDb> {
     query,
     // Requiere estar dentro de una transacción (los tests abren una por caso).
     // El savepoint permite que un error esperado no aborte el resto del test.
-    async as(role, sub, fn) {
+    async as(role, sub, fn, { aal = 'aal2' } = {}) {
       await pg.exec('savepoint as_role')
       await pg.query(`select set_config('request.jwt.claim.sub', $1, true)`, [sub ?? ''])
+      // Como PostgREST: los claims del JWT. aal2 = sesión con MFA de Supabase.
+      await pg.query(`select set_config('request.jwt.claims', $1, true)`, [
+        sub ? JSON.stringify({ sub, role, aal }) : '',
+      ])
       await pg.exec(`set local role ${role}`)
       try {
         const result = await fn()
         await pg.exec('reset role')
         await pg.query(`select set_config('request.jwt.claim.sub', '', true)`)
+        await pg.query(`select set_config('request.jwt.claims', '', true)`)
         await pg.exec('release savepoint as_role')
         return result
       } catch (error) {
@@ -159,12 +169,13 @@ export async function applyPayment(
     amount: number
     currency?: string
     source?: string
+    provider?: 'mercadopago' | 'free' | 'fake'
   },
 ) {
   const t = fakeTokens()
   return db.as('service_role', null, async () => {
     const rows = await db.query<ApplyPaymentRow>(
-      `select * from public.apply_payment($1, 'mercadopago', $2, $3, $4, $5, $6, '{}'::jsonb, $7, $8, $9)`,
+      `select * from public.apply_payment($1, $10, $2, $3, $4, $5, $6, '{}'::jsonb, $7, $8, $9)`,
       [
         args.orderId,
         args.paymentId,
@@ -175,6 +186,7 @@ export async function applyPayment(
         t.giftHash,
         t.giftEnc,
         t.editHash,
+        args.provider ?? 'mercadopago',
       ],
     )
     return rows[0]!

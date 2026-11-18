@@ -204,6 +204,70 @@ describe('apply_payment', () => {
     expect(await usage()).toBe(1)
   })
 
+  it('una orden gratis con un cupón sin cupo no se entrega (tope atómico)', async () => {
+    await db.query(`update public.coupons set max_uses = 1, used_count = 0 where id = $1`, [
+      seed.couponId,
+    ])
+    // Dos órdenes cotizadas a la vez, cuando el cupón todavía tenía cupo.
+    const first = await createOrder(db, seed, {
+      amount: 0,
+      discount: 1500000,
+      couponId: seed.couponId,
+    })
+    const second = await createOrder(db, seed, {
+      amount: 0,
+      discount: 1500000,
+      couponId: seed.couponId,
+    })
+
+    const a = await applyPayment(db, {
+      orderId: first,
+      paymentId: 'free-1',
+      status: 'approved',
+      amount: 0,
+      provider: 'free',
+    })
+    const b = await applyPayment(db, {
+      orderId: second,
+      paymentId: 'free-2',
+      status: 'approved',
+      amount: 0,
+      provider: 'free',
+    })
+
+    expect(a.created).toBe(true)
+    expect(b.outcome).toBe('coupon_exhausted')
+    expect(b.created).toBe(false)
+    expect((await orderRow(second)).status).toBe('cancelled')
+    const [coupon] = await db.query<{ used_count: number }>(
+      `select used_count from public.coupons where id = $1`,
+      [seed.couponId],
+    )
+    expect(coupon!.used_count).toBe(1)
+  })
+
+  it('una orden pagada se entrega aunque el cupón se haya agotado mientras tanto', async () => {
+    await db.query(`update public.coupons set max_uses = 1, used_count = 1 where id = $1`, [
+      seed.couponId,
+    ])
+    const orderId = await createOrder(db, seed, {
+      amount: 1350000,
+      discount: 150000,
+      couponId: seed.couponId,
+    })
+    const result = await applyPayment(db, {
+      orderId,
+      paymentId: 'mp-over',
+      status: 'approved',
+      amount: 1350000,
+    })
+    expect(result.created).toBe(true)
+    const [event] = await db.query<{ outcome: string }>(
+      `select outcome from public.payment_events where provider_payment_id = 'mp-over'`,
+    )
+    expect(event!.outcome).toBe('paid_coupon_over_limit')
+  })
+
   it('un reembolso de Mercado Pago da de baja la orden y la Boxie', async () => {
     const orderId = await createOrder(db, seed)
     const paid = await applyPayment(db, {

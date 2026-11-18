@@ -211,7 +211,7 @@ export async function getInviteDetails(token: string) {
   const db = serviceDb()
 
   const { data: user, error } = await (db.from('users') as any)
-    .select('user_id, email, name, role, invite_expires_at, password_hash')
+    .select('user_id, email, name, role, invite_expires_at, password_hash, totp_enabled')
     .eq('invite_token_hash', tokenHash)
     .maybeSingle()
 
@@ -237,6 +237,7 @@ export async function getInviteDetails(token: string) {
       name: (user.name || (user.email ?? '').split('@')[0] || 'Miembro') as string,
       role: user.role as AdminRole,
       roleLabel,
+      totpEnabled: user.totp_enabled === true,
     },
   }
 }
@@ -272,15 +273,14 @@ export async function activateMemberAccount(token: string, password: string) {
     return { ok: false as const, error: 'No se pudo guardar la contraseña. Probá de nuevo.' }
   }
 
-  // Sincronizar también con Supabase Auth si el usuario fue registrado allí
-  try {
-    await db.auth.admin.updateUserById(user.id, { password })
-  } catch {
-    // Si el usuario no existe en auth.users, es normal y esperado
-  }
+  // La clave NO se copia a Supabase Auth: el panel entra con su propia sesión
+  // (clave + TOTP). Una clave en auth.users permitía pedirle un JWT a Supabase
+  // con la clave pública y saltear el 2FA (auditoría 17/11/2026).
 
   return {
     ok: true as const,
+    // Con 2FA activo, restablecer la clave no abre sesión: hay que entrar con clave + código.
+    requires2FA: user.totpEnabled,
     identity: {
       uid: user.id,
       email: user.email,

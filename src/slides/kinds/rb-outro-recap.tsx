@@ -113,7 +113,18 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
         </Appear>
 
         <div className="rb-grow" style={{ marginTop: u(14), justifyContent: 'flex-start' }}>
-          <Appear active={active} delay={0.25} y={50} className="rb-recap">
+          <Appear
+            active={active}
+            delay={0.25}
+            y={50}
+            className="rb-recap"
+            data-resumen={
+              ctx.style.resumen && ctx.style.resumen !== 'original' ? ctx.style.resumen : undefined
+            }
+            data-fotos={
+              ctx.style.fotos && ctx.style.fotos !== 'original' ? ctx.style.fotos : undefined
+            }
+          >
             <div className="rb-collage">
               {[0, 1, 2].map((i) => {
                 const scenes = pareja ? SCENES_PAREJA : SCENES

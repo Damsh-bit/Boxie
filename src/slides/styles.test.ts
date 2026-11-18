@@ -119,15 +119,10 @@ describe('estilos: en el contenido del comprador', () => {
 })
 
 describe('estilos: los ejes de las pantallas', () => {
-  // Las que todavía no tienen sus piezas propias (Fase 3 del plan). Se van
-  // sacando de acá a medida que se terminan.
-  const PENDING = new Set(['capsula', 'pinata', 'anecdota', 'resumen', 'cierre'])
-
   it('cada pantalla de Cumpleaños tiene al menos cuatro formas de variar', () => {
     const config = readThemeConfig(cumpleanos.config)
     expect(config.buyerStyles).toBe(true)
     for (const slide of config.slides) {
-      if (PENDING.has(slide.key)) continue
       const axes = offeredAxes(styleAxesOf(slide))
       expect(axes.length, slide.key).toBeGreaterThanOrEqual(4)
     }

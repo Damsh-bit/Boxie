@@ -2,6 +2,7 @@ import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from 
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
 import { Bunting, Burst, Rays } from '../ribbly/art'
+import { useRbPalette } from '../ribbly/look'
 import { Btn, editable, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
 import { Loop, spring } from './motion'
 import type { Props } from './shared'
@@ -10,9 +11,33 @@ const STRIPES = ['#F44E63', '#FFD35C', '#4FC3F7', '#5ED6A8', '#B28DFF', '#FF8FB1
 const STAR = 'M100 6 L128 70 L196 76 L144 122 L160 190 L100 154 L40 190 L56 122 L4 76 L72 70 Z'
 const CANDY = ['#F44E63', '#FFD35C', '#4FC3F7', '#5ED6A8', '#B28DFF', '#FF8FB1', '#7A4A2A']
 
+/** La forma de la piñata (eje `forma`), en el mismo cuadro de 200 × 196. */
+const SHAPES: Record<string, string> = {
+  corazon:
+    'M100 188 C40 148 4 112 4 68 C4 34 30 10 62 10 C80 10 94 20 100 34 C106 20 120 10 138 10 C170 10 196 34 196 68 C196 112 160 148 100 188 Z',
+  globo: 'M14 100 A86 90 0 1 0 186 100 A86 90 0 1 0 14 100 Z',
+  caramelo:
+    'M44 98 L4 60 L10 98 L4 136 Z M156 98 L196 60 L190 98 L196 136 Z M42 98 A58 54 0 1 0 158 98 A58 54 0 1 0 42 98 Z',
+}
+
+/** Los colores de las tiras y de lo que cae (eje `colores`). */
+const TONES: Record<string, string[]> = {
+  pastel: ['#F7B6CC', '#FFE3A3', '#B8DFF7', '#BFEBD3', '#D9C8F5', '#FFD1B8'],
+  dorado: ['#F5C451', '#FFF1C4', '#D9A63A', '#FFFFFF', '#C98A1B'],
+  fuego: ['#E8344E', '#F2843B', '#FFD35C', '#F2A93B', '#C2263E'],
+}
+
 /** Estrella de papel picado a rayas, con ojitos. `half` dibuja una sola mitad. */
-function PinataStar({ half }: { half?: 'left' | 'right' }) {
-  const id = `rb-pinata-${half ?? 'full'}`
+function PinataStar({
+  half,
+  shape = STAR,
+  stripes = STRIPES,
+}: {
+  half?: 'left' | 'right'
+  shape?: string
+  stripes?: string[]
+}) {
+  const id = `rb-pinata-${half ?? 'full'}-${shape.length}`
   return (
     <svg
       viewBox="0 0 200 196"
@@ -21,7 +46,7 @@ function PinataStar({ half }: { half?: 'left' | 'right' }) {
     >
       <defs>
         <clipPath id={id}>
-          <path d={STAR} />
+          <path d={shape} />
         </clipPath>
         <clipPath id={`${id}-half`}>
           {half === 'left' ? (
@@ -39,10 +64,10 @@ function PinataStar({ half }: { half?: 'left' | 'right' }) {
             <path
               key={i}
               d={`M-4 ${i * 20} h208 v15 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 l-8 7 l-8 -7 Z`}
-              fill={STRIPES[i % STRIPES.length]}
+              fill={stripes[i % stripes.length]}
             />
           ))}
-          <path d={STAR} fill="none" stroke="rgba(120,40,40,0.14)" strokeWidth="6" />
+          <path d={shape} fill="none" stroke="rgba(120,40,40,0.14)" strokeWidth="6" />
         </g>
         <circle cx="80" cy="96" r="7" fill="#1C2A5A" />
         <circle cx="120" cy="96" r="7" fill="#1C2A5A" />
@@ -71,6 +96,14 @@ export function GamePinata({ theme, buyer, ctx }: Props<'game.pinata'>) {
   const seed = (ctx.recipientName + ctx.senderName).length
   const message = buyer.message.trim() || bank[seed % Math.max(bank.length, 1)] || ''
   const cheer = hits > 0 ? theme.cheers[Math.min(hits, theme.cheers.length) - 1] : ''
+  const palette = useRbPalette()
+  const shape = SHAPES[ctx.style.forma ?? ''] ?? STAR
+  const stripes =
+    TONES[ctx.style.colores ?? ''] ??
+    (palette
+      ? [palette.primary, palette.accent, palette.tint, palette.primaryDeep, '#FFFFFF']
+      : STRIPES)
+  const candy = TONES[ctx.style.colores ?? ''] ?? (palette ? palette.party : CANDY)
 
   const hit = () => {
     if (broken) return
@@ -134,13 +167,13 @@ export function GamePinata({ theme, buyer, ctx }: Props<'game.pinata'>) {
                   >
                     <i className="rb-rope" aria-hidden />
                     <span style={{ display: 'block', position: 'relative' }}>
-                      <PinataStar />
+                      <PinataStar shape={shape} stripes={stripes} />
                       {hits === 0 && <TapMark style={{ left: '50%', top: '56%' }} />}
                     </span>
                   </motion.button>
                 </Loop>
                 {hits > 0 && (
-                  <Burst key={hits} y="48%" seed={hits} count={16} power={0.7} colors={CANDY} />
+                  <Burst key={hits} y="48%" seed={hits} count={16} power={0.7} colors={candy} />
                 )}
               </div>
 
@@ -174,7 +207,7 @@ export function GamePinata({ theme, buyer, ctx }: Props<'game.pinata'>) {
             </motion.div>
           ) : (
             <motion.div key="mensaje" style={{ display: 'contents' }}>
-              <Burst key="rota" y="26%" count={60} power={1.4} colors={CANDY} />
+              <Burst key="rota" y="26%" count={60} power={1.4} colors={candy} />
               <div
                 style={{
                   position: 'relative',
@@ -196,7 +229,7 @@ export function GamePinata({ theme, buyer, ctx }: Props<'game.pinata'>) {
                       transition: spring.bouncy,
                     }}
                   >
-                    <PinataStar half={half} />
+                    <PinataStar half={half} shape={shape} stripes={stripes} />
                   </motion.div>
                 ))}
                 {(['chupetin', 'chocolate', 'estrella', 'chupetin', 'estrella'] as const).map(

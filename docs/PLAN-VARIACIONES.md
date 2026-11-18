@@ -8,7 +8,30 @@ Alcance: las 20 pantallas de **Cumpleaños**. 13 de ellas son kinds compartidos 
 **P**): la infraestructura y los ejes comunes les sirven también; las piezas de arte propias de cada
 temática se dibujan aparte.
 
-## Cómo está hoy
+## Estado (18/11)
+
+**Hecho.** Las 20 pantallas tienen entre 4 y 5 ejes (91 en total); el test "cada pantalla de
+Cumpleaños tiene al menos cuatro formas de variar" (`src/slides/styles.test.ts`) lo controla. Las
+fases 0 a 3 están en el código; todo el arte es SVG y CSS dibujado en el repo.
+
+- Dónde vive: el contrato en `src/slides/styles.ts`, el kit común (paletas, tipografías,
+  decoración) en `ribbly/style-kit.ts`, las opciones de cada pieza en `ribbly/piece-options.ts`, los
+  ejes de cada pantalla en `ribbly/slide-styles.ts` y la torta en `ribbly/cake.tsx`.
+- Para verlo en producción hay que **publicar Cumpleaños** (`npm run themes:publish -- cumpleanos
+--apply`, después del simulacro): el seed trae `buyerStyles: true`, y sin eso el comprador no ve
+  nada nuevo.
+- Decisiones tomadas (las abiertas del final): paleta y tipografía se eligen por pantalla y se pueden
+  "Usar en todo el regalo"; solo Cumpleaños (Pareja no ofrece ejes); todas gratis; el arte lo hice yo
+  en SVG, a partir de las piezas que ya tenía el diseño.
+- Cambios contra la tabla de abajo: las escenas 03 y 05 no tienen paleta ni tipografía comunes (su
+  "Diseño" ya cambia los colores); en cambio suman globos, letra y detalles propios. La 14 tampoco
+  tiene paleta (tiene sus dos diseños). Algunas piezas se reemplazaron por otras más útiles (06:
+  filtro del video en vez de marco; 19: estilo del resumen y armado de fotos).
+- Pendiente: editar estilos desde el editor de formulario (hoy solo el directo, que es el de
+  Cumpleaños) y que el comprador toque la pieza en el diseño para abrir su eje (`anchor`; hoy se elige
+  en la barra "Estilo de esta pantalla").
+
+## Cómo está hoy (antes de empezar)
 
 - Cada pantalla puede tener **una** elección de diseño: el campo `variant` (`field.variant` en
   `src/slides/fields.ts`) y `variants` en la definición (`src/slides/types.ts`). Hoy la usan 03 (rosa /

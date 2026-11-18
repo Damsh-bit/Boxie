@@ -213,3 +213,75 @@ export const WISH_NOTES = [
   ['kraft', 'Kraft'],
   ['rayadas', 'Rayadas'],
 ] as const satisfies PieceOptions
+
+/** 16 · Dónde se guarda la cápsula. */
+export const CAPSULE_VESSELS = [
+  ['original', 'Frasco'],
+  ['cofre', 'Cofre'],
+  ['caja', 'Caja de regalo'],
+  ['sobre', 'Sobre lacrado'],
+] as const satisfies PieceOptions
+
+/** 17 · La forma de la piñata. */
+export const PINATA_SHAPES = [
+  ['original', 'Estrella'],
+  ['corazon', 'Corazón'],
+  ['globo', 'Globo'],
+  ['caramelo', 'Caramelo'],
+] as const satisfies PieceOptions
+
+/** 17 · Los colores de las tiras y de lo que cae. */
+export const PINATA_COLORS = [
+  ['original', 'Arcoíris'],
+  ['pastel', 'Pastel'],
+  ['dorado', 'Dorado'],
+  ['fuego', 'Fuego'],
+] as const satisfies PieceOptions
+
+/** 18 · El estilo de la tarjeta del recuerdo. */
+export const MEMORY_CARDS = [
+  ['original', 'Tarjeta'],
+  ['polaroid', 'Polaroid'],
+  ['cine', 'Cine'],
+  ['postal', 'Postal'],
+] as const satisfies PieceOptions
+
+/** 18 · La forma de la foto. */
+export const MEMORY_FRAMES = [
+  ['original', 'Recta'],
+  ['redonda', 'Redonda'],
+  ['arco', 'Arco'],
+] as const satisfies PieceOptions
+
+/** 19 · El estilo del resumen. */
+export const RECAP_CARDS = [
+  ['original', 'Tarjeta'],
+  ['ticket', 'Ticket'],
+  ['album', 'Álbum'],
+  ['oscuro', 'Oscuro'],
+] as const satisfies PieceOptions
+
+/** 19 · Cómo se arman las fotos de arriba. */
+export const RECAP_PHOTOS = [
+  ['original', 'Columnas'],
+  ['tira', 'Tira de película'],
+  ['mosaico', 'Mosaico'],
+  ['polaroids', 'Polaroids'],
+] as const satisfies PieceOptions
+
+/** 20 · El remate del final. */
+export const FINALE_ENDINGS = [
+  ['original', 'Confeti y globos'],
+  ['globos', 'Globos que suben'],
+  ['fuegos', 'Fuegos artificiales'],
+  ['corazones', 'Corazones que suben'],
+] as const satisfies PieceOptions
+
+/** 20 · La caja del regalo sorpresa. */
+export const FINALE_BOXES = [
+  ['original', 'Blanca'],
+  ['dorada', 'Dorada'],
+  ['kraft', 'Kraft'],
+  ['azul', 'Azul'],
+  ['lunares', 'Lunares'],
+] as const satisfies PieceOptions

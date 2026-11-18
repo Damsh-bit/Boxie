@@ -47,6 +47,12 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
         >
           <motion.article
             className="rb-memory"
+            data-tarjeta={
+              ctx.style.tarjeta && ctx.style.tarjeta !== 'original' ? ctx.style.tarjeta : undefined
+            }
+            data-marco={
+              ctx.style.marco && ctx.style.marco !== 'original' ? ctx.style.marco : undefined
+            }
             initial={false}
             animate={
               active

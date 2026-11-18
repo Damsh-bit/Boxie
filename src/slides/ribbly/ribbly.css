@@ -740,3 +740,33 @@
     animation: none;
   }
 }
+
+/* Globos o corazones que suben sin parar (20 · Final). */
+.rb-rise {
+  position: absolute;
+  inset: 0;
+  /* Detrás de los textos de la pantalla (va adentro del contenido). */
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.rb-rise > span {
+  position: absolute;
+  bottom: 0;
+  translate: 0 110%;
+  animation: rb-rise var(--d) linear var(--delay) infinite;
+}
+
+@keyframes rb-rise {
+  to {
+    translate: 0 -120cqh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-rise > span {
+    animation: none;
+    translate: 0 -40cqh;
+  }
+}

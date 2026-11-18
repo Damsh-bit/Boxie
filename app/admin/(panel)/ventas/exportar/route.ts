@@ -1,3 +1,4 @@
+import { log } from '@/server/log'
 import { formatDateTime } from '@/domain/admin/format'
 import { adminRepo } from '@/server/admin/repo'
 import { getAdminSession } from '@/server/admin/session'
@@ -9,7 +10,11 @@ export const dynamic = 'force-dynamic'
 /** Las órdenes del filtro actual como CSV (separado por ; para abrir en Excel). */
 export async function GET(request: Request) {
   const session = await getAdminSession()
-  if (!session || session.role === 'editor') return new Response('No autorizado', { status: 401 })
+  if (!session) return new Response('No autorizado', { status: 401 })
+  // Datos personales de todos los compradores: solo dueño y administración.
+  if (session.role !== 'owner' && session.role !== 'admin')
+    return new Response('Tu rol no puede exportar datos de clientes.', { status: 403 })
+  log.info('Exportación CSV del panel', { what: 'ventas', by: session.email })
 
   const url = new URL(request.url)
   const params = Object.fromEntries(url.searchParams)

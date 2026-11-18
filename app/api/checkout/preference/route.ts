@@ -7,9 +7,16 @@ import { serviceDb, unwrap } from '@/server/db/client'
 import { env, siteUrl } from '@/server/env'
 import { log } from '@/server/log'
 import { marketingRepo } from '@/server/marketing/repo'
-import { createPreference } from '@/server/mercadopago'
+import { createPreference, toMpDate } from '@/server/mercadopago'
 import { applyPaymentNotice } from '@/server/payments'
 import { clientIp, rateLimit } from '@/server/rate-limit'
+
+/**
+ * La preferencia de MP vence a las 48 h: una orden pendiente no se puede pagar
+ * meses después al precio (o con el cupón) de entonces. Un pago en efectivo ya
+ * generado sigue su propio vencimiento y el webhook lo aplica igual.
+ */
+const PREFERENCE_TTL_MS = 48 * 60 * 60 * 1000
 
 const Body = z.object({
   tematica: z.string().regex(/^[a-z0-9-]{1,60}$/),
@@ -74,18 +81,9 @@ export async function POST(request: Request) {
     const { theme, quote } = result
     const provider = env().PAYMENTS_PROVIDER
 
-    // Buscar coupon_id si hay cupón aplicado (para referencia en la orden).
-    let couponId: string | null = null
-    let couponCode: string | null = null
-    if (quote.coupon) {
-      const couponRow = await serviceDb()
-        .from('coupons')
-        .select('id')
-        .eq('code', quote.coupon.code)
-        .maybeSingle()
-      couponId = couponRow.data?.id ?? null
-      couponCode = quote.coupon.code
-    }
+    // El cupón ya viene validado en la cotización (con su id).
+    const couponId = quote.coupon?.id ?? null
+    const couponCode = quote.coupon?.code ?? null
 
     // Crear la orden (estado 'pending'; se actualiza a 'paid' cuando llegue el aviso).
     const order = unwrap(
@@ -162,7 +160,10 @@ export async function POST(request: Request) {
     const preference = await createPreference({
       items: [
         {
+          id: result.plan ? `${theme.slug}:${result.plan.slug}` : theme.slug,
           title: `Ribbly ${theme.name}${result.plan ? ` · ${result.plan.name}` : ''}`,
+          description: 'Regalo digital interactivo',
+          category_id: 'others',
           quantity: 1,
           // MP trabaja en pesos (no centavos).
           unit_price: quote.totalCents / 100,
@@ -188,6 +189,10 @@ export async function POST(request: Request) {
           }
         : {}),
       external_reference: order.id,
+      statement_descriptor: 'RIBBLY',
+      expires: true,
+      expiration_date_from: toMpDate(new Date(Date.now() - 60_000)),
+      expiration_date_to: toMpDate(new Date(Date.now() + PREFERENCE_TTL_MS)),
     })
 
     // Guardar el preference_id para trazabilidad.

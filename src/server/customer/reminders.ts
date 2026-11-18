@@ -78,6 +78,18 @@ export function calculateNextOccurrence(
   return { daysUntil, nextDateFormatted, status }
 }
 
+/**
+ * Topes de las fechas especiales. Viven en `user_metadata`, que el propio
+ * usuario puede escribir desde el navegador con la clave pública: el servidor
+ * no puede confiar en lo que haya ahí. Sin topes, alguien cargaba miles de
+ * fechas y el cron le mandaba miles de mails (cuota de Resend y reputación
+ * del dominio).
+ */
+export const MAX_SPECIAL_DATES = 30
+const MAX_REMINDERS_PER_USER_PER_RUN = 3
+const MAX_NAME = 80
+const MAX_OCCASION = 40
+
 /** Obtiene las fechas especiales del usuario ordenadas por cercanía */
 export function getCustomerSpecialDates(user?: User | null): CustomerSpecialDate[] {
   if (!user || !user.user_metadata) return []
@@ -87,7 +99,7 @@ export function getCustomerSpecialDates(user?: User | null): CustomerSpecialDate
 
   const dates: CustomerSpecialDate[] = []
 
-  for (const item of rawList) {
+  for (const item of rawList.slice(0, MAX_SPECIAL_DATES)) {
     if (
       !item ||
       typeof item !== 'object' ||
@@ -103,12 +115,13 @@ export function getCustomerSpecialDates(user?: User | null): CustomerSpecialDate
 
     dates.push({
       id: item.id,
-      recipientName: item.recipientName,
-      occasion: typeof item.occasion === 'string' ? item.occasion : 'Cumpleaños',
+      recipientName: item.recipientName.slice(0, MAX_NAME),
+      occasion:
+        typeof item.occasion === 'string' ? item.occasion.slice(0, MAX_OCCASION) : 'Cumpleaños',
       day: item.day,
       month: item.month,
       year: typeof item.year === 'number' ? item.year : undefined,
-      notes: typeof item.notes === 'string' ? item.notes : '',
+      notes: typeof item.notes === 'string' ? item.notes.slice(0, 500) : '',
       createdAt: typeof item.createdAt === 'string' ? item.createdAt : new Date().toISOString(),
       lastNotifiedYear:
         typeof item.lastNotifiedYear === 'number' ? item.lastNotifiedYear : undefined,
@@ -146,10 +159,14 @@ export async function addCustomerSpecialDate(
     ? (data.user.user_metadata.special_dates as SpecialDateRecord[])
     : []
 
+  if (currentList.length >= MAX_SPECIAL_DATES) {
+    throw new Error(`Podés guardar hasta ${MAX_SPECIAL_DATES} fechas.`)
+  }
+
   const newRecord: SpecialDateRecord = {
     id: crypto.randomUUID(),
-    recipientName: input.recipientName.trim(),
-    occasion: input.occasion.trim() || 'Cumpleaños',
+    recipientName: input.recipientName.trim().slice(0, MAX_NAME),
+    occasion: input.occasion.trim().slice(0, MAX_OCCASION) || 'Cumpleaños',
     day: Math.max(1, Math.min(31, Math.round(input.day))),
     month: Math.max(1, Math.min(12, Math.round(input.month))),
     year: input.year ? Math.round(input.year) : undefined,
@@ -236,16 +253,25 @@ export async function processAnnualReminders(): Promise<{ sent: number; checked:
   let sent = 0
   let checked = 0
 
-  const { data, error } = await db.auth.admin.listUsers({ perPage: 1000 })
-  if (error || !data.users) {
-    log.error('Error al listar usuarios para recordatorios anuales', error)
-    return { sent: 0, checked: 0 }
+  // Todas las páginas de usuarios (antes solo se leían los primeros 1000).
+  const users: User[] = []
+  for (let page = 1; page <= 100; page++) {
+    const { data, error } = await db.auth.admin.listUsers({ page, perPage: 1000 })
+    if (error || !data?.users) {
+      log.error('Error al listar usuarios para recordatorios anuales', error)
+      if (page === 1) return { sent: 0, checked: 0 }
+      break
+    }
+    users.push(...data.users)
+    if (data.users.length < 1000) break
   }
 
-  for (const user of data.users) {
-    if (!user.email) continue
+  for (const user of users) {
+    // Solo a casillas verificadas: un recordatorio no se manda a un mail que nadie confirmó.
+    if (!user.email || !user.email_confirmed_at) continue
     const dates = getCustomerSpecialDates(user)
     if (dates.length === 0) continue
+    let sentToUser = 0
 
     let hasUpdates = false
     const updatedRecords: SpecialDateRecord[] = []
@@ -253,7 +279,12 @@ export async function processAnnualReminders(): Promise<{ sent: number; checked:
     for (const d of dates) {
       checked++
       // Si faltan entre 0 y 10 días y no se notificó este año: enviar
-      if (d.daysUntil <= 10 && d.daysUntil >= 0 && d.lastNotifiedYear !== currentYear) {
+      if (
+        d.daysUntil <= 10 &&
+        d.daysUntil >= 0 &&
+        d.lastNotifiedYear !== currentYear &&
+        sentToUser < MAX_REMINDERS_PER_USER_PER_RUN
+      ) {
         try {
           await sendMail({
             to: user.email,
@@ -269,6 +300,7 @@ export async function processAnnualReminders(): Promise<{ sent: number; checked:
           })
 
           sent++
+          sentToUser++
           hasUpdates = true
           updatedRecords.push({ ...d, lastNotifiedYear: currentYear })
 

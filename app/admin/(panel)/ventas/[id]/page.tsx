@@ -34,7 +34,7 @@ const SOURCE_LABEL: Record<string, string> = {
 
 export default async function OrderPage({ params }: PageProps<'/admin/ventas/[id]'>) {
   const { id } = await params
-  await requireAdmin(`/admin/ventas/${id}`)
+  const session = await requireAdmin(`/admin/ventas/${id}`)
   const repo = await adminRepo()
   const [detail, settings] = await Promise.all([repo.getOrder(id), repo.getSettings()])
   if (!detail) notFound()
@@ -137,7 +137,9 @@ export default async function OrderPage({ params }: PageProps<'/admin/ventas/[id
         </div>
         <OrderActions
           orderId={order.id}
-          canRefund={order.status === 'paid'}
+          canRefund={
+            order.status === 'paid' && (session.role === 'owner' || session.role === 'admin')
+          }
           buyerName={order.buyerName}
           amount={formatARS(order.amountCents)}
         />

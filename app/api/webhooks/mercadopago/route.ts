@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { Json } from '@/server/db/database.types'
 import { env } from '@/server/env'
 import { log } from '@/server/log'
-import { getPayment, verifyMpWebhookSignature } from '@/server/mercadopago'
+import { getPayment, summarizePayment, verifyMpWebhookSignature } from '@/server/mercadopago'
 import { applyPaymentNotice, type PaymentStatus } from '@/server/payments'
 
 export const dynamic = 'force-dynamic'
@@ -67,6 +67,10 @@ export async function POST(request: Request) {
       })
       return NextResponse.json({ error: 'Firma inválida' }, { status: 401 })
     }
+  } else if (env().VERCEL_ENV === 'production') {
+    // Se procesa igual (cada aviso se verifica contra la API de MP, así que no
+    // se puede inventar un pago), pero sin firma es una alerta: va a Sentry.
+    log.error('MP_WEBHOOK_SECRET no configurado en producción: webhook sin verificar firma')
   } else {
     log.warn('MP_WEBHOOK_SECRET no configurado: procesando webhook sin verificación de firma')
   }
@@ -110,7 +114,7 @@ export async function POST(request: Request) {
       amountCents: Math.round(payment.transaction_amount * 100),
       currency: payment.currency_id,
       source: 'webhook',
-      raw: payment as unknown as Json,
+      raw: summarizePayment(payment) as unknown as Json,
     })
 
     log.info('Webhook de Mercado Pago procesado exitosamente', {

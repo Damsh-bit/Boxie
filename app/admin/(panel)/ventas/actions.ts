@@ -1,12 +1,13 @@
 'use server'
 
 import { z } from 'zod'
-import { SUPPORT_ROLES, runAction } from '../../_lib/action'
+import { MONEY_ROLES, runAction } from '../../_lib/action'
 
 export async function refundOrder(id: string) {
   return runAction(
     {
-      roles: SUPPORT_ROLES,
+      // Da de baja el regalo: solo quien maneja la plata (auditoría 17/11, P2.5).
+      roles: MONEY_ROLES,
       revalidate: ['/admin', '/admin/ventas', `/admin/ventas/${id}`, '/admin/ribblys'],
     },
     async ({ repo, actor }) => {

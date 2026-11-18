@@ -19,6 +19,14 @@ import { decryptToken, generateToken, hashToken } from './security/tokens'
 /** Las Ribblys más nuevas primero; más que esto no tiene sentido en un solo pedido. */
 const MAX_BOXIES = 5
 
+/**
+ * Un link de edición recién mandado no se vuelve a rotar: si no, cualquiera
+ * que sepa el mail de un comprador podía invalidarle el link una y otra vez
+ * pidiendo "recuperar acceso" (el link nuevo le llega a él, pero el que tenía
+ * abierto deja de andar). Dentro de esta ventana, el mail anterior sigue valiendo.
+ */
+export const ROTATION_COOLDOWN_MS = 15 * 60 * 1000
+
 /** `ilike` sin comodines: el mail se busca tal cual, sin importar mayúsculas. */
 export function exactIlike(value: string): string {
   return value.replace(/[\\%_]/g, (c) => `\\${c}`)
@@ -38,7 +46,9 @@ export async function resendAccessByEmail(email: string): Promise<{ sent: number
 
   const { data: boxies, error: boxieError } = await db
     .from('boxies')
-    .select('id, code, order_id, status, locked_at, expires_at, gift_token_enc, recipient_name')
+    .select(
+      'id, code, order_id, status, locked_at, expires_at, gift_token_enc, recipient_name, access_email_sent_at',
+    )
     .in(
       'order_id',
       orders.map((o) => o.id),
@@ -54,6 +64,8 @@ export async function resendAccessByEmail(email: string): Promise<{ sent: number
     const order = orders.find((o) => o.id === boxie.order_id)!
     try {
       if (!boxie.locked_at) {
+        const lastSent = boxie.access_email_sent_at ? Date.parse(boxie.access_email_sent_at) : 0
+        if (Date.now() - lastSent < ROTATION_COOLDOWN_MS) continue
         const token = generateToken()
         const { error: rotateError } = await db
           .from('boxies')

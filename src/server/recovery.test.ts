@@ -103,6 +103,26 @@ describe('recuperar el acceso', () => {
     expect(state.updates[0]!.values.edit_token_hash).toBe(hashToken(token!))
   })
 
+  it('no rota un link de edición mandado hace menos de 15 minutos (evita invalidarlo en loop)', async () => {
+    state.orders = [order]
+    state.boxies = [
+      {
+        id: 'b1',
+        code: 'K7M2Q9XD',
+        order_id: 'o1',
+        status: 'active',
+        locked_at: null,
+        expires_at: future,
+        gift_token_enc: encryptToken('x'.repeat(32), KEY),
+        recipient_name: 'Sofía',
+        access_email_sent_at: new Date(Date.now() - 60_000).toISOString(),
+      },
+    ]
+    expect(await resendAccessByEmail('leandro@example.com')).toEqual({ sent: 0 })
+    expect(state.updates).toHaveLength(0)
+    expect(devOutbox()).toHaveLength(0)
+  })
+
   it('la que ya se regaló recibe el link del regalo, sin tocar el de edición', async () => {
     const gift = 'g'.repeat(32)
     state.orders = [order]

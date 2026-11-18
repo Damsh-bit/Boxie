@@ -1,3 +1,4 @@
+import { log } from '@/server/log'
 import { formatDate } from '@/domain/admin/format'
 import { customers } from '@/domain/admin/metrics'
 import { adminRepo } from '@/server/admin/repo'
@@ -12,7 +13,11 @@ const strip = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCa
 /** Los clientes del segmento actual como CSV (para mailing, con su permiso). */
 export async function GET(request: Request) {
   const session = await getAdminSession()
-  if (!session || session.role === 'editor') return new Response('No autorizado', { status: 401 })
+  if (!session) return new Response('No autorizado', { status: 401 })
+  // Datos personales de todos los compradores: solo dueño y administración.
+  if (session.role !== 'owner' && session.role !== 'admin')
+    return new Response('Tu rol no puede exportar datos de clientes.', { status: 403 })
+  log.info('Exportación CSV del panel', { what: 'clientes', by: session.email })
   const url = new URL(request.url)
   const segmento = url.searchParams.get('segmento') ?? ''
   const q = strip(url.searchParams.get('q')?.trim() ?? '')

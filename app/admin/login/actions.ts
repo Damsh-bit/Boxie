@@ -3,6 +3,7 @@
 import type { Route } from 'next'
 import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { after } from 'next/server'
 import { authenticateAdmin, verify2FALogin } from '@/server/admin/auth'
 import { adminRepo } from '@/server/admin/repo'
 import { ADMIN_COOKIE, adminCookieOptions, issueAdminSession } from '@/server/admin/session'
@@ -151,25 +152,25 @@ export async function requestPasswordReset(
     }
   }
 
-  try {
-    const { sendPasswordResetEmail } = await import('@/server/admin/invite')
-    const res = await sendPasswordResetEmail(email)
-    if (!res.ok && res.error) {
-      rateLimit(byIp, { limit: 5, ...span })
-      return { error: res.error, success: false, message: null }
+  // Se cuenta el pedido (por IP y por mail) haya o no cuenta con ese mail.
+  rateLimit(byIp, { limit: 5, ...span })
+  rateLimit(byEmail, { limit: 3, ...span })
+
+  // El envío sigue después de responder: tardar más cuando el mail es de un
+  // admin delataba quién es del equipo. La respuesta es siempre la misma.
+  after(async () => {
+    try {
+      const { sendPasswordResetEmail } = await import('@/server/admin/invite')
+      const res = await sendPasswordResetEmail(email)
+      if (!res.ok) log.error('No se pudo enviar el restablecimiento de clave', { error: res.error })
+    } catch (err) {
+      log.error('Error al solicitar restablecimiento de clave', err)
     }
-    return {
-      error: null,
-      success: true,
-      message:
-        'Si el correo está registrado como administrador, recibirás un enlace para restablecer tu contraseña. Revisá tu bandeja de entrada o spam.',
-    }
-  } catch (err) {
-    log.error('Error al solicitar restablecimiento de clave', { error: err })
-    return {
-      error: 'Ocurrió un error inesperado al enviar el correo. Probá nuevamente en unos minutos.',
-      success: false,
-      message: null,
-    }
+  })
+  return {
+    error: null,
+    success: true,
+    message:
+      'Si el correo está registrado como administrador, recibirás un enlace para restablecer tu contraseña. Revisá tu bandeja de entrada o spam.',
   }
 }

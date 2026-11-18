@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { Json } from '@/server/db/database.types'
 import { log } from '@/server/log'
-import { getPayment } from '@/server/mercadopago'
+import { getPayment, summarizePayment } from '@/server/mercadopago'
 import { applyPaymentNotice, type PaymentStatus } from '@/server/payments'
 
 export const dynamic = 'force-dynamic'
@@ -59,7 +59,7 @@ export async function GET(request: Request) {
       amountCents: Math.round(payment.transaction_amount * 100),
       currency: payment.currency_id,
       source: 'return',
-      raw: payment as unknown as Json,
+      raw: summarizePayment(payment) as unknown as Json,
     })
 
     // Pago aprobado y Ribbly recién creada → directo al editor.

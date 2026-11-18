@@ -13,7 +13,7 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
 
 - [ ] **P0.6 · Auditoría 17-18/11/2026: acciones fuera del código** (`docs/Ribbly-auditoria-seguridad-2026-11-17.md`)
   - [x] Supabase → "Confirm email" activado y "Allow new users to sign up" activado (18/11, verificado con captura).
-  - [ ] Aplicar en producción la migración `20261117120000_security_hardening.sql` (`supabase db push`). Cierra H1 (admin por JWT sin 2FA) y M1 (tope de cupones).
+  - [x] Migración `20261117120000_security_hardening.sql` aplicada en producción (18/11, verificada). Historial de migraciones alineado: se marcaron como aplicadas 7 migraciones que estaban en la base sin registrar, y se borraron del historial 1 registro duplicado de soporte y 5 filas con versión mal formada. `supabase db push` vuelve a funcionar ("Remote database is up to date").
   - [ ] Vercel: `CRON_SECRET` (sin ella los recordatorios responden 503), confirmar `MP_WEBHOOK_SECRET` y `NEXT_PUBLIC_SENTRY_DSN`; redeploy.
   - [ ] Revisar con qué se dispara `/api/cron/reminders` (no hay `crons` en `vercel.json`).
 

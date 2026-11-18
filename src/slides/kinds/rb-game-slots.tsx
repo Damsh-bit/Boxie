@@ -44,6 +44,7 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
 
   return (
     <Stage
+      tone="deep"
       bg={
         theme.look === 'pareja'
           ? 'radial-gradient(130% 80% at 50% 40%, #6B1830 0%, #4A1428 55%, #2A1430 100%)'

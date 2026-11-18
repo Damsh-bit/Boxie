@@ -11,7 +11,8 @@ import {
   type CSSProperties,
   type ReactNode,
 } from 'react'
-import type { ParsedSlide, ParsedThemeConfig } from '../config'
+import { buyerStyle, type ParsedSlide, type ParsedThemeConfig } from '../config'
+import { SlideStyleContext } from '../style-context'
 import type { BuyerPhoto } from '../fields'
 import { slideComponents } from '../registry'
 import { slideSummary } from '../labels'
@@ -230,6 +231,7 @@ export function Player({
         {mounted.map(({ index, slot }) => {
           const slideConfig = config.slides[index]!
           const active = index === current
+          const style = buyerStyle(config, slideConfig, data.content[slideConfig.key])
           const ctx: SlideContext = {
             recipientName: data.recipientName,
             senderName: data.senderName,
@@ -247,6 +249,7 @@ export function Player({
             next: () => change(Math.min(index + 1, count - 1)),
             vars,
             editing,
+            style,
           }
           return (
             <SlideFrame
@@ -257,7 +260,9 @@ export function Player({
               current={current}
               position={position}
             >
-              <SlideBody slide={slideConfig} buyer={data.content[slideConfig.key]} ctx={ctx} />
+              <SlideStyleContext.Provider value={style}>
+                <SlideBody slide={slideConfig} buyer={data.content[slideConfig.key]} ctx={ctx} />
+              </SlideStyleContext.Provider>
             </SlideFrame>
           )
         })}

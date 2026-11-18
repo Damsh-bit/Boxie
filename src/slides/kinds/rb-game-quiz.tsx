@@ -117,7 +117,7 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
   })
 
   return (
-    <Stage bg={NIGHT} className={pareja ? 'is-pareja' : ''}>
+    <Stage tone="deep" bg={NIGHT} className={pareja ? 'is-pareja' : ''}>
       {/* El fondo cambia con el final: cielo con rayos si ganó, noche si no. */}
       <motion.div
         className="rb-bg"

@@ -48,6 +48,7 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
 
   return (
     <Stage
+      tone="soft"
       bg={
         theme.look === 'pareja'
           ? 'linear-gradient(180deg, #FFE4E9 0%, #FFCCD5 55%, #F7A8B8 100%)'

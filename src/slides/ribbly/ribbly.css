@@ -103,11 +103,11 @@
 /* ── Tipografías ────────────────────────────────────────────────────────── */
 
 .rb-fredoka {
-  font-family: var(--font-fredoka), var(--font-outfit), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), var(--font-outfit), sans-serif;
 }
 
 .rb-caveat {
-  font-family: var(--font-caveat), 'Segoe Script', cursive;
+  font-family: var(--rb-hand, var(--font-caveat)), 'Segoe Script', cursive;
 }
 
 .rb-playfair {
@@ -127,7 +127,7 @@
 }
 
 .rb-title {
-  font-family: var(--font-fredoka), var(--font-outfit), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), var(--font-outfit), sans-serif;
   font-weight: 600;
   font-size: calc(var(--u) * 30);
   line-height: 1.08;
@@ -142,7 +142,7 @@
 }
 
 .rb-hand {
-  font-family: var(--font-caveat), 'Segoe Script', cursive;
+  font-family: var(--rb-hand, var(--font-caveat)), 'Segoe Script', cursive;
   font-weight: 600;
   font-size: calc(var(--u) * 24);
   line-height: 1.15;
@@ -332,7 +332,7 @@
   padding: calc(var(--u) * 7) calc(var(--u) * 18);
   border-radius: calc(var(--u) * 12);
   border: calc(var(--u) * 3) solid #fff;
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 700;
   font-size: calc(var(--u) * 26);
   line-height: 1.1;
@@ -397,7 +397,7 @@
 }
 
 .rb-sheet h3 {
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 600;
   font-size: calc(var(--u) * 22);
   margin-top: calc(var(--u) * 8);
@@ -674,7 +674,7 @@
   outline: 0;
   resize: none;
   background: transparent;
-  font-family: var(--font-caveat), cursive;
+  font-family: var(--rb-hand, var(--font-caveat)), cursive;
   font-weight: 600;
   color: var(--rb-cielo-p);
   caret-color: var(--rb-coral);

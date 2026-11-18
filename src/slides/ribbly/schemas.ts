@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { field } from '../fields'
 import type { SlideDefinition, SlideVariant } from '../types'
+import { cumpleStyleAxes } from './slide-styles'
 
 /**
  * El contrato de las pantallas nuevas de Ribbly (base de pantallas de
@@ -1518,27 +1519,35 @@ const gameCookie = {
   },
 } satisfies SlideDefinition
 
+/** Le suma a la definición lo que el comprador puede variar (ribbly/slide-styles.ts). */
+function styled<D extends SlideDefinition>(
+  kind: string,
+  definition: D,
+): D & { styleAxes: NonNullable<SlideDefinition['styleAxes']> } {
+  return { ...definition, styleAxes: (props) => cumpleStyleAxes(kind, props) }
+}
+
 export const ribblyDefinitions = {
-  'intro.brand': introBrand,
-  'cover.cake': coverCake,
-  'cover.age': coverAge,
-  'story.card': storyCard,
-  'story.moments': storyMoments,
-  'media.video': mediaVideo,
-  'media.mix': mediaMix,
-  'game.quiz': gameQuiz,
-  'connector.premiere': connectorPremiere,
-  'media.poster': mediaPoster,
-  'game.slots': gameSlots,
-  'game.vouchers': gameVouchers,
-  'story.magazine': storyMagazine,
-  'story.wishes': storyWishes,
-  'reflect.candles': reflectCandles,
-  'reflect.capsule': reflectCapsule,
-  'game.pinata': gamePinata,
-  'story.memory': storyMemory,
-  'outro.recap': outroRecap,
-  'outro.finale': outroFinale,
+  'intro.brand': styled('intro.brand', introBrand),
+  'cover.cake': styled('cover.cake', coverCake),
+  'cover.age': styled('cover.age', coverAge),
+  'story.card': styled('story.card', storyCard),
+  'story.moments': styled('story.moments', storyMoments),
+  'media.video': styled('media.video', mediaVideo),
+  'media.mix': styled('media.mix', mediaMix),
+  'game.quiz': styled('game.quiz', gameQuiz),
+  'connector.premiere': styled('connector.premiere', connectorPremiere),
+  'media.poster': styled('media.poster', mediaPoster),
+  'game.slots': styled('game.slots', gameSlots),
+  'game.vouchers': styled('game.vouchers', gameVouchers),
+  'story.magazine': styled('story.magazine', storyMagazine),
+  'story.wishes': styled('story.wishes', storyWishes),
+  'reflect.candles': styled('reflect.candles', reflectCandles),
+  'reflect.capsule': styled('reflect.capsule', reflectCapsule),
+  'game.pinata': styled('game.pinata', gamePinata),
+  'story.memory': styled('story.memory', storyMemory),
+  'outro.recap': styled('outro.recap', outroRecap),
+  'outro.finale': styled('outro.finale', outroFinale),
   // Pareja
   'cover.gift': coverGift,
   'cover.edition': coverEdition,

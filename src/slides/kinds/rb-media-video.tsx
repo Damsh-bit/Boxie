@@ -154,7 +154,7 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
   }
 
   return (
-    <Stage bg="#0d0a16" className={theme.look === 'pareja' ? 'is-pareja' : ''}>
+    <Stage tone="deep" bg="#0d0a16" className={theme.look === 'pareja' ? 'is-pareja' : ''}>
       <div ref={stage} style={{ position: 'absolute', inset: 0, background: '#0d0a16' }}>
         <div className="rb-bg">
           {showVideo ? (

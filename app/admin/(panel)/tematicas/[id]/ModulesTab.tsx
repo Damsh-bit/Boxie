@@ -18,6 +18,7 @@ import type { Plan } from '@/domain/plans'
 import { SchemaForm } from '@/slides/editor/SchemaForm'
 import { issuesByPath } from '@/slides/editor/schema-info'
 import { slideDefinitions, type SlideKind } from '@/slides/schemas'
+import { offeredOptions, type StyleAxis } from '@/slides/styles'
 import { FRAME_BACKGROUNDS, FrameSchema, PARTICLES } from '@/slides/theme-config'
 import { Button } from '@/ui/Button'
 import { cn } from '@/ui/cn'
@@ -300,6 +301,10 @@ function SlideRow({
               <FrameEditor slide={slide} kind={kind} onChange={(frame) => onChange({ frame })} />
             )}
 
+            {kind && open && (
+              <StylesEditor slide={slide} kind={kind} onChange={(styles) => onChange({ styles })} />
+            )}
+
             <div className="mt-5 grid grid-cols-1 gap-4 rounded-2xl bg-canvas p-4 sm:grid-cols-2">
               <div className="md:hidden">
                 <Label htmlFor={`plan-${slide.key}`}>Plan</Label>
@@ -460,6 +465,111 @@ function FrameEditor({
           <Switch checked={frame.confetti} onChange={(v) => set({ confetti: v })} label="Confeti" />
         </div>
       </div>
+    </fieldset>
+  )
+}
+
+/**
+ * Qué estilos ofrece la temática al comprador en esta pantalla
+ * (docs/PLAN-VARIACIONES.md): las opciones de cada eje que se muestran y cuál
+ * va por defecto. Sin tocar nada se ofrecen todas.
+ */
+function StylesEditor({
+  slide,
+  kind,
+  onChange,
+}: {
+  slide: EditorSlide
+  kind: SlideKind
+  onChange(styles: EditorSlide['styles']): void
+}) {
+  const def = slideDefinitions[kind] as {
+    styleAxes?: (p: Record<string, unknown>) => readonly StyleAxis[]
+  }
+  const axes = def.styleAxes?.((slide.props as Record<string, unknown>) ?? {}) ?? []
+  if (!axes.length) return null
+  const styles = slide.styles ?? {}
+
+  const setRule = (axis: StyleAxis, rule: { allow?: string[]; default?: string }) => {
+    const next = { ...styles }
+    const allowAll = !rule.allow || rule.allow.length === axis.options.length
+    const clean = {
+      ...(allowAll ? {} : { allow: rule.allow }),
+      ...(rule.default && rule.default !== axis.options[0]?.value ? { default: rule.default } : {}),
+    }
+    if (Object.keys(clean).length) next[axis.key] = clean
+    else delete next[axis.key]
+    onChange(Object.keys(next).length ? next : undefined)
+  }
+
+  return (
+    <fieldset className="mt-5 rounded-2xl border border-line p-4">
+      <legend className="px-1 text-sm font-semibold text-ink">
+        Estilos que puede elegir el comprador
+      </legend>
+      <div className="space-y-4">
+        {axes.map((axis) => {
+          const rule = styles[axis.key] ?? {}
+          const allowed = rule.allow?.length ? rule.allow : axis.options.map((o) => o.value)
+          const offered = offeredOptions(axis, slide.styles)
+          return (
+            <div key={axis.key}>
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-ink">{axis.label}</p>
+                <label className="flex items-center gap-2 text-xs text-neutral-600">
+                  Por defecto
+                  <Select
+                    className="w-auto py-1 text-xs"
+                    value={offered[0]?.value ?? ''}
+                    onChange={(e) => setRule(axis, { allow: rule.allow, default: e.target.value })}
+                  >
+                    {offered.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </Select>
+                </label>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {axis.options.map((option) => {
+                  const on = allowed.includes(option.value)
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => {
+                        const next = on
+                          ? allowed.filter((v) => v !== option.value)
+                          : axis.options
+                              .map((o) => o.value)
+                              .filter((v) => v === option.value || allowed.includes(v))
+                        if (!next.length) return
+                        setRule(axis, {
+                          allow: next,
+                          default: next.includes(rule.default ?? '') ? rule.default : undefined,
+                        })
+                      }}
+                      className={cn(
+                        'rounded-full px-3 py-1 text-xs font-semibold ring-1 transition',
+                        on
+                          ? 'bg-brand-soft text-brand ring-brand/30'
+                          : 'bg-white text-neutral-400 line-through ring-line',
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <p className="mt-3 text-xs text-neutral-500">
+        Tachado = no se ofrece. Con una sola opción, el comprador no ve ese eje.
+      </p>
     </fieldset>
   )
 }

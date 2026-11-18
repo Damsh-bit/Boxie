@@ -377,6 +377,17 @@ size`) y todo se mide en `--u`, un píxel del diseño (390 × 760) escalado al t
   `data-edit` (`editable(ctx, ruta)` o `edit` en las escenas) y el editor lo mide en cada
   cuadro: no hace falta un formulario por pantalla. Lo que no se ve tocando (una carta dentro
   del sobre cerrado) queda en "Más opciones de esta pantalla".
+- **Estilos por elemento** (`docs/PLAN-VARIACIONES.md`): cada pantalla declara sus ejes
+  (`styleAxes`: la paleta, la tipografía, la decoración, la torta…) y el comprador elige en la
+  barra "Estilo de esta pantalla" del editor directo. Lo elegido va en el campo `estilo` del
+  contenido de cada slide, también en las que no tienen nada más para completar (la
+  validación lo conserva en todas). La opción `original` de cada eje es el diseño de siempre:
+  sin `estilo`, una Ribbly vieja se ve igual. La temática prende todo con `buyerStyles` y, por
+  slide, elige qué opciones ofrece y cuál va por defecto (`styles`); así un deploy no le cambia
+  nada a producción hasta que se publica la temática. Paleta, tipografía y decoración las pinta
+  el escenario común (`Stage` en `ribbly/ui.tsx`): la paleta pisa el fondo según el `tone` de la
+  pantalla (de color, claro o de noche) y las variables `--rb-coral`, `--rb-sol`, etc.; la
+  tipografía pisa `--rb-display` y `--rb-hand`.
 
 ## Marca Ribbly (antes Boxie)
 

@@ -1,6 +1,15 @@
 import { z } from 'zod'
 import { missingRequired, type MissingField } from './fields'
 import {
+  offeredAxes,
+  readStyleChoice,
+  resolveStyle,
+  STYLE_FIELD,
+  type SlideStylesConfig,
+  type StyleAxis,
+  type StyleValues,
+} from './styles'
+import {
   isSlideKind,
   slideDefinitions,
   type BuyerPropsOf,
@@ -29,6 +38,8 @@ export type ParsedSlide = {
     frame: Frame
     /** Plan desde el que se incluye (slug). Sin plan: en todos. */
     plan?: string
+    /** Qué estilos ofrece la temática en esta slide (src/slides/styles.ts). */
+    styles?: SlideStylesConfig
   }
 }[SlideKind]
 
@@ -36,6 +47,8 @@ export interface ParsedThemeConfig {
   palette: Palette
   /** Cómo se personaliza (theme-config.ts). */
   editor: EditorMode
+  /** El comprador puede elegir estilos (theme-config.ts). */
+  buyerStyles: boolean
   slides: ParsedSlide[]
 }
 
@@ -77,11 +90,20 @@ export function parseThemeConfig(input: unknown): ParseResult<ParsedThemeConfig>
       props: props.data,
       frame,
       ...(slide.plan ? { plan: slide.plan } : {}),
+      ...(slide.styles && Object.keys(slide.styles).length ? { styles: slide.styles } : {}),
     } as ParsedSlide)
   })
 
   if (issues.length) return { success: false, issues }
-  return { success: true, data: { palette: base.data.palette, editor: base.data.editor, slides } }
+  return {
+    success: true,
+    data: {
+      palette: base.data.palette,
+      editor: base.data.editor,
+      buyerStyles: base.data.buyerStyles,
+      slides,
+    },
+  }
 }
 
 /** Versión estricta para datos que ya se validaron al publicar. */
@@ -129,12 +151,20 @@ export function parseBuyerContent(
 
   const issues: string[] = []
   const slides: Record<string, Record<string, unknown>> = {}
-  for (const slide of buyerSlides(config)) {
+  for (const slide of config.slides) {
+    const raw = base.data.slides[slide.key]
+    // El estilo elegido se guarda en todas las slides, también en las que no
+    // tienen nada más para completar.
+    const style = readStyleChoice(raw)
+    const withStyle = Object.keys(style).length ? { [STYLE_FIELD]: style } : {}
     const schema = slideDefinitions[slide.kind].buyerSchema as z.ZodType | null
-    if (!schema) continue
-    const parsed = schema.safeParse(base.data.slides[slide.key] ?? {})
+    if (!schema) {
+      if (Object.keys(withStyle).length) slides[slide.key] = withStyle
+      continue
+    }
+    const parsed = schema.safeParse(raw ?? {})
     if (!parsed.success) issues.push(...formatIssues(`${slide.key}: `, parsed.error))
-    else slides[slide.key] = parsed.data as Record<string, unknown>
+    else slides[slide.key] = { ...(parsed.data as Record<string, unknown>), ...withStyle }
   }
   if (issues.length) return { success: false, issues }
   return {
@@ -179,4 +209,33 @@ export function collectAssetIds(content: BuyerContent): string[] {
   }
   visit(content.slides)
   return [...ids]
+}
+
+// ── Estilos ─────────────────────────────────────────────────────────────────
+
+/** Los ejes de estilo de una slide según su configuración (src/slides/styles.ts). */
+export function styleAxesOf(slide: ParsedSlide): readonly StyleAxis[] {
+  const definition = slideDefinitions[slide.kind] as {
+    styleAxes?: (props: Record<string, unknown>) => readonly StyleAxis[]
+  }
+  return definition.styleAxes?.(slide.props as Record<string, unknown>) ?? []
+}
+
+/** El estilo resuelto de una slide para lo que guardó el comprador en ella. */
+export function slideStyle(slide: ParsedSlide, raw: unknown): StyleValues {
+  return resolveStyle(styleAxesOf(slide), slide.styles, readStyleChoice(raw))
+}
+
+/** Los ejes que ve el comprador en una slide: ninguno si la temática no ofrece estilos. */
+export function buyerAxes(config: ParsedThemeConfig, slide: ParsedSlide) {
+  return config.buyerStyles ? offeredAxes(styleAxesOf(slide), slide.styles) : []
+}
+
+/** El estilo con que se dibuja una slide: el de siempre si la temática no ofrece estilos. */
+export function buyerStyle(
+  config: ParsedThemeConfig,
+  slide: ParsedSlide,
+  raw: unknown,
+): StyleValues {
+  return config.buyerStyles ? slideStyle(slide, raw) : {}
 }

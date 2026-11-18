@@ -34,12 +34,15 @@ function resolved(config: unknown): ThemeConfigInput {
     )
   return {
     palette: parsed.data.palette,
+    editor: parsed.data.editor,
+    buyerStyles: parsed.data.buyerStyles,
     slides: parsed.data.slides.map((s) => ({
       key: s.key,
       kind: s.kind,
       props: s.props as Record<string, unknown>,
       frame: s.frame,
       ...(s.plan ? { plan: s.plan } : {}),
+      ...(s.styles ? { styles: s.styles } : {}),
     })),
   }
 }

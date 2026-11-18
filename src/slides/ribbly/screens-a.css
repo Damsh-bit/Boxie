@@ -26,7 +26,7 @@
 /* ── 02 · Portada de festejo ────────────────────────────────────────────── */
 
 .rb-cake-name {
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 700;
   line-height: 1;
   overflow-wrap: anywhere;
@@ -59,7 +59,7 @@
 .rb-age {
   position: relative;
   display: inline-block;
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 700;
   font-size: calc(var(--u) * 124);
   line-height: 0.95;
@@ -200,7 +200,7 @@
   left: 0;
   right: 0;
   bottom: 22%;
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 700;
   font-size: calc(var(--u) * 50);
   line-height: 1;
@@ -229,7 +229,7 @@
   flex: 1;
   min-height: 0;
   margin-top: calc(var(--u) * 8);
-  font-family: var(--font-caveat), cursive;
+  font-family: var(--rb-hand, var(--font-caveat)), cursive;
   font-weight: 500;
   line-height: 1.24;
   white-space: pre-line;
@@ -288,7 +288,7 @@
 .rb-polaroid-caption {
   margin-top: calc(var(--u) * 9);
   min-height: calc(var(--u) * 26);
-  font-family: var(--font-caveat), cursive;
+  font-family: var(--rb-hand, var(--font-caveat)), cursive;
   font-weight: 600;
   font-size: calc(var(--u) * 21);
   line-height: 1.1;
@@ -514,7 +514,7 @@
 
 .rb-mix-row b {
   display: block;
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 500;
   font-size: calc(var(--u) * 15);
   line-height: 1.2;
@@ -548,7 +548,7 @@
 }
 
 .rb-quiz-title {
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 700;
   font-size: calc(var(--u) * 44);
   line-height: 1.02;
@@ -582,7 +582,7 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.16);
   border: calc(var(--u) * 1.2) solid rgba(255, 255, 255, 0.3);
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 700;
   font-size: calc(var(--u) * 18);
   animation: rb-float 5s ease-in-out infinite;
@@ -616,7 +616,7 @@
   border-radius: calc(var(--u) * 22);
   background: #fff;
   color: var(--rb-noche);
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 600;
   font-size: calc(var(--u) * 21);
   line-height: 1.18;
@@ -681,7 +681,7 @@
   height: calc(var(--u) * 38);
   border-radius: calc(var(--u) * 10);
   color: #fff;
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 700;
   font-size: calc(var(--u) * 17);
 }
@@ -779,7 +779,7 @@
   display: grid;
   place-items: center;
   padding: calc(var(--u) * 20);
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 700;
   font-size: calc(var(--u) * 22);
   color: #4a3410;

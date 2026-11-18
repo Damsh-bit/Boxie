@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { useMemo, type CSSProperties } from 'react'
 import { seededRandom } from '../player/effects'
+import { usePartyColors, useRbPalette } from './look'
 
 /**
  * Ilustraciones y efectos de ambiente de las pantallas de Ribbly, dibujados
@@ -31,6 +32,7 @@ export function Confetti({
   /** Pétalos en vez de papelitos. */
   petals?: boolean
 }) {
+  const party = usePartyColors(colors)
   const pieces = useMemo(() => {
     const rand = seededRandom(seed * 977 + count)
     return Array.from({ length: count }, () => {
@@ -40,7 +42,7 @@ export function Confetti({
         '--x': `${n(rand() * 100)}%`,
         '--w': petals ? n(9 + rand() * 6) : n(long ? 5 + rand() * 3 : 6 + rand() * 4),
         '--h': petals ? n(7 + rand() * 4) : n(long ? 10 + rand() * 6 : 6 + rand() * 4),
-        '--c': colors[Math.floor(rand() * colors.length)]!,
+        '--c': party[Math.floor(rand() * party.length)]!,
         '--r': petals ? '80% 0 80% 0' : rand() > 0.75 ? '50%' : '18%',
         '--d': `${n(duration)}s`,
         '--delay': `${n(-rand() * duration)}s`,
@@ -50,7 +52,7 @@ export function Confetti({
         '--o': opacity,
       } as Vars
     })
-  }, [seed, count, colors, opacity, petals])
+  }, [seed, count, party, opacity, petals])
   return (
     <div className="rb-confetti" aria-hidden>
       {pieces.map((style, i) => (
@@ -80,6 +82,7 @@ export function Burst({
   power?: number
 }) {
   const calm = useReducedMotion()
+  const party = usePartyColors(colors)
   const pieces = useMemo(() => {
     const rand = seededRandom(seed * 131 + count)
     return Array.from({ length: count }, () => {
@@ -91,12 +94,12 @@ export function Burst({
         fall: n(30 + rand() * 40),
         spin: Math.round((rand() - 0.5) * 1080),
         size: n(5 + rand() * 6),
-        color: colors[Math.floor(rand() * colors.length)]!,
+        color: party[Math.floor(rand() * party.length)]!,
         round: rand() > 0.7,
         duration: n(1.5 + rand() * 1.1),
       }
     })
-  }, [seed, count, colors, power])
+  }, [seed, count, party, power])
   if (calm) return null
   return (
     <div
@@ -151,6 +154,11 @@ export function Bokeh({
   blur?: number
   maxOpacity?: number
 }) {
+  const palette = useRbPalette()
+  const lights = useMemo(
+    () => (palette ? [palette.accent, palette.tint, palette.primary] : colors),
+    [palette, colors],
+  )
   const dots = useMemo(() => {
     const rand = seededRandom(seed * 53 + count)
     return Array.from(
@@ -160,14 +168,14 @@ export function Bokeh({
           '--x': `${n(rand() * 100)}%`,
           '--y': `${n(rand() * 100)}%`,
           '--s': n(18 + rand() * 60),
-          '--c': colors[Math.floor(rand() * colors.length)]!,
+          '--c': lights[Math.floor(rand() * lights.length)]!,
           '--b': blur,
           '--o': n(0.12 + rand() * (maxOpacity - 0.12)),
           '--d': `${n(6 + rand() * 7)}s`,
           '--delay': `${n(-rand() * 6)}s`,
         }) as Vars,
     )
-  }, [seed, count, colors, blur, maxOpacity])
+  }, [seed, count, lights, blur, maxOpacity])
   return (
     <div className="rb-bokeh" aria-hidden style={{ position: 'absolute', inset: 0 }}>
       {dots.map((style, i) => (
@@ -216,6 +224,8 @@ const FLAGS = ['#F44E63', '#FFD35C', '#4FC3F7', '#5ED6A8', '#B28DFF', '#FF8FB1']
 
 /** Guirnalda de banderines colgada de lado a lado. */
 export function Bunting({ style, dim = false }: { style?: CSSProperties; dim?: boolean }) {
+  const palette = useRbPalette()
+  const colors = useMemo(() => palette?.party.filter((c) => c !== '#FFFFFF') ?? FLAGS, [palette])
   const flags = useMemo(() => {
     const count = 12
     return Array.from({ length: count }, (_, i) => {
@@ -224,9 +234,9 @@ export function Bunting({ style, dim = false }: { style?: CSSProperties; dim?: b
       const x = 400 * t
       const y = 2 * (1 - t) * t * 46 + 6
       const slope = (2 * (1 - 2 * t) * 46) / 400
-      return { x, y, angle: (Math.atan(slope) * 180) / Math.PI, color: FLAGS[i % FLAGS.length]! }
+      return { x, y, angle: (Math.atan(slope) * 180) / Math.PI, color: colors[i % colors.length]! }
     })
-  }, [])
+  }, [colors])
   return (
     <svg
       className="rb-bunting"

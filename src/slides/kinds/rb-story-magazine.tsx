@@ -46,7 +46,7 @@ export function StoryMagazine({
     ctx.resolveMedia(buyer.photo) ?? ctx.resolveMedia(moments?.find((m) => m.photo)?.photo)
 
   return (
-    <Stage bg={pareja ? '#FFFFFF' : '#FFF9EE'} className={pareja ? 'is-pareja' : ''}>
+    <Stage tone="soft" bg={pareja ? '#FFFFFF' : '#FFF9EE'} className={pareja ? 'is-pareja' : ''}>
       <div className="rb-mag">
         <h2 className="rb-mag-title">
           {text.title.map((line, i) => (

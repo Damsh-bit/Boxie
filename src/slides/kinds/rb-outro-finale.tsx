@@ -41,7 +41,7 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
   const { night: NIGHT, sunset: SUNSET } = LOOK[pareja ? 'pareja' : 'cumple']
 
   return (
-    <Stage bg={NIGHT} className={pareja ? 'is-pareja' : ''}>
+    <Stage tone="deep" bg={NIGHT} className={pareja ? 'is-pareja' : ''}>
       <motion.div
         className="rb-bg"
         style={{ background: SUNSET }}

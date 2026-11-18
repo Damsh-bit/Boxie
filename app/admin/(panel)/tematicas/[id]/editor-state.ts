@@ -70,6 +70,7 @@ export function hydrate(config: EditorConfig): EditorConfig {
   return {
     palette: config.palette,
     ...(config.editor ? { editor: config.editor } : {}),
+    ...(config.buyerStyles ? { buyerStyles: config.buyerStyles } : {}),
     slides: config.slides.map((s) => ({ ...s, props: resolvedProps(s) })),
   }
 }

@@ -35,6 +35,7 @@
       "accent": "#FFD35C"
     },
     "editor": "inline",
+    "buyerStyles": true,
     "slides": [
       {
         "key": "intro",

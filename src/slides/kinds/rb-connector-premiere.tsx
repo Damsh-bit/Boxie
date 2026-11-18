@@ -76,6 +76,7 @@ export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
 
   return (
     <Stage
+      tone="deep"
       className={theme.look === 'pareja' ? 'is-pareja' : ''}
       bg={
         theme.look === 'pareja'

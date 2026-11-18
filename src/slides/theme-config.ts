@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { HexColorSchema } from './fields'
+import { SlideStylesConfigSchema } from './styles'
 
 /**
  * Qué es una temática, concretamente (docs/ARQUITECTURA.md §4.4): una paleta
@@ -60,6 +61,11 @@ export const SlideInstanceSchema = z.object({
     .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
     .max(40)
     .optional(),
+  /**
+   * Qué opciones de estilo se ofrecen al comprador en cada eje de la slide y
+   * cuál va por defecto (src/slides/styles.ts). Sin esto, todas.
+   */
+  styles: SlideStylesConfigSchema.optional(),
 })
 
 /**
@@ -72,6 +78,11 @@ export type EditorMode = (typeof EDITOR_MODES)[number]
 export const ThemeConfigSchema = z.object({
   palette: PaletteSchema.default(DEFAULT_PALETTE),
   editor: z.enum(EDITOR_MODES).default('form'),
+  /**
+   * El comprador puede elegir estilos en las pantallas que los tienen
+   * (src/slides/styles.ts). Apagado, todas se ven con su diseño de siempre.
+   */
+  buyerStyles: z.boolean().default(false),
   slides: z.array(SlideInstanceSchema).min(1, 'La temática necesita al menos una slide').max(40),
 })
 

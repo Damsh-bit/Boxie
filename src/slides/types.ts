@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import type { z } from 'zod'
 import type { BuyerPhoto } from './fields'
+import type { StyleAxis, StyleValues } from './styles'
 import type { FrameInput, Palette } from './theme-config'
 
 /**
@@ -57,6 +58,11 @@ export interface SlideDefinition<
    * menos de dos, la pantalla tiene un solo diseño.
    */
   variants?: (themeProps: Record<string, unknown>) => SlideVariant[]
+  /**
+   * Lo que el comprador puede variar en esta pantalla (la torta, los globos,
+   * la paleta…), según la configuración de la temática (src/slides/styles.ts).
+   */
+  styleAxes?: (themeProps: Record<string, unknown>) => readonly StyleAxis[]
 }
 
 export interface SlideVariant {
@@ -99,6 +105,8 @@ export interface SlideContext {
    * `data-edit` (ver `editable` en ribbly/ui.tsx) y el editor lo dibuja encima.
    */
   editing?: boolean
+  /** El estilo de esta pantalla: cada eje con su opción (src/slides/styles.ts). */
+  style: StyleValues
 }
 
 export interface SlideComponentProps<TTheme = unknown, TBuyer = unknown> {

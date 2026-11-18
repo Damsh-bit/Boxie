@@ -8,6 +8,7 @@ import { DEFAULT_PALETTE, type EditorMode, type Palette } from '@/slides/theme-c
 import { cn } from '@/ui/cn'
 import { Input } from '@/ui/form'
 import { spring } from '@/ui/motion'
+import { Switch } from '../../../_ui/fields'
 import { Card } from '../../../_ui/primitives'
 import type { EditorConfig } from './editor-state'
 
@@ -146,6 +147,22 @@ export function StyleTab({
             )
           })}
         </div>
+        <label className="mt-4 flex items-start justify-between gap-4 rounded-2xl border border-line p-4">
+          <span>
+            <span className="block text-sm font-semibold text-ink">
+              Que elija colores, tipografía y piezas
+            </span>
+            <span className="mt-1 block text-xs text-neutral-500">
+              En las pantallas que tienen variaciones (la torta, los globos, la paleta…). Qué se
+              ofrece en cada una se elige en Pantallas. Apagado, todas se ven como vienen.
+            </span>
+          </span>
+          <Switch
+            checked={config.buyerStyles ?? false}
+            onChange={(v) => onChange({ ...config, buyerStyles: v })}
+            label="El comprador elige estilos"
+          />
+        </label>
       </Card>
     </div>
   )

@@ -64,6 +64,7 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
 
   return (
     <Stage
+      tone="deep"
       bg={
         pareja
           ? 'linear-gradient(180deg, #F7798A 0%, #F4607E 50%, #E8405A 100%)'

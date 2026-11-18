@@ -89,6 +89,7 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
 
   return (
     <Stage
+      tone="soft"
       bg={
         pareja
           ? 'linear-gradient(170deg, #FFE4E9 0%, #FFCCD5 55%, #F7A8B8 100%)'

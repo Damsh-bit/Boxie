@@ -25,6 +25,7 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
 
   return (
     <Stage
+      tone="deep"
       bg={
         pareja
           ? 'linear-gradient(180deg, #6A8F55 0%, #9ABF7A 55%, #C9DDB0 100%)'

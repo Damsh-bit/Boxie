@@ -1,6 +1,7 @@
 import type { z } from 'zod'
 import { buyerSlides, type BuyerContent, type ParsedThemeConfig } from '../config'
 import { initialBuyerProps, slideDefinitions } from '../schemas'
+import { readStyleChoice, STYLE_FIELD } from '../styles'
 
 /**
  * El borrador del editor: los nombres y lo que el comprador cargó en cada
@@ -28,6 +29,13 @@ export function initialDraft(
     const base = saved ?? initialBuyerProps(slide.kind, slide.props as Record<string, unknown>)
     const parsed = schema.safeParse(base)
     slides[slide.key] = (parsed.success ? parsed.data : schema.parse({})) as Record<string, unknown>
+  }
+  // El estilo elegido, en todas las slides (también las que no tienen campos).
+  for (const slide of config.slides) {
+    const style = readStyleChoice(stored?.slides?.[slide.key])
+    if (Object.keys(style).length) {
+      slides[slide.key] = { ...slides[slide.key], [STYLE_FIELD]: style }
+    }
   }
   return {
     recipientName: stored?.recipientName ?? '',

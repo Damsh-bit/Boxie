@@ -10,7 +10,10 @@ import {
 } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { spring } from '../player/motion'
+import { useSlideStyle } from '../style-context'
 import type { SlideContext } from '../types'
+import { DecoLayer } from './deco'
+import { ORIGINAL, paletteOf, typePairOf, type Deco, type Tone } from './style-kit'
 import { fill } from './vars'
 import './ribbly.css'
 import './screens-a.css'
@@ -49,8 +52,15 @@ export function T({
   return <EmojiText text={fill(text, ctx.vars, extra)} />
 }
 
+/**
+ * El escenario de cada pantalla. Además de contener, pinta el estilo que
+ * eligió el comprador (docs/PLAN-VARIACIONES.md): con otra paleta cambia el
+ * fondo (según su `tone`) y los colores base (--rb-coral, --rb-sol…); con otra
+ * tipografía, los títulos y lo escrito a mano; y suma la decoración elegida.
+ */
 export function Stage({
   bg,
+  tone = 'vivid',
   className = '',
   style,
   children,
@@ -58,12 +68,41 @@ export function Stage({
 }: {
   /** Fondo CSS (degradé del diseño). */
   bg?: string
+  /** Cómo es el fondo, para pintarlo con otra paleta: de color, claro o de noche. */
+  tone?: Tone
   className?: string
   style?: CSSProperties
   children: ReactNode
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'style' | 'className' | 'children'>) {
+  const look = useSlideStyle()
+  const palette = paletteOf(look.paleta)
+  const type = typePairOf(look.tipo)
+  const deco = look.deco && look.deco !== ORIGINAL ? (look.deco as Deco) : null
+  const vars = {
+    ...(palette
+      ? {
+          '--rb-coral': palette.primary,
+          '--rb-coral-deep': palette.primaryDeep,
+          '--rb-sol': palette.accent,
+          '--rb-noche': palette.night,
+          '--rb-crema': palette.cream,
+          '--rb-rosa': palette.tint,
+          '--rb-tint': palette.tint,
+          '--rb-ink': palette.ink,
+          '--rb-bg': palette[tone],
+        }
+      : {}),
+    ...(type ? { '--rb-display': type.display, '--rb-hand': type.hand } : {}),
+  } as CSSProperties
   return (
-    <div className={`rb-stage ${className}`} style={{ background: bg, ...style }} {...rest}>
+    <div
+      className={`rb-stage ${className}`}
+      data-paleta={palette ? look.paleta : undefined}
+      data-tipo={type ? look.tipo : undefined}
+      style={{ background: palette ? palette[tone] : bg, ...vars, ...style }}
+      {...rest}
+    >
+      {deco && <DecoLayer kind={deco} palette={palette} />}
       {children}
     </div>
   )

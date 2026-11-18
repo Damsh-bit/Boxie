@@ -43,7 +43,7 @@ export function ReflectCandles({ theme, ctx }: Props<'reflect.candles'>) {
   }
 
   return (
-    <Stage bg="#120C1E">
+    <Stage tone="deep" bg="#120C1E">
       <div className="rb-bg">
         <i className="rb-candle-glow" style={{ opacity: lit ? 1 : 0.25 }} />
         <Bokeh seed={15} count={14} colors={['#F2A93B', '#FFD35C', '#F2843B']} maxOpacity={0.4} />

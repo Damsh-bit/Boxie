@@ -92,7 +92,7 @@ export function ReflectCapsule({ theme, ctx }: Props<'reflect.capsule'>) {
   }
 
   return (
-    <Stage bg="linear-gradient(180deg, #1E3A8A 0%, #6B4FBF 45%, #C97FD4 100%)">
+    <Stage tone="deep" bg="linear-gradient(180deg, #1E3A8A 0%, #6B4FBF 45%, #C97FD4 100%)">
       <div className="rb-bg">
         <Stars seed={16} count={30} sparks={5} area={72} />
         <i className="rb-planet" />

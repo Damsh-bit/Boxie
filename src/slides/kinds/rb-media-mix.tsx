@@ -49,6 +49,7 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
 
   return (
     <Stage
+      tone="deep"
       bg={
         pareja
           ? 'linear-gradient(160deg, #3B1830 0%, #6B2A6E 50%, #8E2A5E 100%)'

@@ -6,7 +6,7 @@
 /* ── 11 · Tragamonedas ──────────────────────────────────────────────────── */
 
 .rb-glow-title {
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 600;
   font-size: calc(var(--u) * 29);
   line-height: 1.05;
@@ -283,7 +283,7 @@
 }
 
 .rb-voucher-info b {
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 600;
   font-size: calc(var(--u) * 15);
   line-height: 1.12;
@@ -392,7 +392,7 @@
   outline-offset: calc(var(--u) * 3);
   background: rgba(255, 249, 238, 0.94);
   color: var(--rb-coral);
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 700;
   font-size: calc(var(--u) * 34);
   line-height: 1.1;
@@ -536,7 +536,7 @@
 
 .rb-note p {
   margin-top: calc(var(--u) * 2);
-  font-family: var(--font-caveat), cursive;
+  font-family: var(--rb-hand, var(--font-caveat)), cursive;
   font-weight: 600;
   font-size: calc(var(--u) * 19);
   line-height: 1.12;
@@ -610,7 +610,7 @@
   border-radius: calc(var(--u) * 5);
   background: #fff9ee;
   color: var(--rb-coral);
-  font-family: var(--font-caveat), cursive;
+  font-family: var(--rb-hand, var(--font-caveat)), cursive;
   font-weight: 600;
   font-size: calc(var(--u) * 15);
   line-height: 1.05;
@@ -659,7 +659,7 @@
 /* ── 17 · Piñata ────────────────────────────────────────────────────────── */
 
 .rb-pinata-title {
-  font-family: var(--font-fredoka), sans-serif;
+  font-family: var(--rb-display, var(--font-fredoka)), sans-serif;
   font-weight: 700;
   font-size: calc(var(--u) * 31);
   line-height: 1.05;

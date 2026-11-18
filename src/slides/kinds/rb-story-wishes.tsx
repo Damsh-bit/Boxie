@@ -205,7 +205,11 @@ function WishesNight(props: Props<'story.wishes'>) {
   const loneIndex = featured > 0 && featured % 2 === 1 ? featured - 1 : -1
 
   return (
-    <Stage bg="linear-gradient(180deg, #1B345C 0%, #172C4F 55%, #13223C 100%)" className="rb-night">
+    <Stage
+      tone="deep"
+      bg="linear-gradient(180deg, #1B345C 0%, #172C4F 55%, #13223C 100%)"
+      className="rb-night"
+    >
       <div className="rb-bg">
         <svg
           className="rb-night-blobs"

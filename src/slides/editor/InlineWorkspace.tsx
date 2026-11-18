@@ -15,16 +15,18 @@ import { z } from 'zod'
 import { cn } from '@/ui/cn'
 import { Input, Label } from '@/ui/form'
 import { spring } from '@/ui/motion'
-import type { ParsedThemeConfig } from '../config'
+import { buyerAxes, buyerStyle, type ParsedThemeConfig } from '../config'
 import { arrayElement, getFieldMeta, missingRequired, objectShape } from '../fields'
 import { slideEditorInfo } from '../labels'
 import { Player, type PlayerData } from '../player/Player'
 import { slideDefinitions } from '../schemas'
+import type { StyleAxis, StyleOption } from '../styles'
 import type { SlideDefinition, SlideVariant } from '../types'
 import type { EditorDraft } from './draft'
 import type { MediaAdapter } from './PhotoField'
 import { SchemaForm } from './SchemaForm'
 import { defaultFor, issuesByPath } from './schema-info'
+import { StyleBar, StyleOptions, styleAxisOfPath, stylePath, withStyle } from './StylePicker'
 
 /**
  * El editor directo (temáticas con `editor: 'inline'`, como Cumpleaños): el
@@ -87,6 +89,8 @@ export function InlineWorkspace({
   const content = draft.slides[slide.key] ?? {}
   const variants = definition.variants?.(slide.props as Record<string, unknown>) ?? []
   const missing = missingPaths(definition, content, draft)
+  const axes = buyerAxes(config, slide)
+  const style = buyerStyle(config, slide, content)
 
   // Mide lo editable de la slide en pantalla en cada cuadro (las entradas se
   // animan y las listas se scrollean): solo actualiza si algo se movió.
@@ -177,6 +181,35 @@ export function InlineWorkspace({
       return { ...d, slides: { ...d.slides, [slide.key]: next } }
     })
 
+  const setStyle = (axis: string, value: string) =>
+    change((d) => withStyle(d, [slide.key], axis, value))
+
+  // "Usar en todo el regalo": cada pantalla que ofrece ese eje y esa opción.
+  const applyEverywhere = (axis: string, value: string) =>
+    change((d) => {
+      const keys = config.slides
+        .filter((s) =>
+          buyerAxes(config, s).some(
+            (a) => a.key === axis && a.options.some((o) => o.value === value),
+          ),
+        )
+        .map((s) => s.key)
+      return withStyle(d, keys, axis, value)
+    })
+
+  // "Sorprendeme": una combinación al azar entre las que ofrece la pantalla.
+  const shuffle = () =>
+    change((d) =>
+      axes.reduce((acc, axis) => {
+        const others = axis.options.filter((o) => o.value !== style[axis.key])
+        const pick = others[Math.floor(Math.random() * others.length)] ?? axis.options[0]!
+        return withStyle(acc, [slide.key], axis.key, pick.value)
+      }, d),
+    )
+
+  const openAxis = open ? styleAxisOfPath(open.path) : null
+  const openStyleAxis = openAxis ? axes.find((a) => a.key === openAxis) : undefined
+
   return (
     <div className="mx-auto grid max-w-6xl gap-6 px-4 pt-5 pb-32 lg:grid-cols-[300px_minmax(0,1fr)] lg:pb-16">
       <div className="order-2 space-y-4 lg:order-1">{side}</div>
@@ -191,7 +224,9 @@ export function InlineWorkspace({
             <p className="mt-1 text-sm text-neutral-500">
               {definition.buyerSchema
                 ? 'Tocá lo que tenga el lápiz para cambiarlo.'
-                : 'Esta pantalla no tiene nada para completar: es parte de la sorpresa.'}
+                : axes.length
+                  ? 'No tiene textos para completar, pero podés cambiarle el estilo.'
+                  : 'Esta pantalla no tiene nada para completar: es parte de la sorpresa.'}
             </p>
           </div>
 
@@ -221,7 +256,7 @@ export function InlineWorkspace({
                 <HotspotBox
                   key={`${h.path}-${i}`}
                   hotspot={h}
-                  label={labelFor(definition, h.path)}
+                  label={labelFor(definition, h.path, axes)}
                   missing={isMissing(missing, h.path)}
                   selected={open?.path === h.path}
                   onOpen={(el) => openAt(h.path, el)}
@@ -261,6 +296,13 @@ export function InlineWorkspace({
             </NavButton>
           </div>
 
+          <StyleBar
+            axes={axes}
+            value={style}
+            onOpen={(axis, el) => openAt(stylePath(axis), el)}
+            onShuffle={shuffle}
+          />
+
           {hidden.length > 0 && (
             <button
               type="button"
@@ -284,18 +326,32 @@ export function InlineWorkspace({
           <EditBubble
             key={open.path}
             anchor={open.anchor}
-            title={labelFor(definition, open.path)}
+            title={labelFor(definition, open.path, axes)}
             onClose={() => setOpen(null)}
           >
-            <FieldEditor
-              definition={definition}
-              slideKey={slide.key}
-              path={open.path}
-              draft={draft}
-              media={media}
-              change={change}
-              onDone={() => setOpen(null)}
-            />
+            {openStyleAxis ? (
+              <StyleOptions
+                axis={openStyleAxis}
+                value={style[openStyleAxis.key] ?? ''}
+                onChange={(value) => setStyle(openStyleAxis.key, value)}
+                onApplyAll={
+                  openStyleAxis.global
+                    ? () => applyEverywhere(openStyleAxis.key, style[openStyleAxis.key] ?? '')
+                    : undefined
+                }
+                onDone={() => setOpen(null)}
+              />
+            ) : (
+              <FieldEditor
+                definition={definition}
+                slideKey={slide.key}
+                path={open.path}
+                draft={draft}
+                media={media}
+                change={change}
+                onDone={() => setOpen(null)}
+              />
+            )}
           </EditBubble>
         )}
       </AnimatePresence>
@@ -664,7 +720,13 @@ function fieldSchema(definition: SlideDefinition, path: string): AnySchema | nul
   return base
 }
 
-function labelFor(definition: SlideDefinition, path: string): string {
+function labelFor(
+  definition: SlideDefinition,
+  path: string,
+  axes: readonly (StyleAxis & { options: StyleOption[] })[] = [],
+): string {
+  const axis = styleAxisOfPath(path)
+  if (axis) return axes.find((a) => a.key === axis)?.label ?? 'Estilo'
   if (path === '@recipientName') return 'Para quién es'
   if (path === '@senderName') return 'De parte de quién'
   const first = path.split(',')[0]!

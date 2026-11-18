@@ -408,7 +408,7 @@
 }
 
 .rb-frost.is-rose .rb-steps i {
-  background: rgba(244, 78, 99, 0.16);
+  background: color-mix(in srgb, var(--rb-coral) 16%, transparent);
 }
 
 .rb-answer {
@@ -562,7 +562,7 @@
   min-width: 0;
   font-size: calc(var(--u) * 15.5);
   color: #2a2433;
-  border-bottom: calc(var(--u) * 1) dashed rgba(244, 78, 99, 0.35);
+  border-bottom: calc(var(--u) * 1) dashed color-mix(in srgb, var(--rb-coral) 35%, transparent);
 }
 
 .rb-diary-photo {
@@ -678,7 +678,7 @@
 .is-pareja .rb-band {
   background: linear-gradient(180deg, #f7798a, #f44e63);
   box-shadow:
-    0 calc(var(--u) * 8) calc(var(--u) * 16) rgba(244, 78, 99, 0.3),
+    0 calc(var(--u) * 8) calc(var(--u) * 16) color-mix(in srgb, var(--rb-coral) 30%, transparent),
     inset 0 calc(var(--u) * 3) 0 rgba(255, 255, 255, 0.35);
 }
 
@@ -703,7 +703,7 @@
   color: #ffccd5;
   text-shadow:
     0 0 calc(var(--u) * 12) rgba(255, 143, 177, 0.95),
-    0 0 calc(var(--u) * 28) rgba(244, 78, 99, 0.7);
+    0 0 calc(var(--u) * 28) color-mix(in srgb, var(--rb-coral) 70%, transparent);
 }
 
 .is-pareja .rb-glow-title.is-neon {
@@ -739,7 +739,7 @@
 }
 
 .is-pareja .rb-track-knob {
-  box-shadow: 0 0 0 calc(var(--u) * 3) rgba(244, 78, 99, 0.35);
+  box-shadow: 0 0 0 calc(var(--u) * 3) color-mix(in srgb, var(--rb-coral) 35%, transparent);
 }
 
 .is-pareja .rb-song-band {

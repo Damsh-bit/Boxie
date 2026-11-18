@@ -39,6 +39,13 @@ export function CoverAge({ theme, buyer, ctx }: Props<'cover.age'>) {
     caption: buyer.caption.trim(),
     title: buyer.title.trim() || fill(theme.defaultTitle, ctx.vars),
     wish: buyer.wish.trim() || fill(theme.defaultWish, ctx.vars),
+    age: ctx.vars.edad,
+    style: {
+      marco: ctx.style.marco,
+      globos: ctx.style.globos,
+      letra: ctx.style.letra,
+      detalles: ctx.style.detalles,
+    },
   }
 
   const measure = useSceneMeasure()
@@ -62,7 +69,15 @@ export function CoverAge({ theme, buyer, ctx }: Props<'cover.age'>) {
           active={active}
           label={fill(theme.shareLabel, ctx.vars) || 'Compartir en Instagram'}
           fileName="ribbly-feliz-cumple.png"
-          deps={[data.variant, photo, data.caption, data.title, data.wish].join('|')}
+          deps={[
+            data.variant,
+            photo,
+            data.caption,
+            data.title,
+            data.wish,
+            data.age,
+            JSON.stringify(data.style),
+          ].join('|')}
           draw={(families) => drawScene(coverScene(data, createMeasure(families)), families)}
         />
       </Appear>

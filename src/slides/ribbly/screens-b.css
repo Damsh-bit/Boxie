@@ -181,7 +181,12 @@
   width: calc(var(--u) * 26);
   height: calc(var(--u) * 26);
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ff9db0, #f44e63 55%, #c93049);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #ff9db0,
+    #f44e63 55%,
+    var(--rb-coral-deep, #c93049)
+  );
   box-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 8) rgba(0, 0, 0, 0.3);
 }
 
@@ -895,7 +900,12 @@
   left: 50%;
   width: calc(var(--u) * 26);
   margin-left: calc(var(--u) * -13);
-  background: linear-gradient(90deg, #f8627a, #f44e63 60%, #d63a55);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--rb-coral) 82%, #fff),
+    #f44e63 60%,
+    #d63a55
+  );
 }
 
 .rb-gift-lid {

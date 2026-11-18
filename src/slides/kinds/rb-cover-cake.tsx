@@ -72,7 +72,13 @@ export function CoverCake({ theme, ctx }: Props<'cover.cake'>) {
               animate={blown ? { scale: [1, 1.07, 1] } : { scale: 1 }}
               transition={{ duration: 0.45, ease: 'easeOut' }}
             >
-              <Cake age={ctx.vars.edad} lit={!blown} flicker={active} />
+              <Cake
+                age={ctx.vars.edad}
+                lit={!blown}
+                flicker={active}
+                flavor={ctx.style.torta}
+                candles={ctx.style.velas}
+              />
             </motion.button>
           </Appear>
           {blown && <Burst key="soplo" y="38%" count={46} power={1.15} />}

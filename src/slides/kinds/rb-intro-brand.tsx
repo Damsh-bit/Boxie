@@ -1,5 +1,7 @@
 import { ChevronUp } from 'lucide-react'
 import { Balloon, Bokeh, Bunting, Confetti, Heart, Ribbon } from '../ribbly/art'
+import { useRbPalette } from '../ribbly/look'
+import { FoilNumber } from '../ribbly/pieces'
 import { Btn, Stage, T, u } from '../ribbly/ui'
 import { Appear, frames, Loop, Pop } from './motion'
 import type { Props } from './shared'
@@ -23,6 +25,69 @@ function LoveDecor({ active }: { active: boolean }) {
         delay={-2}
         tilt={8}
       />
+    </>
+  )
+}
+
+const BALLOON_SPOTS = [
+  { style: { left: '5%', top: '53%', width: u(64) }, duration: 6.4, delay: 0, tilt: -3 },
+  { style: { right: '8%', top: '47%', width: u(78) }, duration: 7.2, delay: -2, tilt: 4 },
+  { style: { left: '27%', top: '66%', width: u(52) }, duration: 5.6, delay: -1, tilt: 3 },
+  { style: { right: '26%', top: '67%', width: u(58) }, duration: 6.8, delay: -3.4, tilt: -3 },
+] as const
+
+/**
+ * Los globos de la intro (eje `globos`): redondos, corazones, el número de la
+ * edad en globos metalizados o ninguno. Con otra paleta, toman sus colores.
+ */
+function IntroBalloons({ kind = 'original', age }: { kind?: string; age?: string }) {
+  const palette = useRbPalette()
+  const colors = palette
+    ? [palette.balloons[2], palette.primary, palette.balloons[0], palette.balloons[1]]
+    : ['#F2A93B', '#F44E63', '#B28DFF', '#5ED6A8']
+  if (kind === 'sin') return null
+  if (kind === 'numero' && age) {
+    return (
+      <>
+        <FoilNumber
+          value={age}
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '55%',
+            width: u(age.length > 1 ? 150 : 84),
+            translate: '-50% 0',
+          }}
+        />
+        <Balloon
+          color={colors[1]!}
+          {...BALLOON_SPOTS[0]}
+          style={{ ...BALLOON_SPOTS[0].style, width: u(52) }}
+        />
+        <Balloon
+          color={colors[3]!}
+          {...BALLOON_SPOTS[1]}
+          style={{ ...BALLOON_SPOTS[1].style, width: u(56) }}
+        />
+      </>
+    )
+  }
+  return (
+    <>
+      {BALLOON_SPOTS.map((spot, i) =>
+        kind === 'corazones' ? (
+          <Heart
+            key={i}
+            color={colors[i]!}
+            duration={spot.duration}
+            delay={spot.delay}
+            tilt={spot.tilt}
+            style={{ position: 'absolute', ...spot.style }}
+          />
+        ) : (
+          <Balloon key={i} color={colors[i]!} {...spot} />
+        ),
+      )}
     </>
   )
 }
@@ -77,27 +142,7 @@ export function IntroBrand({ theme, ctx }: Props<'intro.brand'>) {
         <Confetti seed={1} count={30} />
       </div>
       <Bunting />
-      <Balloon color="#F2A93B" style={{ left: '5%', top: '53%', width: u(64) }} duration={6.4} />
-      <Balloon
-        color="#F44E63"
-        style={{ right: '8%', top: '47%', width: u(78) }}
-        duration={7.2}
-        delay={-2}
-        tilt={4}
-      />
-      <Balloon
-        color="#B28DFF"
-        style={{ left: '27%', top: '66%', width: u(52) }}
-        duration={5.6}
-        delay={-1}
-        tilt={3}
-      />
-      <Balloon
-        color="#5ED6A8"
-        style={{ right: '26%', top: '67%', width: u(58) }}
-        duration={6.8}
-        delay={-3.4}
-      />
+      <IntroBalloons kind={ctx.style.globos} age={ctx.vars.edad} />
 
       <div className="rb-body">
         <div className="rb-intro-logo">

@@ -321,6 +321,307 @@ export interface CoverData {
   caption: string
   title: string
   wish: string
+  /** La edad (para los globos de número). */
+  age?: string
+  /** Lo que eligió el comprador (ejes de piece-options.ts). Sin esto, el diseño. */
+  style?: { marco?: string; globos?: string; letra?: string; detalles?: string }
+}
+
+/** El marco de la foto (eje `marco`): onda orgánica, arco, círculo o polaroid. */
+function coverPhoto(
+  marco: string | undefined,
+  c: CoverPalette,
+  src: string | undefined,
+): GroupNode {
+  if (marco === 'arco') {
+    return {
+      type: 'group',
+      id: 'photo',
+      edit: 'photo',
+      children: [
+        {
+          type: 'photo',
+          x: 14,
+          y: 52,
+          w: 334,
+          h: 420,
+          src,
+          clip: 'M28 470L28 214A152 152 0 0 1 332 214L332 470Z',
+        },
+        line('M22 420L22 214A158 158 0 0 1 338 214L338 420', c.gold, 5),
+        line('M23 420L23 214A157 157 0 0 1 180 57', c.goldLight, 1.2, 0.8),
+        line('M346 200C352 240 340 268 348 306', c.gold, 1.6),
+      ],
+    }
+  }
+  if (marco === 'circulo') {
+    return {
+      type: 'group',
+      id: 'photo',
+      edit: 'photo',
+      children: [
+        { type: 'photo', x: 14, y: 52, w: 334, h: 420, src, clip: ellipse(180, 252, 152, 152) },
+        path(ellipse(180, 252, 158, 158), { stroke: c.gold, width: 5 }),
+        path(ellipse(180, 252, 166, 166), { stroke: c.goldLight, width: 1.2, opacity: 0.9 }),
+        sparkle(46, 150, 5, c.gold),
+        sparkle(318, 352, 4, c.gold),
+      ],
+    }
+  }
+  if (marco === 'polaroid') {
+    return {
+      type: 'group',
+      id: 'photo',
+      edit: 'photo',
+      x: 180,
+      y: 238,
+      rotate: -3,
+      children: [
+        {
+          type: 'rect',
+          x: -148,
+          y: -176,
+          w: 296,
+          h: 352,
+          fill: '#FFFFFF',
+          radius: 3,
+          shadow: true,
+        },
+        { type: 'photo', x: -134, y: -162, w: 268, h: 286, src },
+        line('M-40 152H40', c.goldLight, 1.4, 0.9),
+        bow(0, -176, 0, c.gold, shade(c.gold, -0.3)),
+      ],
+    }
+  }
+  return {
+    type: 'group',
+    id: 'photo',
+    edit: 'photo',
+    children: [
+      { type: 'photo', x: 14, y: 52, w: 334, h: 420, src, clip: COVER_PHOTO_CLIP },
+      line(
+        'M14 405C12 340 13 262 15 206C17 152 30 112 62 87 100 58 150 51 200 53 250 55 292 71 318 97 340 119 349 160 347 205 345 250 351 300 347 350 344 385 343 405 342 420',
+        c.gold,
+        5,
+      ),
+      line(
+        'M15 405C13 340 14 262 16 206C18 152 31 112 63 87 101 58 151 51 201 53',
+        c.goldLight,
+        1.2,
+        0.8,
+      ),
+      line('M352 186C359 228 343 258 353 298 361 334 345 362 353 404', c.gold, 1.8),
+    ],
+  }
+}
+
+/** Un globo con forma de corazón, con su hilo. */
+function heartBalloon(cx: number, cy: number, size: number, color: string): SceneNode[] {
+  return [
+    line(
+      `M${cx} ${cy + size * 0.36}C${cx - 6} ${cy + size * 0.36 + 20} ${cx + 7} ${cy + size * 0.36 + 36} ${cx - 2} ${cy + size * 0.36 + 58}`,
+      '#C9B08A',
+      0.8,
+      0.85,
+    ),
+    {
+      type: 'heart',
+      x: cx,
+      y: cy,
+      size,
+      rotate: (cx % 7) - 3,
+      fill: {
+        radial: [8, 8, 18],
+        stops: [
+          [0, shade(color, 0.7)],
+          [0.4, shade(color, 0.15)],
+          [1, shade(color, -0.12)],
+        ],
+      },
+    },
+  ]
+}
+
+/** El número de la edad en globos metalizados dorados, arriba a la derecha. */
+function foilNumber(age: string, x: number, y: number, size: number): SceneNode[] {
+  const digits = age.slice(0, 2).split('')
+  const step = size * 0.62
+  return digits.flatMap((digit, i) => {
+    const dx = x + i * step - ((digits.length - 1) * step) / 2
+    return [
+      line(
+        `M${dx} ${y + 4}C${dx - 5} ${y + 22} ${dx + 6} ${y + 36} ${dx - 2} ${y + 56}`,
+        '#C9B08A',
+        0.8,
+        0.85,
+      ),
+      {
+        type: 'text',
+        x: dx - size * 0.3,
+        y,
+        text: digit,
+        font: { family: 'fredoka', weight: 700, size },
+        color: '#E2B04A',
+        gradient: {
+          linear: [dx - size * 0.3, y - size * 0.8, dx + size * 0.3, y],
+          stops: [
+            [0, '#FFF4C2'],
+            [0.4, '#F5C451'],
+            [0.75, '#C98A1B'],
+            [1, '#F5C451'],
+          ],
+        },
+        shadow: true,
+      } satisfies TextNode,
+    ]
+  })
+}
+
+/** Los globos (eje `globos`): redondos, corazones, el número de la edad o ninguno. */
+function coverBalloons(
+  globos: string | undefined,
+  c: CoverPalette,
+  age: string | undefined,
+): GroupNode[] {
+  const b = c.balloons
+  if (globos === 'sin') return []
+  if (globos === 'corazones') {
+    return [
+      {
+        type: 'group',
+        id: 'balloons-right',
+        children: [
+          ...heartBalloon(318, 62, 60, b.a),
+          ...heartBalloon(340, 138, 54, b.c),
+          ...heartBalloon(282, 96, 56, b.b),
+        ],
+      },
+      {
+        type: 'group',
+        id: 'balloons-left',
+        children: [
+          ...heartBalloon(4, 334, 44, b.c),
+          ...heartBalloon(24, 272, 52, b.a),
+          ...heartBalloon(46, 362, 56, b.b),
+        ],
+      },
+    ]
+  }
+  const left: GroupNode = {
+    type: 'group',
+    id: 'balloons-left',
+    children: [
+      ...balloon(2, 332, 20, 28, b.c),
+      ...balloon(23, 272, 25, 31, b.a),
+      ...balloon(46, 360, 28, 33, b.b),
+    ],
+  }
+  if (globos === 'numero' && age) {
+    return [{ type: 'group', id: 'balloons-right', children: foilNumber(age, 304, 132, 92) }, left]
+  }
+  return [
+    {
+      type: 'group',
+      id: 'balloons-right',
+      children: [
+        ...balloon(320, 60, 27, 33, b.a),
+        ...balloon(341, 136, 26, 32, b.c),
+        ...balloon(285, 92, 27, 32, b.b),
+      ],
+    },
+    left,
+  ]
+}
+
+/** Confeti, serpentinas y garabatos (eje `detalles`). */
+function coverDetails(detalles: string | undefined, c: CoverPalette): SceneNode[] {
+  const whiteSparkles = [
+    sparkle(276, 155, 4, '#FFFFFF', 0.9),
+    sparkle(246, 140, 2.8, '#FFFFFF', 0.85),
+    sparkle(88, 368, 3.4, '#FFFFFF', 0.9),
+    sparkle(58, 238, 2.8, '#FFFFFF', 0.8),
+  ]
+  if (detalles === 'limpio') return [...whiteSparkles, sparkle(330, 520, 3, c.gold)]
+  if (detalles === 'estrellas') {
+    return [
+      ...whiteSparkles,
+      sparkle(30, 72, 5, c.gold),
+      sparkle(254, 64, 4, c.gold),
+      sparkle(330, 520, 5, c.gold),
+      sparkle(40, 470, 4, c.gold),
+      sparkle(130, 34, 3.5, c.gold),
+      star(72, 64, 7, c.gold),
+      star(44, 196, 6, c.gold),
+      star(330, 214, 7, c.gold),
+      star(318, 302, 5, c.gold),
+      star(60, 430, 8, c.heart, 1.2),
+      star(318, 560, 9, c.heart, 1.2),
+      star(232, 60, 5, c.gold),
+    ]
+  }
+  if (detalles === 'corazones') {
+    const hearts: [number, number, number, number][] = [
+      [266, 32, 10, -10],
+      [228, 62, 8, 12],
+      [72, 64, 11, -8],
+      [44, 192, 9, 10],
+      [330, 214, 10, -6],
+      [318, 300, 8, 14],
+      [56, 300, 9, -12],
+      [128, 30, 8, 6],
+    ]
+    return [
+      ...whiteSparkles,
+      ...hearts.map(
+        ([x, y, size, rotate]) =>
+          ({ type: 'heart', x, y, size, rotate, fill: c.gold }) satisfies SceneNode,
+      ),
+      { type: 'heart', x: 267, y: 182, size: 15, rotate: -8, stroke: '#FFFFFF', width: 1.3 },
+      { type: 'heart', x: 74, y: 399, size: 16, rotate: -6, fill: c.heart },
+      { type: 'heart', x: 314, y: 557, size: 20, rotate: -10, fill: c.heart },
+      { type: 'heart', x: 44, y: 560, size: 14, rotate: 8, stroke: c.heart, width: 1.3 },
+    ]
+  }
+  return [
+    ...confetti(
+      [
+        [266, 32, 30],
+        [228, 62, 70],
+        [254, 58, -20],
+        [345, 92, 15],
+        [72, 64, -30],
+        [44, 192, 40],
+        [330, 214, 60],
+        [318, 300, -40],
+        [56, 300, 25],
+        [64, 436, -50],
+        [344, 330, 10],
+        [128, 30, 70],
+      ],
+      c.gold,
+    ),
+    line('M106 36C118 46 92 60 104 72 114 82 94 94 106 104', c.gold, 1.1, 0.9),
+    line('M14 80C26 88 6 102 18 112 28 122 10 132 22 140', c.gold, 1, 0.8),
+    line('M300 286C310 296 290 306 300 316', c.gold, 1, 0.8),
+    sparkle(30, 72, 3.5, c.gold),
+    sparkle(254, 64, 3, c.gold),
+    ...whiteSparkles,
+    sparkle(330, 520, 3, c.gold),
+    { type: 'heart', x: 267, y: 182, size: 15, rotate: -8, stroke: '#FFFFFF', width: 1.3 },
+    { type: 'heart', x: 280, y: 202, size: 10, rotate: 10, stroke: '#FFFFFF', width: 1.2 },
+    { type: 'heart', x: 74, y: 399, size: 14, rotate: -6, stroke: c.heart, width: 1.2 },
+    cakeDoodle(31, 444, c.doodle),
+    { type: 'heart', x: 314, y: 557, size: 18, rotate: -10, stroke: c.heart, width: 1.4 },
+    ...candleDoodle(327, 538, c.doodle, c.flame),
+  ]
+}
+
+/** La letra del deseo (eje `letra`). */
+function wishFontFor(letra: string | undefined): Font {
+  if (letra === 'caveat') return { family: 'caveat', weight: 600, size: 29 }
+  if (letra === 'serif') return { family: 'playfair', weight: 700, size: 21, italic: true }
+  if (letra === 'moderna') return { family: 'outfit', weight: 400, size: 21 }
+  return { family: 'dancing', weight: 500, size: 25.5 }
 }
 
 export function coverScene(data: CoverData, measure: Measure): Scene {
@@ -377,28 +678,10 @@ export function coverScene(data: CoverData, measure: Measure): Scene {
   ]
 
   const fg: SceneNode[] = []
+  const style = data.style ?? {}
 
   // La foto, con su marco dorado.
-  fg.push({
-    type: 'group',
-    id: 'photo',
-    edit: 'photo',
-    children: [
-      { type: 'photo', x: 14, y: 52, w: 334, h: 420, src: data.photo, clip: COVER_PHOTO_CLIP },
-      line(
-        'M14 405C12 340 13 262 15 206C17 152 30 112 62 87 100 58 150 51 200 53 250 55 292 71 318 97 340 119 349 160 347 205 345 250 351 300 347 350 344 385 343 405 342 420',
-        c.gold,
-        5,
-      ),
-      line(
-        'M15 405C13 340 14 262 16 206C18 152 31 112 63 87 101 58 151 51 201 53',
-        c.goldLight,
-        1.2,
-        0.8,
-      ),
-      line('M352 186C359 228 343 258 353 298 361 334 345 362 353 404', c.gold, 1.8),
-    ],
-  })
+  fg.push(coverPhoto(style.marco, c, data.photo))
 
   // Las ondas de abajo (con la frase): se pasan del lienzo hacia los bordes.
   fg.push(
@@ -473,66 +756,10 @@ export function coverScene(data: CoverData, measure: Measure): Scene {
   )
 
   // Globos.
-  const b = c.balloons
-  fg.push({
-    type: 'group',
-    id: 'balloons-right',
-    children: [
-      ...balloon(320, 60, 27, 33, b.a),
-      ...balloon(341, 136, 26, 32, b.c),
-      ...balloon(285, 92, 27, 32, b.b),
-    ],
-  })
-  fg.push({
-    type: 'group',
-    id: 'balloons-left',
-    children: [
-      ...balloon(2, 332, 20, 28, b.c),
-      ...balloon(23, 272, 25, 31, b.a),
-      ...balloon(46, 360, 28, 33, b.b),
-    ],
-  })
+  fg.push(...coverBalloons(style.globos, c, data.age))
 
   // Confeti dorado, serpentinas y garabatos.
-  fg.push({
-    type: 'group',
-    id: 'confetti',
-    children: [
-      ...confetti(
-        [
-          [266, 32, 30],
-          [228, 62, 70],
-          [254, 58, -20],
-          [345, 92, 15],
-          [72, 64, -30],
-          [44, 192, 40],
-          [330, 214, 60],
-          [318, 300, -40],
-          [56, 300, 25],
-          [64, 436, -50],
-          [344, 330, 10],
-          [128, 30, 70],
-        ],
-        c.gold,
-      ),
-      line('M106 36C118 46 92 60 104 72 114 82 94 94 106 104', c.gold, 1.1, 0.9),
-      line('M14 80C26 88 6 102 18 112 28 122 10 132 22 140', c.gold, 1, 0.8),
-      line('M300 286C310 296 290 306 300 316', c.gold, 1, 0.8),
-      sparkle(30, 72, 3.5, c.gold),
-      sparkle(254, 64, 3, c.gold),
-      sparkle(276, 155, 4, '#FFFFFF', 0.9),
-      sparkle(246, 140, 2.8, '#FFFFFF', 0.85),
-      sparkle(88, 368, 3.4, '#FFFFFF', 0.9),
-      sparkle(58, 238, 2.8, '#FFFFFF', 0.8),
-      sparkle(330, 520, 3, c.gold),
-      { type: 'heart', x: 267, y: 182, size: 15, rotate: -8, stroke: '#FFFFFF', width: 1.3 },
-      { type: 'heart', x: 280, y: 202, size: 10, rotate: 10, stroke: '#FFFFFF', width: 1.2 },
-      { type: 'heart', x: 74, y: 399, size: 14, rotate: -6, stroke: c.heart, width: 1.2 },
-      cakeDoodle(31, 444, c.doodle),
-      { type: 'heart', x: 314, y: 557, size: 18, rotate: -10, stroke: c.heart, width: 1.4 },
-      ...candleDoodle(327, 538, c.doodle, c.flame),
-    ],
-  })
+  fg.push({ type: 'group', id: 'confetti', children: coverDetails(style.detalles, c) })
 
   // La marca.
   fg.push({ type: 'group', id: 'logo', children: wordmark(measure, 183, 33, 22, c.logo) })
@@ -593,7 +820,7 @@ export function coverScene(data: CoverData, measure: Measure): Scene {
   })
 
   // El deseo, a mano, en dos renglones.
-  const wishFont: Font = { family: 'dancing', weight: 500, size: 25.5 }
+  const wishFont = wishFontFor(style.letra)
   const wish = balanced(measure, data.wish, wishFont, 250)
   fg.push({
     type: 'group',
@@ -876,6 +1103,115 @@ export interface CumpleMomentsData {
   title: string
   phrase: string
   days: string
+  /** Lo que eligió el comprador (ejes de piece-options.ts). Sin esto, el diseño. */
+  style?: { sujecion?: string; disposicion?: string; globos?: string; letra?: string }
+}
+
+/** Cómo se acomodan las fotos (eje `disposicion`): rectas, en collage o como vienen. */
+function arrangeSpots(spots: CumplePolaroidSpot[], disposicion: string | undefined) {
+  if (disposicion === 'derecha') {
+    const cols = spots.length >= 2 ? [104, 256] : [180]
+    return spots.map((s, i) => ({
+      ...s,
+      w: Math.min(s.w, 148),
+      h: Math.min(s.h, 164),
+      x: spots.length === 3 && i === 2 ? 180 : cols[i % cols.length]!,
+      y: spots.length <= 2 ? 300 : i < 2 ? 222 : 414,
+      rotate: 0,
+      bow: 0,
+    }))
+  }
+  if (disposicion === 'collage') {
+    const nudge: [number, number][] = [
+      [10, 12],
+      [-12, 4],
+      [14, -10],
+      [-10, -8],
+    ]
+    return spots.map((s, i) => ({
+      ...s,
+      x: s.x + nudge[i]![0],
+      y: s.y + nudge[i]![1],
+      rotate: s.rotate * 1.9,
+      bow: s.bow * 1.5,
+    }))
+  }
+  return spots
+}
+
+/** Lo que sostiene la polaroid arriba (eje `sujecion`). */
+function fastener(
+  kind: string | undefined,
+  w: number,
+  h: number,
+  tilt: number,
+  c: MomentsPalette,
+): SceneNode[] {
+  if (kind === 'washi') {
+    return [
+      {
+        type: 'group',
+        x: 0,
+        y: -h / 2 + 1,
+        rotate: tilt * 0.8 - 3,
+        children: [
+          { type: 'rect', x: -26, y: -9, w: 52, h: 18, fill: 'rgba(255,221,140,0.82)', radius: 1 },
+          line('M-26 -9V9M26 -9V9', 'rgba(255,255,255,0.5)', 1, 0.8),
+        ],
+      },
+    ]
+  }
+  if (kind === 'chinche') {
+    return [
+      path(ellipse(2, -h / 2 + 11, 7.5, 3.4), { fill: 'rgba(40,30,30,0.18)' }),
+      path(ellipse(0, -h / 2 + 7, 7.5, 7.5), {
+        fill: {
+          radial: [-2, -h / 2 + 4, 10],
+          stops: [
+            [0, '#FFB3BF'],
+            [0.45, '#F2506B'],
+            [1, '#B8233F'],
+          ],
+        },
+      }),
+      path(ellipse(-2.5, -h / 2 + 4.5, 2, 1.4), { fill: 'rgba(255,255,255,0.7)' }),
+    ]
+  }
+  if (kind === 'clip') {
+    const x = -w / 2 + 24
+    const y = -h / 2 - 12
+    return [
+      line(
+        `M${x} ${y + 30}V${y + 4}A5 5 0 0 1 ${x + 10} ${y + 4}V${y + 34}A7 7 0 0 1 ${x - 4} ${y + 34}V${y + 10}`,
+        '#8E98AC',
+        2.2,
+      ),
+    ]
+  }
+  return [bow(-2, -h / 2 + 2, tilt, c.bow[0], c.bow[1])]
+}
+
+/** La letra de la frase (eje `letra`): las dos líneas, la común y la destacada. */
+function phraseFonts(letra: string | undefined): [Font, Font] {
+  if (letra === 'caveat')
+    return [
+      { family: 'caveat', weight: 600, size: 28 },
+      { family: 'caveat', weight: 700, size: 35 },
+    ]
+  if (letra === 'serif')
+    return [
+      { family: 'playfair', weight: 700, size: 20, italic: true },
+      { family: 'playfair', weight: 900, size: 25, italic: true },
+    ]
+  if (letra === 'moderna')
+    return [
+      { family: 'outfit', weight: 400, size: 20 },
+      { family: 'fredoka', weight: 600, size: 26 },
+    ]
+  return [
+    { family: 'dancing', weight: 500, size: 25 },
+    { family: 'dancing', weight: 700, size: 31 },
+  ]
 }
 
 function cumplePolaroid(
@@ -883,6 +1219,7 @@ function cumplePolaroid(
   src: string | undefined,
   i: number,
   c: MomentsPalette,
+  sujecion?: string,
 ): GroupNode {
   const { w, h } = spot
   const m = 8
@@ -935,7 +1272,7 @@ function cumplePolaroid(
         : []),
       { type: 'photo', x: -w / 2 + m, y: -h / 2 + m, w: photoW, h: photoH, src },
       ...feet,
-      bow(-2, -h / 2 + 2, spot.bow, c.bow[0], c.bow[1]),
+      ...fastener(sujecion, w, h, spot.bow, c),
     ],
   }
 }
@@ -945,18 +1282,29 @@ export function cumpleMomentsScene(data: CumpleMomentsData, measure: Measure): S
   const c = MOMENTS[variant]
   const fg: SceneNode[] = []
   const photos = data.photos.slice(0, 4)
+  const style = data.style ?? {}
 
   // Globos de los costados (detrás de las polaroids) y confeti.
-  fg.push({
-    type: 'group',
-    id: 'balloons',
-    children: [
-      ...balloon(17, 328, 23, 31, c.balloons.b),
-      ...balloon(40, 250, 29, 36, c.balloons.a),
-      ...balloon(348, 438, 22, 30, c.balloons.b),
-      ...balloon(332, 404, 26, 32, c.balloons.a),
-    ],
-  })
+  if (style.globos !== 'sin') {
+    fg.push({
+      type: 'group',
+      id: 'balloons',
+      children:
+        style.globos === 'corazones'
+          ? [
+              ...heartBalloon(18, 330, 46, c.balloons.b),
+              ...heartBalloon(40, 252, 56, c.balloons.a),
+              ...heartBalloon(346, 440, 44, c.balloons.b),
+              ...heartBalloon(330, 404, 52, c.balloons.a),
+            ]
+          : [
+              ...balloon(17, 328, 23, 31, c.balloons.b),
+              ...balloon(40, 250, 29, 36, c.balloons.a),
+              ...balloon(348, 438, 22, 30, c.balloons.b),
+              ...balloon(332, 404, 26, 32, c.balloons.a),
+            ],
+    })
+  }
   fg.push({
     type: 'group',
     id: 'confetti',
@@ -1085,8 +1433,8 @@ export function cumpleMomentsScene(data: CumpleMomentsData, measure: Measure): S
   })
 
   // Las polaroids.
-  cumpleSpots(photos.length || 1).forEach((spot, i) =>
-    fg.push(cumplePolaroid(spot, photos[i], i, c)),
+  arrangeSpots(cumpleSpots(photos.length || 1), style.disposicion).forEach((spot, i) =>
+    fg.push(cumplePolaroid(spot, photos[i], i, c, style.sujecion)),
   )
 
   // La vela sobre la frase.
@@ -1094,8 +1442,9 @@ export function cumpleMomentsScene(data: CumpleMomentsData, measure: Measure): S
 
   // La frase en su píldora.
   const [p1, p2] = splitAccent(data.phrase, 3)
-  const l1 = p1 ? fit(measure, p1, { family: 'dancing', weight: 500, size: 25 }, 226, 1) : null
-  const l2 = fit(measure, p2, { family: 'dancing', weight: 700, size: 31 }, 232, 1)
+  const [phraseFont1, phraseFont2] = phraseFonts(style.letra)
+  const l1 = p1 ? fit(measure, p1, phraseFont1, 226, 1) : null
+  const l2 = fit(measure, p2, phraseFont2, 232, 1)
   const l2Text = l2.lines.join(' ')
   const l2w = measure(l2Text, l2.font)
   const l2y = l1 ? 569 : 557

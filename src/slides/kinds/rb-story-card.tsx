@@ -2,11 +2,21 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Bookmark } from 'lucide-react'
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
+import type { IconName } from '@/domain/icons'
 import { Balloon, Confetti, Heart, PETALS, Squiggles } from '../ribbly/art'
+import { useRbPalette } from '../ribbly/look'
 import { Btn, editable, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { Appear, ease, spring } from './motion'
 import type { Props } from './shared'
+
+/** El sticker del sobre (eje `sello`). */
+function sealIcon(sello: string | undefined): IconName {
+  if (sello === 'corazon') return 'corazon'
+  if (sello === 'estrella') return 'estrella'
+  if (sello === 'regalo') return 'regalo'
+  return 'torta'
+}
 
 /** Pareja: la carta en una hoja rayada que sube desde el sobre abierto. */
 function Letter({
@@ -77,6 +87,7 @@ function Letter({
 export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
   const active = ctx.active
   const calm = useReducedMotion()
+  const palette = useRbPalette()
   const pareja = theme.look === 'pareja'
   const [open, setOpen] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -179,7 +190,7 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
                     {pareja ? (
                       <Heart still color="#FF8A9A" style={{ width: u(28) }} />
                     ) : (
-                      <Icon name="torta" size={u(38)} />
+                      <Icon name={sealIcon(ctx.style.sello)} size={u(38)} />
                     )}
                   </motion.button>
                   <TapMark style={{ left: '50%', top: '62%', zIndex: 4 }} />
@@ -214,18 +225,21 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
               <motion.div
                 key="tarjeta"
                 className="rb-card"
+                data-papel={
+                  ctx.style.papel && ctx.style.papel !== 'original' ? ctx.style.papel : undefined
+                }
                 initial={{ opacity: 0, scale: 0.7, y: 40, rotate: -6 }}
                 animate={{ opacity: 1, scale: 1, y: 0, rotate: -1.5, transition: spring.bouncy }}
                 exit={{ opacity: 0, scale: 0.8, y: 30, transition: { duration: 0.22 } }}
               >
                 <div className="rb-card-spine">
                   <Balloon
-                    color="#F44E63"
+                    color={palette?.balloons[1] ?? '#F44E63'}
                     style={{ left: '12%', top: '8%', width: u(46) }}
                     duration={5}
                   />
                   <Balloon
-                    color="#4FC3F7"
+                    color={palette?.balloons[2] ?? '#4FC3F7'}
                     style={{ left: '48%', top: '19%', width: u(40) }}
                     duration={6}
                     delay={-2}

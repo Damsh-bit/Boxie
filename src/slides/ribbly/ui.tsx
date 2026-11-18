@@ -84,6 +84,14 @@ export function Stage({
           '--rb-coral': palette.primary,
           '--rb-coral-deep': palette.primaryDeep,
           '--rb-sol': palette.accent,
+          '--rb-naranja': palette.accent,
+          '--rb-cielo': palette.primary,
+          '--rb-cielo-p': palette.primaryDeep,
+          // Para las piezas con colores propios del diseño (sobres, lomos, tickets):
+          // con otra paleta, `var(--rb-p1, <el del diseño>)` toma estos.
+          '--rb-p1': palette.primary,
+          '--rb-p2': palette.primaryDeep,
+          '--rb-a': palette.accent,
           '--rb-noche': palette.night,
           '--rb-crema': palette.cream,
           '--rb-rosa': palette.tint,

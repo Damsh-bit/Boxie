@@ -68,7 +68,13 @@ export function ReflectCandles({ theme, ctx }: Props<'reflect.candles'>) {
         }}
         transition={{ duration: 0.7, ease: ease.out }}
       >
-        <Cake age={ctx.vars.edad} lit={lit} flicker={active} />
+        <Cake
+          age={ctx.vars.edad}
+          lit={lit}
+          flicker={active}
+          flavor={ctx.style.torta}
+          candles={ctx.style.velas}
+        />
       </motion.div>
 
       <AnimatePresence mode="wait" initial={false}>

@@ -231,15 +231,20 @@
 }
 
 .rb-btn-primary {
-  background: linear-gradient(180deg, #f8627a, var(--rb-coral));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--rb-coral) 82%, #fff),
+    var(--rb-coral)
+  );
   color: #fff;
   box-shadow:
-    0 calc(var(--u) * 5) 0 #c93049,
-    0 calc(var(--u) * 12) calc(var(--u) * 24) rgba(244, 78, 99, 0.45);
+    0 calc(var(--u) * 5) 0 var(--rb-coral-deep, #c93049),
+    0 calc(var(--u) * 12) calc(var(--u) * 24) color-mix(in srgb, var(--rb-coral) 45%, transparent);
 }
 
 .rb-btn-primary.is-flat {
-  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 24) rgba(244, 78, 99, 0.45);
+  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 24)
+    color-mix(in srgb, var(--rb-coral) 45%, transparent);
 }
 
 .rb-btn-white {

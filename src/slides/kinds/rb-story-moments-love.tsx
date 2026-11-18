@@ -65,6 +65,12 @@ export function StoryMomentsGrid({ theme, buyer, ctx }: Props<'story.moments'>) 
     title: buyer.title.trim() || fill(theme.title, ctx.vars),
     phrase: buyer.phrase.trim() || fill(theme.phrase, ctx.vars),
     days: ctx.vars.dias_juntos ? fill(theme.daysLabel, ctx.vars) : '',
+    style: {
+      sujecion: ctx.style.sujecion,
+      disposicion: ctx.style.disposicion,
+      globos: ctx.style.globos,
+      letra: ctx.style.letra,
+    },
   }
   const build = cumple ? cumpleMomentsScene : momentsScene
   const measure = useSceneMeasure()
@@ -104,6 +110,7 @@ export function StoryMomentsGrid({ theme, buyer, ctx }: Props<'story.moments'>) 
             data.title,
             data.phrase,
             data.days,
+            JSON.stringify(data.style),
           ].join('|')}
           draw={(families) => drawScene(build(data, createMeasure(families)), families)}
         />

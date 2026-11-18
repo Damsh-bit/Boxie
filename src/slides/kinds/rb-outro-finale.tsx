@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { Balloon, Bokeh, Bow, Bunting, Burst, Confetti, Heart, Stars } from '../ribbly/art'
-import { Brand, Btn, Stage, T, u } from '../ribbly/ui'
+import { Brand, Btn, editable, Stage, T, u } from '../ribbly/ui'
 import { Appear, ease, frames, Loop, Pop, spring } from './motion'
 import type { Props } from './shared'
 
@@ -118,6 +118,7 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
               frames={frames.wiggle(3)}
               className="rb-gift"
               style={{ marginTop: u(84) }}
+              {...editable(ctx, 'gift,giftDetail,giftSignature,giftLink')}
             >
               {/* La luz sale de la caja cuando se abre. */}
               <motion.i
@@ -161,7 +162,10 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
                     }}
                     style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                   >
-                    <div className="rb-giftcard">
+                    <div
+                      className="rb-giftcard"
+                      {...editable(ctx, 'gift,giftDetail,giftSignature,giftLink')}
+                    >
                       <div className="rb-giftcard-main">
                         <p
                           className="rb-kicker"

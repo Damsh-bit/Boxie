@@ -5,7 +5,7 @@ import { Icon } from '@/ui/Icon'
 import type { BuyerPhoto } from '../fields'
 import { CoupleScene, PartyScene } from '../ribbly/art'
 import { pickMagazine } from '../ribbly/magazine'
-import { Brand, Btn, Sheet, slideOfKind, Stage, T, u } from '../ribbly/ui'
+import { Brand, Btn, editable, Sheet, slideOfKind, Stage, T, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { Appear, ease } from './motion'
 import type { Props } from './shared'
@@ -73,7 +73,14 @@ export function StoryMagazine({
             marginTop: u(22),
           }}
         >
-          <Appear as="p" active={active} delay={0.6} className="rb-mag-text" lang="es">
+          <Appear
+            as="p"
+            active={active}
+            delay={0.6}
+            className="rb-mag-text"
+            lang="es"
+            {...editable(ctx, 'relation,tone,version,ownText')}
+          >
             {own ? (
               own
             ) : (
@@ -85,7 +92,13 @@ export function StoryMagazine({
             )}
           </Appear>
 
-          <Appear active={active} delay={0.8} y={30} className="rb-mag-photo">
+          <Appear
+            active={active}
+            delay={0.8}
+            y={30}
+            className="rb-mag-photo"
+            {...editable(ctx, 'photo')}
+          >
             {photo ? <img src={photo} alt="" /> : pareja ? <CoupleScene /> : <PartyScene />}
             <span
               style={{

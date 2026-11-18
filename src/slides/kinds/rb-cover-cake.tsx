@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { Bunting, Burst, Cake, Confetti, Rays } from '../ribbly/art'
-import { Btn, Stage, T, TapMark, u } from '../ribbly/ui'
+import { Btn, editable, Stage, T, TapMark, u } from '../ribbly/ui'
 import { Appear, Pop } from './motion'
 import type { Props } from './shared'
 
@@ -55,6 +55,7 @@ export function CoverCake({ theme, ctx }: Props<'cover.cake'>) {
           from={0.5}
           className="rb-cake-name"
           style={{ fontSize: u(nameSize(name)), marginTop: u(6), maxWidth: '100%' }}
+          {...editable(ctx, '@recipientName')}
         >
           {name}
         </Pop>
@@ -65,6 +66,7 @@ export function CoverCake({ theme, ctx }: Props<'cover.cake'>) {
               type="button"
               className="rb-cake-tap"
               onClick={blow}
+              {...editable(ctx, 'age,treatment,birthday')}
               aria-label={blown ? 'Seguir' : 'Soplar las velitas'}
               whileTap={{ scale: 0.96 }}
               animate={blown ? { scale: [1, 1.07, 1] } : { scale: 1 }}
@@ -94,7 +96,14 @@ export function CoverCake({ theme, ctx }: Props<'cover.cake'>) {
             </Btn>
             {!blown && <TapMark style={{ left: '50%', top: '50%' }} />}
           </Appear>
-          <Appear as="p" active={active} delay={1} y={10} className="rb-sender">
+          <Appear
+            as="p"
+            active={active}
+            delay={1}
+            y={10}
+            className="rb-sender"
+            {...editable(ctx, '@senderName')}
+          >
             <T text={theme.senderPrefix} ctx={ctx} /> {ctx.senderName}
           </Appear>
         </div>

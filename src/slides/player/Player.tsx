@@ -53,6 +53,8 @@ export interface PlayerProps {
   /** Algo fijo debajo del teléfono (la barra de la Ribbly de ejemplo). */
   footer?: ReactNode
   logoUrl?: string
+  /** Editor directo: las slides marcan lo que se edita tocándolo (SlideContext.editing). */
+  editing?: boolean
 }
 
 const BACKGROUND_CLASS: Record<string, string> = {
@@ -80,6 +82,7 @@ export function Player({
   animateIn = false,
   footer,
   logoUrl = '/brand/ribbly-logo.png',
+  editing = false,
 }: PlayerProps) {
   const count = config.slides.length
   const [selected, setSelected] = useState(() => Math.max(slide ?? initialSlide, 0))
@@ -243,6 +246,7 @@ export function Player({
             slides: slideList,
             next: () => change(Math.min(index + 1, count - 1)),
             vars,
+            editing,
           }
           return (
             <SlideFrame

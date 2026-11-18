@@ -90,7 +90,11 @@ export function SchemaForm({
 
 function Fields({ shape, path, ctx }: { shape: Record<string, AnySchema>; path: Path; ctx: Ctx }) {
   const [showAdvanced, setShowAdvanced] = useState(false)
-  const entries = Object.entries(shape).filter(([, s]) => getFieldMeta(s))
+  // El diseño (variant) no es un campo del formulario: lo elige el editor con tarjetas.
+  const entries = Object.entries(shape).filter(([, s]) => {
+    const m = getFieldMeta(s)
+    return m && m.widget !== 'variant'
+  })
   const main = entries.filter(([, s]) => !getFieldMeta(s)?.advanced)
   const advanced = entries.filter(([, s]) => getFieldMeta(s)?.advanced)
   const advancedId = `${idOf(ctx, path)}-mas`

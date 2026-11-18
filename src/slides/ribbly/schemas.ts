@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { field } from '../fields'
-import type { SlideDefinition } from '../types'
+import type { SlideDefinition, SlideVariant } from '../types'
 
 /**
  * El contrato de las pantallas nuevas de Ribbly (base de pantallas de
@@ -114,36 +114,57 @@ const coverCake = {
 
 // ── 03 · Edición cumple ─────────────────────────────────────────────────────
 
+export const COVER_AGE_VARIANTS: SlideVariant[] = [
+  { value: 'rosa', label: 'Rosa y dorado', swatch: ['#F9C7D3', '#D9B98C'] },
+  { value: 'celeste', label: 'Celeste y dorado', swatch: ['#B2DBF9', '#BF9964'] },
+]
+
 const coverAge = {
   label: 'Ribbly · Edición cumple',
-  description: 'La edad en dorado bajo un haz de luz, con un deseo para empezar.',
+  description:
+    'Su foto en un marco orgánico dorado, con globos, confeti y el saludo en dos colores. Dos diseños (rosa o celeste) y se comparte como historia de Instagram.',
   category: 'intro',
   themeSchema: z.object({
     ...screen(),
-    kicker: field.text('Etiqueta', { default: 'EDICIÓN CUMPLE', max: 30 }),
-    caption: field.text('Debajo del número', { default: 'vueltas al sol ☀️', max: 30 }),
-    chip1: field.text('Chip 1', { default: '🎉 Hoy se festeja', max: 30 }),
-    chip2: field.text('Chip 2', { default: '👑 {{rol}} del año', max: 40 }),
-    wishLabel: field.text('Rótulo del deseo', { default: 'UN DESEO PARA EMPEZAR', max: 30 }),
+    defaultTitle: field.text('Saludo si el comprador no escribe', {
+      default: 'Feliz cumpleaños',
+      max: 30,
+      help: 'La última palabra va destacada. Para elegir otra, marcala con *asteriscos*.',
+    }),
     defaultWish: field.text('Deseo si el comprador no escribe', {
-      default: 'Que este año te traiga todo lo que te merecés.',
+      default: 'Que todos tus deseos se hagan realidad.',
       max: 90,
     }),
-    cta: field.text('Botón', { default: 'Empezar el festejo →', max: 30 }),
-  }),
-  buyerSchema: z.object({
-    wish: field.text('Un deseo para empezar', {
-      max: 80,
-      placeholder: 'Que este año te traiga todo lo que te merecés.',
-      help: 'Aparece firmado con tu nombre, debajo de la edad.',
+    shareLabel: field.text('Botón para compartir', { default: 'Compartir en Instagram', max: 30 }),
+    photoFromKind: field.text('Si no hay foto, la primera de', {
+      default: 'story.moments',
+      advanced: true,
     }),
   }),
-  frame: FRAME,
+  buyerSchema: z.object({
+    variant: field.variant('Diseño', ['rosa', 'celeste']),
+    photo: field.photo('Su foto', {
+      help: 'Va grande, en el marco dorado. Si no subís una, va la primera de tus fotos.',
+    }),
+    caption: field.text('Texto a mano sobre la foto (opcional)', {
+      max: 24,
+      placeholder: 'mi persona favorita',
+    }),
+    title: field.text('El saludo', { max: 30, placeholder: 'Feliz cumpleaños' }),
+    wish: field.text('Un deseo para empezar', {
+      max: 80,
+      placeholder: 'Que todos tus deseos se hagan realidad.',
+      help: 'Va a mano, en dos renglones, debajo del saludo.',
+    }),
+  }),
+  frame: FRAME_LIGHT,
   summary: null,
   editor: {
-    title: 'Un deseo para empezar',
-    intro: 'Una frase corta tuya, debajo del número de la edad. Si la dejás vacía va la nuestra.',
+    title: 'Edición cumple',
+    intro:
+      'La tapa de su cumple: su foto en un marco dorado con globos, el saludo y un deseo tuyo. Elegí el diseño que más te guste.',
   },
+  variants: () => COVER_AGE_VARIANTS,
 } satisfies SlideDefinition
 
 // ── 04 · Tarjeta de cumple ──────────────────────────────────────────────────
@@ -191,9 +212,15 @@ const storyCard = {
 
 // ── 05 · Recorrido ──────────────────────────────────────────────────────────
 
+export const MOMENTS_CUMPLE_VARIANTS: SlideVariant[] = [
+  { value: 'celeste', label: 'Celeste y dorado', swatch: ['#BBD9EF', '#C8A257'] },
+  { value: 'crema', label: 'Crema y rosa', swatch: ['#F8F2E6', '#E33A75'] },
+]
+
 const storyMoments = {
   label: 'Ribbly · Mejores momentos',
-  description: 'Polaroids colgadas con broches: se pasan deslizando o tocando el año.',
+  description:
+    'Cuatro polaroids en grilla. En Cumpleaños, con moños y globos en dos diseños (celeste o crema); en Pareja, con cinta washi.',
   category: 'story',
   themeSchema: z.object({
     ...screen(),
@@ -229,6 +256,7 @@ const storyMoments = {
     }),
   }),
   buyerSchema: z.object({
+    variant: field.variant('Diseño', ['celeste', 'crema']),
     moments: field.list(
       'Momentos',
       field.group('Momento', {
@@ -243,14 +271,24 @@ const storyMoments = {
         help: 'De 1 a 10 fotos. Cada una con su año y un pie cortito.',
       },
     ),
+    title: field.text('Título (opcional)', { max: 40, advanced: true }),
+    phrase: field.text('Frase (opcional)', { max: 60, advanced: true }),
+    since: field.text('¿Desde cuándo se conocen? (opcional)', {
+      max: 10,
+      placeholder: '14/02/2019',
+      advanced: true,
+      help: 'Día/mes/año. En algunos diseños contamos los días juntos.',
+    }),
   }),
   frame: FRAME,
   summary: { icon: 'camera', title: 'Momentos', text: 'Sus mejores fotos, año por año.' },
   editor: {
     title: 'Mejores momentos',
     intro:
-      'Tus fotos como polaroids colgadas de un hilo. Subí de 1 a 10 y poneles el año: se recorren deslizando.',
+      'Tus fotos como polaroids en una grilla, con moños y globos. Subí de 1 a 10: en la grilla van las primeras 4 y tocando una se ven todas.',
   },
+  variables: { inicio: 'since' },
+  variants: (props) => (props.look === 'cumple' ? MOMENTS_CUMPLE_VARIANTS : []),
 } satisfies SlideDefinition
 
 // ── 06 · Su canción ─────────────────────────────────────────────────────────
@@ -795,6 +833,11 @@ const storyMagazine = {
 
 // ── 14 · 10 deseos ──────────────────────────────────────────────────────────
 
+export const WISHES_CUMPLE_VARIANTS: SlideVariant[] = [
+  { value: 'cielo', label: 'Notas sobre cielo', swatch: ['#4FC3F7', '#FFF3C8'] },
+  { value: 'noche', label: 'Noche dorada', swatch: ['#1B345C', '#DCBE88'] },
+]
+
 const storyWishes = {
   label: 'Ribbly · Deseos',
   description: 'Notas pegadas con cinta, una por deseo, que aparecen de a una.',
@@ -808,6 +851,38 @@ const storyWishes = {
       max: 40,
       advanced: true,
     }),
+    nightTitle: field.text('Título del diseño Noche', {
+      default: 'razones',
+      max: 20,
+      advanced: true,
+    }),
+    nightSubtitle: field.text('Subtítulo del diseño Noche', {
+      default: 'por las que te elijo',
+      max: 40,
+      advanced: true,
+    }),
+    nightSuggestions: field.list(
+      'Notas sugeridas del diseño Noche',
+      field.text('Nota', { max: 40 }),
+      {
+        max: 10,
+        itemLabel: 'Nota #{n}',
+        advanced: true,
+        help: 'Si quien regala no cambió las notas y elige el diseño Noche, van estas.',
+        default: [
+          'Por tu forma de mirarme',
+          'Por cómo me hacés reír',
+          'Por tus abrazos que arreglan todo',
+          'Por bancarme siempre',
+          'Por los mates de los domingos',
+          'Por cómo cantás en el auto',
+          'Por hacerme sentir en casa',
+          'Por tus ganas de todo',
+          'Por soñar conmigo',
+          'Porque sos vos 💛',
+        ],
+      },
+    ),
     suggestions: field.list('Deseos sugeridos', field.text('Deseo', { max: 40 }), {
       max: 10,
       itemLabel: 'Deseo #{n}',
@@ -827,11 +902,18 @@ const storyWishes = {
     }),
   }),
   buyerSchema: z.object({
+    variant: field.variant('Diseño', ['cielo', 'noche']),
     // Nombres neutros: la misma pantalla es "10 deseos" y "10 razones".
     wishes: field.list('Notas', field.text('Nota', { max: 40 }), {
       max: 10,
       itemLabel: 'Nota #{n}',
       help: 'Hasta 10, cortitas: van en notas pegadas con cinta.',
+    }),
+    title: field.text('Título (opcional)', { max: 20, advanced: true, placeholder: 'deseos' }),
+    subtitle: field.text('Subtítulo (opcional)', {
+      max: 40,
+      advanced: true,
+      placeholder: 'para tus 28',
     }),
   }),
   frame: FRAME,
@@ -841,6 +923,7 @@ const storyWishes = {
     intro:
       'Tus deseos para su nuevo año, en notas de colores. Arrancan con los nuestros: dejá los que te gusten y cambiá el resto.',
   },
+  variants: (props) => (props.look === 'cumple' ? WISHES_CUMPLE_VARIANTS : []),
 } satisfies SlideDefinition
 
 // ── 15 · Velitas ────────────────────────────────────────────────────────────

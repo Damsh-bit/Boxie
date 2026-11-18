@@ -1,5 +1,6 @@
 import {
   Caveat,
+  Dancing_Script,
   Fredoka,
   Josefin_Sans,
   Nunito,
@@ -68,6 +69,15 @@ export const nunito = Nunito({
   preload: false,
 })
 
+/** Manuscrita ligada: los saludos de las pantallas 03 y 05 de Cumpleaños. Sin precarga. */
+export const dancing = Dancing_Script({
+  subsets: ['latin'],
+  weight: ['500', '700'],
+  variable: '--font-dancing',
+  display: 'swap',
+  preload: false,
+})
+
 export const fontVariables = [
   outfit.variable,
   josefin.variable,
@@ -76,4 +86,5 @@ export const fontVariables = [
   caveat.variable,
   playfair.variable,
   nunito.variable,
+  dancing.variable,
 ].join(' ')

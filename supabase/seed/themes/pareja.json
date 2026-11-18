@@ -71,6 +71,8 @@
         "key": "momentos",
         "kind": "story.moments",
         "frame": {
+          "background": "none",
+          "fullScreen": true,
           "chrome": "dark"
         },
         "props": {

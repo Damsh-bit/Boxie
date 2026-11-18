@@ -49,6 +49,16 @@ export function sampleGift(
     if (slide.kind === 'cover.edition') {
       content[slide.key] = { photo: { assetId: PHOTOS.dedication }, since: '14/02/2022' }
     }
+    if (slide.kind === 'story.moments' && !isLove(slide.props)) {
+      content[slide.key] = {
+        moments: [
+          { photo: { assetId: PHOTOS.anecdote }, year: '2022', caption: 'Mendoza 🍇' },
+          { photo: { assetId: PHOTOS.dedication }, year: '2023', caption: 'La nieve ❄️' },
+          { photo: { assetId: PHOTOS.couple }, year: '2024', caption: 'El recital' },
+          { photo: { assetId: PHOTOS.together }, year: '2025', caption: 'Atardecer' },
+        ],
+      }
+    }
     if (slide.kind === 'story.moments' && isLove(slide.props)) {
       content[slide.key] = {
         moments: [

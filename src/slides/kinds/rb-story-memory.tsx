@@ -3,7 +3,7 @@ import { Heart, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText, Icon } from '@/ui/Icon'
 import { Burst, CoupleScene, PartyScene } from '../ribbly/art'
-import { Brand, Btn, Sheet, Stage, T, u } from '../ribbly/ui'
+import { Brand, Btn, editable, Sheet, Stage, T, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { frames, Loop, spring } from './motion'
 import type { Props } from './shared'
@@ -59,7 +59,9 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
                 : { opacity: 0, y: 60, scale: 0.9, rotate: 3, transition: { duration: 0.2 } }
             }
           >
-            <div className="rb-memory-photo">{picture}</div>
+            <div className="rb-memory-photo" {...editable(ctx, 'photo')}>
+              {picture}
+            </div>
             <div style={{ padding: `${u(2)} ${u(24)} ${u(24)}`, position: 'relative' }}>
               <span style={{ color: 'var(--rb-coral)', display: 'flex', justifyContent: 'center' }}>
                 <Brand size={19} />
@@ -67,6 +69,7 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
               <h2
                 className="rb-title"
                 style={{ fontSize: u(title.length > 26 ? 21 : 24.5), marginTop: u(16) }}
+                {...editable(ctx, 'title')}
               >
                 <EmojiText text={title} />
               </h2>
@@ -79,6 +82,7 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
                   marginTop: u(12),
                   textWrap: 'pretty',
                 }}
+                {...editable(ctx, 'text')}
               >
                 “{text}”
               </p>

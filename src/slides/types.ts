@@ -51,6 +51,19 @@ export interface SlideDefinition<
    * edad una vez y cualquier pantalla la usa como {{edad}} (ribbly/vars.ts).
    */
   variables?: Record<string, string>
+  /**
+   * Diseños entre los que elige el comprador (campo `variant` de su
+   * buyerSchema), según la configuración de la temática. Sin esto, o con
+   * menos de dos, la pantalla tiene un solo diseño.
+   */
+  variants?: (themeProps: Record<string, unknown>) => SlideVariant[]
+}
+
+export interface SlideVariant {
+  value: string
+  label: string
+  /** Dos colores para la muestra en el editor. */
+  swatch: [string, string]
 }
 
 /** Valores para reemplazar las {{variables}} de los textos. */
@@ -81,6 +94,11 @@ export interface SlideContext {
   next(): void
   /** {{nombre}}, {{de}}, {{edad}}… ya resueltas para este regalo. */
   vars: SlideVars
+  /**
+   * Editor directo: lo que se puede tocar para editar se marca con
+   * `data-edit` (ver `editable` en ribbly/ui.tsx) y el editor lo dibuja encima.
+   */
+  editing?: boolean
 }
 
 export interface SlideComponentProps<TTheme = unknown, TBuyer = unknown> {

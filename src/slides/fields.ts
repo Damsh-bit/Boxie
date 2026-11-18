@@ -26,6 +26,8 @@ export type Widget =
   | 'youtube'
   | 'list'
   | 'group'
+  /** Diseño de la pantalla a elegir entre varios (lo dibuja el editor, no el formulario). */
+  | 'variant'
 
 export interface FieldMeta {
   widget: Widget
@@ -179,6 +181,19 @@ export const field = {
       { widget: 'list', label, itemLabel: o.itemLabel, ...pick(o) },
     )
     return s.default((o.default ?? []) as never)
+  },
+
+  /**
+   * El diseño de la pantalla (p. ej. rosa o celeste). Vacío = el de la
+   * temática. Las opciones las da la definición (`variants`), porque dependen
+   * del estilo de la temática; el editor las muestra como tarjetas.
+   */
+  variant(label: string, values: readonly string[]) {
+    const s = z
+      .string()
+      .max(30)
+      .refine((v) => v === '' || values.includes(v), 'Diseño desconocido')
+    return meta(s, { widget: 'variant', label }).default('')
   },
 
   group<S extends z.ZodRawShape>(label: string, shape: S, o: Common = {}) {

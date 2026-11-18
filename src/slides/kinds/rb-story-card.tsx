@@ -3,7 +3,7 @@ import { Bookmark } from 'lucide-react'
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
 import { Balloon, Confetti, Heart, PETALS, Squiggles } from '../ribbly/art'
-import { Btn, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
+import { Btn, editable, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { Appear, ease, spring } from './motion'
 import type { Props } from './shared'
@@ -254,6 +254,7 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
                   <motion.p
                     className="rb-card-text"
                     style={{ fontSize: u(textSize) }}
+                    {...editable(ctx, 'text')}
                     initial={calm ? false : { clipPath: 'inset(0 0 100% 0)' }}
                     animate={{ clipPath: 'inset(0 0 0% 0)' }}
                     transition={{ duration: 2.2, delay: 0.95, ease: 'linear' }}
@@ -271,6 +272,7 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: calm ? 0 : 3 }}
+                    {...editable(ctx, '@senderName')}
                   >
                     — {ctx.senderName}
                   </motion.p>

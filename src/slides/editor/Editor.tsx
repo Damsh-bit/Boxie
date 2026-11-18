@@ -17,9 +17,11 @@ import { useBottomBar } from '@/ui/use-bottom-bar'
 import { collectAssetIds, type ParsedThemeConfig } from '../config'
 import { Player, type PlayerData } from '../player/Player'
 import { slideDefinitions } from '../schemas'
+import type { SlideDefinition } from '../types'
 import type { EditorBackend, LockResult } from './backend'
 import type { EditorDraft } from './draft'
 import { GiftReady } from './GiftReady'
+import { InlineWorkspace, VariantPicker } from './InlineWorkspace'
 import { ModuleCard } from './ModuleCard'
 import { editorModules, progressSummary, type EditorModule } from './modules'
 import { PasswordFields } from './PasswordFields'
@@ -81,6 +83,8 @@ export function Editor({
   allowPassword = true,
 }: EditorProps) {
   const isSandbox = mode === 'sandbox'
+  // Cumpleaños (y las que lo pidan): se edita tocando el diseño.
+  const inline = config.editor === 'inline'
   const modules = useMemo(
     () => editorModules(config, { password: allowPassword }),
     [config, allowPassword],
@@ -160,6 +164,12 @@ export function Editor({
     const target = modules.find((m) => m.id === moduleId)
     if (!target) return
     setReview(null)
+    if (inline) {
+      // En el editor directo, ir a lo que falta es ir a su pantalla.
+      setPreviewIndex(target.previewIndex)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     setOpenId(target.id)
     setPreviewIndex(target.previewIndex)
     setTimeout(
@@ -306,104 +316,101 @@ export function Editor({
               </div>
             )}
 
-            <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-6 pb-32 lg:grid-cols-[minmax(0,1fr)_360px] lg:pb-16">
-              <motion.main
-                className="min-w-0 space-y-4"
-                initial="hidden"
-                animate="show"
-                variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } } }}
-              >
-                <motion.section
-                  variants={cardIn}
-                  className="rounded-3xl bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] sm:p-8"
-                >
-                  <p className="text-xs font-bold tracking-widest text-brand uppercase">
-                    {isSandbox ? 'Probá cómo se personaliza' : 'Tu Ribbly'}
-                  </p>
-                  <h1 className="mt-1 font-display text-3xl leading-tight font-bold text-ink">
-                    Personalizá tu Ribbly {theme.name}
-                  </h1>
-                  <p className="mt-2 leading-relaxed text-neutral-600">
-                    Completá cada parte a tu ritmo: se guarda sola. Cuando esté como querés, la
-                    bloqueás y te damos el link para regalarla.
-                  </p>
-                  <Progress
-                    done={progress.done}
-                    total={progress.total}
-                    missing={progress.missing.length}
-                    onMissing={() => {
-                      const first = progress.missing[0]
-                      if (first) goTo(first.moduleId)
-                    }}
-                  />
-                  {editableUntil && (
-                    <p className="mt-3 text-xs text-neutral-500">
-                      Podés editarla hasta el {formatLongDate(editableUntil)}.
-                    </p>
-                  )}
-                </motion.section>
-
-                {progress.modules.map(({ module, state, missing }) => (
-                  <motion.div key={module.id} variants={cardIn}>
-                    <ModuleCard
-                      module={module}
-                      progress={{ state, missing }}
-                      open={openId === module.id}
-                      onToggle={() => toggle(module)}
-                      onPreview={() => setOverlay({ index: module.previewIndex })}
-                    >
-                      {module.kind === 'globals' && (
-                        <div className="grid gap-5 sm:grid-cols-2">
-                          <div>
-                            <Label htmlFor="editor-para">
-                              Para<span className="ml-1 text-brand">*</span>
-                            </Label>
-                            <Input
-                              id="editor-para"
-                              value={draft.recipientName}
-                              maxLength={40}
-                              autoComplete="off"
-                              placeholder="Su nombre o apodo"
-                              onChange={(e) => {
-                                const recipientName = e.target.value
-                                change((d) => ({ ...d, recipientName }))
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="editor-de">
-                              De parte de<span className="ml-1 text-brand">*</span>
-                            </Label>
-                            <Input
-                              id="editor-de"
-                              value={draft.senderName}
-                              maxLength={40}
-                              autoComplete="off"
-                              placeholder="Tu nombre"
-                              onChange={(e) => {
-                                const senderName = e.target.value
-                                change((d) => ({ ...d, senderName }))
-                              }}
-                            />
-                          </div>
+            {inline ? (
+              <InlineWorkspace
+                config={config}
+                draft={draft}
+                playerData={playerData}
+                media={mediaAdapter}
+                slideIndex={previewIndex}
+                onSlideChange={setPreviewIndex}
+                change={change}
+                side={
+                  <>
+                    <section className="rounded-3xl bg-white p-5 shadow-[0_10px_40px_rgba(0,0,0,0.05)]">
+                      <p className="text-xs font-bold tracking-widest text-brand uppercase">
+                        {isSandbox ? 'Probá cómo se personaliza' : 'Tu Ribbly'}
+                      </p>
+                      <h1 className="mt-1 font-display text-2xl leading-tight font-bold text-ink">
+                        Personalizá tu Ribbly {theme.name}
+                      </h1>
+                      <p className="mt-2 text-sm leading-relaxed text-neutral-600">
+                        Editás directo sobre el diseño: tocá lo que tenga el lápiz, cambialo y mirá
+                        cómo queda. Se guarda solo.
+                      </p>
+                      <div className="mt-4 grid gap-3">
+                        <div>
+                          <Label htmlFor="editor-para">
+                            Para<span className="ml-1 text-brand">*</span>
+                          </Label>
+                          <Input
+                            id="editor-para"
+                            value={draft.recipientName}
+                            maxLength={40}
+                            autoComplete="off"
+                            placeholder="Su nombre o apodo"
+                            onChange={(e) => {
+                              const recipientName = e.target.value
+                              change((d) => ({ ...d, recipientName }))
+                            }}
+                          />
                         </div>
+                        <div>
+                          <Label htmlFor="editor-de">
+                            De parte de<span className="ml-1 text-brand">*</span>
+                          </Label>
+                          <Input
+                            id="editor-de"
+                            value={draft.senderName}
+                            maxLength={40}
+                            autoComplete="off"
+                            placeholder="Tu nombre"
+                            onChange={(e) => {
+                              const senderName = e.target.value
+                              change((d) => ({ ...d, senderName }))
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <Progress
+                        done={progress.done}
+                        total={progress.total}
+                        missing={progress.missing.length}
+                        onMissing={() => {
+                          const first = progress.missing[0]
+                          if (first) goTo(first.moduleId)
+                        }}
+                      />
+                      {progress.missing.length > 0 && (
+                        <ul className="mt-3 space-y-1 text-sm">
+                          {progress.missing.slice(0, 6).map((m) => (
+                            <li key={`${m.moduleId}-${m.label}`}>
+                              <button
+                                type="button"
+                                onClick={() => goTo(m.moduleId)}
+                                className="text-left text-amber-800 underline-offset-2 hover:underline"
+                              >
+                                {m.module} · {m.label}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
                       )}
-
-                      {module.kind === 'slide' && module.slideKind && module.slideKey && (
-                        <SlideFields
-                          module={module}
-                          value={draft.slides[module.slideKey]}
-                          media={mediaAdapter}
-                          onChange={(next) =>
-                            change((d) => ({
-                              ...d,
-                              slides: { ...d.slides, [module.slideKey!]: next },
-                            }))
-                          }
-                        />
+                      {editableUntil && (
+                        <p className="mt-3 text-xs text-neutral-500">
+                          Podés editarla hasta el {formatLongDate(editableUntil)}.
+                        </p>
                       )}
+                    </section>
 
-                      {module.kind === 'password' && (
+                    {modules.some((m) => m.kind === 'password') && (
+                      <section className="rounded-3xl bg-white p-5 shadow-[0_10px_40px_rgba(0,0,0,0.05)]">
+                        <h2 className="font-display text-lg font-bold text-ink">
+                          Clave (opcional)
+                        </h2>
+                        <p className="mt-1 mb-3 text-sm text-neutral-600">
+                          Para que solo la abra quien tenga la clave.
+                        </p>
                         <PasswordFields
                           hasPassword={hasPassword}
                           onSave={async (password) => {
@@ -412,69 +419,215 @@ export function Editor({
                             return result
                           }}
                         />
-                      )}
-                    </ModuleCard>
-                  </motion.div>
-                ))}
+                      </section>
+                    )}
 
-                <motion.section
-                  variants={cardIn}
-                  className="relative overflow-hidden rounded-3xl bg-ink p-6 text-white sm:p-8"
+                    <section className="relative overflow-hidden rounded-3xl bg-ink p-5 text-white">
+                      <h2 className="relative font-display text-xl font-bold">¿Terminaste?</h2>
+                      <p className="relative mt-1 text-sm text-white/70">
+                        {ready
+                          ? 'Está todo listo: revisala y regalala.'
+                          : 'Completá lo que falta y la bloqueás para regalarla.'}
+                      </p>
+                      <GiftButton
+                        ready={ready}
+                        size="lg"
+                        className="relative mt-4"
+                        onClick={openReview}
+                      >
+                        Revisar y regalar
+                      </GiftButton>
+                    </section>
+                  </>
+                }
+              />
+            ) : (
+              <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-6 pb-32 lg:grid-cols-[minmax(0,1fr)_360px] lg:pb-16">
+                <motion.main
+                  className="min-w-0 space-y-4"
+                  initial="hidden"
+                  animate="show"
+                  variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } } }}
                 >
-                  <motion.div
-                    aria-hidden
-                    className="pointer-events-none absolute -top-20 -right-16 size-56 rounded-full bg-brand/30 blur-3xl"
-                    animate={{ opacity: ready ? 1 : 0.35, scale: ready ? 1.15 : 1 }}
-                    transition={spring.gentle}
-                  />
-                  <h2 className="relative font-display text-2xl font-bold">¿Terminaste?</h2>
-                  <p className="relative mt-2 text-white/70">
-                    <Swap id={ready ? 'lista' : 'falta'} y={6}>
-                      {ready
-                        ? 'Está todo listo. Mirala una última vez en la vista previa y regalala.'
-                        : 'Revisá lo que falta y, cuando esté completa, la bloqueás para regalarla.'}
-                    </Swap>
-                  </p>
-                  <GiftButton
-                    ready={ready}
-                    size="lg"
-                    className="relative mt-5"
-                    onClick={openReview}
+                  <motion.section
+                    variants={cardIn}
+                    className="rounded-3xl bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] sm:p-8"
                   >
-                    Revisar y regalar
-                  </GiftButton>
-                </motion.section>
-              </motion.main>
-
-              <aside className="hidden lg:block" aria-label="Vista previa">
-                <motion.div
-                  className="sticky top-24"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ ...spring.gentle, delay: 0.25 }}
-                >
-                  <div className="mb-3 flex items-center justify-between px-1">
-                    <p className="text-sm font-semibold text-ink">Vista previa</p>
-                    <p className="text-xs text-neutral-500">
-                      Así la ve {draft.recipientName.trim() || 'quien la recibe'}
+                    <p className="text-xs font-bold tracking-widest text-brand uppercase">
+                      {isSandbox ? 'Probá cómo se personaliza' : 'Tu Ribbly'}
                     </p>
-                  </div>
-                  <div className="mx-auto aspect-[9/19] h-[min(700px,calc(100dvh-9rem))]">
-                    <Player
-                      config={config}
-                      data={playerData}
-                      variant="embedded"
-                      preview
-                      slide={previewIndex}
-                      onSlideChange={setPreviewIndex}
+                    <h1 className="mt-1 font-display text-3xl leading-tight font-bold text-ink">
+                      Personalizá tu Ribbly {theme.name}
+                    </h1>
+                    <p className="mt-2 leading-relaxed text-neutral-600">
+                      Completá cada parte a tu ritmo: se guarda sola. Cuando esté como querés, la
+                      bloqueás y te damos el link para regalarla.
+                    </p>
+                    <Progress
+                      done={progress.done}
+                      total={progress.total}
+                      missing={progress.missing.length}
+                      onMissing={() => {
+                        const first = progress.missing[0]
+                        if (first) goTo(first.moduleId)
+                      }}
                     />
-                  </div>
-                  <p className="mt-3 text-center text-xs text-neutral-400">
-                    Deslizá o usá las flechas para recorrerla
-                  </p>
-                </motion.div>
-              </aside>
-            </div>
+                    {editableUntil && (
+                      <p className="mt-3 text-xs text-neutral-500">
+                        Podés editarla hasta el {formatLongDate(editableUntil)}.
+                      </p>
+                    )}
+                  </motion.section>
+
+                  {progress.modules.map(({ module, state, missing }) => (
+                    <motion.div key={module.id} variants={cardIn}>
+                      <ModuleCard
+                        module={module}
+                        progress={{ state, missing }}
+                        open={openId === module.id}
+                        onToggle={() => toggle(module)}
+                        onPreview={() => setOverlay({ index: module.previewIndex })}
+                      >
+                        {module.kind === 'globals' && (
+                          <div className="grid gap-5 sm:grid-cols-2">
+                            <div>
+                              <Label htmlFor="editor-para">
+                                Para<span className="ml-1 text-brand">*</span>
+                              </Label>
+                              <Input
+                                id="editor-para"
+                                value={draft.recipientName}
+                                maxLength={40}
+                                autoComplete="off"
+                                placeholder="Su nombre o apodo"
+                                onChange={(e) => {
+                                  const recipientName = e.target.value
+                                  change((d) => ({ ...d, recipientName }))
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="editor-de">
+                                De parte de<span className="ml-1 text-brand">*</span>
+                              </Label>
+                              <Input
+                                id="editor-de"
+                                value={draft.senderName}
+                                maxLength={40}
+                                autoComplete="off"
+                                placeholder="Tu nombre"
+                                onChange={(e) => {
+                                  const senderName = e.target.value
+                                  change((d) => ({ ...d, senderName }))
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {module.kind === 'slide' && module.slideKind && module.slideKey && (
+                          <SlideVariants
+                            config={config}
+                            slideKey={module.slideKey}
+                            value={draft.slides[module.slideKey]}
+                            onChange={(variant) =>
+                              change((d) => ({
+                                ...d,
+                                slides: {
+                                  ...d.slides,
+                                  [module.slideKey!]: { ...d.slides[module.slideKey!], variant },
+                                },
+                              }))
+                            }
+                          />
+                        )}
+                        {module.kind === 'slide' && module.slideKind && module.slideKey && (
+                          <SlideFields
+                            module={module}
+                            value={draft.slides[module.slideKey]}
+                            media={mediaAdapter}
+                            onChange={(next) =>
+                              change((d) => ({
+                                ...d,
+                                slides: { ...d.slides, [module.slideKey!]: next },
+                              }))
+                            }
+                          />
+                        )}
+
+                        {module.kind === 'password' && (
+                          <PasswordFields
+                            hasPassword={hasPassword}
+                            onSave={async (password) => {
+                              const result = await backend.setPassword(password)
+                              if (result.ok) setHasPassword(result.hasPassword)
+                              return result
+                            }}
+                          />
+                        )}
+                      </ModuleCard>
+                    </motion.div>
+                  ))}
+
+                  <motion.section
+                    variants={cardIn}
+                    className="relative overflow-hidden rounded-3xl bg-ink p-6 text-white sm:p-8"
+                  >
+                    <motion.div
+                      aria-hidden
+                      className="pointer-events-none absolute -top-20 -right-16 size-56 rounded-full bg-brand/30 blur-3xl"
+                      animate={{ opacity: ready ? 1 : 0.35, scale: ready ? 1.15 : 1 }}
+                      transition={spring.gentle}
+                    />
+                    <h2 className="relative font-display text-2xl font-bold">¿Terminaste?</h2>
+                    <p className="relative mt-2 text-white/70">
+                      <Swap id={ready ? 'lista' : 'falta'} y={6}>
+                        {ready
+                          ? 'Está todo listo. Mirala una última vez en la vista previa y regalala.'
+                          : 'Revisá lo que falta y, cuando esté completa, la bloqueás para regalarla.'}
+                      </Swap>
+                    </p>
+                    <GiftButton
+                      ready={ready}
+                      size="lg"
+                      className="relative mt-5"
+                      onClick={openReview}
+                    >
+                      Revisar y regalar
+                    </GiftButton>
+                  </motion.section>
+                </motion.main>
+
+                <aside className="hidden lg:block" aria-label="Vista previa">
+                  <motion.div
+                    className="sticky top-24"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ ...spring.gentle, delay: 0.25 }}
+                  >
+                    <div className="mb-3 flex items-center justify-between px-1">
+                      <p className="text-sm font-semibold text-ink">Vista previa</p>
+                      <p className="text-xs text-neutral-500">
+                        Así la ve {draft.recipientName.trim() || 'quien la recibe'}
+                      </p>
+                    </div>
+                    <div className="mx-auto aspect-[9/19] h-[min(700px,calc(100dvh-9rem))]">
+                      <Player
+                        config={config}
+                        data={playerData}
+                        variant="embedded"
+                        preview
+                        slide={previewIndex}
+                        onSlideChange={setPreviewIndex}
+                      />
+                    </div>
+                    <p className="mt-3 text-center text-xs text-neutral-400">
+                      Deslizá o usá las flechas para recorrerla
+                    </p>
+                  </motion.div>
+                </aside>
+              </div>
+            )}
 
             <motion.div
               ref={bottomBar}
@@ -656,6 +809,32 @@ function Progress({
         />
       </div>
     </div>
+  )
+}
+
+/** Los diseños entre los que se elige la pantalla (si tiene más de uno). */
+function SlideVariants({
+  config,
+  slideKey,
+  value,
+  onChange,
+}: {
+  config: ParsedThemeConfig
+  slideKey: string
+  value: Record<string, unknown> | undefined
+  onChange(variant: string): void
+}) {
+  const slide = config.slides.find((s) => s.key === slideKey)
+  if (!slide) return null
+  const definition = slideDefinitions[slide.kind] as SlideDefinition
+  const variants = definition.variants?.(slide.props as Record<string, unknown>) ?? []
+  if (variants.length < 2) return null
+  return (
+    <VariantPicker
+      variants={variants}
+      value={(value?.variant as string) || variants[0]!.value}
+      onChange={onChange}
+    />
   )
 }
 

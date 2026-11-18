@@ -3,7 +3,7 @@ import { ArrowDown, Play } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { Balloon, CityNightScene, Confetti, Rays, Stars } from '../ribbly/art'
-import { Btn, Stage, T, u } from '../ribbly/ui'
+import { Btn, editable, Stage, T, u } from '../ribbly/ui'
 import { Appear, ease } from './motion'
 import type { Props } from './shared'
 
@@ -217,6 +217,7 @@ function PosterBody({
           >
             <h2
               className="rb-title"
+              {...editable(ctx, 'picks')}
               style={{
                 fontSize: u(pick.title.length > 18 ? 34 : 42),
                 marginTop: u(8),

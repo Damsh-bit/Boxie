@@ -23,6 +23,16 @@ import './screens-c.css'
  * Los estilos están en ribbly.css.
  */
 
+/**
+ * En el editor directo, marca un elemento como editable: el editor dibuja
+ * encima un recuadro y, al tocarlo, abre el campo `path` del comprador de esta
+ * slide (p. ej. `wish`, `moments.2`, `@recipientName` para el nombre).
+ * Fuera del editor no agrega nada.
+ */
+export function editable(ctx: SlideContext, path: string): { 'data-edit'?: string } {
+  return ctx.editing ? { 'data-edit': path } : {}
+}
+
 /** Medida en "píxeles del diseño": escala con el tamaño del teléfono. */
 export const u = (n: number) => `calc(var(--u) * ${n})`
 

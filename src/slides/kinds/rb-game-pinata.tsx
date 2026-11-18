@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from 
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
 import { Bunting, Burst, Rays } from '../ribbly/art'
-import { Btn, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
+import { Btn, editable, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
 import { Loop, spring } from './motion'
 import type { Props } from './shared'
 
@@ -235,6 +235,7 @@ export function GamePinata({ theme, buyer, ctx }: Props<'game.pinata'>) {
                     <T text={theme.messageKicker} ctx={ctx} />
                   </p>
                   <p
+                    {...editable(ctx, 'message')}
                     className="rb-playfair"
                     style={{
                       fontWeight: 700,

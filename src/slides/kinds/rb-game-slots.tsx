@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { Emoji, EmojiText } from '@/ui/Icon'
 import { Bokeh, Burst, Confetti, ROSE, Rays } from '../ribbly/art'
-import { Btn, Chip, Stage, T, TapMark, u } from '../ribbly/ui'
+import { Btn, Chip, editable, Stage, T, TapMark, u } from '../ribbly/ui'
 import { ease, spring } from './motion'
 import type { Props } from './shared'
 
@@ -213,6 +213,7 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
                   <T text={theme.prizesLabel} ctx={ctx} />
                 </p>
                 <div
+                  {...editable(ctx, 'prizes,winner')}
                   style={{
                     display: 'flex',
                     flexWrap: 'wrap',
@@ -259,6 +260,7 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
                 <p
                   className="rb-fredoka"
                   style={{ fontWeight: 600, fontSize: u(22), lineHeight: 1.15, marginTop: u(3) }}
+                  {...editable(ctx, 'prizes,winner')}
                 >
                   <EmojiText text={prize} />
                 </p>

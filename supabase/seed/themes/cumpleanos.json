@@ -34,6 +34,7 @@
       "ink": "#1C2A5A",
       "accent": "#FFD35C"
     },
+    "editor": "inline",
     "slides": [
       {
         "key": "intro",
@@ -53,7 +54,21 @@
       },
       {
         "key": "momentos",
-        "kind": "story.moments"
+        "kind": "story.moments",
+        "frame": {
+          "background": "none",
+          "fullScreen": true,
+          "chrome": "dark"
+        },
+        "props": {
+          "screenTitle": "Momentos",
+          "editorTitle": "Sus mejores momentos",
+          "editorIntro": "Sus fotos como polaroids con moños dorados y globos. Subí de 1 a 10: en la grilla van las primeras 4 y tocando una se ven todas. Se comparte como historia de Instagram.",
+          "kicker": "HOY ES TU DÍA",
+          "title": "Feliz cumpleaños",
+          "phrase": "Que todos tus deseos se hagan realidad.",
+          "defaultCaption": "El cumple {{anio_anterior}} 🎂"
+        }
       },
       {
         "key": "cancion",

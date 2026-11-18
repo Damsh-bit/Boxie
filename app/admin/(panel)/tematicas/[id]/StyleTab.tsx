@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { useMemo } from 'react'
 import { ARCHETYPES, GENERAL_ARCHETYPE } from '@/slides/generator/generate'
-import { DEFAULT_PALETTE, type Palette } from '@/slides/theme-config'
+import { DEFAULT_PALETTE, type EditorMode, type Palette } from '@/slides/theme-config'
 import { cn } from '@/ui/cn'
 import { Input } from '@/ui/form'
 import { spring } from '@/ui/motion'
@@ -116,6 +116,50 @@ export function StyleTab({
           })}
         </div>
       </Card>
+
+      <Card>
+        <h3 className="mb-1 font-semibold text-ink">Cómo se personaliza</h3>
+        <p className="mb-4 text-sm text-neutral-500">
+          Lo que ve quien compra cuando arma su Ribbly.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Editor">
+          {EDITOR_OPTIONS.map((o) => {
+            const on = (config.editor ?? 'form') === o.value
+            return (
+              <button
+                key={o.value}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                onClick={() => onChange({ ...config, editor: o.value })}
+                className={cn(
+                  'rounded-2xl border p-4 text-left transition',
+                  on ? 'border-brand ring-2 ring-brand/30' : 'border-line hover:bg-neutral-50',
+                )}
+              >
+                <span className="flex items-center gap-2 text-sm font-semibold text-ink">
+                  {o.label}
+                  {on && <Check className="size-4 text-brand" aria-hidden />}
+                </span>
+                <span className="mt-1 block text-xs text-neutral-500">{o.hint}</span>
+              </button>
+            )
+          })}
+        </div>
+      </Card>
     </div>
   )
 }
+
+const EDITOR_OPTIONS: { value: EditorMode; label: string; hint: string }[] = [
+  {
+    value: 'form',
+    label: 'Formulario',
+    hint: 'Una tarjeta por pantalla con sus campos y la vista previa al lado.',
+  },
+  {
+    value: 'inline',
+    label: 'Directo sobre el diseño',
+    hint: 'Toca cada cosa con el lápiz en la pantalla y la cambia ahí mismo.',
+  },
+]

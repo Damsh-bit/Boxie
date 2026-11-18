@@ -57,6 +57,8 @@ export interface Entrance {
 
 interface Ctx {
   id: string
+  /** Editor directo: los grupos con `edit` se marcan con data-edit. */
+  editing?: boolean
   /** Capa estirada: los trazos no se deforman. */
   stretch?: boolean
   defs: ReactNode[]
@@ -106,6 +108,8 @@ const FAMILY = {
   caveat: 'var(--font-caveat), cursive',
   outfit: 'var(--font-outfit), sans-serif',
   nunito: 'var(--font-nunito), sans-serif',
+  dancing: 'var(--font-dancing), cursive',
+  playfair: 'var(--font-playfair), serif',
 }
 
 function heartTransform(x: number, y: number, size: number, rotate = 0) {
@@ -136,7 +140,7 @@ function renderNodes(nodes: SceneNode[], ctx: Ctx): ReactNode[] {
             key={i}
             x={node.x}
             y={node.y}
-            fill={node.color}
+            fill={node.gradient ? paintRef(ctx, node.gradient) : node.color}
             letterSpacing={node.spacing}
             filter={node.shadow ? `url(#${ctx.id}-text-shadow)` : undefined}
             style={{
@@ -178,7 +182,16 @@ function renderNodes(nodes: SceneNode[], ctx: Ctx): ReactNode[] {
             filter={node.shadow ? `url(#${ctx.id}-paper-shadow)` : undefined}
           />
         )
-      case 'photo':
+      case 'photo': {
+        const clipId = node.clip ? `${ctx.id}-c${ctx.count++}` : undefined
+        if (node.clip) {
+          ctx.defs.push(
+            <clipPath key={clipId} id={clipId}>
+              <path d={node.clip} />
+            </clipPath>,
+          )
+        }
+        const clipPath = clipId ? `url(#${clipId})` : undefined
         return node.src ? (
           <image
             key={i}
@@ -188,9 +201,10 @@ function renderNodes(nodes: SceneNode[], ctx: Ctx): ReactNode[] {
             width={node.w}
             height={node.h}
             preserveAspectRatio="xMidYMid slice"
+            clipPath={clipPath}
           />
         ) : (
-          <g key={i}>
+          <g key={i} clipPath={clipPath}>
             <rect
               x={node.x}
               y={node.y}
@@ -215,6 +229,7 @@ function renderNodes(nodes: SceneNode[], ctx: Ctx): ReactNode[] {
             />
           </g>
         )
+      }
       case 'group': {
         const transform =
           node.x || node.y || node.rotate
@@ -234,6 +249,7 @@ function renderNodes(nodes: SceneNode[], ctx: Ctx): ReactNode[] {
           <g
             key={node.id ?? i}
             transform={transform}
+            data-edit={ctx.editing && node.edit ? node.edit : undefined}
             onClick={
               tap
                 ? (e) => {
@@ -318,9 +334,12 @@ export function SceneView({
   entrances = {},
   onTap,
   label,
+  editing = false,
 }: {
   scene: Scene
   active: boolean
+  /** Editor directo (SlideContext.editing). */
+  editing?: boolean
   entrances?: Record<string, Entrance>
   onTap?: (id: string) => void
   /** Lo que dice la pantalla, para lectores de pantalla. */
@@ -329,7 +348,7 @@ export function SceneView({
   const id = useId().replace(/[^a-zA-Z0-9-]/g, '')
   const bgCtx: Ctx = { id: `${id}b`, stretch: true, defs: [], count: 0, active, entrances: {} }
   const bg = renderNodes(scene.bg, bgCtx)
-  const fgCtx: Ctx = { id: `${id}f`, defs: [], count: 0, active, entrances, onTap }
+  const fgCtx: Ctx = { id: `${id}f`, editing, defs: [], count: 0, active, entrances, onTap }
   const fg = renderNodes(scene.fg, fgCtx)
   const viewBox = `0 0 ${STORY_W} ${STORY_H}`
   return (

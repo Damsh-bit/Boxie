@@ -62,8 +62,16 @@ export const SlideInstanceSchema = z.object({
     .optional(),
 })
 
+/**
+ * Cómo se personaliza: `form` es el formulario por pantalla con la vista previa
+ * al lado; `inline`, tocando los elementos directamente sobre el diseño.
+ */
+export const EDITOR_MODES = ['form', 'inline'] as const
+export type EditorMode = (typeof EDITOR_MODES)[number]
+
 export const ThemeConfigSchema = z.object({
   palette: PaletteSchema.default(DEFAULT_PALETTE),
+  editor: z.enum(EDITOR_MODES).default('form'),
   slides: z.array(SlideInstanceSchema).min(1, 'La temática necesita al menos una slide').max(40),
 })
 

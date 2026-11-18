@@ -28,7 +28,7 @@ export type Paint =
   | { linear: [number, number, number, number]; stops: Stops }
   | { radial: [number, number, number]; stops: Stops }
 
-export type FontFamily = 'fredoka' | 'caveat' | 'outfit' | 'nunito'
+export type FontFamily = 'fredoka' | 'caveat' | 'outfit' | 'nunito' | 'dancing' | 'playfair'
 
 export interface Font {
   family: FontFamily
@@ -58,6 +58,8 @@ export interface TextNode {
   text: string
   font: Font
   color: string
+  /** Degradé en lugar de `color` (en coordenadas del lienzo). */
+  gradient?: Paint
   spacing?: number
   shadow?: boolean
 }
@@ -94,12 +96,16 @@ export interface PhotoNode {
   w: number
   h: number
   src?: string
+  /** Forma de la foto (un trazo cerrado); sin esto, el rectángulo. */
+  clip?: string
 }
 
 export interface GroupNode {
   type: 'group'
   /** Para animar la entrada y, si `tap`, para tocarlo. */
   id?: string
+  /** En el editor directo: el campo del comprador que se edita tocándolo. */
+  edit?: string
   x?: number
   y?: number
   rotate?: number
@@ -120,7 +126,12 @@ export const HEART_PATH =
 
 /** Una medida aproximada (sin fuentes: el servidor y el primer render). */
 export const roughMeasure: Measure = (text, font, spacing = 0) => {
-  const per = font.family === 'caveat' ? 0.42 : font.family === 'nunito' ? 0.5 : 0.54
+  const per =
+    font.family === 'caveat' || font.family === 'dancing'
+      ? 0.42
+      : font.family === 'nunito'
+        ? 0.5
+        : 0.54
   return [...text].length * (font.size * per + spacing)
 }
 
@@ -188,12 +199,16 @@ export function fit(
   }
 }
 
-const path = (d: string, o: Omit<PathNode, 'type' | 'd'>): PathNode => ({ type: 'path', d, ...o })
-const line = (d: string, stroke: string, width = 1, opacity?: number): PathNode =>
+export const path = (d: string, o: Omit<PathNode, 'type' | 'd'>): PathNode => ({
+  type: 'path',
+  d,
+  ...o,
+})
+export const line = (d: string, stroke: string, width = 1, opacity?: number): PathNode =>
   path(d, { stroke, width, opacity })
 
 /** "ribbly♥" en minúscula, centrado en `cx`. */
-function wordmark(measure: Measure, cx: number, y: number, size: number, color: string) {
+export function wordmark(measure: Measure, cx: number, y: number, size: number, color: string) {
   const font: Font = { family: 'fredoka', weight: 600, size }
   const w = measure('ribbly', font)
   const heart = size * 0.42
@@ -635,6 +650,7 @@ function polaroid(spot: PolaroidSpot, src: string | undefined, i: number): Group
   return {
     type: 'group',
     id: `polaroid-${i}`,
+    edit: `moments.${i}`,
     x: spot.x,
     y: spot.y,
     rotate: spot.rotate,

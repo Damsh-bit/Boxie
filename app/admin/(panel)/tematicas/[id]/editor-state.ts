@@ -69,6 +69,7 @@ export function resolvedProps(slide: EditorSlide): Record<string, unknown> {
 export function hydrate(config: EditorConfig): EditorConfig {
   return {
     palette: config.palette,
+    ...(config.editor ? { editor: config.editor } : {}),
     slides: config.slides.map((s) => ({ ...s, props: resolvedProps(s) })),
   }
 }

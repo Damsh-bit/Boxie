@@ -362,6 +362,21 @@ size`) y todo se mide en `--u`, un píxel del diseño (390 × 760) escalado al t
   nuevas. En una base que ya existe (producción), las dos siguen con sus pantallas anteriores
   hasta publicar una versión nueva. Amistad conserva las del prototipo, y es la que usan los
   tests del editor que necesitan dedicatoria con foto, razones y cuponera.
+- **Pantallas calcadas (v1.1 de Cumpleaños, 03 y 05 de Pareja):** son escenas en el lienzo
+  de 360 × 640 del diseño (`ribbly/love-art.ts`, `ribbly/cumple-art.ts`) que dibujan dos
+  lados con el mismo resultado: la pantalla como SVG (`scene-svg.tsx`) y la historia de
+  Instagram de 1080 × 1920 en un canvas (`story-image.ts`). El fondo se estira para tocar los
+  bordes y lo demás se escala parejo, arriba.
+- **Variantes de diseño:** las pantallas 03, 05 y 14 de Cumpleaños tienen dos diseños cada
+  una. El comprador elige con el campo `variant` (widget `variant`, vacío = el de la
+  temática) y la definición dice cuáles hay según el estilo (`variants`). En el diseño Noche
+  de la 14, si las notas no se tocaron, van las "razones" (`nightSuggestions`).
+- **Editor directo:** la temática elige cómo se personaliza con `editor` (`form` o
+  `inline`). Cumpleaños usa `inline`: el regalo en grande y, encima, un recuadro con lápiz en
+  cada cosa editable; al tocarla se abre el campo ahí mismo. Las slides marcan lo editable con
+  `data-edit` (`editable(ctx, ruta)` o `edit` en las escenas) y el editor lo mide en cada
+  cuadro: no hace falta un formulario por pantalla. Lo que no se ve tocando (una carta dentro
+  del sobre cerrado) queda en "Más opciones de esta pantalla".
 
 ## Marca Ribbly (antes Boxie)
 

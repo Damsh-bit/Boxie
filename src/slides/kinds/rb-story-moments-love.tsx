@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { SCENES_PAREJA } from '../ribbly/art'
+import { cumpleMomentsScene } from '../ribbly/cumple-art'
 import { momentsScene } from '../ribbly/love-art'
 import { SceneView, useSceneMeasure, type Entrance } from '../ribbly/scene-svg'
 import { createMeasure, drawScene } from '../ribbly/story-image'
@@ -13,6 +14,9 @@ import { Appear, spring } from './motion'
 import type { Props } from './shared'
 
 const ENTRANCES: Record<string, Entrance> = {
+  balloons: { delay: 0.2, y: 40 },
+  confetti: { delay: 0.6, scale: 0.8, pop: true },
+  candle: { delay: 0.8, scale: 0.6, pop: true },
   logo: { y: -10 },
   kicker: { delay: 0.08, y: 10 },
   title: { delay: 0.16, y: 14 },
@@ -32,13 +36,13 @@ interface Moment {
 }
 
 /**
- * 05 · Fotos (Pareja): cuatro polaroids en una grilla de 2 × 2, pegadas con
- * cinta sobre un fondo rosa con ondas, la frase en un óvalo dibujado a mano y
- * el contador de días juntos. Calcada del diseño en 9:16: se comparte como
- * historia de Instagram. Un toque en una foto la agranda; ahí se pueden
- * recorrer todas.
+ * 05 · Fotos: cuatro polaroids en una grilla de 2 × 2, la frase en un óvalo y,
+ * si hay fecha, el contador de días juntos. En Pareja van pegadas con cinta
+ * sobre rosa; en Cumpleaños, con moños dorados y globos, en dos diseños
+ * (celeste o crema). Calcadas del diseño en 9:16: se comparten como historia
+ * de Instagram. Un toque en una foto la agranda; ahí se pueden recorrer todas.
  */
-export function StoryMomentsLove({ theme, buyer, ctx }: Props<'story.moments'>) {
+export function StoryMomentsGrid({ theme, buyer, ctx }: Props<'story.moments'>) {
   const active = ctx.active
   const loaded = buyer.moments.filter((m) => m.photo || m.caption.trim() || m.year.trim())
   const moments: Moment[] = loaded.length
@@ -53,15 +57,18 @@ export function StoryMomentsLove({ theme, buyer, ctx }: Props<'story.moments'>) 
   const shown = moments.slice(0, 4)
   const [zoom, setZoom] = useState<number | null>(null)
 
+  const cumple = theme.look !== 'pareja'
   const data = {
+    variant: buyer.variant,
     photos: shown.map((m) => m.src),
     kicker: fill(theme.kicker, ctx.vars),
-    title: fill(theme.title, ctx.vars),
-    phrase: fill(theme.phrase, ctx.vars),
+    title: buyer.title.trim() || fill(theme.title, ctx.vars),
+    phrase: buyer.phrase.trim() || fill(theme.phrase, ctx.vars),
     days: ctx.vars.dias_juntos ? fill(theme.daysLabel, ctx.vars) : '',
   }
+  const build = cumple ? cumpleMomentsScene : momentsScene
   const measure = useSceneMeasure()
-  const scene = momentsScene(data, measure)
+  const scene = build(data, measure)
 
   const picture = (m: Moment) => {
     const Scene = SCENES_PAREJA[m.scene]!
@@ -72,10 +79,14 @@ export function StoryMomentsLove({ theme, buyer, ctx }: Props<'story.moments'>) 
   const current = zoom === null ? null : moments[zoom]
 
   return (
-    <Stage bg="#FCF1F5" className="rb-lm">
+    <Stage
+      bg={cumple ? (data.variant === 'crema' ? '#F8F2E6' : '#E6F4FB') : '#FCF1F5'}
+      className="rb-lm"
+    >
       <SceneView
         scene={scene}
         active={active}
+        editing={ctx.editing}
         entrances={ENTRANCES}
         onTap={(id) => setZoom(Number(id.replace('polaroid-', '')))}
         label={[data.kicker, data.title, data.phrase, data.days].filter(Boolean).join('. ')}
@@ -87,13 +98,14 @@ export function StoryMomentsLove({ theme, buyer, ctx }: Props<'story.moments'>) 
           label={fill(theme.shareLabel, ctx.vars) || 'Compartir en Instagram'}
           fileName="ribbly-momentos.png"
           deps={[
+            data.variant,
             ...data.photos.map((p, i) => p ?? `vacia-${i}`),
             data.kicker,
             data.title,
             data.phrase,
             data.days,
           ].join('|')}
-          draw={(families) => drawScene(momentsScene(data, createMeasure(families)), families)}
+          draw={(families) => drawScene(build(data, createMeasure(families)), families)}
         />
       </Appear>
       {moments.length > shown.length && (

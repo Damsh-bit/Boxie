@@ -3,7 +3,10 @@ import cumpleanos from '../../../supabase/seed/themes/cumpleanos.json'
 import parejaSeed from '../../../supabase/seed/themes/pareja.json'
 import { missingForLock, parseBuyerContent, readThemeConfig } from '../config'
 import { slideEditorInfo, slideSummary } from '../labels'
-import { initialBuyerProps } from '../schemas'
+import { wishesFor } from '../kinds/rb-story-wishes'
+import { initialBuyerProps, slideDefinitions, type SlideKind } from '../schemas'
+import type { SlideDefinition } from '../types'
+import { coverScene, cumpleMomentsScene } from './cumple-art'
 import { magazinePool, pickMagazine } from './magazine'
 import { CUMPLE_MAGAZINE } from './magazine-bank'
 import { PAREJA_MAGAZINE } from './magazine-bank-pareja'
@@ -287,5 +290,80 @@ describe('pareja: escenas de la 03 y la 05', () => {
     expect(photos(two)).toBe(2)
     expect(texts(two.fg).map((t) => t.text)).toContain('1.627 días juntos')
     expect(texts(two.fg).map((t) => t.text)).toContain('NUESTROS MOMENTOS')
+  })
+})
+
+describe('cumpleaños: variantes de diseño y editor directo', () => {
+  const texts = (nodes: SceneNode[]): string[] =>
+    nodes.flatMap((n) =>
+      n.type === 'text' ? [n.text] : n.type === 'group' ? texts(n.children) : [],
+    )
+  const edits = (nodes: SceneNode[]): string[] =>
+    nodes.flatMap((n) =>
+      n.type === 'group' ? [...(n.edit ? [n.edit] : []), ...edits(n.children)] : [],
+    )
+
+  it('la temática de cumpleaños se edita directo sobre el diseño; las demás, con formulario', () => {
+    expect(config.editor).toBe('inline')
+    expect(readThemeConfig(parejaSeed.config).editor).toBe('form')
+  })
+
+  it('las pantallas 03, 05 y 14 tienen dos diseños en Cumpleaños (y la 05 y la 14, ninguno en Pareja)', () => {
+    const variantsOf = (kind: string, look: string) =>
+      (slideDefinitions[kind as SlideKind] as SlideDefinition)
+        .variants?.({ look })
+        .map((v) => v.value) ?? []
+    expect(variantsOf('cover.age', 'cumple')).toEqual(['rosa', 'celeste'])
+    expect(variantsOf('story.moments', 'cumple')).toEqual(['celeste', 'crema'])
+    expect(variantsOf('story.wishes', 'cumple')).toEqual(['cielo', 'noche'])
+    expect(variantsOf('story.moments', 'pareja')).toEqual([])
+    expect(variantsOf('story.wishes', 'pareja')).toEqual([])
+  })
+
+  it('el diseño elegido se valida: vacío es el de la temática, uno desconocido no pasa', () => {
+    const schema = slideDefinitions['cover.age'].buyerSchema
+    expect(schema.safeParse({}).data?.variant).toBe('')
+    expect(schema.safeParse({ variant: 'celeste' }).success).toBe(true)
+    expect(schema.safeParse({ variant: 'violeta' }).success).toBe(false)
+  })
+
+  it('la 03 dibuja foto, saludo en dos colores y deseo, y deja tocar cada uno', () => {
+    const scene = coverScene(
+      {
+        variant: 'celeste',
+        caption: '',
+        title: 'Feliz cumpleaños',
+        wish: 'Que todos tus deseos se hagan realidad.',
+      },
+      roughMeasure,
+    )
+    expect(texts(scene.fg)).toEqual(expect.arrayContaining(['ribbly', 'Feliz', 'cumpleaños']))
+    expect(texts(scene.fg).join(' ')).toContain('se hagan realidad.')
+    expect(edits(scene.fg)).toEqual(expect.arrayContaining(['photo', 'title', 'wish']))
+  })
+
+  it('la 05 cuenta los días juntos solo en el diseño crema y deja tocar cada polaroid', () => {
+    const data = {
+      photos: ['a', 'b', 'c', 'd'],
+      kicker: 'Hoy es tu día',
+      title: 'Feliz cumpleaños',
+      phrase: 'Que todos tus deseos se hagan realidad.',
+      days: '1.627 días juntos',
+    }
+    const crema = cumpleMomentsScene({ ...data, variant: 'crema' }, roughMeasure)
+    const celeste = cumpleMomentsScene({ ...data, variant: 'celeste' }, roughMeasure)
+    expect(texts(crema.fg)).toContain('1.627 días juntos')
+    expect(texts(celeste.fg)).not.toContain('1.627 días juntos')
+    expect(edits(celeste.fg)).toEqual(
+      expect.arrayContaining(['moments.0', 'moments.3', 'title', 'phrase']),
+    )
+  })
+
+  it('en el diseño Noche, las notas sin tocar pasan a ser las razones', () => {
+    const theme = { suggestions: ['Que viajes'], nightSuggestions: ['Por tu forma de mirarme'] }
+    expect(wishesFor(theme, { wishes: [] }, true)).toEqual(['Por tu forma de mirarme'])
+    expect(wishesFor(theme, { wishes: ['Que viajes'] }, true)).toEqual(['Por tu forma de mirarme'])
+    expect(wishesFor(theme, { wishes: ['Que viajes'] }, false)).toEqual(['Que viajes'])
+    expect(wishesFor(theme, { wishes: ['La mía'] }, true)).toEqual(['La mía'])
   })
 })

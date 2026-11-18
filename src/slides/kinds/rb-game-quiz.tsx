@@ -3,7 +3,7 @@ import { Check, Lightbulb, X } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText, Icon } from '@/ui/Icon'
 import { Balloon, Bokeh, Burst, Confetti, Heart, Rays, ROSE } from '../ribbly/art'
-import { Btn, Chip, Stage, Steps, T, TapMark, u, useStored } from '../ribbly/ui'
+import { Btn, Chip, editable, Stage, Steps, T, TapMark, u, useStored } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { ease, frames, Loop, shake, spring } from './motion'
 import type { Props } from './shared'
@@ -271,7 +271,10 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
               </Loop>
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: u(8) }}>
+            <div
+              style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: u(8) }}
+              {...editable(ctx, 'questions,prize')}
+            >
               <Chip style={{ transform: 'rotate(-3deg)' }}>
                 <T text={theme.chipQuestions} ctx={ctx} extra={counts} />
               </Chip>
@@ -323,7 +326,7 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
               <Steps states={steps} />
             </div>
 
-            <div className="rb-q-card" style={{ marginTop: u(40) }}>
+            <div className="rb-q-card" style={{ marginTop: u(40) }} {...editable(ctx, 'questions')}>
               <motion.span
                 className="rb-q-badge"
                 initial={{ scale: 0, rotate: -40 }}
@@ -513,6 +516,7 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
             <div className="rb-grow">
               <motion.div
                 className="rb-prize"
+                {...editable(ctx, 'prize')}
                 initial={{ opacity: 0, y: 40, rotate: -4 }}
                 animate={{
                   opacity: 1,

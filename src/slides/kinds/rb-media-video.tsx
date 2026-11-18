@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { youtubeId } from '../fields'
 import { Bokeh, Confetti, CoupleScene, PartyScene } from '../ribbly/art'
-import { Btn, Chip, Stage, T, u } from '../ribbly/ui'
+import { Btn, Chip, editable, Stage, T, u } from '../ribbly/ui'
 import { Appear, ease, spring } from './motion'
 import type { Props } from './shared'
 
@@ -161,6 +161,7 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
             <motion.iframe
               ref={frame}
               className="rb-video"
+              {...editable(ctx, 'youtubeUrl')}
               src={`${YT_ORIGIN}/embed/${id}?${params}`}
               allow="autoplay; encrypted-media; fullscreen"
               title={title}
@@ -230,6 +231,7 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
               active={active}
               delay={0.4}
               className="rb-title"
+              {...editable(ctx, 'songTitle,youtubeUrl')}
               style={{
                 fontSize: u(title.length > 22 ? 28 : 36),
                 marginTop: u(6),

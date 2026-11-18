@@ -63,6 +63,7 @@ export function CoverEdition({ theme, buyer, ctx }: Props<'cover.edition'>) {
       <SceneView
         scene={scene}
         active={active}
+        editing={ctx.editing}
         entrances={ENTRANCES}
         label={`${caption}. “${wish}”${sender ? ` — ${sender}` : ''}`}
       />

@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { Emoji, EmojiText } from '@/ui/Icon'
 import { Burst, Confetti, ROSE } from '../ribbly/art'
-import { Btn, Chip, Stage, T, u, useStored } from '../ribbly/ui'
+import { Btn, Chip, editable, Stage, T, u, useStored } from '../ribbly/ui'
 import { shortDate } from '../ribbly/vars'
 import { Appear, ease, spring } from './motion'
 import type { Props } from './shared'
@@ -84,6 +84,7 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
             return (
               <Appear
                 key={i}
+                {...editable(ctx, 'vouchers')}
                 active={active}
                 delay={0.2 + i * 0.06}
                 y={24}

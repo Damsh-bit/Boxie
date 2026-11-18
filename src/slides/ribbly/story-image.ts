@@ -27,6 +27,8 @@ const VARS: Record<FontFamily, [string, string]> = {
   caveat: ['--font-caveat', 'cursive'],
   outfit: ['--font-outfit', 'sans-serif'],
   nunito: ['--font-nunito', 'sans-serif'],
+  dancing: ['--font-dancing', 'cursive'],
+  playfair: ['--font-playfair', 'serif'],
 }
 
 /** Las familias reales de next/font (sus nombres cambian en cada build). */
@@ -75,6 +77,8 @@ export async function loadFonts(families: Families): Promise<void> {
     { family: 'nunito', weight: 300, size: 20, italic: true },
     { family: 'nunito', weight: 400, size: 20, italic: true },
     { family: 'nunito', weight: 800, size: 20, italic: true },
+    { family: 'dancing', weight: 500, size: 20 },
+    { family: 'dancing', weight: 700, size: 20 },
   ]
   // Solo la familia principal: la de respaldo de next/font es local() y, si
   // falla, haría fallar la carga entera.
@@ -205,7 +209,7 @@ function drawNodes(
       }
       case 'text': {
         ctx.font = cssFont(node.font, families)
-        ctx.fillStyle = node.color
+        ctx.fillStyle = node.gradient ? paint(ctx, node.gradient) : node.color
         ctx.textAlign = 'left'
         ctx.textBaseline = 'alphabetic'
         if (node.shadow) {
@@ -250,6 +254,7 @@ function drawNodes(
         break
       }
       case 'photo': {
+        if (node.clip) ctx.clip(new Path2D(node.clip))
         const img = node.src ? images.get(node.src) : null
         if (img) drawCover(ctx, img, node.x, node.y, node.w, node.h)
         else drawPlaceholder(ctx, node.x, node.y, node.w, node.h)

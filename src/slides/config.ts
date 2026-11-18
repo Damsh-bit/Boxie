@@ -7,7 +7,13 @@ import {
   type SlideKind,
   type ThemePropsOf,
 } from './schemas'
-import { FrameSchema, ThemeConfigSchema, type Frame, type Palette } from './theme-config'
+import {
+  FrameSchema,
+  ThemeConfigSchema,
+  type EditorMode,
+  type Frame,
+  type Palette,
+} from './theme-config'
 
 /**
  * Validación de temáticas y del contenido del comprador contra el registro.
@@ -28,6 +34,8 @@ export type ParsedSlide = {
 
 export interface ParsedThemeConfig {
   palette: Palette
+  /** Cómo se personaliza (theme-config.ts). */
+  editor: EditorMode
   slides: ParsedSlide[]
 }
 
@@ -73,7 +81,7 @@ export function parseThemeConfig(input: unknown): ParseResult<ParsedThemeConfig>
   })
 
   if (issues.length) return { success: false, issues }
-  return { success: true, data: { palette: base.data.palette, slides } }
+  return { success: true, data: { palette: base.data.palette, editor: base.data.editor, slides } }
 }
 
 /** Versión estricta para datos que ya se validaron al publicar. */

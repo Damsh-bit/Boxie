@@ -39,7 +39,7 @@ import { DEFAULT_DEMO_EMAIL } from '../token'
  * Ningún dato es de una persona real: los mails son @ejemplo.com.
  */
 
-export const DEMO_DB_VERSION = 9 // 9: datos de muestra con la marca Ribbly (cupón RIBBLY10, mails @ribbly.demo)
+export const DEMO_DB_VERSION = 10 // 10: Cumpleaños con variantes de diseño y editor directo; 9: marca Ribbly
 
 export interface DemoThemeVersion {
   id: string

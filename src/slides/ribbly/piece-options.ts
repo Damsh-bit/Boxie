@@ -148,3 +148,68 @@ export const POSTER_SCENES = [
   ['butacas', 'Butacas'],
   ['cielo', 'Cielo con estrellas'],
 ] as const satisfies PieceOptions
+
+/** 11 · La máquina. */
+export const SLOTS_MACHINES = [
+  ['original', 'Clásica'],
+  ['neon', 'Neón'],
+  ['dorada', 'Dorada'],
+  ['caramelo', 'Caramelo'],
+] as const satisfies PieceOptions
+
+/** 11 · Los símbolos de los rodillos. */
+export const SLOTS_SYMBOLS = [
+  ['original', 'De cumple'],
+  ['frutas', 'Frutas'],
+  ['corazones', 'Corazones'],
+  ['estrellas', 'Estrellas'],
+] as const satisfies PieceOptions
+
+/** 12 · Los colores de los vales. */
+export const VOUCHER_COLORS = [
+  ['original', 'De colores'],
+  ['pastel', 'Pastel'],
+  ['kraft', 'Kraft'],
+  ['dorados', 'Dorados'],
+  ['noche', 'Noche'],
+] as const satisfies PieceOptions
+
+/** 12 · El sello de canjeado. */
+export const VOUCHER_STAMPS = [
+  ['original', 'Rectangular'],
+  ['redondo', 'Redondo'],
+  ['dorado', 'Dorado'],
+  ['corazon', 'Con corazones'],
+] as const satisfies PieceOptions
+
+/** 13 · El estilo de la tapa. */
+export const MAGAZINE_COVERS = [
+  ['original', 'Revista'],
+  ['diario', 'Diario'],
+  ['retro', 'Retro'],
+  ['moderna', 'Moderna'],
+] as const satisfies PieceOptions
+
+/** 13 · El marco de la foto. */
+export const MAGAZINE_FRAMES = [
+  ['original', 'Recta'],
+  ['redonda', 'Redonda'],
+  ['polaroid', 'Polaroid'],
+  ['arco', 'Arco'],
+] as const satisfies PieceOptions
+
+/** 14 · Cómo se sostienen las notas. */
+export const WISH_FASTENERS = [
+  ['original', 'Cinta'],
+  ['chinche', 'Chinches'],
+  ['clip', 'Clips'],
+  ['corazon', 'Corazones'],
+] as const satisfies PieceOptions
+
+/** 14 · Cómo son las notas. */
+export const WISH_NOTES = [
+  ['original', 'De colores'],
+  ['postit', 'Post-it'],
+  ['kraft', 'Kraft'],
+  ['rayadas', 'Rayadas'],
+] as const satisfies PieceOptions

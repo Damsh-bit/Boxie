@@ -12,6 +12,13 @@ const TILTS = [-2.2, 1.6, 1.2, -2.6, -1.4, 2.2, 2.6, -1, -1.8, 1.4]
 
 type Vars = React.CSSProperties & Record<`--${string}`, string>
 
+/** Lo elegido para las notas (ejes `sujecion` y `notas`), como atributos del escenario. */
+function noteStyle(style: Record<string, string>) {
+  const pick = (axis: string) =>
+    style[axis] && style[axis] !== 'original' ? style[axis] : undefined
+  return { 'data-sujecion': pick('sujecion'), 'data-notas': pick('notas') }
+}
+
 /**
  * 14 · 10 deseos: notas de colores pegadas con cinta, una por deseo, que van
  * apareciendo de la #1 a la última (150 ms entre una y otra).
@@ -61,6 +68,7 @@ function WishesSky(props: Props<'story.wishes'>) {
           : 'linear-gradient(180deg, #4FC3F7 0%, #6FB6EE 50%, #9BC4F0 100%)'
       }
       className={pareja ? 'is-pareja' : ''}
+      {...noteStyle(ctx.style)}
     >
       <div className="rb-bg">
         {pareja ? (
@@ -209,6 +217,7 @@ function WishesNight(props: Props<'story.wishes'>) {
       tone="deep"
       bg="linear-gradient(180deg, #1B345C 0%, #172C4F 55%, #13223C 100%)"
       className="rb-night"
+      {...noteStyle(ctx.style)}
     >
       <div className="rb-bg">
         <svg

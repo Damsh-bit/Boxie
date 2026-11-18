@@ -47,7 +47,11 @@ export function StoryMagazine({
 
   return (
     <Stage tone="soft" bg={pareja ? '#FFFFFF' : '#FFF9EE'} className={pareja ? 'is-pareja' : ''}>
-      <div className="rb-mag">
+      <div
+        className="rb-mag"
+        data-tapa={ctx.style.tapa && ctx.style.tapa !== 'original' ? ctx.style.tapa : undefined}
+        data-marco={ctx.style.marco && ctx.style.marco !== 'original' ? ctx.style.marco : undefined}
+      >
         <h2 className="rb-mag-title">
           {text.title.map((line, i) => (
             <span key={i}>

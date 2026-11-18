@@ -11,6 +11,13 @@ type Phase = 'ready' | 'spinning' | 'won'
 /** Cuántas vueltas da la tira de símbolos antes de frenar en el ganador. */
 const LOOPS = 3
 
+/** Los símbolos de los rodillos (eje `simbolos`); sin elegir, los de la temática. */
+const SYMBOL_SETS: Record<string, { symbols: string[]; win: string }> = {
+  frutas: { symbols: ['🍒', '🍋', '🍉'], win: '7️⃣' },
+  corazones: { symbols: ['corazon', 'corazon-flechado', 'carta-de-amor'], win: 'corazon-brillo' },
+  estrellas: { symbols: ['estrella', 'destellos', 'trofeo'], win: 'estrella' },
+}
+
 /**
  * 11 · Tragamonedas. Tres vistas del diseño: lista para girar, girando (los
  * rodillos frenan de a uno, de izquierda a derecha) y jackpot con el premio.
@@ -22,9 +29,15 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
   const [phase, setPhase] = useState<Phase>('ready')
   const [stopped, setStopped] = useState(0)
 
-  const symbols = theme.symbols.length >= 3 ? theme.symbols : ['globo', 'torta', 'cotillon']
+  const set = SYMBOL_SETS[ctx.style.simbolos ?? '']
+  const symbols = set
+    ? set.symbols
+    : theme.symbols.length >= 3
+      ? theme.symbols
+      : ['globo', 'torta', 'cotillon']
+  const winSymbol = set?.win ?? theme.winSymbol
   // La tira: varias vueltas de símbolos y, al final, el que gana.
-  const strip = [...Array.from({ length: LOOPS }, () => symbols).flat(), theme.winSymbol]
+  const strip = [...Array.from({ length: LOOPS }, () => symbols).flat(), winSymbol]
   const step = 100 / strip.length
   const last = strip.length - 1
 
@@ -51,6 +64,9 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
           : 'linear-gradient(180deg, #1B3B6F 0%, #3A2A6B 55%, #6B2A5E 100%)'
       }
       className={theme.look === 'pareja' ? 'is-pareja' : ''}
+      data-maquina={
+        ctx.style.maquina && ctx.style.maquina !== 'original' ? ctx.style.maquina : undefined
+      }
     >
       <div className="rb-bg">
         <Rays at="50% 42%" strength={0.07} />

@@ -2,12 +2,21 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { Emoji, EmojiText } from '@/ui/Icon'
 import { Burst, Confetti, ROSE } from '../ribbly/art'
+import { useRbPalette } from '../ribbly/look'
 import { Btn, Chip, editable, Stage, T, u, useStored } from '../ribbly/ui'
 import { shortDate } from '../ribbly/vars'
 import { Appear, ease, spring } from './motion'
 import type { Props } from './shared'
 
 type Vars = React.CSSProperties & Record<`--${string}`, string>
+
+/** Los colores de los vales (eje `vales`); sin elegir, los de la temática o la paleta. */
+const VOUCHER_TONES: Record<string, string[]> = {
+  pastel: ['#F29BBE', '#8FC8EE', '#9ED9B3', '#F2C46F', '#B9A2EC'],
+  kraft: ['#B98A5A', '#A7794B', '#C49A6C'],
+  dorados: ['#D9A63A', '#C08A28', '#E3B852'],
+  noche: ['#2D3A6E', '#4A2E6B', '#1F4D5E'],
+}
 
 /**
  * 12 · Vales de cumple. Tres vistas: la grilla, el vale abierto (un ticket
@@ -20,9 +29,14 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
   const calm = useReducedMotion()
   const mine = buyer.vouchers.filter((v) => v.title.trim())
   const styles = theme.examples
+  const palette = useRbPalette()
+  const tones =
+    VOUCHER_TONES[ctx.style.vales ?? ''] ??
+    (palette ? [palette.primary, palette.primaryDeep, palette.accent] : null)
   const vouchers = (mine.length ? mine : styles).map((v, i) => {
     const style = styles[i % styles.length]!
-    return { title: v.title, detail: v.detail, icon: style.icon, color: style.color }
+    const color = tones ? tones[i % tones.length]! : style.color
+    return { title: v.title, detail: v.detail, icon: style.icon, color }
   })
 
   /** índice del vale → fecha en que se canjeó. */
@@ -55,6 +69,7 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
           : 'linear-gradient(180deg, #EAF6FE 0%, #E9E4FA 55%, #F9D5E0 100%)'
       }
       className={theme.look === 'pareja' ? 'is-pareja' : ''}
+      data-sello={ctx.style.sello && ctx.style.sello !== 'original' ? ctx.style.sello : undefined}
     >
       <div className="rb-bg">
         <Confetti

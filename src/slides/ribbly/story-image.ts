@@ -1,67 +1,94 @@
 import {
-  EDITION_DOODLES,
-  EDITION_PHOTO_BOTTOM,
-  EDITION_WAVES,
   HEART_PATH,
-  MOMENTS_BG,
-  MOMENTS_DOODLES,
-  MOMENTS_WAVES,
-  POLAROID,
-  polaroidSpots,
-  splitAccent,
+  type Font,
+  type FontFamily,
+  type Measure,
+  type Paint,
+  type Scene,
+  type SceneNode,
   STORY_H,
   STORY_W,
-  type Wave,
 } from './love-art'
 
 /**
  * La imagen para compartir en una historia de Instagram (1080 × 1920) de las
- * pantallas 03 y 05 de Pareja. Se dibuja a mano sobre un canvas con la misma
- * geometría que la pantalla (love-art.ts): no depende de capturar el DOM, así
- * que sale igual en cualquier teléfono y sin los botones ni la barra del
- * player.
+ * pantallas 03 y 05 de Pareja: dibuja en un canvas la misma escena que se ve
+ * en pantalla (love-art.ts), sin los botones ni la barra del player.
  *
  * Solo navegador (canvas, fuentes del documento).
  */
 
 const SCALE = 3
-export const IMAGE_W = STORY_W * SCALE
-export const IMAGE_H = STORY_H * SCALE
 
-/** Las tipografías de next/font, por nombre real (cambian en cada build). */
-export interface StoryFonts {
-  fredoka: string
-  caveat: string
-  outfit: string
+// ── Fuentes ─────────────────────────────────────────────────────────────────
+
+const VARS: Record<FontFamily, [string, string]> = {
+  fredoka: ['--font-fredoka', 'sans-serif'],
+  caveat: ['--font-caveat', 'cursive'],
+  outfit: ['--font-outfit', 'sans-serif'],
+  nunito: ['--font-nunito', 'sans-serif'],
 }
 
-/** Lee las familias de las variables CSS de next/font (--font-fredoka, …). */
-export function readFonts(el: Element): StoryFonts {
-  const style = getComputedStyle(el)
-  const read = (name: string, fallback: string) => style.getPropertyValue(name).trim() || fallback
-  return {
-    fredoka: read('--font-fredoka', 'sans-serif'),
-    caveat: read('--font-caveat', 'cursive'),
-    outfit: read('--font-outfit', 'sans-serif'),
+/** Las familias reales de next/font (sus nombres cambian en cada build). */
+export type Families = Record<FontFamily, string>
+
+export function readFamilies(): Families {
+  const style = getComputedStyle(document.documentElement)
+  const out = {} as Families
+  for (const [key, [name, fallback]] of Object.entries(VARS) as [FontFamily, [string, string]][]) {
+    out[key] = style.getPropertyValue(name).trim() || fallback
+  }
+  return out
+}
+
+export const cssFont = (font: Font, families: Families) =>
+  `${font.italic ? 'italic ' : ''}${font.weight} ${font.size}px ${families[font.family]}`
+
+let measureCtx: CanvasRenderingContext2D | null = null
+
+/** Mide con las fuentes de verdad (las mismas que usa la pantalla). */
+export function createMeasure(families: Families): Measure {
+  measureCtx ??= document.createElement('canvas').getContext('2d')
+  const ctx = measureCtx!
+  const cache = new Map<string, number>()
+  return (text, font, spacing = 0) => {
+    const key = `${cssFont(font, families)}|${spacing}|${text}`
+    let width = cache.get(key)
+    if (width === undefined) {
+      ctx.font = cssFont(font, families)
+      width = ctx.measureText(text).width + spacing * [...text].length
+      cache.set(key, width)
+    }
+    return width
   }
 }
 
-async function loadFonts(fonts: StoryFonts) {
+/** Pide las fuentes de las escenas (si ya están, no hace nada). */
+export async function loadFonts(families: Families): Promise<void> {
   if (typeof document === 'undefined' || !document.fonts) return
-  await Promise.all(
-    [
-      `italic 500 40px ${fonts.fredoka}`,
-      `italic 700 40px ${fonts.fredoka}`,
-      `700 40px ${fonts.fredoka}`,
-      `700 40px ${fonts.caveat}`,
-      `600 40px ${fonts.outfit}`,
-    ].map((font) => document.fonts.load(font).catch(() => [])),
-  )
+  const fonts: Font[] = [
+    { family: 'fredoka', weight: 600, size: 20 },
+    { family: 'fredoka', weight: 700, size: 20 },
+    { family: 'caveat', weight: 700, size: 20 },
+    { family: 'outfit', weight: 400, size: 20 },
+    { family: 'outfit', weight: 500, size: 20 },
+    { family: 'nunito', weight: 300, size: 20, italic: true },
+    { family: 'nunito', weight: 400, size: 20, italic: true },
+    { family: 'nunito', weight: 800, size: 20, italic: true },
+  ]
+  // Solo la familia principal: la de respaldo de next/font es local() y, si
+  // falla, haría fallar la carga entera.
+  const primary = Object.fromEntries(
+    Object.entries(families).map(([key, list]) => [key, list.split(',')[0]!.trim()]),
+  ) as Families
+  await Promise.all(fonts.map((f) => document.fonts.load(cssFont(f, primary)).catch(() => [])))
+  await document.fonts.ready
 }
 
+// ── Dibujo ──────────────────────────────────────────────────────────────────
+
 /** Carga una imagen para dibujarla; si no se puede (CORS, red), null. */
-function loadImage(src: string | undefined): Promise<HTMLImageElement | null> {
-  if (!src) return Promise.resolve(null)
+function loadImage(src: string): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
     const img = new Image()
     if (!src.startsWith('data:') && !src.startsWith('blob:')) img.crossOrigin = 'anonymous'
@@ -72,44 +99,25 @@ function loadImage(src: string | undefined): Promise<HTMLImageElement | null> {
   })
 }
 
-function makeCanvas() {
-  const canvas = document.createElement('canvas')
-  canvas.width = IMAGE_W
-  canvas.height = IMAGE_H
-  const ctx = canvas.getContext('2d')!
-  // De acá en más se dibuja en el lienzo de 360 × 640.
-  ctx.scale(SCALE, SCALE)
-  ctx.textBaseline = 'alphabetic'
-  return { canvas, ctx }
-}
-
-function drawWaves(ctx: CanvasRenderingContext2D, waves: Wave[]) {
-  for (const wave of waves) {
-    const path = new Path2D(wave.d)
-    ctx.save()
-    ctx.globalAlpha = wave.opacity ?? 1
-    if (wave.stroke) {
-      ctx.strokeStyle = wave.stroke
-      ctx.lineWidth = wave.strokeWidth ?? 1
-      ctx.lineCap = 'round'
-      ctx.stroke(path)
-    } else {
-      if (wave.gradient) {
-        const g = ctx.createLinearGradient(0, 0, 0, STORY_H)
-        g.addColorStop(0, wave.gradient[0])
-        g.addColorStop(1, wave.gradient[1])
-        ctx.fillStyle = g
-      } else {
-        ctx.fillStyle = wave.fill ?? '#fff'
-      }
-      ctx.fill(path)
-    }
-    ctx.restore()
+function collectPhotos(nodes: SceneNode[], out: Set<string>) {
+  for (const node of nodes) {
+    if (node.type === 'photo' && node.src) out.add(node.src)
+    if (node.type === 'group') collectPhotos(node.children, out)
   }
 }
 
-/** Dibuja la imagen cubriendo el rectángulo (como object-fit: cover). */
-function drawCover(
+function paint(ctx: CanvasRenderingContext2D, p: Paint): string | CanvasGradient {
+  if (typeof p === 'string') return p
+  const g =
+    'linear' in p
+      ? ctx.createLinearGradient(...p.linear)
+      : ctx.createRadialGradient(p.radial[0], p.radial[1], 0, ...p.radial)
+  for (const [offset, color] of p.stops) g.addColorStop(offset, color)
+  return g
+}
+
+/** Cubre el rectángulo con la imagen (como object-fit: cover). */
+export function drawCover(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
   x: number,
@@ -120,9 +128,7 @@ function drawCover(
   const ratio = Math.max(w / img.naturalWidth, h / img.naturalHeight)
   const sw = w / ratio
   const sh = h / ratio
-  const sx = (img.naturalWidth - sw) / 2
-  const sy = (img.naturalHeight - sh) / 2
-  ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h)
+  ctx.drawImage(img, (img.naturalWidth - sw) / 2, (img.naturalHeight - sh) / 2, sw, sh, x, y, w, h)
 }
 
 /** Sin foto: un degradé rosa con un corazón. */
@@ -138,120 +144,160 @@ function drawPlaceholder(
   g.addColorStop(1, '#F48FB1')
   ctx.fillStyle = g
   ctx.fillRect(x, y, w, h)
-  const size = Math.min(w, h) * 0.3
-  drawHeart(ctx, x + w / 2, y + h / 2, size, { fill: 'rgba(255,255,255,0.85)' })
+  drawHeart(ctx, x + w / 2, y + h / 2, Math.min(w, h) * 0.3, 0, 'rgba(255,255,255,0.85)')
 }
 
 function drawHeart(
   ctx: CanvasRenderingContext2D,
-  cx: number,
-  cy: number,
+  x: number,
+  y: number,
   size: number,
-  o: { fill?: string; stroke?: string; lineWidth?: number; rotate?: number },
+  rotate: number,
+  fill?: Paint,
+  stroke?: string,
+  width = 1.6,
 ) {
   ctx.save()
-  ctx.translate(cx, cy)
-  ctx.rotate(((o.rotate ?? 0) * Math.PI) / 180)
+  ctx.translate(x, y)
+  ctx.rotate((rotate * Math.PI) / 180)
   const k = size / 24
   ctx.scale(k, k)
   ctx.translate(-12, -12.5)
-  const path = new Path2D(HEART_PATH)
-  if (o.fill) {
-    ctx.fillStyle = o.fill
-    ctx.fill(path)
+  const heart = new Path2D(HEART_PATH)
+  if (fill) {
+    // Un degradé del corazón va en su cuadro de 24 × 24.
+    ctx.fillStyle = paint(ctx, fill)
+    ctx.fill(heart)
   }
-  if (o.stroke) {
-    ctx.strokeStyle = o.stroke
-    ctx.lineWidth = (o.lineWidth ?? 1.6) / k
+  if (stroke) {
+    ctx.strokeStyle = stroke
+    ctx.lineWidth = width / k
     ctx.lineJoin = 'round'
-    ctx.stroke(path)
+    ctx.stroke(heart)
   }
   ctx.restore()
 }
 
-/** Corta un texto en renglones que entren en `max` de ancho. */
-function wrap(ctx: CanvasRenderingContext2D, text: string, max: number): string[] {
-  const lines: string[] = []
-  let line = ''
-  for (const word of text.split(' ').filter(Boolean)) {
-    const next = line ? `${line} ${word}` : word
-    if (ctx.measureText(next).width > max && line) {
-      lines.push(line)
-      line = word
-    } else {
-      line = next
+function drawNodes(
+  ctx: CanvasRenderingContext2D,
+  nodes: SceneNode[],
+  families: Families,
+  images: Map<string, HTMLImageElement | null>,
+) {
+  for (const node of nodes) {
+    ctx.save()
+    switch (node.type) {
+      case 'path': {
+        const p = new Path2D(node.d)
+        ctx.globalAlpha *= node.opacity ?? 1
+        if (node.fill) {
+          ctx.fillStyle = paint(ctx, node.fill)
+          ctx.fill(p)
+        }
+        if (node.stroke) {
+          ctx.strokeStyle = node.stroke
+          ctx.lineWidth = node.width ?? 1
+          ctx.lineCap = 'round'
+          ctx.lineJoin = 'round'
+          ctx.stroke(p)
+        }
+        break
+      }
+      case 'text': {
+        ctx.font = cssFont(node.font, families)
+        ctx.fillStyle = node.color
+        ctx.textAlign = 'left'
+        ctx.textBaseline = 'alphabetic'
+        if (node.shadow) {
+          ctx.shadowColor = 'rgba(0,0,0,0.35)'
+          ctx.shadowBlur = 6 * SCALE
+        }
+        if (node.spacing) {
+          // Letra por letra: así sale igual en todos los navegadores.
+          let x = node.x
+          for (const ch of node.text) {
+            ctx.fillText(ch, x, node.y)
+            x += ctx.measureText(ch).width + node.spacing
+          }
+        } else {
+          ctx.fillText(node.text, node.x, node.y)
+        }
+        break
+      }
+      case 'heart':
+        drawHeart(
+          ctx,
+          node.x,
+          node.y,
+          node.size,
+          node.rotate ?? 0,
+          node.fill,
+          node.stroke,
+          node.width,
+        )
+        break
+      case 'rect': {
+        ctx.globalAlpha *= node.opacity ?? 1
+        if (node.shadow) {
+          ctx.shadowColor = 'rgba(150,60,90,0.24)'
+          ctx.shadowBlur = 12 * SCALE
+          ctx.shadowOffsetY = 5 * SCALE
+        }
+        ctx.fillStyle = paint(ctx, node.fill)
+        ctx.beginPath()
+        ctx.roundRect(node.x, node.y, node.w, node.h, node.radius ?? 0)
+        ctx.fill()
+        break
+      }
+      case 'photo': {
+        const img = node.src ? images.get(node.src) : null
+        if (img) drawCover(ctx, img, node.x, node.y, node.w, node.h)
+        else drawPlaceholder(ctx, node.x, node.y, node.w, node.h)
+        break
+      }
+      case 'group':
+        ctx.translate(node.x ?? 0, node.y ?? 0)
+        ctx.rotate(((node.rotate ?? 0) * Math.PI) / 180)
+        drawNodes(ctx, node.children, families, images)
+        break
     }
-  }
-  if (line) lines.push(line)
-  return lines
-}
-
-/** Achica la letra hasta que el texto entre en `max` renglones. */
-function fit(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  font: (size: number) => string,
-  size: number,
-  width: number,
-  maxLines: number,
-): { lines: string[]; size: number } {
-  let s = size
-  for (;;) {
-    ctx.font = font(s)
-    const lines = wrap(ctx, text, width)
-    if (lines.length <= maxLines || s <= size * 0.6) return { lines, size: s }
-    s -= 1
+    ctx.restore()
   }
 }
 
-/** "ribbly♥" en minúscula, centrado. */
-function drawWordmark(ctx: CanvasRenderingContext2D, fonts: StoryFonts, y: number, color: string) {
-  ctx.font = `700 25px ${fonts.fredoka}`
-  ctx.fillStyle = color
-  ctx.textAlign = 'left'
-  const w = ctx.measureText('ribbly').width
-  const x = STORY_W / 2 - (w + 10) / 2
-  ctx.fillText('ribbly', x, y)
-  drawHeart(ctx, x + w + 6, y - 17, 10, { fill: color, rotate: 12 })
-}
+/**
+ * Dibuja la escena en 1080 × 1920. `photo` es la foto de fondo (la de la Love
+ * edition), que va antes que todo lo demás.
+ */
+export async function drawScene(
+  scene: Scene,
+  families: Families,
+  photo?: { src?: string; x: number; y: number; w: number; h: number },
+): Promise<Blob> {
+  const sources = new Set<string>()
+  collectPhotos(scene.fg, sources)
+  if (photo?.src) sources.add(photo.src)
+  const [loaded] = await Promise.all([
+    Promise.all([...sources].map(async (src) => [src, await loadImage(src)] as const)),
+    loadFonts(families),
+  ])
+  const images = new Map(loaded)
 
-/** Subrayado a mano: una curva suave debajo de un texto. */
-function underline(
-  ctx: CanvasRenderingContext2D,
-  x1: number,
-  x2: number,
-  y: number,
-  color: string,
-) {
-  ctx.save()
-  ctx.strokeStyle = color
-  ctx.lineWidth = 2
-  ctx.lineCap = 'round'
-  ctx.beginPath()
-  ctx.moveTo(x1, y + 1.5)
-  ctx.quadraticCurveTo((x1 + x2) / 2, y - 2.5, x2, y)
-  ctx.stroke()
-  ctx.restore()
-}
+  const canvas = document.createElement('canvas')
+  canvas.width = STORY_W * SCALE
+  canvas.height = STORY_H * SCALE
+  const ctx = canvas.getContext('2d')!
+  ctx.scale(SCALE, SCALE)
+  ctx.fillStyle = '#FFFFFF'
+  ctx.fillRect(0, 0, STORY_W, STORY_H)
+  if (photo) {
+    const img = photo.src ? images.get(photo.src) : null
+    if (img) drawCover(ctx, img, photo.x, photo.y, photo.w, photo.h)
+    else drawPlaceholder(ctx, photo.x, photo.y, photo.w, photo.h)
+  }
+  drawNodes(ctx, scene.bg, families, images)
+  drawNodes(ctx, scene.fg, families, images)
 
-function roundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  r: number,
-) {
-  ctx.beginPath()
-  ctx.moveTo(x + r, y)
-  ctx.arcTo(x + w, y, x + w, y + h, r)
-  ctx.arcTo(x + w, y + h, x, y + h, r)
-  ctx.arcTo(x, y + h, x, y, r)
-  ctx.arcTo(x, y, x + w, y, r)
-  ctx.closePath()
-}
-
-function toBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
     try {
       canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('sin imagen'))), 'image/png')
@@ -259,272 +305,6 @@ function toBlob(canvas: HTMLCanvasElement): Promise<Blob> {
       reject(error)
     }
   })
-}
-
-// ── 03 · Love edition ───────────────────────────────────────────────────────
-
-export interface EditionImage {
-  photo?: string
-  caption: string
-  wish: string
-  sender: string
-}
-
-export async function drawEditionImage(data: EditionImage, fonts: StoryFonts): Promise<Blob> {
-  const [img] = await Promise.all([loadImage(data.photo), loadFonts(fonts)])
-  const { canvas, ctx } = makeCanvas()
-
-  ctx.fillStyle = '#FDFAF5'
-  ctx.fillRect(0, 0, STORY_W, STORY_H)
-  if (img) drawCover(ctx, img, 0, 0, STORY_W, EDITION_PHOTO_BOTTOM)
-  else drawPlaceholder(ctx, 0, 0, STORY_W, EDITION_PHOTO_BOTTOM)
-  drawWaves(ctx, EDITION_WAVES)
-
-  drawWordmark(ctx, fonts, 52, '#F23A74')
-
-  // "nosotros ♥" escrito sobre la foto, con su subrayado y un corazón.
-  if (data.caption) {
-    ctx.save()
-    ctx.translate(300, 176)
-    ctx.rotate((-7 * Math.PI) / 180)
-    ctx.font = `700 25px ${fonts.caveat}`
-    ctx.textAlign = 'right'
-    ctx.shadowColor = 'rgba(0,0,0,0.35)'
-    ctx.shadowBlur = 6
-    ctx.fillStyle = '#FFFFFF'
-    ctx.fillText(data.caption, 0, 0)
-    const w = ctx.measureText(data.caption).width
-    ctx.shadowBlur = 3
-    underline(ctx, -w + 4, -4, 9, '#FFFFFF')
-    ctx.restore()
-    drawHeart(ctx, 322, 168, 20, { stroke: '#F64482', lineWidth: 2, rotate: 8 })
-    ctx.save()
-    ctx.strokeStyle = '#FFFFFF'
-    ctx.lineWidth = 1.8
-    ctx.lineCap = 'round'
-    ctx.beginPath()
-    ctx.moveTo(334, 150)
-    ctx.lineTo(338, 142)
-    ctx.moveTo(340, 156)
-    ctx.lineTo(348, 152)
-    ctx.stroke()
-    ctx.restore()
-  }
-
-  // La frase: corazón, dos colores y la firma.
-  drawHeart(ctx, 46, 474, 24, { fill: '#EA245F' })
-  const [plain, accent] = splitAccent(data.wish, 2)
-  const left = 34
-  const width = 290
-  let y = 522
-  let last = y
-  ctx.textAlign = 'left'
-  if (plain) {
-    const quoted = `“${plain}`
-    const top = fit(ctx, quoted, (s) => `italic 500 ${s}px ${fonts.fredoka}`, 28, width, 2)
-    ctx.fillStyle = '#5D4447'
-    for (const line of top.lines) {
-      ctx.fillText(line, left, y)
-      last = y
-      y += top.size * 1.18
-    }
-  }
-  const bottom = fit(
-    ctx,
-    `${plain ? '' : '“'}${accent}”`,
-    (s) => `italic 700 ${s}px ${fonts.fredoka}`,
-    31,
-    width,
-    2,
-  )
-  ctx.fillStyle = '#F23A74'
-  for (const line of bottom.lines) {
-    ctx.fillText(line, left, y)
-    last = y
-    y += bottom.size * 1.12
-  }
-  if (data.sender) {
-    ctx.font = `italic 500 17px ${fonts.fredoka}`
-    ctx.fillStyle = '#61474A'
-    ctx.fillText(`— ${data.sender}`, left + 2, last + 32)
-  }
-
-  for (const d of EDITION_DOODLES) {
-    drawHeart(ctx, d.x, d.y, d.size, { stroke: '#F3A5BF', lineWidth: 1.4, rotate: d.rotate })
-  }
-
-  return toBlob(canvas)
-}
-
-// ── 05 · Fotos ──────────────────────────────────────────────────────────────
-
-export interface MomentsImage {
-  photos: (string | undefined)[]
-  kicker: string
-  title: string
-  phrase: string
-  days: string
-}
-
-export async function drawMomentsImage(data: MomentsImage, fonts: StoryFonts): Promise<Blob> {
-  const photos = data.photos.slice(0, 4)
-  const [images] = await Promise.all([Promise.all(photos.map(loadImage)), loadFonts(fonts)])
-  const { canvas, ctx } = makeCanvas()
-
-  const bg = ctx.createLinearGradient(0, 0, 0, STORY_H)
-  bg.addColorStop(0, MOMENTS_BG[0])
-  bg.addColorStop(0.55, MOMENTS_BG[1])
-  bg.addColorStop(1, MOMENTS_BG[2])
-  ctx.fillStyle = bg
-  ctx.fillRect(0, 0, STORY_W, STORY_H)
-  drawWaves(ctx, MOMENTS_WAVES)
-
-  drawWordmark(ctx, fonts, 52, '#E43672')
-
-  // Etiqueta con un filete a cada lado.
-  ctx.font = `600 11px ${fonts.outfit}`
-  ctx.fillStyle = '#231F26'
-  ctx.textAlign = 'center'
-  const kicker = data.kicker.toUpperCase()
-  const spaced = 'letterSpacing' in ctx
-  if (spaced) ctx.letterSpacing = '3px'
-  ctx.fillText(kicker, STORY_W / 2, 80)
-  const kw = ctx.measureText(kicker).width
-  ctx.strokeStyle = 'rgba(35,31,38,0.45)'
-  ctx.lineWidth = 0.8
-  ctx.beginPath()
-  ctx.moveTo(30, 76.5)
-  ctx.lineTo(STORY_W / 2 - kw / 2 - 12, 76.5)
-  ctx.moveTo(STORY_W / 2 + kw / 2 + 12, 76.5)
-  ctx.lineTo(STORY_W - 30, 76.5)
-  ctx.stroke()
-  if (spaced) ctx.letterSpacing = '0px'
-
-  // Título en dos colores, lo destacado subrayado.
-  const [plain, accent] = splitAccent(data.title, 1)
-  let size = 28
-  const font = (s: number) => `700 ${s}px ${fonts.fredoka}`
-  ctx.font = font(size)
-  const gap = plain ? 7 : 0
-  let pw = plain ? ctx.measureText(plain).width : 0
-  let aw = ctx.measureText(accent).width
-  while (pw + gap + aw > 316 && size > 18) {
-    size -= 1
-    ctx.font = font(size)
-    pw = plain ? ctx.measureText(plain).width : 0
-    aw = ctx.measureText(accent).width
-  }
-  const tx = STORY_W / 2 - (pw + gap + aw) / 2
-  ctx.textAlign = 'left'
-  ctx.fillStyle = '#231F26'
-  if (plain) ctx.fillText(plain, tx, 112)
-  ctx.fillStyle = '#F62E72'
-  ctx.fillText(accent, tx + pw + gap, 112)
-  underline(ctx, tx + pw + gap + 2, tx + pw + gap + aw - 2, 122, '#F62E72')
-
-  // Garabatos.
-  for (const h of MOMENTS_DOODLES.hearts) {
-    drawHeart(ctx, h.x, h.y, h.size, { stroke: '#E8487E', lineWidth: 1.5, rotate: h.rotate })
-  }
-  ctx.strokeStyle = '#231F26'
-  ctx.lineWidth = 1.4
-  ctx.lineCap = 'round'
-  for (const d of MOMENTS_DOODLES.dashes) {
-    const s = d.flip ? -1 : 1
-    ctx.beginPath()
-    ctx.moveTo(d.x, d.y - 8)
-    ctx.lineTo(d.x + 4 * s, d.y - 15)
-    ctx.moveTo(d.x + 2 * s, d.y)
-    ctx.lineTo(d.x + 11 * s, d.y - 3)
-    ctx.moveTo(d.x, d.y + 8)
-    ctx.lineTo(d.x + 8 * s, d.y + 12)
-    ctx.stroke()
-  }
-
-  // Las polaroids, con su cinta y el corazón al pie.
-  const spots = polaroidSpots(photos.length || 1)
-  const { w, pad, foot } = POLAROID
-  const photoSize = w - pad * 2
-  const h = pad + photoSize + foot
-  spots.forEach((spot, i) => {
-    ctx.save()
-    ctx.translate(spot.x, spot.y)
-    ctx.rotate((spot.rotate * Math.PI) / 180)
-    ctx.shadowColor = 'rgba(140,40,80,0.22)'
-    ctx.shadowBlur = 14
-    ctx.shadowOffsetY = 6
-    ctx.fillStyle = '#FFFFFF'
-    ctx.fillRect(-w / 2, -h / 2, w, h)
-    ctx.shadowColor = 'transparent'
-    const img = images[i]
-    if (img) drawCover(ctx, img, -w / 2 + pad, -h / 2 + pad, photoSize, photoSize)
-    else drawPlaceholder(ctx, -w / 2 + pad, -h / 2 + pad, photoSize, photoSize)
-    drawHeart(ctx, -w / 2 + pad + 18, h / 2 - foot / 2, 15, { stroke: '#231F26', lineWidth: 1.3 })
-    ctx.fillStyle = 'rgba(251,142,172,0.85)'
-    ctx.rotate((-4 * Math.PI) / 180)
-    ctx.fillRect(-22, -h / 2 - 8, 44, 15)
-    ctx.restore()
-  })
-
-  // La frase dentro de la píldora.
-  const [phrasePlain, phraseAccent] = splitAccent(data.phrase, 2)
-  roundRect(ctx, 40, 516, 280, 66, 33)
-  ctx.fillStyle = 'rgba(255,255,255,0.55)'
-  ctx.fill()
-  ctx.strokeStyle = '#F2B8CC'
-  ctx.lineWidth = 1.5
-  ctx.stroke()
-  ctx.textAlign = 'center'
-  ctx.font = `700 24px ${fonts.caveat}`
-  ctx.fillStyle = '#231F26'
-  if (phrasePlain) ctx.fillText(phrasePlain, STORY_W / 2 - 6, 544)
-  ctx.font = `700 26px ${fonts.caveat}`
-  ctx.fillStyle = '#F52970'
-  const py = phrasePlain ? 570 : 556
-  ctx.fillText(phraseAccent, STORY_W / 2 - 6, py)
-  const paw = ctx.measureText(phraseAccent).width
-  underline(ctx, STORY_W / 2 - 6 - paw / 2 + 8, STORY_W / 2 - 6 + paw / 2, py + 6, '#231F26')
-  drawHeart(ctx, STORY_W / 2 - 6 + Math.max(paw, 120) / 2 + 22, 552, 22, {
-    stroke: '#231F26',
-    lineWidth: 1.5,
-    rotate: 8,
-  })
-
-  // Días juntos, abajo a la izquierda.
-  if (data.days) {
-    ctx.save()
-    ctx.strokeStyle = '#231F26'
-    ctx.lineWidth = 1.4
-    roundRect(ctx, 22, 604, 20, 18, 3)
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.moveTo(22, 610)
-    ctx.lineTo(42, 610)
-    ctx.moveTo(27, 601)
-    ctx.lineTo(27, 606)
-    ctx.moveTo(37, 601)
-    ctx.lineTo(37, 606)
-    ctx.stroke()
-    ctx.fillStyle = '#231F26'
-    for (const [dx, dy] of [
-      [27, 614],
-      [32, 614],
-      [37, 614],
-      [27, 618.5],
-      [32, 618.5],
-    ]) {
-      ctx.fillRect(dx! - 1, dy! - 1, 2, 2)
-    }
-    ctx.globalAlpha = 0.4
-    ctx.fillRect(50, 603, 1, 20)
-    ctx.globalAlpha = 1
-    ctx.font = `500 13px ${fonts.outfit}`
-    ctx.textAlign = 'left'
-    ctx.fillText(data.days, 58, 618)
-    ctx.restore()
-  }
-
-  return toBlob(canvas)
 }
 
 // ── Compartir ───────────────────────────────────────────────────────────────

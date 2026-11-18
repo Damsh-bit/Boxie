@@ -7,7 +7,7 @@ import { initialBuyerProps } from '../schemas'
 import { magazinePool, pickMagazine } from './magazine'
 import { CUMPLE_MAGAZINE } from './magazine-bank'
 import { PAREJA_MAGAZINE } from './magazine-bank-pareja'
-import { splitAccent } from './love-art'
+import { editionScene, momentsScene, roughMeasure, splitAccent, type SceneNode } from './love-art'
 import { buildVars, fill, parseDayMonth, parseFullDate } from './vars'
 
 const config = readThemeConfig(cumpleanos.config)
@@ -233,5 +233,59 @@ describe('pareja: palabras destacadas', () => {
     expect(splitAccent('Te *amo* mucho')).toEqual(['Te', 'amo mucho'])
     expect(splitAccent('*Siempre*')).toEqual(['', 'Siempre'])
     expect(splitAccent('Hola')).toEqual(['', 'Hola'])
+  })
+})
+
+describe('pareja: escenas de la 03 y la 05', () => {
+  const texts = (nodes: SceneNode[]): { text: string; y: number }[] =>
+    nodes.flatMap((n) =>
+      n.type === 'text' ? [{ text: n.text, y: n.y }] : n.type === 'group' ? texts(n.children) : [],
+    )
+
+  it('la frase va en dos colores, con el cierre de comillas aparte y la firma', () => {
+    const scene = editionScene(
+      { caption: 'nosotros', wish: 'Porque sos mi persona favorita.', sender: 'Agus' },
+      roughMeasure,
+    )
+    const all = texts(scene.fg).map((t) => t.text)
+    expect(all).toEqual(
+      expect.arrayContaining(['nosotros', '“ Porque sos mi', 'persona favorita.', '”', '— Agus']),
+    )
+  })
+
+  it('una frase larga sube para que la firma no se salga de la historia', () => {
+    const scene = editionScene(
+      {
+        caption: '',
+        wish: 'Gracias por cada risa, cada viaje y cada abrazo, te elijo todos los días de mi vida',
+        sender: 'Agus',
+      },
+      roughMeasure,
+    )
+    const sign = texts(scene.fg).find((t) => t.text === '— Agus')!
+    expect(sign.y).toBeLessThanOrEqual(600)
+  })
+
+  it('la grilla lleva hasta 4 fotos y el contador solo si hay días', () => {
+    const data = {
+      kicker: 'Nuestros momentos',
+      title: 'Sus mejores momentos',
+      phrase: 'Cada foto, un recuerdo nuestro',
+    }
+    const photos = (scene: ReturnType<typeof momentsScene>) =>
+      scene.fg.filter((n) => n.type === 'group' && n.id?.startsWith('polaroid-')).length
+    const six = momentsScene(
+      { ...data, photos: ['a', 'b', 'c', 'd', 'e', 'f'], days: '' },
+      roughMeasure,
+    )
+    expect(photos(six)).toBe(4)
+    expect(six.fg.some((n) => n.type === 'group' && n.id === 'days')).toBe(false)
+    const two = momentsScene(
+      { ...data, photos: ['a', 'b'], days: '1.627 días juntos' },
+      roughMeasure,
+    )
+    expect(photos(two)).toBe(2)
+    expect(texts(two.fg).map((t) => t.text)).toContain('1.627 días juntos')
+    expect(texts(two.fg).map((t) => t.text)).toContain('NUESTROS MOMENTOS')
   })
 })

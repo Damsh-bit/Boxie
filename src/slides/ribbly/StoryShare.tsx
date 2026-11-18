@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { site } from '@/content/site'
 import { SocialIcon } from '@/ui/SocialIcon'
 import { spring } from '../player/motion'
-import { readFonts, shareImage, type StoryFonts } from './story-image'
+import { readFamilies, shareImage, type Families } from './story-image'
 import { Sheet } from './ui'
 
 /**
@@ -27,7 +27,7 @@ export function StoryShare({
   active: boolean
   label: string
   fileName: string
-  draw: (fonts: StoryFonts) => Promise<Blob>
+  draw: (families: Families) => Promise<Blob>
   deps: string
   className?: string
 }) {
@@ -47,7 +47,7 @@ export function StoryShare({
     if (!active || ready || !ref.current) return
     let cancelled = false
     drawRef
-      .current(readFonts(ref.current))
+      .current(readFamilies())
       .then((blob) => {
         if (!cancelled) setImage({ deps, blob })
       })
@@ -61,7 +61,7 @@ export function StoryShare({
     if (busy) return
     setBusy(true)
     try {
-      const blob = ready ?? (await drawRef.current(readFonts(ref.current!)))
+      const blob = ready ?? (await drawRef.current(readFamilies()))
       if (!ready) setImage({ deps, blob })
       const result = await shareImage(blob, fileName)
       if (result === 'downloaded' || result === 'retry' || result === 'failed') setSheet(result)

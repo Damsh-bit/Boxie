@@ -2,6 +2,7 @@ import {
   Caveat,
   Fredoka,
   Josefin_Sans,
+  Nunito,
   Outfit,
   Permanent_Marker,
   Playfair_Display,
@@ -54,6 +55,19 @@ export const playfair = Playfair_Display({
   display: 'swap',
 })
 
+/**
+ * Nunito itálica: la frase de la Love edition de Pareja (03). Sin precarga:
+ * solo se baja en las pantallas que la usan.
+ */
+export const nunito = Nunito({
+  subsets: ['latin'],
+  weight: ['300', '400', '800'],
+  style: ['italic'],
+  variable: '--font-nunito',
+  display: 'swap',
+  preload: false,
+})
+
 export const fontVariables = [
   outfit.variable,
   josefin.variable,
@@ -61,4 +75,5 @@ export const fontVariables = [
   marker.variable,
   caveat.variable,
   playfair.variable,
+  nunito.variable,
 ].join(' ')

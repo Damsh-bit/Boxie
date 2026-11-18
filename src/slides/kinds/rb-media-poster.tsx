@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { Balloon, CityNightScene, Confetti, Rays, Stars } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
-import { Btn, editable, Stage, T, u } from '../ribbly/ui'
+import { Btn, editable, Stage, StyleSpot, T, u } from '../ribbly/ui'
 import { Appear, ease } from './motion'
 import type { Props } from './shared'
 
@@ -158,6 +158,11 @@ export function MediaPoster({ theme, buyer, ctx }: Props<'media.poster'>) {
         <PosterScene kind={ctx.style.escena} />
         <div className="rb-poster-shade" />
       </div>
+      <StyleSpot
+        ctx={ctx}
+        styles="escena"
+        style={{ left: '30%', right: '30%', top: '36%', height: '16%' }}
+      />
       <Balloon
         color={balloons[0]!}
         style={{ left: '8%', top: '13%', width: u(58) }}

@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { youtubeId } from '../fields'
 import { Bokeh, Confetti, CoupleScene, PartyScene } from '../ribbly/art'
-import { Btn, Chip, editable, Stage, T, u } from '../ribbly/ui'
+import { Btn, Chip, editable, Stage, StyleSpot, T, u } from '../ribbly/ui'
 import { Appear, ease, spring } from './motion'
 import type { Props } from './shared'
 
@@ -203,6 +203,11 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
           <div className="rb-video-shade" />
           {ctx.style.filtro === 'vhs' && <div className="rb-vhs" />}
         </div>
+        <StyleSpot
+          ctx={ctx}
+          styles="filtro"
+          style={{ left: '8%', right: '8%', top: '12%', height: '36%' }}
+        />
 
         <div className="rb-body" style={{ alignItems: 'stretch', textAlign: 'left' }}>
           <Appear active={active} y={-12} style={{ marginTop: u(-22), alignSelf: 'flex-start' }}>

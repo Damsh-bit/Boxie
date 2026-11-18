@@ -338,6 +338,7 @@ function coverPhoto(
       type: 'group',
       id: 'photo',
       edit: 'photo',
+      style: 'marco',
       children: [
         {
           type: 'photo',
@@ -359,6 +360,7 @@ function coverPhoto(
       type: 'group',
       id: 'photo',
       edit: 'photo',
+      style: 'marco',
       children: [
         { type: 'photo', x: 14, y: 52, w: 334, h: 420, src, clip: ellipse(180, 252, 152, 152) },
         path(ellipse(180, 252, 158, 158), { stroke: c.gold, width: 5 }),
@@ -373,6 +375,7 @@ function coverPhoto(
       type: 'group',
       id: 'photo',
       edit: 'photo',
+      style: 'marco',
       x: 180,
       y: 238,
       rotate: -3,
@@ -397,6 +400,7 @@ function coverPhoto(
     type: 'group',
     id: 'photo',
     edit: 'photo',
+    style: 'marco',
     children: [
       { type: 'photo', x: 14, y: 52, w: 334, h: 420, src, clip: COVER_PHOTO_CLIP },
       line(
@@ -490,6 +494,7 @@ function coverBalloons(
       {
         type: 'group',
         id: 'balloons-right',
+        style: 'globos',
         children: [
           ...heartBalloon(318, 62, 60, b.a),
           ...heartBalloon(340, 138, 54, b.c),
@@ -517,12 +522,21 @@ function coverBalloons(
     ],
   }
   if (globos === 'numero' && age) {
-    return [{ type: 'group', id: 'balloons-right', children: foilNumber(age, 304, 132, 92) }, left]
+    return [
+      {
+        type: 'group',
+        id: 'balloons-right',
+        style: 'globos',
+        children: foilNumber(age, 304, 132, 92),
+      },
+      left,
+    ]
   }
   return [
     {
       type: 'group',
       id: 'balloons-right',
+      style: 'globos',
       children: [
         ...balloon(320, 60, 27, 33, b.a),
         ...balloon(341, 136, 26, 32, b.c),
@@ -826,6 +840,7 @@ export function coverScene(data: CoverData, measure: Measure): Scene {
     type: 'group',
     id: 'wish',
     edit: 'wish',
+    style: 'letra',
     children: wish.lines.map((text, i) =>
       centered(measure, text, wish.font, 180, 559 + i * wish.font.size * 1.08, c.ink),
     ),
@@ -1256,6 +1271,7 @@ function cumplePolaroid(
     type: 'group',
     id: `polaroid-${i}`,
     edit: `moments.${i}`,
+    style: 'sujecion,disposicion',
     x: spot.x,
     y: spot.y,
     rotate: spot.rotate,
@@ -1480,7 +1496,7 @@ export function cumpleMomentsScene(data: CumpleMomentsData, measure: Measure): S
       variant === 'celeste' ? 1.8 : 2.4,
     ),
   )
-  fg.push({ type: 'group', id: 'phrase', edit: 'phrase', children: pill })
+  fg.push({ type: 'group', id: 'phrase', edit: 'phrase', style: 'letra', children: pill })
 
   // Días juntos (solo crema, si hay fecha).
   if (variant === 'crema' && data.days) {

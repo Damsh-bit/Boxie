@@ -2,7 +2,7 @@ import { ChevronUp } from 'lucide-react'
 import { Balloon, Bokeh, Bunting, Confetti, Heart, Ribbon } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { FoilNumber } from '../ribbly/pieces'
-import { Btn, Stage, T, u } from '../ribbly/ui'
+import { Btn, Stage, StyleSpot, T, u } from '../ribbly/ui'
 import { Appear, frames, Loop, Pop } from './motion'
 import type { Props } from './shared'
 
@@ -143,6 +143,11 @@ export function IntroBrand({ theme, ctx }: Props<'intro.brand'>) {
       </div>
       <Bunting />
       <IntroBalloons kind={ctx.style.globos} age={ctx.vars.edad} />
+      <StyleSpot
+        ctx={ctx}
+        styles="globos"
+        style={{ left: '4%', right: '4%', top: '46%', height: '34%' }}
+      />
 
       <div className="rb-body">
         <div className="rb-intro-logo">

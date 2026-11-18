@@ -174,7 +174,10 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
                   transition: { duration: 0.28, ease: ease.inOut },
                 }}
               >
-                <div className={`rb-envelope ${pareja ? 'is-cream' : ''}`}>
+                <div
+                  className={`rb-envelope ${pareja ? 'is-cream' : ''}`}
+                  {...editable(ctx, '', 'sello')}
+                >
                   {!pareja && (
                     <div className="rb-stamp">
                       <Icon name="globo" size={u(30)} />
@@ -250,6 +253,7 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
                 {/* La hoja se abre como la tapa de una tarjeta. */}
                 <motion.div
                   className="rb-card-page"
+                  {...editable(ctx, '', 'papel')}
                   initial={calm ? false : { rotateY: -115 }}
                   animate={{ rotateY: 0 }}
                   transition={{ duration: 0.9, delay: 0.25, ease: ease.out }}

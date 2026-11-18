@@ -5,6 +5,7 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Palette,
   Pencil,
   SlidersHorizontal,
   Trash2,
@@ -20,13 +21,13 @@ import { arrayElement, getFieldMeta, missingRequired, objectShape } from '../fie
 import { slideEditorInfo } from '../labels'
 import { Player, type PlayerData } from '../player/Player'
 import { slideDefinitions } from '../schemas'
-import type { StyleAxis, StyleOption } from '../styles'
+
 import type { SlideDefinition, SlideVariant } from '../types'
 import type { EditorDraft } from './draft'
 import type { MediaAdapter } from './PhotoField'
 import { SchemaForm } from './SchemaForm'
 import { defaultFor, issuesByPath } from './schema-info'
-import { StyleBar, StyleOptions, styleAxisOfPath, stylePath, withStyle } from './StylePicker'
+import { ShuffleButton, StyleSection, withStyle, type OfferedAxis } from './StylePicker'
 
 /**
  * El editor directo (temáticas con `editor: 'inline'`, como Cumpleaños): el
@@ -42,7 +43,10 @@ import { StyleBar, StyleOptions, styleAxisOfPath, stylePath, withStyle } from '.
 type AnySchema = z.core.$ZodType
 
 interface Hotspot {
+  /** Los campos que se editan tocándolo ('' si es una pieza con solo estilos). */
   path: string
+  /** Los ejes de estilo de la pieza (data-style), de los que ofrece la pantalla. */
+  styles: string[]
   x: number
   y: number
   w: number
@@ -52,6 +56,9 @@ interface Hotspot {
 interface OpenEditor {
   slideKey: string
   path: string
+  styles: string[]
+  /** El lápiz de la pantalla: colores, tipografía y lo que no tiene pieza a la vista. */
+  screen?: boolean
   /** Rectángulo del elemento en la pantalla (coordenadas del viewport). */
   anchor: { left: number; top: number; width: number; height: number }
 }
@@ -91,6 +98,11 @@ export function InlineWorkspace({
   const missing = missingPaths(definition, content, draft)
   const axes = buyerAxes(config, slide)
   const style = buyerStyle(config, slide, content)
+  // Para medir: qué ejes ofrece la pantalla (sin volver a arrancar el bucle).
+  const axisKeys = useRef<Set<string>>(new Set())
+  useLayoutEffect(() => {
+    axisKeys.current = new Set(axes.map((a) => a.key))
+  })
 
   // Mide lo editable de la slide en pantalla en cada cuadro (las entradas se
   // animan y las listas se scrollean): solo actualiza si algo se movió.
@@ -104,7 +116,14 @@ export function InlineWorkspace({
         const base = root.getBoundingClientRect()
         const clip = phone.getBoundingClientRect()
         const next: Hotspot[] = []
-        for (const el of root.querySelectorAll('.bx-slide.is-active [data-edit]')) {
+        for (const el of root.querySelectorAll(
+          '.bx-slide.is-active [data-edit], .bx-slide.is-active [data-style]',
+        )) {
+          const path = el.getAttribute('data-edit') ?? ''
+          const styles = (el.getAttribute('data-style') ?? '')
+            .split(',')
+            .filter((key) => axisKeys.current.has(key))
+          if (!path && !styles.length) continue
           const r = el.getBoundingClientRect()
           const left = Math.max(r.left, clip.left + 4)
           const top = Math.max(r.top, clip.top + 4)
@@ -112,7 +131,8 @@ export function InlineWorkspace({
           const bottom = Math.min(r.bottom, clip.bottom - 4)
           if (right - left < 14 || bottom - top < 12) continue
           next.push({
-            path: el.getAttribute('data-edit') ?? '',
+            path,
+            styles,
             x: Math.round(left - base.left),
             y: Math.round(top - base.top),
             w: Math.round(right - left),
@@ -135,11 +155,13 @@ export function InlineWorkspace({
   }, [index])
 
   const openAt = useCallback(
-    (path: string, el: Element) => {
+    (el: Element, target: { path?: string; styles?: string[]; screen?: boolean }) => {
       const r = el.getBoundingClientRect()
       setOpen({
         slideKey: slide.key,
-        path,
+        path: target.path ?? '',
+        styles: target.styles ?? [],
+        ...(target.screen ? { screen: true } : {}),
         anchor: { left: r.left, top: r.top, width: r.width, height: r.height },
       })
     },
@@ -197,18 +219,27 @@ export function InlineWorkspace({
       return withStyle(d, keys, axis, value)
     })
 
-  // "Sorprendeme": una combinación al azar entre las que ofrece la pantalla.
-  const shuffle = () =>
+  // Los ejes del lápiz de la pantalla: los de toda la pantalla y los de
+  // piezas que no se ven ahora (la carta, con el sobre cerrado).
+  const anchored = new Set(hotspots.flatMap((h) => h.styles))
+  const screenAxes = axes.filter((a) => !anchored.has(a.key))
+
+  // "Sorprendeme": una combinación al azar entre las que ofrece el globo.
+  const shuffle = (list: OfferedAxis[]) =>
     change((d) =>
-      axes.reduce((acc, axis) => {
+      list.reduce((acc, axis) => {
         const others = axis.options.filter((o) => o.value !== style[axis.key])
         const pick = others[Math.floor(Math.random() * others.length)] ?? axis.options[0]!
         return withStyle(acc, [slide.key], axis.key, pick.value)
       }, d),
     )
 
-  const openAxis = open ? styleAxisOfPath(open.path) : null
-  const openStyleAxis = openAxis ? axes.find((a) => a.key === openAxis) : undefined
+  const openAxes = open
+    ? open.screen
+      ? screenAxes
+      : open.styles.flatMap((key) => axes.find((a) => a.key === key) ?? [])
+    : []
+  const openKey = open ? `${open.screen ? '@pantalla' : open.path}|${open.styles.join(',')}` : ''
 
   return (
     <div className="mx-auto grid max-w-6xl gap-6 px-4 pt-5 pb-32 lg:grid-cols-[300px_minmax(0,1fr)] lg:pb-16">
@@ -222,11 +253,9 @@ export function InlineWorkspace({
             </p>
             <h2 className="mt-0.5 font-display text-xl font-bold text-ink">{info.title}</h2>
             <p className="mt-1 text-sm text-neutral-500">
-              {definition.buyerSchema
+              {definition.buyerSchema || axes.length
                 ? 'Tocá lo que tenga el lápiz para cambiarlo.'
-                : axes.length
-                  ? 'No tiene textos para completar, pero podés cambiarle el estilo.'
-                  : 'Esta pantalla no tiene nada para completar: es parte de la sorpresa.'}
+                : 'Esta pantalla no tiene nada para completar: es parte de la sorpresa.'}
             </p>
           </div>
 
@@ -254,14 +283,20 @@ export function InlineWorkspace({
             <div className="pointer-events-none absolute inset-0 z-[60]">
               {hotspots.map((h, i) => (
                 <HotspotBox
-                  key={`${h.path}-${i}`}
+                  key={`${h.path}|${h.styles.join(',')}-${i}`}
                   hotspot={h}
-                  label={labelFor(definition, h.path, axes)}
-                  missing={isMissing(missing, h.path)}
-                  selected={open?.path === h.path}
-                  onOpen={(el) => openAt(h.path, el)}
+                  label={hotspotLabel(definition, h.path, h.styles, axes)}
+                  missing={!!h.path && isMissing(missing, h.path)}
+                  selected={!open?.screen && openKey === `${h.path}|${h.styles.join(',')}`}
+                  onOpen={(el) => openAt(el, { path: h.path, styles: h.styles })}
                 />
               ))}
+              {screenAxes.length > 0 && (
+                <ScreenStyleButton
+                  selected={!!open?.screen}
+                  onOpen={(el) => openAt(el, { screen: true })}
+                />
+              )}
             </div>
           </div>
 
@@ -296,18 +331,11 @@ export function InlineWorkspace({
             </NavButton>
           </div>
 
-          <StyleBar
-            axes={axes}
-            value={style}
-            onOpen={(axis, el) => openAt(stylePath(axis), el)}
-            onShuffle={shuffle}
-          />
-
           {hidden.length > 0 && (
             <button
               type="button"
               className="mt-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm ring-1 ring-neutral-200 hover:bg-neutral-50"
-              onClick={(e) => openAt(hidden.join(','), e.currentTarget)}
+              onClick={(e) => openAt(e.currentTarget, { path: hidden.join(',') })}
             >
               <SlidersHorizontal className="size-4" aria-hidden />
               Más opciones de esta pantalla
@@ -324,24 +352,16 @@ export function InlineWorkspace({
       <AnimatePresence>
         {open && open.slideKey === slide.key && (
           <EditBubble
-            key={open.path}
+            key={openKey}
             anchor={open.anchor}
-            title={labelFor(definition, open.path, axes)}
+            title={
+              open.screen
+                ? 'Estilo de la pantalla'
+                : hotspotLabel(definition, open.path, open.styles, axes)
+            }
             onClose={() => setOpen(null)}
           >
-            {openStyleAxis ? (
-              <StyleOptions
-                axis={openStyleAxis}
-                value={style[openStyleAxis.key] ?? ''}
-                onChange={(value) => setStyle(openStyleAxis.key, value)}
-                onApplyAll={
-                  openStyleAxis.global
-                    ? () => applyEverywhere(openStyleAxis.key, style[openStyleAxis.key] ?? '')
-                    : undefined
-                }
-                onDone={() => setOpen(null)}
-              />
-            ) : (
+            {open.path && (
               <FieldEditor
                 definition={definition}
                 slideKey={slide.key}
@@ -350,8 +370,23 @@ export function InlineWorkspace({
                 media={media}
                 change={change}
                 onDone={() => setOpen(null)}
+                showDone={false}
               />
             )}
+            {openAxes.map((axis, i) => (
+              <StyleSection
+                key={axis.key}
+                axis={axis}
+                first={!open.path && i === 0}
+                value={style[axis.key] ?? ''}
+                onChange={(value) => setStyle(axis.key, value)}
+                onApplyAll={
+                  axis.global ? () => applyEverywhere(axis.key, style[axis.key] ?? '') : undefined
+                }
+              />
+            ))}
+            {openAxes.length > 1 && <ShuffleButton onClick={() => shuffle(openAxes)} />}
+            <DoneButton onClick={() => setOpen(null)} />
           </EditBubble>
         )}
       </AnimatePresence>
@@ -416,6 +451,53 @@ function HotspotBox({
           Falta
         </span>
       )}
+    </motion.button>
+  )
+}
+
+/** El "Listo" del globo. */
+function DoneButton({ onClick }: { onClick(): void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white hover:bg-ink/90"
+    >
+      <Check className="size-4" aria-hidden /> Listo
+    </button>
+  )
+}
+
+/**
+ * El lápiz de la pantalla, abajo a la izquierda del teléfono: colores,
+ * tipografía, decoración y las piezas que ahora no se ven. Redondo y chico,
+ * para no tapar los botones de la pantalla.
+ */
+function ScreenStyleButton({ selected, onOpen }: { selected: boolean; onOpen(el: Element): void }) {
+  return (
+    <motion.button
+      type="button"
+      className={cn(
+        'group pointer-events-auto absolute bottom-3 left-3 grid size-10 place-items-center rounded-full shadow-md ring-2 ring-white transition',
+        selected ? 'bg-brand text-white' : 'bg-white text-brand hover:scale-105',
+      )}
+      aria-label="Editar: estilo de la pantalla"
+      title="Estilo de la pantalla: colores, tipografía y decoración"
+      onClick={(e) => {
+        e.stopPropagation()
+        onOpen(e.currentTarget)
+      }}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileTap={{ scale: 0.92 }}
+    >
+      <Palette className="size-5" aria-hidden />
+      <span
+        className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-brand text-white ring-2 ring-white"
+        aria-hidden
+      >
+        <Pencil className="size-2.5" />
+      </span>
     </motion.button>
   )
 }
@@ -583,6 +665,7 @@ function FieldEditor({
   media,
   change,
   onDone,
+  showDone = true,
 }: {
   definition: SlideDefinition
   slideKey: string
@@ -591,16 +674,10 @@ function FieldEditor({
   media: MediaAdapter
   change: InlineWorkspaceProps['change']
   onDone(): void
+  /** Sin su propio "Listo" (el globo pone uno al final, después de los estilos). */
+  showDone?: boolean
 }) {
-  const done = (
-    <button
-      type="button"
-      onClick={onDone}
-      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white hover:bg-ink/90"
-    >
-      <Check className="size-4" aria-hidden /> Listo
-    </button>
-  )
+  const done = showDone ? <DoneButton onClick={onDone} /> : null
 
   // Los nombres del regalo.
   if (path === '@recipientName' || path === '@senderName') {
@@ -720,13 +797,21 @@ function fieldSchema(definition: SlideDefinition, path: string): AnySchema | nul
   return base
 }
 
-function labelFor(
+/** El nombre del globo: el del campo o, si la pieza solo tiene estilos, los de sus ejes. */
+function hotspotLabel(
   definition: SlideDefinition,
   path: string,
-  axes: readonly (StyleAxis & { options: StyleOption[] })[] = [],
+  styles: string[],
+  axes: readonly OfferedAxis[],
 ): string {
-  const axis = styleAxisOfPath(path)
-  if (axis) return axes.find((a) => a.key === axis)?.label ?? 'Estilo'
+  if (path) return labelFor(definition, path)
+  const labels = styles.flatMap((key) => axes.find((a) => a.key === key)?.label ?? [])
+  return labels.length > 1
+    ? `${labels.slice(0, -1).join(', ')} y ${labels.at(-1)!.toLowerCase()}`
+    : (labels[0] ?? 'Estilo')
+}
+
+function labelFor(definition: SlideDefinition, path: string): string {
   if (path === '@recipientName') return 'Para quién es'
   if (path === '@senderName') return 'De parte de quién'
   const first = path.split(',')[0]!

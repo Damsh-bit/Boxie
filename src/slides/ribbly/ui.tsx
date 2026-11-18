@@ -32,8 +32,42 @@ import './screens-c.css'
  * slide (p. ej. `wish`, `moments.2`, `@recipientName` para el nombre).
  * Fuera del editor no agrega nada.
  */
-export function editable(ctx: SlideContext, path: string): { 'data-edit'?: string } {
-  return ctx.editing ? { 'data-edit': path } : {}
+export function editable(
+  ctx: SlideContext,
+  path: string,
+  /**
+   * Ejes de estilo de esta pieza (`torta,velas`): al tocarla, sus opciones
+   * aparecen en el mismo globo, debajo de los campos (src/slides/styles.ts).
+   */
+  styles?: string,
+): { 'data-edit'?: string; 'data-style'?: string } {
+  if (!ctx.editing) return {}
+  return { ...(path ? { 'data-edit': path } : {}), ...(styles ? { 'data-style': styles } : {}) }
+}
+
+/**
+ * Una pieza que solo tiene estilos (los globos de la intro, el telón): en el
+ * editor directo marca su lugar para que tenga su lápiz. Fuera del editor no
+ * dibuja nada.
+ */
+export function StyleSpot({
+  ctx,
+  styles,
+  style,
+}: {
+  ctx: SlideContext
+  styles: string
+  /** Dónde está la pieza (left/top/width/height, en % del escenario). */
+  style: CSSProperties
+}) {
+  if (!ctx.editing) return null
+  return (
+    <i
+      aria-hidden
+      data-style={styles}
+      style={{ position: 'absolute', pointerEvents: 'none', zIndex: 1, ...style }}
+    />
+  )
 }
 
 /** Medida en "píxeles del diseño": escala con el tamaño del teléfono. */

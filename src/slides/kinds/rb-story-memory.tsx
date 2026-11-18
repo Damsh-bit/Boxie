@@ -47,6 +47,7 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
         >
           <motion.article
             className="rb-memory"
+            {...editable(ctx, '', 'tarjeta')}
             data-tarjeta={
               ctx.style.tarjeta && ctx.style.tarjeta !== 'original' ? ctx.style.tarjeta : undefined
             }
@@ -66,7 +67,7 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
                 : { opacity: 0, y: 60, scale: 0.9, rotate: 3, transition: { duration: 0.2 } }
             }
           >
-            <div className="rb-memory-photo" {...editable(ctx, 'photo')}>
+            <div className="rb-memory-photo" {...editable(ctx, 'photo', 'marco')}>
               {picture}
             </div>
             <div style={{ padding: `${u(2)} ${u(24)} ${u(24)}`, position: 'relative' }}>

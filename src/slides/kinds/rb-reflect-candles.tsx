@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { Bokeh, Cake } from '../ribbly/art'
-import { Btn, Stage, Steps, T, u, useStored } from '../ribbly/ui'
+import { Btn, editable, Stage, Steps, T, u, useStored } from '../ribbly/ui'
 import { ease, spring } from './motion'
 import type { Props } from './shared'
 
@@ -51,6 +51,7 @@ export function ReflectCandles({ theme, ctx }: Props<'reflect.candles'>) {
 
       {/* La torta queda siempre abajo; al escribir se desenfoca detrás de la tarjeta. */}
       <motion.div
+        {...editable(ctx, '', 'torta,velas')}
         style={{
           position: 'absolute',
           left: '50%',

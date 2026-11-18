@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { EmojiText, Icon } from '@/ui/Icon'
 import type { BuyerPhoto } from '../fields'
 import { Bokeh, Bunting, Confetti, SCENES, SCENES_PAREJA } from '../ribbly/art'
-import { Brand, Btn, Sheet, slideOfKind, Stage, T, u, useStored } from '../ribbly/ui'
+import { Brand, Btn, editable, Sheet, slideOfKind, Stage, T, u, useStored } from '../ribbly/ui'
 import { Appear, Pop } from './motion'
 import type { QuizResult } from './rb-game-quiz'
 import { shareOrCopy, type Props } from './shared'
@@ -118,6 +118,7 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
             delay={0.25}
             y={50}
             className="rb-recap"
+            {...editable(ctx, '', 'resumen')}
             data-resumen={
               ctx.style.resumen && ctx.style.resumen !== 'original' ? ctx.style.resumen : undefined
             }
@@ -125,7 +126,7 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
               ctx.style.fotos && ctx.style.fotos !== 'original' ? ctx.style.fotos : undefined
             }
           >
-            <div className="rb-collage">
+            <div className="rb-collage" {...editable(ctx, '', 'fotos')}>
               {[0, 1, 2].map((i) => {
                 const scenes = pareja ? SCENES_PAREJA : SCENES
                 const Scene = scenes[i % scenes.length]!

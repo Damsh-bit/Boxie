@@ -106,6 +106,8 @@ export interface GroupNode {
   id?: string
   /** En el editor directo: el campo del comprador que se edita tocándolo. */
   edit?: string
+  /** En el editor directo: los ejes de estilo de esta pieza (`marco`, `globos`). */
+  style?: string
   x?: number
   y?: number
   rotate?: number

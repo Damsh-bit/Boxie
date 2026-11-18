@@ -143,7 +143,7 @@ function WishesSky(props: Props<'story.wishes'>) {
             return (
               <motion.div
                 key={i}
-                {...editable(ctx, `wishes.${i}`)}
+                {...editable(ctx, `wishes.${i}`, 'notas,sujecion')}
                 className={`rb-note ${last ? 'is-last' : ''}`}
                 style={
                   {
@@ -306,7 +306,7 @@ function WishesNight(props: Props<'story.wishes'>) {
             return (
               <motion.div
                 key={i}
-                {...editable(ctx, `wishes.${i}`)}
+                {...editable(ctx, `wishes.${i}`, 'notas,sujecion')}
                 className={`rb-night-note ${isFeatured ? 'is-featured' : ''} ${i === loneIndex ? 'is-alone' : ''}`}
                 style={{ '--c': NIGHT_NOTES[i % NIGHT_NOTES.length]! } as Vars}
                 initial={false}

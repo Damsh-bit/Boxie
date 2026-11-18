@@ -250,6 +250,7 @@ function renderNodes(nodes: SceneNode[], ctx: Ctx): ReactNode[] {
             key={node.id ?? i}
             transform={transform}
             data-edit={ctx.editing && node.edit ? node.edit : undefined}
+            data-style={ctx.editing && node.style ? node.style : undefined}
             onClick={
               tap
                 ? (e) => {

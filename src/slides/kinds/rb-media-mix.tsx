@@ -4,7 +4,7 @@ import { Icon } from '@/ui/Icon'
 import { Burst, Heart, ROSE } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { Boombox, Cassette, Vinyl } from '../ribbly/pieces'
-import { Btn, Stage, T, u } from '../ribbly/ui'
+import { Btn, editable, Stage, T, u } from '../ribbly/ui'
 import { Appear, Pop } from './motion'
 import type { Props } from './shared'
 
@@ -63,7 +63,12 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
     >
       <div className="rb-body">
         {cover !== 'original' ? (
-          <Pop active={active} from={0.6} className="rb-mix-cover">
+          <Pop
+            active={active}
+            from={0.6}
+            className="rb-mix-cover"
+            {...editable(ctx, '', 'portada')}
+          >
             {cover === 'vinilo' && (
               <Vinyl
                 color={palette?.primary ?? '#F44E63'}
@@ -87,7 +92,12 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
             )}
           </Pop>
         ) : (
-          <Pop active={active} from={0.6} className="rb-mix-cover">
+          <Pop
+            active={active}
+            from={0.6}
+            className="rb-mix-cover"
+            {...editable(ctx, '', 'portada')}
+          >
             <i
               style={{
                 left: 0,

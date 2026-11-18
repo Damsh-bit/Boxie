@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { Stars } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
-import { Btn, Chip, slideOfKind, Stage, T, u, useStored } from '../ribbly/ui'
+import { Btn, Chip, editable, slideOfKind, Stage, T, u, useStored } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { ease, frames, Loop, spring } from './motion'
 import type { Props } from './shared'
@@ -257,6 +257,7 @@ export function ReflectCapsule({ theme, ctx }: Props<'reflect.capsule'>) {
                 style={{ position: 'relative', width: u(150) }}
               >
                 <motion.div
+                  {...editable(ctx, '', 'recipiente')}
                   initial={false}
                   animate={
                     justSaved ? { scale: [1, 1.1, 0.97, 1], rotate: [0, -4, 3, 0] } : { scale: 1 }

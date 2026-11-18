@@ -52,7 +52,7 @@ export function StoryMagazine({
         data-tapa={ctx.style.tapa && ctx.style.tapa !== 'original' ? ctx.style.tapa : undefined}
         data-marco={ctx.style.marco && ctx.style.marco !== 'original' ? ctx.style.marco : undefined}
       >
-        <h2 className="rb-mag-title">
+        <h2 className="rb-mag-title" {...editable(ctx, '', 'tapa')}>
           {text.title.map((line, i) => (
             <span key={i}>
               <motion.b
@@ -101,7 +101,7 @@ export function StoryMagazine({
             delay={0.8}
             y={30}
             className="rb-mag-photo"
-            {...editable(ctx, 'photo')}
+            {...editable(ctx, 'photo', 'marco')}
           >
             {photo ? <img src={photo} alt="" /> : pareja ? <CoupleScene /> : <PartyScene />}
             <span

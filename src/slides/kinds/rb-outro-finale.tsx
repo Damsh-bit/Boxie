@@ -190,7 +190,7 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
               frames={frames.wiggle(3)}
               className="rb-gift"
               style={{ marginTop: u(84) }}
-              {...editable(ctx, 'gift,giftDetail,giftSignature,giftLink')}
+              {...editable(ctx, 'gift,giftDetail,giftSignature,giftLink', 'caja')}
             >
               {/* La luz sale de la caja cuando se abre. */}
               <motion.i
@@ -236,7 +236,7 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
                   >
                     <div
                       className="rb-giftcard"
-                      {...editable(ctx, 'gift,giftDetail,giftSignature,giftLink')}
+                      {...editable(ctx, 'gift,giftDetail,giftSignature,giftLink', 'caja')}
                     >
                       <div className="rb-giftcard-main">
                         <p
@@ -361,7 +361,11 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
               </>
             )}
 
-            <h2 className="rb-finale-title" style={{ marginTop: u(64) }}>
+            <h2
+              className="rb-finale-title"
+              style={{ marginTop: u(64) }}
+              {...editable(ctx, '', 'remate')}
+            >
               <Pop as="span" active={active} delay={0.1} from={0.5} rotate={-8}>
                 <T text={theme.title1} ctx={ctx} />
               </Pop>

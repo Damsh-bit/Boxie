@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { useEffect } from 'react'
 import { Stars } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
-import { Stage, T, u } from '../ribbly/ui'
+import { editable, Stage, T, u } from '../ribbly/ui'
 import { Appear, ease, frames, Loop, spring } from './motion'
 import type { Props } from './shared'
 
@@ -172,7 +172,7 @@ export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
       </div>
       <motion.i className="rb-curtain" style={{ left: 0 }} {...curtain(-1)} aria-hidden />
       <motion.i className="rb-curtain" style={{ right: 0 }} {...curtain(1)} aria-hidden />
-      <i className="rb-valance" aria-hidden />
+      <i className="rb-valance" aria-hidden {...editable(ctx, '', 'telon')} />
 
       <div className="rb-body" style={{ zIndex: 5, pointerEvents: 'none' }}>
         <Appear
@@ -202,6 +202,7 @@ export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
 
         <div className="rb-grow" style={{ justifyContent: 'flex-end' }}>
           <motion.div
+            {...editable(ctx, '', 'snack')}
             style={{ position: 'relative', width: u(196), marginBottom: u(54) }}
             initial={false}
             animate={

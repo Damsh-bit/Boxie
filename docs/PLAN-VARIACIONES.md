@@ -27,9 +27,13 @@ fases 0 a 3 están en el código; todo el arte es SVG y CSS dibujado en el repo.
   "Diseño" ya cambia los colores); en cambio suman globos, letra y detalles propios. La 14 tampoco
   tiene paleta (tiene sus dos diseños). Algunas piezas se reemplazaron por otras más útiles (06:
   filtro del video en vez de marco; 19: estilo del resumen y armado de fotos).
+- Cómo se elige: cada pieza tiene su lápiz y, al tocarla, sus opciones aparecen en el mismo globo,
+  debajo de sus campos (la torta: la edad y, abajo, Torta y Velas). Las slides marcan la pieza con
+  `editable(ctx, campos, 'torta,velas')` (o `StyleSpot` si no tiene campos, y `style` en los
+  grupos de las escenas). Colores, tipografía, decoración y las piezas que ahora no se ven van en el
+  lápiz de la pantalla (el botón redondo de la paleta, abajo a la izquierda del teléfono).
 - Pendiente: editar estilos desde el editor de formulario (hoy solo el directo, que es el de
-  Cumpleaños) y que el comprador toque la pieza en el diseño para abrir su eje (`anchor`; hoy se elige
-  en la barra "Estilo de esta pantalla").
+  Cumpleaños).
 
 ## Cómo está hoy (antes de empezar)
 

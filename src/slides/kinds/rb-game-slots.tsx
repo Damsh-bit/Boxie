@@ -115,6 +115,7 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
 
         <motion.div
           className="rb-slots"
+          {...editable(ctx, '', 'maquina,simbolos')}
           style={{ marginTop: u(phase === 'won' ? 26 : 38) }}
           initial={false}
           animate={

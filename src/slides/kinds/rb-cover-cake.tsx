@@ -66,7 +66,7 @@ export function CoverCake({ theme, ctx }: Props<'cover.cake'>) {
               type="button"
               className="rb-cake-tap"
               onClick={blow}
-              {...editable(ctx, 'age,treatment,birthday')}
+              {...editable(ctx, 'age,treatment,birthday', 'torta,velas')}
               aria-label={blown ? 'Seguir' : 'Soplar las velitas'}
               whileTap={{ scale: 0.96 }}
               animate={blown ? { scale: [1, 1.07, 1] } : { scale: 1 }}

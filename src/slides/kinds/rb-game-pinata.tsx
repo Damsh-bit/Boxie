@@ -160,6 +160,7 @@ export function GamePinata({ theme, buyer, ctx }: Props<'game.pinata'>) {
                   <motion.button
                     type="button"
                     className="rb-pinata"
+                    {...editable(ctx, '', 'forma,colores')}
                     onClick={hit}
                     aria-label={`Golpear la piñata (${hits} de ${needed})`}
                     animate={swing}

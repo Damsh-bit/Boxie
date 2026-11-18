@@ -223,6 +223,7 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
                 duration={4.5}
                 frames={frames.float(8, 1.5)}
                 className="rb-quiz-cards"
+                {...editable(ctx, '', 'tarjetas')}
               >
                 <i
                   style={{
@@ -335,7 +336,11 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
               <Steps states={steps} />
             </div>
 
-            <div className="rb-q-card" style={{ marginTop: u(40) }} {...editable(ctx, 'questions')}>
+            <div
+              className="rb-q-card"
+              style={{ marginTop: u(40) }}
+              {...editable(ctx, 'questions', 'tarjetas')}
+            >
               <motion.span
                 className="rb-q-badge"
                 initial={{ scale: 0, rotate: -40 }}

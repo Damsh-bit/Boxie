@@ -100,7 +100,7 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
             return (
               <Appear
                 key={i}
-                {...editable(ctx, 'vouchers')}
+                {...editable(ctx, 'vouchers', 'vales,sello')}
                 active={active}
                 delay={0.2 + i * 0.06}
                 y={24}

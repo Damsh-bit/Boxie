@@ -378,8 +378,10 @@ size`) y todo se mide en `--u`, un píxel del diseño (390 × 760) escalado al t
   cuadro: no hace falta un formulario por pantalla. Lo que no se ve tocando (una carta dentro
   del sobre cerrado) queda en "Más opciones de esta pantalla".
 - **Estilos por elemento** (`docs/PLAN-VARIACIONES.md`): cada pantalla declara sus ejes
-  (`styleAxes`: la paleta, la tipografía, la decoración, la torta…) y el comprador elige en la
-  barra "Estilo de esta pantalla" del editor directo. Lo elegido va en el campo `estilo` del
+  (`styleAxes`: la paleta, la tipografía, la decoración, la torta…). En el editor directo, cada
+  pieza muestra sus opciones en su propio globo, debajo de sus campos (las slides la marcan con
+  `data-style`: `editable(ctx, campos, ejes)`, `StyleSpot` o `style` en las escenas); lo que es de
+  toda la pantalla (colores, tipografía, decoración) va en el lápiz de la pantalla. Lo elegido va en el campo `estilo` del
   contenido de cada slide, también en las que no tienen nada más para completar (la
   validación lo conserva en todas). La opción `original` de cada eje es el diseño de siempre:
   sin `estilo`, una Ribbly vieja se ve igual. La temática prende todo con `buyerStyles` y, por

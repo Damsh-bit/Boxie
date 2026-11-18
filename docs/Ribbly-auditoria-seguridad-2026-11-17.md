@@ -116,5 +116,5 @@ el flujo completo con tarjetas de prueba (`docs/CHECKOUT_Y_PAGOS.md`).
 
 ## Pagos internacionales
 
-Postergado a propósito: por ahora se cobra solo en ARS con Mercado Pago. Se retoma cuando lo de seguridad esté
-cerrado, con información actualizada sobre opciones sin LLC, gratuitas o de comisión baja.
+Por ahora se cobra solo en ARS con Mercado Pago. La comparación de opciones sin LLC (18/11/2026) y la recomendación
+están en `docs/PAGOS-INTERNACIONALES.md`.

@@ -1,10 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
-import { Bokeh, SCENES, SCENES_PAREJA, StringLights } from '../ribbly/art'
+import { SCENES } from '../ribbly/art'
 import { Stage, T, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { Appear, spring } from './motion'
+import { StoryMomentsLove } from './rb-story-moments-love'
 import type { Props } from './shared'
 
 interface Moment {
@@ -15,14 +16,25 @@ interface Moment {
 }
 
 /**
- * 05 · Recorrido: las fotos de quien regala como polaroids colgadas con
- * broches. Se pasan arrastrando hacia los costados o tocando el año; un toque
- * en la del frente la agranda.
+ * 05 · Recorrido. En Pareja es la grilla de polaroids (rb-story-moments-love);
+ * en Cumpleaños, el carrusel de acá.
  */
-export function StoryMoments({ theme, buyer, ctx }: Props<'story.moments'>) {
+export function StoryMoments(props: Props<'story.moments'>) {
+  return props.theme.look === 'pareja' ? (
+    <StoryMomentsLove {...props} />
+  ) : (
+    <StoryMomentsCarousel {...props} />
+  )
+}
+
+/**
+ * Las fotos de quien regala como polaroids colgadas con broches. Se pasan
+ * arrastrando hacia los costados o tocando el año; un toque en la del frente
+ * la agranda.
+ */
+function StoryMomentsCarousel({ theme, buyer, ctx }: Props<'story.moments'>) {
   const active = ctx.active
-  const pareja = theme.look === 'pareja'
-  const scenes = pareja ? SCENES_PAREJA : SCENES
+  const scenes = SCENES
   const year = Number(ctx.vars.anio)
   const loaded = buyer.moments.filter((m) => m.photo || m.caption.trim() || m.year.trim())
   const moments: Moment[] = loaded.length
@@ -60,26 +72,7 @@ export function StoryMoments({ theme, buyer, ctx }: Props<'story.moments'>) {
   }
 
   return (
-    <Stage
-      bg={pareja ? '#2A2433' : 'linear-gradient(180deg, #FFB45C 0%, #FF8A7A 45%, #F77A9D 100%)'}
-      className={pareja ? 'is-pareja' : ''}
-    >
-      {pareja && (
-        // Pareja: la foto de adelante, fuera de foco, tiñe el fondo.
-        <div className="rb-bg">
-          <div className="rb-photo-bg" style={{ opacity: 0.55 }}>
-            {picture(current)}
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'linear-gradient(180deg, rgba(42,36,51,0.55), rgba(42,36,51,0.75))',
-            }}
-          />
-          <Bokeh seed={55} count={10} colors={['#FFC56E', '#FFD9A0']} blur={8} maxOpacity={0.35} />
-        </div>
-      )}
+    <Stage bg="linear-gradient(180deg, #FFB45C 0%, #FF8A7A 45%, #F77A9D 100%)">
       <div className="rb-body">
         <Appear as="p" active={active} y={10} className="rb-kicker" style={{ marginTop: u(4) }}>
           <T text={theme.kicker} ctx={ctx} />
@@ -95,32 +88,15 @@ export function StoryMoments({ theme, buyer, ctx }: Props<'story.moments'>) {
         </Appear>
 
         <div className="rb-deck" style={{ marginTop: u(26) }}>
-          {pareja ? (
-            <StringLights
-              style={{
-                position: 'absolute',
-                left: '-6%',
-                width: '112%',
-                top: u(-4),
-                height: u(54),
-              }}
+          <svg className="rb-deck-line" viewBox="0 0 400 46" preserveAspectRatio="none" aria-hidden>
+            <path
+              d="M0 4 Q200 44 400 4"
+              fill="none"
+              stroke="rgba(255,255,255,0.75)"
+              strokeWidth="1.6"
+              vectorEffect="non-scaling-stroke"
             />
-          ) : (
-            <svg
-              className="rb-deck-line"
-              viewBox="0 0 400 46"
-              preserveAspectRatio="none"
-              aria-hidden
-            >
-              <path
-                d="M0 4 Q200 44 400 4"
-                fill="none"
-                stroke="rgba(255,255,255,0.75)"
-                strokeWidth="1.6"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
-          )}
+          </svg>
           {moments.map((m, i) => {
             const offset = i - index
             const near = Math.abs(offset) <= 2

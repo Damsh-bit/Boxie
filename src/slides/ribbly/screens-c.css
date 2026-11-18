@@ -49,33 +49,447 @@
   display: block;
 }
 
-.rb-edition-title {
-  font-family: var(--font-playfair), Georgia, serif;
-  font-weight: 900;
-  font-style: italic;
-  font-size: calc(var(--u) * 70);
-  line-height: 0.9;
-  letter-spacing: -0.02em;
+/* ── Pareja con ondas orgánicas (03 · Love edition y 05 · Fotos) ────────────
+   9:16, como una historia de Instagram. Las ondas son un SVG estirado al
+   escenario (love.tsx) y las posiciones salen del mismo lienzo de 360 × 640
+   que dibuja la imagen para compartir (story-image.ts). */
+
+.rb-waves {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.rb-edition-sub {
-  font-family: var(--font-josefin), sans-serif;
+.rb-wordmark {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.08em;
+  font-family: var(--font-fredoka), sans-serif;
+  font-weight: 700;
+  font-size: calc(var(--u) * 27);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.rb-wordmark-heart {
+  width: 0.42em;
+  margin-top: -0.06em;
+  transform: rotate(12deg);
+}
+
+.rb-ig-share {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 7);
+  min-height: calc(var(--u) * 36);
+  padding: calc(var(--u) * 6) calc(var(--u) * 14) calc(var(--u) * 6) calc(var(--u) * 6);
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #c8305a;
+  font-weight: 700;
+  font-size: calc(var(--u) * 12.5);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 18) rgba(200, 48, 90, 0.25);
+}
+
+.rb-ig-share-icon {
+  display: grid;
+  place-items: center;
+  width: calc(var(--u) * 26);
+  height: calc(var(--u) * 26);
+  border-radius: 50%;
+  color: #fff;
+  background: radial-gradient(
+    circle at 30% 107%,
+    #fdf497 0%,
+    #fd5949 45%,
+    #d6249f 60%,
+    #285aeb 90%
+  );
+}
+
+.rb-ig-share-icon svg {
+  width: calc(var(--u) * 14);
+  height: calc(var(--u) * 14);
+}
+
+/* 03 · Love edition */
+
+.rb-le {
+  cursor: pointer;
+}
+
+.rb-le-photo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  overflow: hidden;
+  background: #e9dfe3;
+}
+
+.rb-le-photo > img,
+.rb-le-photo > svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rb-le-body > * {
+  position: absolute;
+}
+
+.rb-le-logo {
+  left: 0;
+  right: 0;
+  top: calc(var(--u) * 30);
+  display: flex;
+  justify-content: center;
+}
+
+.rb-le-caption {
+  right: 7%;
+  transform: rotate(-7deg);
+}
+
+.rb-le-caption-in {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 6);
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  font-size: calc(var(--u) * 29);
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 8) rgba(0, 0, 0, 0.4);
+}
+
+.rb-le-caption-in > span:first-child {
+  padding-bottom: calc(var(--u) * 4);
+  background: linear-gradient(#fff, #fff) left bottom / 92% calc(var(--u) * 2) no-repeat;
+}
+
+.rb-le-caption-heart {
+  position: relative;
+  width: calc(var(--u) * 24);
+  margin-top: calc(var(--u) * -8);
+  filter: drop-shadow(0 0 calc(var(--u) * 3) rgba(255, 255, 255, 0.6));
+}
+
+.rb-le-caption-heart svg {
+  display: block;
+  width: 100%;
+}
+
+/* Las dos rayitas de "brillo" del corazón. */
+.rb-le-caption-heart i {
+  position: absolute;
+  right: calc(var(--u) * -9);
+  top: calc(var(--u) * -9);
+  width: calc(var(--u) * 10);
+  height: calc(var(--u) * 10);
+  border-top: calc(var(--u) * 2) solid #fff;
+  border-right: calc(var(--u) * 2) solid #fff;
+  border-radius: 0 calc(var(--u) * 10) 0 0;
+  clip-path: polygon(0 0, 35% 0, 35% 100%, 100% 100%, 100% 65%, 0 65%);
+}
+
+.rb-le-quote {
+  left: calc(var(--u) * 32);
+  right: calc(var(--u) * 28);
+  text-align: left;
+}
+
+.rb-le-quote-heart {
+  width: calc(var(--u) * 28);
+  margin-bottom: calc(var(--u) * 10);
+  filter: drop-shadow(0 calc(var(--u) * 4) calc(var(--u) * 6) rgba(234, 36, 95, 0.3));
+}
+
+.rb-le-quote-heart svg {
+  display: block;
+  width: 100%;
+}
+
+.rb-le-quote blockquote {
+  margin: 0;
+  font-family: var(--font-fredoka), sans-serif;
+  font-style: italic;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.rb-le-l1 {
+  font-weight: 500;
+  font-size: calc(var(--u) * 30);
+  color: #5d4447;
+}
+
+.rb-le-l2 {
+  font-weight: 700;
+  font-size: calc(var(--u) * 34);
+  color: #f23a74;
+}
+
+.rb-le-sign {
+  margin-top: calc(var(--u) * 12);
+  font-family: var(--font-fredoka), sans-serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: calc(var(--u) * 19);
+  color: #61474a;
+}
+
+/* Centrado: a la derecha están las flechas del player. */
+.rb-le-share {
+  left: 0;
+  right: 0;
+  bottom: calc(var(--u) * 18);
+  display: flex;
+  justify-content: center;
+}
+
+/* 05 · Fotos */
+
+.rb-lm-doodle {
+  position: absolute;
+  overflow: visible;
+}
+
+.rb-lm-body {
+  padding: calc(var(--u) * 34) calc(var(--u) * 18) calc(var(--u) * 16);
+  color: #231f26;
+}
+
+.rb-lm-logo {
+  display: flex;
+  justify-content: center;
+}
+
+.rb-lm-kicker {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 12);
+  width: 100%;
+  margin-top: calc(var(--u) * 14);
+  padding: 0 calc(var(--u) * 12);
+  font-weight: 600;
+  font-size: calc(var(--u) * 12);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.rb-lm-kicker i {
+  flex: 1;
+  height: 1px;
+  background: rgba(35, 31, 38, 0.45);
+}
+
+.rb-lm-title {
+  margin-top: calc(var(--u) * 6);
+  font-family: var(--font-fredoka), sans-serif;
+  font-weight: 700;
+  font-size: calc(var(--u) * 31);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.rb-lm-accent {
+  color: #f62e72;
+  padding-bottom: calc(var(--u) * 5);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M2 6Q50 1 98 4' fill='none' stroke='%23F62E72' stroke-width='2.2' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E")
+    center bottom / 96% calc(var(--u) * 8) no-repeat;
+}
+
+.rb-lm-grid {
+  position: relative;
+  flex: 1 1 0;
+  width: calc(100% + var(--u) * 36);
+  margin: calc(var(--u) * 10) calc(var(--u) * -18) 0;
+  min-height: calc(var(--u) * 300);
+}
+
+.rb-lm-spot {
+  position: absolute;
+}
+
+.rb-lm-polaroid {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 6.2% 6.2% 0;
+  border: 0;
+  background: #fff;
+  border-radius: calc(var(--u) * 2);
+  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 18) rgba(140, 40, 80, 0.22);
+  cursor: zoom-in;
+}
+
+.rb-lm-tape {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--u) * -9);
+  width: 32%;
+  height: calc(var(--u) * 17);
+  transform: translateX(-50%) rotate(-4deg);
+  background: rgba(251, 142, 172, 0.82);
+  z-index: 1;
+}
+
+.rb-lm-photo {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f9c9d9;
+}
+
+.rb-lm-photo > img,
+.rb-lm-photo > svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rb-lm-more {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(35, 31, 38, 0.45);
+  color: #fff;
+  font-family: var(--font-fredoka), sans-serif;
   font-weight: 700;
   font-size: calc(var(--u) * 30);
-  letter-spacing: 0.32em;
+}
+
+.rb-lm-foot {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 6);
+  height: calc(var(--u) * 38);
+  padding-left: calc(var(--u) * 4);
+}
+
+.rb-lm-foot svg {
+  flex: none;
+  width: calc(var(--u) * 19);
+}
+
+.rb-lm-caption {
+  min-width: 0;
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  font-size: calc(var(--u) * 17);
   line-height: 1;
-  color: #ffccd5;
+  color: #231f26;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.rb-edition-polaroid {
+.rb-lm-pill {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 82%;
+  margin-top: calc(var(--u) * 10);
+  padding: calc(var(--u) * 9) calc(var(--u) * 46) calc(var(--u) * 11) calc(var(--u) * 24);
+  border: calc(var(--u) * 1.5) solid #f2b8cc;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  line-height: 1.02;
+}
+
+.rb-lm-pill-l1 {
+  font-size: calc(var(--u) * 27);
+}
+
+.rb-lm-pill-l2 {
+  font-size: calc(var(--u) * 30);
+  color: #f52970;
+  padding-bottom: calc(var(--u) * 3);
+  background: linear-gradient(#231f26, #231f26) right bottom / 82% calc(var(--u) * 1.6) no-repeat;
+}
+
+.rb-lm-pill-heart {
   position: absolute;
-  right: calc(var(--u) * 2);
-  top: calc(var(--u) * 26);
-  width: calc(var(--u) * 182);
+  right: calc(var(--u) * 16);
+  top: 50%;
+  width: calc(var(--u) * 28);
+  transform: translateY(-50%) rotate(8deg);
 }
 
-.rb-edition-polaroid .rb-polaroid {
-  cursor: default;
+.rb-lm-foot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--u) * 8);
+  width: 100%;
+  margin-top: calc(var(--u) * 14);
+  /* Lugar para las flechas del player (abajo a la derecha). */
+  padding-right: 44px;
+}
+
+.rb-lm-days {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 8);
+  font-weight: 500;
+  font-size: calc(var(--u) * 13.5);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.rb-lm-days svg {
+  width: calc(var(--u) * 20);
+  height: calc(var(--u) * 20);
+}
+
+.rb-lm-days i {
+  width: 1px;
+  height: calc(var(--u) * 18);
+  background: rgba(35, 31, 38, 0.4);
+}
+
+.rb-zoom > .rb-lm-zoom-nav {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--u) * 26);
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 14);
+  width: auto;
+  max-width: none;
+  padding: calc(var(--u) * 4);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-weight: 600;
+  font-size: calc(var(--u) * 13);
+}
+
+.rb-lm-zoom-nav button {
+  display: grid;
+  place-items: center;
+  width: calc(var(--u) * 36);
+  height: calc(var(--u) * 36);
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #c8305a;
+  cursor: pointer;
 }
 
 /* ── Gratitud ───────────────────────────────────────────────────────────── */
@@ -473,22 +887,6 @@
 
 .is-pareja .rb-track-knob {
   box-shadow: 0 0 0 calc(var(--u) * 3) rgba(244, 78, 99, 0.35);
-}
-
-.is-pareja .rb-year {
-  width: calc(var(--u) * 8);
-  height: calc(var(--u) * 8);
-  padding: 0;
-  font-size: 0;
-  background: rgba(255, 255, 255, 0.4);
-  transition:
-    width 0.3s,
-    background-color 0.3s;
-}
-
-.is-pareja .rb-year.is-on {
-  width: calc(var(--u) * 26);
-  background: #fff;
 }
 
 .is-pareja .rb-song-band {

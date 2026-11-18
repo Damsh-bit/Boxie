@@ -47,6 +47,46 @@ export function parseDayMonth(text: string | undefined): { day: number; month: n
   return { day, month }
 }
 
+/** "14/02/2021", "14-2-21" o "2021-02-14" → la fecha (a las 0 h); si no es válida, null. */
+export function parseFullDate(text: string | undefined): Date | null {
+  const value = text?.trim() ?? ''
+  let day: number, month: number, year: number
+  const iso = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)
+  const local = value.match(/^(\d{1,2})\s*[/.-]\s*(\d{1,2})\s*[/.-]\s*(\d{2}|\d{4})$/)
+  if (iso) {
+    ;[year, month, day] = [Number(iso[1]), Number(iso[2]), Number(iso[3])]
+  } else if (local) {
+    ;[day, month, year] = [Number(local[1]), Number(local[2]), Number(local[3])]
+    if (year < 100) year += 2000
+  } else {
+    return null
+  }
+  const date = new Date(year, month - 1, day)
+  // 31/02 no existe: Date lo corre al mes siguiente.
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    return null
+  }
+  return date
+}
+
+/** Días y años completos desde `since` hasta `now` (null si es a futuro). */
+export function timeTogether(since: Date, now: Date): { days: number; years: number } | null {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  // Por fecha de calendario: los cambios de horario no corren un día.
+  const days = Math.round(
+    (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
+      Date.UTC(since.getFullYear(), since.getMonth(), since.getDate())) /
+      86_400_000,
+  )
+  if (days < 0) return null
+  let years = today.getFullYear() - since.getFullYear()
+  const beforeAnniversary =
+    today.getMonth() < since.getMonth() ||
+    (today.getMonth() === since.getMonth() && today.getDate() < since.getDate())
+  if (beforeAnniversary) years--
+  return { days, years: Math.max(0, years) }
+}
+
 export function buildVars(
   config: Pick<ParsedThemeConfig, 'slides'>,
   data: {
@@ -97,6 +137,12 @@ export function buildVars(
     vars.fecha = ''
     vars.fecha_proximo_cumple = ''
   }
+
+  // Pareja: desde cuándo están juntos (lo carga quien regala en la Love edition).
+  const since = parseFullDate(vars.inicio)
+  const together = since ? timeTogether(since, now) : null
+  vars.dias_juntos = together ? together.days.toLocaleString('es-AR') : ''
+  vars.anios = together ? String(together.years) : ''
   return vars
 }
 

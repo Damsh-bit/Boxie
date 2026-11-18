@@ -70,14 +70,17 @@
       {
         "key": "momentos",
         "kind": "story.moments",
+        "frame": {
+          "chrome": "dark"
+        },
         "props": {
           "look": "pareja",
           "screenTitle": "Fotos",
           "editorTitle": "Sus mejores momentos",
-          "editorIntro": "Fotos de ustedes como polaroids colgadas de una guirnalda de luces. Subí de 1 a 10 y poneles un pie: se recorren deslizando.",
+          "editorIntro": "Cuatro fotos de ustedes como polaroids pegadas con cinta, con los días que llevan juntos. Subí de 1 a 10 (en la grilla van las primeras 4; tocando una se ven todas). Se comparte como historia de Instagram.",
           "kicker": "NUESTROS MOMENTOS",
           "title": "Sus mejores momentos",
-          "phrase": "Cada foto, un recuerdo nuestro 💕",
+          "phrase": "Cada foto, un recuerdo nuestro",
           "defaultCaption": "Nuestro primer viaje ✈️"
         }
       },

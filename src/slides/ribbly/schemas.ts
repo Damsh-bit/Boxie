@@ -10,7 +10,8 @@ import type { SlideDefinition } from '../types'
  *
  * Los textos aceptan {{variables}}: {{nombre}}, {{de}}, {{edad}},
  * {{edad_siguiente}}, {{anio}}, {{anio_anterior}}, {{fecha_proximo_cumple}},
- * {{rol}}, {{titulo_cumple}}, {{querida}}, {{a_la}} (ribbly/vars.ts).
+ * {{rol}}, {{titulo_cumple}}, {{querida}}, {{a_la}} y, en Pareja, {{dias_juntos}} y
+ * {{anios}} (ribbly/vars.ts).
  *
  * Sin React: el servidor valida con esto sin cargar el player.
  */
@@ -213,6 +214,18 @@ const storyMoments = {
     defaultCaption: field.text('Pie de foto de ejemplo', {
       default: 'El cumple {{anio_anterior}} 🎂',
       max: 40,
+    }),
+    daysLabel: field.text('Contador de días juntos', {
+      default: '{{dias_juntos}} días juntos',
+      max: 40,
+      advanced: true,
+      help: 'Solo con el estilo Pareja. Sale de la fecha que carga quien regala en la Love edition.',
+    }),
+    shareLabel: field.text('Botón para compartir', {
+      default: 'Compartir en Instagram',
+      max: 30,
+      advanced: true,
+      help: 'Solo con el estilo Pareja: arma la grilla como historia de Instagram.',
     }),
   }),
   buyerSchema: z.object({
@@ -1135,21 +1148,22 @@ const coverGift = {
 // ── 03 · Love edition ───────────────────────────────────────────────────────
 
 const coverEdition = {
-  label: 'Ribbly · Edición especial',
-  description: 'Tapa de edición especial con su foto en una polaroid y una frase tuya.',
+  label: 'Ribbly · Love edition',
+  description:
+    'Su foto enmarcada en ondas rosas, con la marca arriba y tu frase grande al pie. Se comparte como historia de Instagram.',
   category: 'intro',
   themeSchema: z.object({
     ...screen('pareja'),
-    kicker: field.text('Etiqueta', { default: 'RIBBLY · EDICIÓN ESPECIAL', max: 40 }),
-    title: field.text('Título', { default: 'Love', max: 14 }),
-    subtitle: field.text('Debajo del título', { default: 'EDITION', max: 16 }),
-    wishLabel: field.text('Rótulo de la frase', { default: 'PENSADO EN SENTIMIENTOS', max: 40 }),
     defaultWish: field.text('Frase si el comprador no escribe', {
       default: 'Porque sos mi persona favorita.',
       max: 90,
+      help: 'Las últimas dos palabras van en rosa. Para elegir otras, marcalas con *asteriscos*.',
     }),
-    defaultCaption: field.text('Pie de foto si no hay', { default: 'nosotros ♥', max: 30 }),
-    cta: field.text('Botón', { default: 'Empezar ahora →', max: 30 }),
+    defaultCaption: field.text('Texto sobre la foto si no hay', { default: 'nosotros', max: 30 }),
+    shareLabel: field.text('Botón para compartir', {
+      default: 'Compartir en Instagram',
+      max: 30,
+    }),
     photoFromKind: field.text('Si no hay foto, la primera de', {
       default: 'story.moments',
       advanced: true,
@@ -1157,21 +1171,28 @@ const coverEdition = {
   }),
   buyerSchema: z.object({
     photo: field.photo('Su foto juntos', {
-      help: 'Va en una polaroid y, fuera de foco, de fondo. Si no subís una, va la primera de tus fotos.',
+      help: 'Va grande, enmarcada en ondas rosas. Si no subís una, va la primera de tus fotos.',
     }),
-    caption: field.text('Pie de la foto', { max: 30, placeholder: 'nosotros ♥' }),
+    caption: field.text('Texto sobre la foto', { max: 30, placeholder: 'nosotros' }),
     wish: field.text('Una frase para empezar', {
       max: 80,
       placeholder: 'Porque sos mi persona favorita.',
+      help: 'Va firmada con tu nombre. Las últimas dos palabras quedan en rosa.',
+    }),
+    since: field.text('¿Desde cuándo están juntos?', {
+      max: 10,
+      placeholder: '14/02/2021',
+      help: 'Opcional (día/mes/año). Con esto contamos los días juntos en la pantalla de fotos.',
     }),
   }),
-  frame: FRAME,
+  frame: FRAME_LIGHT,
   summary: null,
   editor: {
-    title: 'Edición especial',
+    title: 'Love edition',
     intro:
-      'La tapa de su edición especial: una foto de ustedes en una polaroid y una frase tuya, firmada.',
+      'La tapa de su edición especial: una foto de ustedes enmarcada en ondas rosas y una frase tuya, firmada. Se puede compartir como historia de Instagram.',
   },
+  variables: { inicio: 'since' },
 } satisfies SlideDefinition
 
 // ── 13 · Revista (pareja) ───────────────────────────────────────────────────

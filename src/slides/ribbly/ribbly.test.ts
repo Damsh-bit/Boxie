@@ -7,7 +7,8 @@ import { initialBuyerProps } from '../schemas'
 import { magazinePool, pickMagazine } from './magazine'
 import { CUMPLE_MAGAZINE } from './magazine-bank'
 import { PAREJA_MAGAZINE } from './magazine-bank-pareja'
-import { buildVars, fill, parseDayMonth } from './vars'
+import { splitAccent } from './love-art'
+import { buildVars, fill, parseDayMonth, parseFullDate } from './vars'
 
 const config = readThemeConfig(cumpleanos.config)
 const NOW = new Date(2026, 4, 14)
@@ -188,5 +189,49 @@ describe('Pareja', () => {
       'momentos.moments',
       'anecdota.photo',
     ])
+  })
+})
+
+describe('pareja: días juntos', () => {
+  const love = readThemeConfig(parejaSeed.config)
+
+  it('la Love edition presta la fecha de inicio y sale {{dias_juntos}} con separador de miles', () => {
+    const vars = buildVars(love, gift({ edicion: { since: '14/02/2022' } }), NOW)
+    // Del 14/02/2022 al 14/05/2026: 1550 días, 4 años cumplidos.
+    expect(vars.dias_juntos).toBe('1.550')
+    expect(vars.anios).toBe('4')
+  })
+
+  it('acepta año corto e ISO; una fecha inválida o futura no cuenta', () => {
+    expect(parseFullDate('14-2-22')?.getFullYear()).toBe(2022)
+    expect(parseFullDate('2022-02-14')?.getMonth()).toBe(1)
+    expect(parseFullDate('31/02/2022')).toBeNull()
+    expect(parseFullDate('14/02')).toBeNull()
+    expect(buildVars(love, gift({ edicion: { since: '01/01/2030' } }), NOW).dias_juntos).toBe('')
+    expect(buildVars(love, gift(), NOW).dias_juntos).toBe('')
+  })
+
+  it('el aniversario todavía no llegó: los años no se adelantan', () => {
+    expect(buildVars(love, gift({ edicion: { since: '20/05/2020' } }), NOW).anios).toBe('5')
+  })
+})
+
+describe('pareja: palabras destacadas', () => {
+  it('sin marcas destaca las últimas palabras (los emojis no cuentan)', () => {
+    expect(splitAccent('Sus mejores momentos')).toEqual(['Sus mejores', 'momentos'])
+    expect(splitAccent('Porque sos mi persona favorita.', 2)).toEqual([
+      'Porque sos mi',
+      'persona favorita.',
+    ])
+    expect(splitAccent('Cada foto, un recuerdo nuestro 💕', 2)).toEqual([
+      'Cada foto, un',
+      'recuerdo nuestro 💕',
+    ])
+  })
+
+  it('con *asteriscos* destaca lo marcado', () => {
+    expect(splitAccent('Te *amo* mucho')).toEqual(['Te', 'amo mucho'])
+    expect(splitAccent('*Siempre*')).toEqual(['', 'Siempre'])
+    expect(splitAccent('Hola')).toEqual(['', 'Hola'])
   })
 })

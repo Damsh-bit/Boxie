@@ -269,7 +269,8 @@ export function InlineWorkspace({
 
           <div
             ref={stage}
-            className="relative aspect-[9/17.5] w-full max-w-[420px] lg:h-[min(780px,calc(100dvh-13rem))] lg:w-auto"
+            // isolate: los lápices quedan debajo del encabezado fijo del sitio al hacer scroll.
+            className="relative isolate aspect-[9/17.5] w-full max-w-[420px] lg:h-[min(780px,calc(100dvh-13rem))] lg:w-auto"
           >
             <Player
               config={config}
@@ -469,16 +470,17 @@ function DoneButton({ onClick }: { onClick(): void }) {
 }
 
 /**
- * El lápiz de la pantalla, abajo a la izquierda del teléfono: colores,
- * tipografía, decoración y las piezas que ahora no se ven. Redondo y chico,
- * para no tapar los botones de la pantalla.
+ * El lápiz de la pantalla, como una insignia en la esquina de arriba a la
+ * izquierda del teléfono (no tapa nada de la pantalla; abajo están sus botones
+ * y, en el celular, el botón de ayuda del sitio): colores, tipografía,
+ * decoración y las piezas que ahora no se ven.
  */
 function ScreenStyleButton({ selected, onOpen }: { selected: boolean; onOpen(el: Element): void }) {
   return (
     <motion.button
       type="button"
       className={cn(
-        'group pointer-events-auto absolute bottom-3 left-3 grid size-10 place-items-center rounded-full shadow-md ring-2 ring-white transition',
+        'group pointer-events-auto absolute -top-3 -left-3 grid size-10 place-items-center rounded-full shadow-md ring-2 ring-white transition',
         selected ? 'bg-brand text-white' : 'bg-white text-brand hover:scale-105',
       )}
       aria-label="Editar: estilo de la pantalla"
@@ -593,7 +595,21 @@ function EditBubble({
   // junto al elemento: se ubica midiéndolo, sin pasar por el estado.
   useLayoutEffect(() => {
     const el = panel.current
-    if (!el || window.innerWidth < 640) return
+    if (!el) return
+    if (window.innerWidth < 640) {
+      // La hoja tapa la mitad de abajo: la página se corre para que lo tocado
+      // (la torta, los globos) quede a la vista arriba y el cambio se vea en vivo.
+      const header = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0
+      const free = {
+        top: Math.max(header, 0) + 8,
+        bottom: window.innerHeight - el.offsetHeight - 8,
+      }
+      const room = free.bottom - free.top
+      const target = anchor.height <= room ? free.top + (room - anchor.height) / 2 : free.top
+      const delta = anchor.top - target
+      if (Math.abs(delta) > 8) window.scrollBy({ top: delta, behavior: 'smooth' })
+      return
+    }
     const vw = window.innerWidth
     const vh = window.innerHeight
     const w = el.offsetWidth
@@ -632,7 +648,7 @@ function EditBubble({
         ref={panel}
         role="dialog"
         aria-label={title}
-        className="fixed inset-x-0 bottom-0 z-[71] flex max-h-[min(70dvh,560px)] flex-col overflow-hidden rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_20px_60px_rgba(0,0,0,0.25)] sm:inset-x-auto sm:bottom-auto sm:w-[360px] sm:rounded-3xl sm:pb-0"
+        className="fixed inset-x-0 bottom-0 z-[71] flex max-h-[min(56dvh,520px)] flex-col overflow-hidden rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_20px_60px_rgba(0,0,0,0.25)] sm:inset-x-auto sm:bottom-auto sm:w-[360px] sm:rounded-3xl sm:pb-0"
         initial={{ opacity: 0, y: 14, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1, transition: spring.snappy }}
         exit={{ opacity: 0, y: 10, scale: 0.97, transition: { duration: 0.15 } }}

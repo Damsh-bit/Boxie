@@ -75,6 +75,7 @@ el flujo completo con tarjetas de prueba (`docs/CHECKOUT_Y_PAGOS.md`).
 | L9  | Baja        | "Recuperar acceso" permitía invalidar el link de otro una y otra vez                                            | No rota un link mandado hace < 15 min                                                                 | 18/11 |
 | L10 | Baja        | "¿Olvidaste tu clave?" tardaba más con mails de admins (enumeración)                                            | Envío en segundo plano, respuesta igual                                                               | 18/11 |
 | L11 | Baja        | Webhook sin `MP_WEBHOOK_SECRET` en producción pasaba en silencio                                                | Ahora es error (llega a Sentry)                                                                       | 18/11 |
+| L12 | Baja        | Sin `Cross-Origin-Opener-Policy` (tabnabbing, fugas entre pestañas)                                             | `COOP: same-origin` y `Permissions-Policy` más estricta                                               | 18/11 |
 
 ## Hallazgos abiertos
 
@@ -107,9 +108,11 @@ el flujo completo con tarjetas de prueba (`docs/CHECKOUT_Y_PAGOS.md`).
 
 ## Fuera de seguridad, encontrado de paso
 
-- **Error de hidratación en la home** (React #418, también en producción): una parte del HTML del servidor no
-  coincide con el del navegador, así que React re-renderiza en el cliente. No es de seguridad, pero hace la
-  carga más lenta. Pendiente de revisar.
+- **Error de hidratación en la home** (React #418): pasa **solo con "reducir movimiento" activado** en el
+  dispositivo. framer-motion arranca en el cliente sin los estilos iniciales de animación (`opacity: 0`,
+  `transform`) que mandó el servidor (diagnosticado en modo desarrollo el 18/11). React regenera esa parte y la
+  página funciona igual. Arreglo posible: no renderizar en el servidor los estilos iniciales de las animaciones
+  de `CoverScene` y `ThemeShowcase` cuando el usuario reduce el movimiento.
 
 ## Pagos internacionales
 

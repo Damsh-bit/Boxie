@@ -3,6 +3,7 @@ import { Check, Lightbulb, X } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText, Icon } from '@/ui/Icon'
 import { Balloon, Bokeh, Burst, Confetti, Heart, Rays, ROSE } from '../ribbly/art'
+import { useRbPalette } from '../ribbly/look'
 import { Btn, Chip, editable, Stage, Steps, T, TapMark, u, useStored } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { ease, frames, Loop, shake, spring } from './motion'
@@ -50,9 +51,12 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
   const calm = useReducedMotion()
   const pareja = theme.look === 'pareja'
   const look = LOOK[pareja ? 'pareja' : 'cumple']
+  const palette = useRbPalette()
   const NIGHT = look.night
-  const SKY = look.sky
-  const DUSK = look.dusk
+  const SKY = palette?.vivid ?? look.sky
+  const DUSK = palette?.deep ?? look.dusk
+  const cards =
+    ctx.style.tarjetas && ctx.style.tarjetas !== 'original' ? ctx.style.tarjetas : undefined
   const LETTER_COLORS = look.letters
   const active = ctx.active
   const usable = (list: typeof theme.examples) =>
@@ -117,7 +121,12 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
   })
 
   return (
-    <Stage tone="deep" bg={NIGHT} className={pareja ? 'is-pareja' : ''}>
+    <Stage
+      tone="deep"
+      bg={NIGHT}
+      className={`rb-quiz ${pareja ? 'is-pareja' : ''}`}
+      data-tarjetas={cards}
+    >
       {/* El fondo cambia con el final: cielo con rayos si ganó, noche si no. */}
       <motion.div
         className="rb-bg"

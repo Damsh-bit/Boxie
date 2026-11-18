@@ -3,6 +3,7 @@ import { ArrowDown, Play } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { Balloon, CityNightScene, Confetti, Rays, Stars } from '../ribbly/art'
+import { useRbPalette } from '../ribbly/look'
 import { Btn, editable, Stage, T, u } from '../ribbly/ui'
 import { Appear, ease } from './motion'
 import type { Props } from './shared'
@@ -55,6 +56,42 @@ function Crowd() {
   )
 }
 
+/** Filas de butacas de cine, a contraluz. */
+function Seats() {
+  return (
+    <svg
+      className="rb-crowd"
+      viewBox="0 0 390 300"
+      preserveAspectRatio="xMidYMax slice"
+      aria-hidden
+    >
+      {[0, 1].map((row) => (
+        <g key={row} fill={row ? '#120E2E' : '#1B1640'}>
+          {Array.from({ length: 7 }, (_, i) => {
+            const w = row ? 58 : 50
+            const x = -10 + i * (w + 6) + (row ? -18 : 6)
+            const y = row ? 214 : 176
+            return (
+              <path
+                key={i}
+                d={`M${x} 300 V${y + 18} q0 -18 18 -18 h${w - 36} q18 0 18 18 V300 Z`}
+              />
+            )
+          })}
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+/** La escena de abajo del póster (eje `escena`). */
+function PosterScene({ kind }: { kind?: string }) {
+  if (kind === 'ciudad') return <CityNightScene />
+  if (kind === 'butacas') return <Seats />
+  if (kind === 'cielo') return <Stars seed={12} count={30} sparks={4} area={70} />
+  return <Crowd />
+}
+
 /**
  * 10 · Recomendado para vos: un póster a pantalla completa por recomendación,
  * con solapas por plataforma. "Siguiente" pasa a la próxima; en la última,
@@ -69,6 +106,7 @@ export function MediaPoster({ theme, buyer, ctx }: Props<'media.poster'>) {
   const pick = picks[index]
   const last = index >= picks.length - 1
   const pareja = theme.look === 'pareja'
+  const palette = useRbPalette()
 
   if (!pick) return <Stage bg={MOODS[0]}>{null}</Stage>
 
@@ -96,40 +134,50 @@ export function MediaPoster({ theme, buyer, ctx }: Props<'media.poster'>) {
     )
   }
 
+  // Con otra paleta, un solo clima: el de la paleta.
+  const moods = palette ? [palette.vivid] : MOODS
+  const balloons = palette
+    ? [palette.balloons[1], palette.accent, palette.primary, palette.balloons[2]]
+    : ['#4FC3F7', '#B28DFF', '#F44E63', '#5ED6A8']
+
   return (
     <Stage bg={MOODS[0]}>
-      {MOODS.map((mood, i) => (
+      {moods.map((mood, i) => (
         <motion.div
           key={i}
           className="rb-bg"
           style={{ background: mood }}
           initial={false}
-          animate={{ opacity: i === index % MOODS.length ? 1 : 0 }}
+          animate={{ opacity: i === index % moods.length ? 1 : 0 }}
           transition={{ duration: 0.6 }}
         />
       ))}
       <div className="rb-bg">
         <Rays at="50% 36%" strength={0.2} />
         <Confetti seed={10} count={18} />
-        <Crowd />
+        <PosterScene kind={ctx.style.escena} />
         <div className="rb-poster-shade" />
       </div>
-      <Balloon color="#4FC3F7" style={{ left: '8%', top: '13%', width: u(58) }} duration={6.4} />
       <Balloon
-        color="#B28DFF"
+        color={balloons[0]!}
+        style={{ left: '8%', top: '13%', width: u(58) }}
+        duration={6.4}
+      />
+      <Balloon
+        color={balloons[1]!}
         style={{ right: '9%', top: '10%', width: u(60) }}
         duration={7}
         delay={-2}
         tilt={4}
       />
       <Balloon
-        color="#F44E63"
+        color={balloons[2]!}
         style={{ right: '16%', top: '27%', width: u(56) }}
         duration={5.8}
         delay={-3}
       />
       <Balloon
-        color="#5ED6A8"
+        color={balloons[3]!}
         style={{ left: '14%', top: '30%', width: u(52) }}
         duration={6.8}
         delay={-1}

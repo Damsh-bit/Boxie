@@ -122,11 +122,6 @@ describe('estilos: los ejes de las pantallas', () => {
   // Las que todavía no tienen sus piezas propias (Fase 3 del plan). Se van
   // sacando de acá a medida que se terminan.
   const PENDING = new Set([
-    'cancion',
-    'playlist',
-    'trivia',
-    'cine',
-    'recomendado',
     'tragamonedas',
     'vales',
     'revista',

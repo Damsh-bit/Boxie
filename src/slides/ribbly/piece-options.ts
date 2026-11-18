@@ -99,3 +99,52 @@ export const MOMENTS_BALLOONS = [
   ['corazones', 'Corazones'],
   ['sin', 'Sin globos'],
 ] as const satisfies PieceOptions
+
+/** 06 · El filtro del video. */
+export const VIDEO_FILTERS = [
+  ['original', 'Sin filtro'],
+  ['calido', 'Cálido'],
+  ['bn', 'Blanco y negro'],
+  ['sonado', 'Soñado'],
+  ['vhs', 'VHS'],
+] as const satisfies PieceOptions
+
+/** 07 · La portada de las playlists. */
+export const MIX_COVERS = [
+  ['original', 'Portadas'],
+  ['vinilo', 'Vinilo'],
+  ['cassette', 'Cassette'],
+  ['parlante', 'Parlante'],
+] as const satisfies PieceOptions
+
+/** 08 · Las tarjetas del quiz. */
+export const QUIZ_CARDS = [
+  ['original', 'Blancas'],
+  ['pizarra', 'Pizarra'],
+  ['neon', 'Neón'],
+  ['papel', 'Papel'],
+] as const satisfies PieceOptions
+
+/** 09 · El telón. */
+export const PREMIERE_CURTAINS = [
+  ['original', 'Rojo'],
+  ['azul', 'Azul'],
+  ['violeta', 'Violeta'],
+  ['dorado', 'Dorado'],
+  ['rosa', 'Rosa'],
+] as const satisfies PieceOptions
+
+/** 09 · Lo que se come en la función. */
+export const PREMIERE_SNACKS = [
+  ['original', 'Pochoclos'],
+  ['gaseosa', 'Gaseosa'],
+  ['golosinas', 'Golosinas'],
+] as const satisfies PieceOptions
+
+/** 10 · La escena de abajo del póster. */
+export const POSTER_SCENES = [
+  ['original', 'Gente festejando'],
+  ['ciudad', 'Ciudad de noche'],
+  ['butacas', 'Butacas'],
+  ['cielo', 'Cielo con estrellas'],
+] as const satisfies PieceOptions

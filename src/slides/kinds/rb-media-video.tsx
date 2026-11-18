@@ -155,7 +155,14 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
 
   return (
     <Stage tone="deep" bg="#0d0a16" className={theme.look === 'pareja' ? 'is-pareja' : ''}>
-      <div ref={stage} style={{ position: 'absolute', inset: 0, background: '#0d0a16' }}>
+      <div
+        ref={stage}
+        className="rb-filtered"
+        data-filtro={
+          ctx.style.filtro && ctx.style.filtro !== 'original' ? ctx.style.filtro : undefined
+        }
+        style={{ position: 'absolute', inset: 0, background: 'var(--rb-bg, #0d0a16)' }}
+      >
         <div className="rb-bg">
           {showVideo ? (
             <motion.iframe
@@ -194,6 +201,7 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
             </>
           )}
           <div className="rb-video-shade" />
+          {ctx.style.filtro === 'vhs' && <div className="rb-vhs" />}
         </div>
 
         <div className="rb-body" style={{ alignItems: 'stretch', textAlign: 'left' }}>

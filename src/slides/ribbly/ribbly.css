@@ -712,3 +712,31 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Piezas que giran o laten (vinilo, cassette, parlante). */
+.rb-spin {
+  animation: rb-piece-spin 4.5s linear infinite;
+}
+
+.rb-beat {
+  animation: rb-piece-beat 0.9s ease-in-out infinite;
+}
+
+@keyframes rb-piece-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rb-piece-beat {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-spin,
+  .rb-beat {
+    animation: none;
+  }
+}

@@ -451,6 +451,69 @@
   pointer-events: none;
 }
 
+/* El filtro del video (eje `filtro`): sobre el video, la portada o la escena. */
+.rb-filtered[data-filtro='calido'] .rb-bg > :not(.rb-video-shade):not(.rb-vhs) {
+  filter: sepia(0.35) saturate(1.25) hue-rotate(-8deg) brightness(1.04);
+}
+
+.rb-filtered[data-filtro='bn'] .rb-bg > :not(.rb-video-shade):not(.rb-vhs) {
+  filter: grayscale(1) contrast(1.12);
+}
+
+.rb-filtered[data-filtro='sonado'] .rb-bg > :not(.rb-video-shade):not(.rb-vhs) {
+  filter: saturate(1.2) brightness(1.08) contrast(0.92);
+}
+
+.rb-filtered[data-filtro='sonado'] .rb-video-shade {
+  background:
+    radial-gradient(
+      120% 70% at 50% 30%,
+      transparent 40%,
+      color-mix(in srgb, var(--rb-coral) 40%, transparent) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0) 30%,
+      rgba(0, 0, 0, 0.8) 62%,
+      rgba(0, 0, 0, 0.92) 100%
+    );
+}
+
+.rb-vhs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px),
+    radial-gradient(130% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  mix-blend-mode: multiply;
+}
+
+.rb-vhs::after {
+  content: 'REC ●';
+  position: absolute;
+  top: calc(var(--u) * 70);
+  right: calc(var(--u) * 22);
+  font:
+    700 calc(var(--u) * 13) / 1 var(--font-outfit),
+    monospace;
+  letter-spacing: 0.12em;
+  color: #ff5a5a;
+  text-shadow: 0 0 calc(var(--u) * 6) rgba(255, 60, 60, 0.7);
+  animation: rb-vhs-blink 1.4s steps(2) infinite;
+}
+
+.rb-filtered[data-filtro='vhs'] .rb-bg > :not(.rb-video-shade):not(.rb-vhs) {
+  filter: saturate(1.35) contrast(1.08) blur(0.3px);
+}
+
+@keyframes rb-vhs-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
 .rb-video-shade {
   position: absolute;
   inset: 0;
@@ -756,6 +819,71 @@
   font-size: calc(var(--u) * 17);
 }
 
+/* Las tarjetas del quiz (eje `tarjetas`). */
+.rb-quiz[data-tarjetas='pizarra'] .rb-q-card,
+.rb-quiz[data-tarjetas='pizarra'] .rb-q-option:not(.is-ok):not(.is-bad) {
+  background: linear-gradient(170deg, #2f5d4a 0%, #234a3a 100%);
+  color: #f4f1e8;
+  border: calc(var(--u) * 3) solid #a27a52;
+  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 18) rgba(0, 0, 0, 0.3);
+}
+
+.rb-quiz[data-tarjetas='pizarra'] .rb-q-card {
+  font-family: var(--rb-hand, var(--font-caveat)), cursive;
+  font-size: calc(var(--u) * 27);
+}
+
+.rb-quiz[data-tarjetas='pizarra'] .rb-q-option {
+  font-family: var(--rb-hand, var(--font-caveat)), cursive;
+  font-size: calc(var(--u) * 22);
+}
+
+.rb-quiz[data-tarjetas='neon'] .rb-q-card,
+.rb-quiz[data-tarjetas='neon'] .rb-q-option:not(.is-ok):not(.is-bad) {
+  background: rgba(10, 6, 24, 0.72);
+  color: #fff;
+  border: calc(var(--u) * 2) solid var(--rb-coral);
+  box-shadow:
+    0 0 calc(var(--u) * 10) color-mix(in srgb, var(--rb-coral) 70%, transparent),
+    inset 0 0 calc(var(--u) * 10) color-mix(in srgb, var(--rb-coral) 35%, transparent);
+}
+
+.rb-quiz[data-tarjetas='neon'] .rb-q-card {
+  border-color: var(--rb-sol);
+  box-shadow:
+    0 0 calc(var(--u) * 14) color-mix(in srgb, var(--rb-sol) 70%, transparent),
+    inset 0 0 calc(var(--u) * 12) color-mix(in srgb, var(--rb-sol) 30%, transparent);
+  text-shadow: 0 0 calc(var(--u) * 8) color-mix(in srgb, var(--rb-sol) 80%, transparent);
+}
+
+.rb-quiz[data-tarjetas='papel'] .rb-q-card,
+.rb-quiz[data-tarjetas='papel'] .rb-q-option:not(.is-ok):not(.is-bad) {
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 calc(var(--u) * 23),
+      #d8e4f2 calc(var(--u) * 23) calc(var(--u) * 24)
+    ),
+    #fffdf6;
+  color: #2a2433;
+  border-radius: calc(var(--u) * 4);
+  box-shadow: calc(var(--u) * 3) calc(var(--u) * 5) 0 rgba(0, 0, 0, 0.18);
+}
+
+.rb-quiz[data-tarjetas='papel'] .rb-q-card {
+  transform: rotate(-1.5deg);
+  font-family: var(--rb-hand, var(--font-caveat)), cursive;
+  font-size: calc(var(--u) * 26);
+}
+
+.rb-quiz[data-tarjetas='papel'] .rb-q-option:nth-child(odd) {
+  rotate: 0.8deg;
+}
+
+.rb-quiz[data-tarjetas='papel'] .rb-q-option:nth-child(even) {
+  rotate: -0.8deg;
+}
+
 .rb-q-option.is-dim {
   box-shadow: none;
 }
@@ -874,7 +1002,12 @@
       rgba(255, 255, 255, 0.1) calc(var(--u) * 14),
       rgba(0, 0, 0, 0.26) calc(var(--u) * 30)
     ),
-    linear-gradient(180deg, #c22a40, #8e1b2e 70%, #6b1322);
+    linear-gradient(
+      180deg,
+      var(--curtain-1, #c22a40),
+      var(--curtain-2, #8e1b2e) 70%,
+      var(--curtain-3, #6b1322)
+    );
   box-shadow: 0 0 calc(var(--u) * 30) rgba(0, 0, 0, 0.5);
   will-change: transform;
 }
@@ -893,7 +1026,7 @@
       rgba(255, 255, 255, 0.08) calc(var(--u) * 14),
       rgba(0, 0, 0, 0.2) calc(var(--u) * 30)
     ),
-    #a82338;
+    var(--curtain-v, #a82338);
   -webkit-mask:
     radial-gradient(
         circle at 50% calc(100% - var(--u) * 14),
@@ -911,6 +1044,35 @@
       0 0 / calc(var(--u) * 28) 100%,
     linear-gradient(#000, #000) 0 0 / 100% calc(100% - var(--u) * 14) no-repeat;
   box-shadow: inset 0 calc(var(--u) * -3) 0 #ffd35c;
+}
+
+/* El color del telón (eje `telon`). */
+.rb-stage[data-telon='azul'] {
+  --curtain-1: #2c4f9e;
+  --curtain-2: #1c3470;
+  --curtain-3: #12234f;
+  --curtain-v: #24438a;
+}
+
+.rb-stage[data-telon='violeta'] {
+  --curtain-1: #7b3fb8;
+  --curtain-2: #55268a;
+  --curtain-3: #3c1866;
+  --curtain-v: #6a32a3;
+}
+
+.rb-stage[data-telon='dorado'] {
+  --curtain-1: #e3b34d;
+  --curtain-2: #b8862b;
+  --curtain-3: #8a6118;
+  --curtain-v: #cf9d3a;
+}
+
+.rb-stage[data-telon='rosa'] {
+  --curtain-1: #f06c9b;
+  --curtain-2: #c94677;
+  --curtain-3: #a1305c;
+  --curtain-v: #dd5888;
 }
 
 .rb-valance::after {

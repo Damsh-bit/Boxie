@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useEffect } from 'react'
 import { Stars } from '../ribbly/art'
+import { useRbPalette } from '../ribbly/look'
 import { Stage, T, u } from '../ribbly/ui'
 import { Appear, ease, frames, Loop, spring } from './motion'
 import type { Props } from './shared'
@@ -51,12 +52,90 @@ function Popcorn() {
   )
 }
 
+/** Vaso de gaseosa con tapa, sorbete y burbujas. */
+function Soda({ color }: { color: string }) {
+  return (
+    <svg
+      viewBox="0 0 200 250"
+      style={{ display: 'block', width: '100%', overflow: 'visible' }}
+      aria-hidden
+    >
+      <defs>
+        <clipPath id="rb-cup">
+          <path d="M44 78 H156 L140 244 H60 Z" />
+        </clipPath>
+      </defs>
+      <path d="M118 6 L108 74" stroke="#fff" strokeWidth="9" strokeLinecap="round" />
+      <path
+        d="M118 6 L108 74"
+        stroke={color}
+        strokeWidth="9"
+        strokeLinecap="round"
+        strokeDasharray="10 10"
+      />
+      <g clipPath="url(#rb-cup)">
+        <rect x="30" y="70" width="140" height="180" fill="#fff" />
+        <path d="M30 120 C70 108 130 132 170 118 V250 H30 Z" fill={color} />
+        {[
+          [80, 170, 5],
+          [112, 150, 4],
+          [98, 206, 6],
+          [126, 190, 3.5],
+        ].map(([x, y, r], i) => (
+          <circle key={i} cx={x} cy={y} r={r} fill="rgba(255,255,255,0.6)" />
+        ))}
+        <path d="M130 78 h40 v172 h-44 Z" fill="rgba(28,42,90,0.1)" />
+      </g>
+      <rect x="36" y="64" width="128" height="18" rx="9" fill="#fff" />
+      <path d="M50 64 Q100 40 150 64 Z" fill="#fff" />
+      <rect x="36" y="76" width="128" height="6" rx="3" fill="rgba(28,42,90,0.12)" />
+    </svg>
+  )
+}
+
+/** Bolsa de golosinas con caramelos asomando. */
+function Candy({ color, accent }: { color: string; accent: string }) {
+  const candies: [number, number, string, number][] = [
+    [62, 70, '#FF8FB1', -20],
+    [96, 56, '#4FC3F7', 10],
+    [132, 68, '#5ED6A8', 30],
+    [80, 90, '#FFD35C', -40],
+    [118, 88, '#B28DFF', 15],
+  ]
+  return (
+    <svg
+      viewBox="0 0 200 250"
+      style={{ display: 'block', width: '100%', overflow: 'visible' }}
+      aria-hidden
+    >
+      {candies.map(([x, y, c, r], i) => (
+        <g key={i} transform={`rotate(${r} ${x} ${y})`}>
+          <path d={`M${x - 22} ${y} l8 -8 v16 Z M${x + 22} ${y} l-8 -8 v16 Z`} fill={c} />
+          <ellipse cx={x} cy={y} rx="15" ry="11" fill={c} />
+          <path
+            d={`M${x - 8} ${y - 4} q8 -6 16 0`}
+            stroke="rgba(255,255,255,0.7)"
+            strokeWidth="3"
+            fill="none"
+            strokeLinecap="round"
+          />
+        </g>
+      ))}
+      <path d="M36 96 H164 L150 244 H50 Z" fill={color} />
+      <path d="M36 96 H164 L160 120 H40 Z" fill="rgba(0,0,0,0.12)" />
+      <path d="M60 150 h80 M66 176 h68" stroke={accent} strokeWidth="10" strokeLinecap="round" />
+      <path d="M128 96 h36 l-14 148 h-30 Z" fill="rgba(28,42,90,0.1)" />
+    </svg>
+  )
+}
+
 /**
  * 09 · Cine: se abre el telón y aparecen los pochoclos, la marquesina y una
  * entrada VIP a nombre de quien cumple. Un toque (o unos segundos) y sigue.
  */
 export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
   const active = ctx.active
+  const palette = useRbPalette()
   const { autoAdvance } = theme
   const { preview, next } = ctx
 
@@ -85,6 +164,7 @@ export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
       }
       onClick={next}
       style={{ cursor: 'pointer' }}
+      data-telon={ctx.style.telon && ctx.style.telon !== 'original' ? ctx.style.telon : undefined}
     >
       <div className="rb-bg">
         <i className="rb-beam" style={{ height: '78%', opacity: 0.8 }} />
@@ -131,7 +211,16 @@ export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
             }
           >
             <Loop active={active} delay={2.2} duration={3.4} frames={frames.pulse(1.025)}>
-              <Popcorn />
+              {ctx.style.snack === 'gaseosa' ? (
+                <Soda color={palette?.primary ?? '#E63950'} />
+              ) : ctx.style.snack === 'golosinas' ? (
+                <Candy
+                  color={palette?.primary ?? '#F44E63'}
+                  accent={palette?.accent ?? '#FFD35C'}
+                />
+              ) : (
+                <Popcorn />
+              )}
             </Loop>
             <span className="rb-marquee">
               <T text={theme.marquee} ctx={ctx} />

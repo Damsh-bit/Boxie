@@ -12,6 +12,12 @@ import {
   MOMENTS_BALLOONS,
   MOMENTS_FASTENERS,
   MOMENTS_LAYOUTS,
+  MIX_COVERS,
+  POSTER_SCENES,
+  PREMIERE_CURTAINS,
+  PREMIERE_SNACKS,
+  QUIZ_CARDS,
+  VIDEO_FILTERS,
 } from './piece-options'
 import { decoAxis, PALETTE_AXIS, pieceAxis, TYPE_AXIS } from './style-kit'
 
@@ -53,11 +59,15 @@ export const CUMPLE_STYLES: Record<string, readonly StyleAxis[]> = {
     pieceAxis('globos', 'Globos', MOMENTS_BALLOONS),
     pieceAxis('letra', 'Letra de la frase', COVER_HANDS),
   ],
-  'media.video': common(['confeti']),
-  'media.mix': common(),
-  'game.quiz': common(['confeti']),
-  'connector.premiere': common(['estrellas']),
-  'media.poster': common(['confeti', 'globos']),
+  'media.video': [pieceAxis('filtro', 'Filtro', VIDEO_FILTERS), ...common(['confeti'])],
+  'media.mix': [pieceAxis('portada', 'Portada', MIX_COVERS), ...common()],
+  'game.quiz': [pieceAxis('tarjetas', 'Tarjetas', QUIZ_CARDS), ...common(['confeti'])],
+  'connector.premiere': [
+    pieceAxis('telon', 'Telón', PREMIERE_CURTAINS),
+    pieceAxis('snack', 'Para comer', PREMIERE_SNACKS),
+    ...common(['estrellas']),
+  ],
+  'media.poster': [pieceAxis('escena', 'Escena', POSTER_SCENES), ...common(['confeti', 'globos'])],
   'game.slots': common(['confeti']),
   'game.vouchers': common(['confeti']),
   'story.magazine': common(),

@@ -56,12 +56,12 @@ Atajo: **Ctrl/⌘ K** abre el buscador (secciones, acciones y búsqueda directa 
 
 ### Roles
 
-| Rol           | Puede                                                                                   |
-| ------------- | --------------------------------------------------------------------------------------- |
-| Dueño         | Todo, incluido el equipo y restablecer la demo.                                         |
-| Administrador | Todo menos el equipo.                                                                   |
-| Editor        | Resumen, temáticas, generador, tareas y actividad.                                      |
-| Soporte       | Resumen, soporte, ventas, Ribblys (reembolsos, reenvíos), clientes, tareas y actividad. |
+| Rol           | Puede                                                                                                                                   |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Dueño         | Todo, incluido el equipo y restablecer la demo.                                                                                         |
+| Administrador | Todo menos el equipo.                                                                                                                   |
+| Editor        | Resumen, temáticas, generador, tareas y actividad.                                                                                      |
+| Soporte       | Resumen, soporte, ventas, Ribblys (reenvíos, extender, corregir nombres), clientes, tareas y actividad. Sin reembolsos ni exportar CSV. |
 
 El menú muestra solo lo que el rol puede usar, y las acciones lo verifican en el servidor
 (`runAction` con `roles`). En la base, solo el dueño escribe en `users` y siempre queda uno.
@@ -100,6 +100,22 @@ equipo (el mail de soporte de **Configuración**) le llega cada consulta nueva y
 como mucho, las respuestas del cliente. En demo quedan en la bandeja de desarrollo.
 
 Cada cambio de estado, prioridad o asignación queda en **Actividad**.
+
+### Protocolo contra ingeniería social
+
+Un link de editor o de regalo es una credencial: quien lo tiene, entra. La estafa típica es
+escribir a soporte haciéndose pasar por el comprador ("perdí el mail, mandámelo a este otro").
+
+1. **Los links se reenvían solo al mail de la compra.** El botón "Reenviar" del panel ya hace
+   eso; nunca copiar un link y pegarlo en un chat, WhatsApp o en otro mail.
+2. **Si piden mandarlo a otro mail, la respuesta es no.** Que entre a `/mi-ribbly` con el mail
+   con el que compró, o a `/cuenta`. Si ya no tiene acceso a esa casilla, pedir el número de
+   operación de Mercado Pago **y** los últimos 4 dígitos de la tarjeta, y comparar con la
+   orden antes de corregir el mail. Ante la duda, escalar al dueño.
+3. **Nunca pedir ni aceptar claves, códigos 2FA o capturas de la tarjeta completa.**
+4. **Reembolsos y exportar clientes** quedan solo para dueño y administración (el rol Soporte
+   no puede, ni desde el panel ni por URL).
+5. Todo reenvío y cambio queda en **Actividad**: revisarla si algo no cierra.
 
 ## Marketing
 

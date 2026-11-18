@@ -11,13 +11,15 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
 
 ### ⚠️ Pendientes Críticos para Go-Live
 
-- [ ] **P0.6 · Auditoría 17/11/2026: acciones fuera del código** (`docs/Ribbly-auditoria-seguridad-2026-11-17.md`)
-  - **Dónde:** Supabase y Vercel.
-  - **Acción:**
-    1. Supabase → Authentication → Email: activar **"Confirm email"** (C1: tomar regalos ajenos desde `/cuenta`).
-    2. Decidir el portal de clientes: con "Allow new users to sign up" apagado (P0.3), un comprador nuevo no puede entrar a `/cuenta`. Si se quiere el portal, activarlo (seguro con el punto 1).
-    3. Aplicar la migración `20261117120000_security_hardening.sql` en producción (`supabase db push`). Cierra H1 (admin por JWT sin 2FA) y M1 (tope de cupones).
-    4. Vercel: cargar `CRON_SECRET` (sin ella los recordatorios responden 503) y confirmar `MP_WEBHOOK_SECRET`.
+- [ ] **P0.6 · Auditoría 17-18/11/2026: acciones fuera del código** (`docs/Ribbly-auditoria-seguridad-2026-11-17.md`)
+  - [x] Supabase → "Confirm email" activado y "Allow new users to sign up" activado (18/11, verificado con captura).
+  - [ ] Aplicar en producción la migración `20261117120000_security_hardening.sql` (`supabase db push`). Cierra H1 (admin por JWT sin 2FA) y M1 (tope de cupones).
+  - [ ] Vercel: `CRON_SECRET` (sin ella los recordatorios responden 503), confirmar `MP_WEBHOOK_SECRET` y `NEXT_PUBLIC_SENTRY_DSN`; redeploy.
+  - [ ] Revisar con qué se dispara `/api/cron/reminders` (no hay `crons` en `vercel.json`).
+
+- [ ] **P0.7 · Entorno de desarrollo separado de producción**
+  - **Por qué:** `.env.local` usa la base de producción y el token real de Mercado Pago: una prueba de compra en local cobra de verdad y escribe en la base real, y una laptop comprometida da acceso total a producción.
+  - **Acción:** crear un vendedor y un comprador de prueba en Mercado Pago (_Tus integraciones → Cuentas de prueba_) y un proyecto (o branch) de Supabase para desarrollo; poner esas credenciales en `.env.local` y dejar las de producción solo en Vercel.
 
 - [x] **P0.1 · Crear cuenta Owner real y borrar usuario demo [COMPLETADO · 02/10/2026]**
   - **Acción:** Cuenta Owner real creada, usuario demo `admin@boxie.demo` eliminado del equipo e invitaciones enviadas a los usuarios reales desde `/admin/equipo`.
@@ -81,14 +83,10 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
 
 ### 📅 Semana 1 a 2 · Operación y Observabilidad
 
-- [ ] **P1.7 · Activar Monitoreo con Sentry**
-  - **Dónde:** Código (`instrumentation.ts`) y Vercel.
-  - **Acción:** Configurar `NEXT_PUBLIC_SENTRY_DSN`, filtrar datos personales sensibles en `beforeSend` y configurar alertas automáticas por correo ante errores en cobros o webhooks.
-
-- [ ] **P1.8 · Rate Limiting Global / Distribuido (Upstash Redis)**
-  - **Dónde:** Vercel Firewall o Upstash Redis.
-  - **Acción:** Migrar los límites de tasa locales en memoria hacia Redis para persistir conteos entre distintas instancias serverless en `/admin/login`, `/api/checkout/*`, `/g/*`, `/editor/*` y `/soporte/*`.
-
+- [x] **P1.7 · Monitoreo con Sentry [CÓDIGO COMPLETADO · 18/11/2026]**
+  - Antes había DSN pero Sentry nunca se inicializaba. Ahora `instrumentation.ts` lo inicia del lado del servidor, captura los errores de cada request y limpia mails, tokens y cookies antes de enviar (`src/server/sentry-scrub.ts`). Falta: confirmar `NEXT_PUBLIC_SENTRY_DSN` en Vercel y crear una alerta por mail para errores con "webhook" o "Mercado Pago".
+- [ ] **P1.8 · Límite de pedidos global (Vercel Firewall)**
+  - El límite actual vive en memoria de cada instancia (desde el 17/11 aislado por espacio de nombres). Para un límite real entre instancias: Vercel → Firewall → Rate Limiting, reglas por IP: `/api/checkout/preference` 10/10 min · `/api/checkout/quote` 30/10 min · `/admin/login` 20/15 min · `/api/mi-ribbly` 10/h · `/api/contact` y `/api/marcas` 5/h · `/editor/` 30/10 min.
 - [ ] **P1.9 · Backups automáticos y Plan Pro en Supabase**
   - **Dónde:** Dashboard de Supabase.
   - **Acción:** Migrar al plan Pro para habilitar copias de seguridad automáticas diarias point-in-time y asegurar que el proyecto no se pause por periodos de baja actividad.
@@ -101,26 +99,26 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
 
 ### 🛡️ Mes 1 · Endurecimiento Progresivo (Fase 2)
 
-- [ ] **P2.1 · Content Security Policy (CSP)**
-  - Configurar encabezados CSP en `next.config.ts` (comenzando en modo `Report-Only`), autorizando exclusivamente Mercado Pago, Meta Pixel, Supabase Storage, Sentry y YouTube.
-- [ ] **P2.2 · Permisos estrictos en DB (Defensa en Profundidad)**
-  - Revocar permisos directos de `SELECT` e `INSERT` al rol `anon` en tablas privadas y revocar lectura de columnas sensibles al rol `authenticated`.
+- [x] **P2.1 · Content Security Policy (CSP) [COMPLETADO · 18/11/2026]**
+  - CSP con nonce por pedido y `strict-dynamic` en `proxy.ts` (sin `unsafe-inline` ni `eval` en scripts, `connect-src` acotado, solo YouTube en frames). Probada página por página en un build de producción sin violaciones; tests en `tests/unit/csp.test.ts`.
+- [x] **P2.2 · Permisos estrictos en DB [RESUELTO · 17/11/2026]**
+  - Las tablas privadas no tienen políticas para `anon`, y los privilegios de admin por JWT ahora exigen MFA de Supabase (aal2), que el panel no usa: en la práctica la API REST no da acceso a nada privado.
 - [x] **P2.3 · Control atómico de topes de cupones [COMPLETADO · 17/11/2026, falta aplicar la migración]**
   - En `apply_payment`, verificar `used_count < max_uses` de forma estrictamente atómica para evitar colisiones en cupones de alta concurrencia.
-- [x] **P2.4 · Sanitización de retorno de Mercado Pago [COMPLETADO · 17/11/2026: `payment_id` numérico y `external_reference` UUID; queda minimizar `payment_events.raw`]**
+- [x] **P2.4 · Sanitización de retorno de Mercado Pago [COMPLETADO · 17-18/11/2026: `payment_id` numérico, `external_reference` UUID y `payment_events.raw` reducido a un resumen sin datos personales]**
   - Validar formato numérico de `payment_id` en `/api/checkout/return` y evitar registrar datos personales de clientes en los logs.
-- [ ] **P2.5 · Principio de mínimo privilegio en el Panel**
-  - Restringir la exportación de bases de clientes y reembolsos exclusivamente a usuarios con rol `owner` y `admin`.
+- [x] **P2.5 · Mínimo privilegio en el Panel [COMPLETADO · 18/11/2026]**
+  - Exportar clientes/ventas y reembolsar: solo dueño y administración (el rol Soporte ya no puede, ni por URL). Cada exportación queda en el log.
 - [ ] **P2.6 · Protección contra Bots (Cloudflare Turnstile)**
   - Incorporar captcha invisible en formularios públicos (Soporte, Contacto y `/mi-boxie`).
-- [ ] **P2.7 · Evitar DoS por rotación de tokens en Recuperar Acceso**
-  - En `/mi-boxie`, no regenerar el link de edición si ya se generó uno hace menos de 15 minutos.
+- [x] **P2.7 · Evitar DoS por rotación de tokens en Recuperar Acceso [COMPLETADO · 18/11/2026]**
+  - Un link de edición mandado hace menos de 15 minutos no se vuelve a rotar.
 - [ ] **P2.8 · Paginación en lecturas de órdenes**
   - Paginar la consulta `dataset()` en `src/server/admin/supabase-repo.ts` al superar las 1.000 ventas.
-- [ ] **P2.9 · Protección de rama `main` en GitHub**
-  - Exigir Pull Request con CI en verde antes de mergear, activando Dependabot y escaneo de secretos.
-- [ ] **P2.10 · Protocolo contra Ingeniería Social en Soporte**
-  - Documentar en `docs/ADMIN.md` la obligatoriedad de verificar coincidencia de email antes de reenviar accesos manualmente.
+- [ ] **P2.9 · GitHub: escaneo de secretos y alertas de dependencias**
+  - Exigir pull requests choca con el flujo acordado (push directo a `main`). Lo que sí suma sin cambiar el flujo: _Settings → Code security_ → activar **Secret scanning + Push protection** y **Dependabot alerts / security updates**.
+- [x] **P2.10 · Protocolo contra ingeniería social en Soporte [COMPLETADO · 18/11/2026]**
+  - Documentado en `docs/ADMIN.md` → Soporte → "Protocolo contra ingeniería social".
 
 ---
 
@@ -130,5 +128,5 @@ Derivado de la auditoría de seguridad del 28/09/2026 (`docs/Boxie-auditoria-seg
   - Inscribir la base de datos ante la Agencia de Acceso a la Información Pública (AAIP) y definir políticas de retención/purga de datos de órdenes viejas.
 - [ ] **P3.2 · Protocolo de Respuesta a Incidentes**
   - Documentar manual operativo de rotación de cada credencial y secreto ante incidentes.
-- [ ] **P3.3 · Elevar costo de scrypt**
-  - Elevar el parámetro de costo a $N = 2^{17}$ para contraseñas de administradores según recomendaciones OWASP.
+- [x] **P3.3 · Costo de scrypt [RIESGO ACEPTADO · 18/11/2026]**
+  - Se deja N=2^14: subirlo a 2^17 con el hash síncrono actual bloquea la instancia ~400 ms por login (en Fluid Compute frena otros pedidos) y obliga a rehacer la huella de sesión. Las claves tienen ≥12 caracteres, hay 2FA y los hashes ya no son legibles por la API. Revisar si se pasa a scrypt asíncrono.

@@ -1,278 +1,117 @@
-# Ribbly · Auditoría de seguridad, pagos y venta internacional
+# Ribbly · Auditoría de seguridad (documento vivo)
 
-**Fecha:** 17/11/2026 · **Alcance:** todo el código en `main` (75b6d6f) más los cambios de esta auditoría.
-Sigue a la auditoría del 28/09/2026 (`docs/Boxie-auditoria-seguridad-2026-09-28.md`): acá se
-revisó sobre todo lo que se agregó después (portal de clientes `/cuenta`, recuperar clave del panel,
-clave del regalo, recordatorios por cron, checkout gratuito) y se rechequeó la pasarela completa.
+**Última actualización:** 18/11/2026 · **Auditorías:** 28/09/2026 (`docs/Boxie-auditoria-seguridad-2026-09-28.md`),
+17/11 y 18/11/2026 (este documento). Checklist operativo: `docs/CHECKLIST-SEGURIDAD.md`.
 
-## Resumen
+## Estado en una línea
 
-| #   | Severidad   | Hallazgo                                                                    | Estado                           |
-| --- | ----------- | --------------------------------------------------------------------------- | -------------------------------- |
-| C1  | **Crítica** | Tomar los regalos de cualquier comprador desde `/cuenta` con `signUp()`     | Corregido en código + **acción** |
-| H1  | **Alta**    | Un admin con sesión de Supabase (Google/magic link) saltea clave y 2FA      | Corregido (migración)            |
-| H2  | **Alta**    | Restablecer la clave del panel abría sesión sin pedir el 2FA                | Corregido                        |
-| M1  | Media       | El tope de usos de los cupones no era atómico (gratis por encima del tope)  | Corregido (migración)            |
-| M2  | Media       | El límite de pedidos se podía resetear entero (incluido el login del panel) | Corregido                        |
-| M3  | Media       | El cron usaba `TOKEN_ENCRYPTION_KEY` como contraseña                        | Corregido + **acción**           |
-| M4  | Media       | `zod` < 4.6.6: agotamiento de memoria al validar colecciones grandes        | Corregido (`npm audit fix`)      |
-| L1  | Baja        | `payment_id` sin validar en la URL de la API de Mercado Pago                | Corregido                        |
-| L2  | Baja        | Orden gratis con cupón agotado: mandaba a `/editor` sin sesión              | Corregido                        |
-| L3  | Baja        | `/cuenta/ribblys/<id>/editar` rotaba el link desde un `<img>` de otro sitio | Corregido                        |
-| L4  | Baja        | La pantalla de activación pedía 8 caracteres y el servidor 12               | Corregido                        |
+**La pasarela de pago es sólida y está probada; el sitio quedó endurecido.** Lo que falta para cerrar
+del todo son **acciones fuera del código** (Supabase, Vercel, GitHub) que solo puede hacer el dueño.
 
-**La pasarela de pago está bien construida.** El precio sale siempre del servidor. `apply_payment` es
-atómica e idempotente, bloquea la orden y no entrega nada si el monto o la moneda no coinciden con
-lo calculado. El webhook valida la firma HMAC y vuelve a consultar el pago en la API de MP, y el
-retorno no le cree a los parámetros de la URL. El proveedor `fake` se rechaza en producción. Lo
-que encontré en pagos son bordes (M1, L1, L2), no agujeros en el cobro.
+## 🛑 Lo que tenés que hacer vos
 
-**Lo grave estaba en la autenticación nueva** (C1, H1, H2): el portal de clientes y la recuperación
-de clave se sumaron después de la auditoría anterior y abrían caminos alrededor del 2FA y de la
-propiedad de los regalos.
+| #   | Dónde         | Acción                                                                                                        | Por qué                                                                        |
+| --- | ------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| 1   | Supabase      | ~~"Confirm email" y "Allow new users to sign up" activados~~ ✅ **Hecho 18/11**                               | C1                                                                             |
+| 2   | Supabase      | Aplicar `supabase/migrations/20261117120000_security_hardening.sql` (`supabase db push`)                      | **Sin esto H1 y M1 siguen abiertos en producción**                             |
+| 3   | Vercel        | Cargar `CRON_SECRET`; confirmar `MP_WEBHOOK_SECRET` y `NEXT_PUBLIC_SENTRY_DSN`; redeploy                      | Sin `CRON_SECRET` los recordatorios responden 503; Sentry recién ahora reporta |
+| 4   | Vercel        | Firewall → Rate Limiting con las reglas de P1.8 del checklist                                                 | El límite del código es por instancia                                          |
+| 5   | MP + Supabase | Crear vendedor/comprador **de prueba** en Mercado Pago y un proyecto Supabase de desarrollo para `.env.local` | Hoy `.env.local` es producción (ver D1)                                        |
+| 6   | GitHub        | Settings → Code security: Secret scanning + Push protection + Dependabot alerts                               | Detecta secretos commiteados y dependencias vulnerables                        |
+| 7   | Sentry        | Alerta por mail para errores que mencionen "webhook" o "Mercado Pago"                                         | Una venta cobrada sin regalo tiene que avisar                                  |
 
 ---
 
-## 🛑 Acciones que tenés que hacer vos (no se pueden hacer desde el código)
+## Pasarela de pago: cómo está y cómo se probó
 
-1. **Supabase → Authentication → Sign In / Providers → Email:** activar **"Confirm email"**. Es
-   la mitad de C1. Mientras esté apagado, el código nuevo ya bloquea el ataque, pero no hay que
-   depender de una sola barrera.
-2. **Supabase → Authentication → "Allow new users to sign up":** el checklist dice que lo
-   desactivaste (P0.3). Con eso apagado, **un comprador nuevo no puede entrar a `/cuenta`** (el
-   magic link y Google fallan con "Signups not allowed"). Si querés el portal, hay que activarlo,
-   y con "Confirm email" activado (punto 1) es seguro.
-3. **Aplicar la migración** `supabase/migrations/20261117120000_security_hardening.sql` en
-   producción (`supabase db push` con el proyecto linkeado). Sin esto, H1 y M1 siguen abiertos.
-4. **Vercel → Environment Variables:**
-   - `CRON_SECRET`: un valor aleatorio (`openssl rand -base64 32`). **Sin esta variable, los
-     recordatorios anuales ahora responden 503** en vez de usar la clave de cifrado. Además no hay
-     `vercel.json` con `crons`: revisá con qué se dispara hoy `/api/cron/reminders`.
-   - `MP_WEBHOOK_SECRET`: confirmá que está cargada. Sin ella, el webhook acepta avisos sin firma
-     (el daño queda acotado porque cada aviso se verifica contra la API de MP, pero cualquiera
-     puede hacerte gastar llamadas).
-5. **Si algún admin usó alguna vez la clave del panel en Supabase Auth** (se copiaba ahí al
-   activar la cuenta): con la migración ya no sirve para nada, pero conviene cambiarla desde
-   Supabase → Authentication → Users por una aleatoria.
+**Diseño (bien):** el precio sale siempre del servidor. `apply_payment` es atómica e idempotente: bloquea la orden y
+no entrega nada si monto o moneda no coinciden, y ahora toma el cupo del cupón en la misma transacción. El webhook valida la firma
+HMAC y vuelve a consultar el pago en la API de MP. El retorno no le cree a la URL. El proveedor `fake` se
+rechaza en producción.
 
----
+**Pruebas automáticas (corren con `npm test`):**
 
-## Hallazgos
+- `tests/unit/payment-routes.test.ts`: **30 casos** con los handlers reales de `/api/checkout/preference`,
+  `/api/checkout/return` y `/api/webhooks/mercadopago`. Cubre firma válida, firma de otro secreto, sin firma, firma
+  de un pago con el cuerpo cambiado a otro, ids no numéricos, pagos sin referencia, montos con
+  centavos, pago de otra orden, status falso en la URL, pendiente, rechazado, duplicado, orden gratis,
+  cupón agotado, precio enviado por el navegador (se ignora), ventas pausadas, límite por IP y errores de MP
+  sin filtrar detalles.
+- `tests/db/payments.test.ts`: `apply_payment` contra Postgres real (PGlite) con todas las migraciones. Cubre
+  idempotencia, monto/moneda distintos, pago doble, reembolso, tope atómico de cupón (orden gratis sin
+  cupo no se entrega; pagada sí, marcada) y que la clave pública no la puede llamar.
+- **API real de MP (18/11):** se validó que MP acepta la preferencia nueva (vencimiento,
+  `statement_descriptor`, ítem con id/categoría). Fue una preferencia de $1 sin webhook, que vence sola.
 
-### C1 · Crítica · Cualquiera podía tomar los regalos de un comprador desde `/cuenta`
-
-**Qué pasaba.** El portal (`src/server/customer/session.ts`) identificaba al cliente solo por el
-mail de su sesión de Supabase. Con ese mail, `getCustomerPortalData` mostraba los links de los regalos
-(descifrados) y `getOrRotateEditorUrl` generaba un link de edición nuevo para cualquier Ribbly de una
-orden con ese mail. En `supabase/config.toml` estaban `enable_signup = true` y
-`enable_confirmations = false`. Si producción está igual, el ataque era:
-
-```js
-// En la consola de cualquier navegador, con la clave anon (es pública):
-await supabase.auth.signUp({ email: 'compradora@gmail.com', password: 'loquesea123' })
-// → sesión inmediata con ese mail → /cuenta muestra sus regalos y su link de edición.
-```
-
-No pude verificar la configuración de producción. El checklist dice que los signups están
-apagados (P0.3), y en ese caso el ataque no funcionaba, pero tampoco funcionaba el portal para
-clientes nuevos (ver Acción 2).
-
-**Qué cambié.** `getCustomerSession` ahora exige un mail confirmado y que la sesión venga de un
-método que pruebe que el mail es de quien entra: el claim `amr` del JWT tiene que ser `oauth`,
-`magiclink` u `otp` (o confirmación por link). Una sesión con `password` o anónima ya no ve nada. El
-portal nunca ofreció login con clave, así que nadie legítimo queda afuera. Además activé
-`enable_confirmations` en `config.toml`. Test: `src/server/customer/session.test.ts`.
-
-### H1 · Alta · Admin por la API de Supabase sin clave ni 2FA
-
-**Qué pasaba.** El panel usa su propia cookie (clave + TOTP) y opera con el service role. Pero
-la RLS seguía dando permisos de admin a cualquier JWT `authenticated` cuyo usuario estuviera en
-`public.users`: `is_admin()` y `admin_role()` solo miraban `auth.uid()`. Los admins existen en
-`auth.users` con el mail confirmado (los crea `invite.ts`). Dos caminos:
-
-- **Portal de clientes:** un admin (o quien tenga acceso a su casilla) entra a `/cuenta` con Google o
-  magic link, y el JWT que recibe permite leer todas las órdenes (datos personales de todos los
-  clientes), crear cupones 100% OFF, cambiar precios y temáticas o, si es el dueño, editar el
-  equipo, todo por la API REST con la clave anon.
-- **Clave copiada:** `activateMemberAccount` copiaba la clave del panel a Supabase Auth. Con la
-  clave alcanzaba `signInWithPassword()` para obtener el mismo JWT sin pasar por el 2FA.
-
-**Qué cambié.** La migración nueva hace que `is_admin()` y `admin_role()` exijan `aal = 'aal2'` en el
-JWT, o sea MFA verificado por Supabase Auth, que el panel no usa. En la práctica, los privilegios de
-admin por JWT quedan cerrados, y el service role no cambia. También dejé de copiar la clave a
-Supabase Auth. Tests: `tests/db/backoffice.test.ts`, "admin por JWT sin MFA de Supabase".
-
-### H2 · Alta · Restablecer la clave salteaba el 2FA
-
-**Qué pasaba.** Después de "¿Olvidaste tu clave?", `/admin/activar` abría una sesión completa del
-panel. El 2FA está justamente para que el acceso a la casilla no alcance.
-
-**Qué cambié.** Si la cuenta tiene TOTP activo, después de guardar la clave nueva se manda a
-`/admin/login?clave=restablecida`, y ahí se entra con clave y código. Una invitación nueva, sin TOTP,
-sigue entrando directo.
-
-### M1 · Media · Tope de cupones no atómico (P2.3 del checklist)
-
-**Qué pasaba.** `evaluateCoupon` mira `used_count` al cotizar, y `apply_payment` sumaba el uso sin
-mirar el tope. Varias compras simultáneas, o varias órdenes pendientes pagadas más tarde, pasaban
-el límite. Con un cupón 100% OFF de 1 uso, varias pestañas a la vez se llevaban varias Ribblys gratis.
-
-**Qué cambié.** El cupo se toma dentro de `apply_payment` con un
-`update … where used_count < max_uses`, en la misma transacción. Una orden **gratis** sin cupo se
-cancela (`coupon_exhausted`) y el checkout muestra "Ese cupón ya alcanzó su límite de usos". Una
-orden **pagada** se entrega igual, porque el comprador ya pagó, y queda marcada como
-`paid_coupon_over_limit` en `payment_events`. Tests en `tests/db/payments.test.ts`.
-
-### M2 · Media · El límite de pedidos se podía resetear entero
-
-Al pasar las 10.000 claves, `rate-limit.ts` borraba todo el mapa. Pedir "recuperar acceso" con miles
-de mails distintos reseteaba también el contador de claves erradas del login del panel. Ahora hay
-un mapa por espacio de nombres (`admin-login-fail`, `recover`, …), así que llenar uno no toca a los
-otros, y al podar se descartan primero las claves vencidas. Sigue siendo un límite por instancia: el
-límite global real lo tiene que poner el firewall de Vercel (P1.8).
-
-### M3 · Media · El cron usaba la clave de cifrado como contraseña
-
-`/api/cron/reminders` aceptaba `Bearer <TOKEN_ENCRYPTION_KEY>` si faltaba `CRON_SECRET`. Así, una
-clave que protege los links de todos los regalos viajaba en un header, y la comparación no era de
-tiempo constante. Ahora exige `CRON_SECRET` (en producción sin ella responde 503) y compara en tiempo
-constante.
-
-### M4 · Media · Dependencias
-
-`npm audit fix` subió `zod` a 4.6.7, que era la única vulnerable en runtime y valida todo lo que entra.
-Quedan avisos en `@sentry/nextjs` → `@rollup/plugin-commonjs@28.0.1` (picomatch, fdir, glob,
-minimatch). Es tooling que corre solo en el build sobre nuestro propio código, sin datos de usuarios:
-se resuelve cuando Sentry actualice esa dependencia, y no vale un `--force`.
-
-### L1–L4 · Bajas
-
-- **L1:** `/api/checkout/return` y el webhook pasaban `payment_id` tal cual a
-  `api.mercadopago.com/v1/payments/<id>` con nuestro token, así que un `../` le pegaba a otro
-  endpoint. Ahora solo se aceptan dígitos (en las rutas y en `getPayment`), y `external_reference`
-  tiene que ser un UUID.
-- **L2:** una orden gratis que no se entregaba devolvía `/editor` sin sesión. Ahora responde 409
-  con el motivo.
-- **L3:** la ruta que rota el link del editor desde el portal rechaza las cargas cross-site que no
-  son navegación (`<img>`, `fetch`). Un clic desde un mail sigue andando.
-- **L4:** la pantalla de activación ahora pide 12 caracteres, igual que el servidor.
+**Lo que no se pudo probar de punta a punta:** un pago real completo (tarjeta → webhook → mail). Hoy
+solo hay credenciales de producción, así que hacerlo cobra de verdad. Con la acción 5 se puede correr
+el flujo completo con tarjetas de prueba (`docs/CHECKOUT_Y_PAGOS.md`).
 
 ---
 
-## Pendientes que no toqué (en orden de prioridad)
+## Hallazgos resueltos
 
-1. **CSP (P2.1).** Sigue sin Content-Security-Policy. Es la mejor defensa si algún día entra un XSS.
-   Arrancar en `Report-Only`.
-2. **Límite global en Vercel Firewall (P1.8).** Hacen falta reglas de rate limit para
-   `/api/checkout/*`, `/admin/login`, `/api/mi-ribbly/*` y `/g/*`.
-3. **Minimizar datos de pago.** `payment_events.raw` guarda el pago completo de MP (mail, DNI, últimos
-   4 dígitos, IP). El portal solo usa el medio de pago y las cuotas. Guardar solo eso (Ley 25.326,
-   P3.1).
-4. **Vencimiento de la preferencia de MP.** Una orden pendiente se puede pagar meses después al precio
-   viejo, porque la preferencia no tiene `expiration_date_to`. Agregar 48 h y probarlo contra MP antes
-   de subirlo.
-5. **`RECORDAR15`** se crea solo la primera vez que alguien lo escribe: 15% sin tope ni vencimiento
-   para quien conozca el código. Si es a propósito, está bien; si no, ponerle `max_uses` o atarlo a
-   la cuenta.
-6. **Enumeración de admins por tiempo.** "¿Olvidaste tu clave?" tarda más cuando el mail es de un
-   admin, porque manda el correo. Es menor, y se arregla con `after()` como en `/mi-ribbly`.
-7. **Webhook sin ventana de tiempo.** Se acepta un `ts` viejo. Como todo es idempotente, repetir un
-   aviso no hace nada.
+| #   | Sev.        | Hallazgo                                                                                                        | Cómo se cerró                                                                                         | Fecha |
+| --- | ----------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----- |
+| C1  | **Crítica** | `/cuenta`: con `signUp()` y el mail de un comprador se veían y editaban sus regalos                             | Solo sesiones Google/magic link/OTP con mail confirmado (claim `amr`) + "Confirm email" en Supabase   | 17/11 |
+| H1  | **Alta**    | Un admin con sesión de Supabase (Google, magic link o la clave copiada) tenía acceso de admin a la base sin 2FA | `is_admin()`/`admin_role()` exigen `aal2`; la clave ya no se copia a Supabase Auth (**falta migrar**) | 17/11 |
+| H2  | **Alta**    | Restablecer la clave del panel abría sesión sin 2FA                                                             | Con TOTP activo, vuelve al login (clave + código)                                                     | 17/11 |
+| M1  | Media       | Tope de cupones no atómico (gratis por encima del tope)                                                         | Cupo tomado en `apply_payment` (**falta migrar**)                                                     | 17/11 |
+| M2  | Media       | El límite de pedidos se reseteaba entero (incluido el login del panel)                                          | Un mapa por espacio de nombres, poda de claves vencidas                                               | 17/11 |
+| M3  | Media       | El cron usaba `TOKEN_ENCRYPTION_KEY` como contraseña                                                            | Exige `CRON_SECRET`, comparación en tiempo constante                                                  | 17/11 |
+| M4  | Media       | `zod` < 4.6.6 (agotamiento de memoria)                                                                          | `zod` 4.6.7                                                                                           | 17/11 |
+| M5  | Media       | **Sin CSP**: un XSS habría corrido sin freno                                                                    | CSP con nonce + `strict-dynamic` en `proxy.ts`, probada página por página                             | 18/11 |
+| M6  | Media       | **Sentry nunca se inicializaba**: los errores de pago no avisaban a nadie                                       | `instrumentation.ts` + limpieza de mails/tokens/cookies                                               | 18/11 |
+| M7  | Media       | Soporte podía exportar todos los clientes y reembolsar (dar de baja regalos)                                    | Solo dueño y administración; exportaciones logueadas                                                  | 18/11 |
+| M8  | Media       | Fechas especiales sin tope: miles de fechas en `user_metadata` → miles de mails del cron                        | Máx. 30 fechas, 3 mails por usuario y corrida, solo mails confirmados, cron paginado                  | 18/11 |
+| L1  | Baja        | `payment_id` sin validar en la URL de la API de MP                                                              | Solo dígitos (rutas y `getPayment`); referencia = UUID                                                | 17/11 |
+| L2  | Baja        | Orden gratis con cupón agotado mandaba a `/editor` sin sesión                                                   | 409 con el motivo                                                                                     | 17/11 |
+| L3  | Baja        | Rotar el link del editor desde un `<img>` de otro sitio                                                         | Bloqueo de cargas cross-site que no son navegación                                                    | 17/11 |
+| L4  | Baja        | Activación pedía 8 caracteres, el servidor 12                                                                   | 12 en ambos                                                                                           | 17/11 |
+| L5  | Baja        | `payment_events.raw` guardaba el pago completo (DNI, mail, IP)                                                  | Solo un resumen (medio de pago, cuotas, últimos 4)                                                    | 18/11 |
+| L6  | Baja        | Una orden pendiente se podía pagar meses después al precio viejo                                                | Preferencia vence a las 48 h                                                                          | 18/11 |
+| L7  | Baja        | Sin descriptor en el resumen de tarjeta (más contracargos por "no reconozco")                                   | `statement_descriptor: RIBBLY`                                                                        | 18/11 |
+| L8  | Baja        | Llamadas a MP sin timeout                                                                                       | 10 s                                                                                                  | 18/11 |
+| L9  | Baja        | "Recuperar acceso" permitía invalidar el link de otro una y otra vez                                            | No rota un link mandado hace < 15 min                                                                 | 18/11 |
+| L10 | Baja        | "¿Olvidaste tu clave?" tardaba más con mails de admins (enumeración)                                            | Envío en segundo plano, respuesta igual                                                               | 18/11 |
+| L11 | Baja        | Webhook sin `MP_WEBHOOK_SECRET` en producción pasaba en silencio                                                | Ahora es error (llega a Sentry)                                                                       | 18/11 |
 
-## Lo que no pude verificar
+## Hallazgos abiertos
 
-- La configuración real de Supabase Auth en producción (confirmación de mail, signups) y si los
-  admins tienen clave en `auth.users`.
-- Las variables de entorno de Vercel (`MP_WEBHOOK_SECRET`, `CRON_SECRET`).
-- Los E2E de Playwright: necesitan Supabase local con Docker. Pasaron typecheck, lint, build y los
-  562 tests unitarios y de base (con 8 nuevos).
+| #   | Sev.                 | Hallazgo                                                                                                                                               | Qué hacer                                                                |
+| --- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| D1  | **Alta** (operativa) | `.env.local` usa la base de producción y el token real de MP. Una prueba en local cobra de verdad, y una laptop comprometida = producción comprometida | Acción 5                                                                 |
+| O1  | Media                | Límite de pedidos por instancia, no global                                                                                                             | Acción 4                                                                 |
+| O2  | Baja                 | Cupones con códigos adivinables (`RIBBLY10`, `PAREJA20`): el tanteo está limitado por IP, pero con muchas IPs se pueden encontrar                      | Para cupones de valor alto, códigos largos y con `max_uses`              |
+| O3  | Baja                 | `RECORDAR15` se crea solo y vale para cualquiera que conozca el código (15%, sin tope)                                                                 | Decisión comercial; si no es a propósito, ponerle `max_uses`             |
+| O4  | Baja                 | Tooling de build de Sentry con avisos de `npm audit` (`@rollup/plugin-commonjs` 28.0.1)                                                                | Se va con la próxima versión de `@sentry/nextjs`; corre solo en el build |
+| O5  | Baja                 | Sin captcha en formularios públicos (contacto, soporte, `/mi-ribbly`); hay honeypot y límite por IP                                                    | Cloudflare Turnstile si aparece abuso (P2.6)                             |
 
----
+## Riesgos aceptados (decisión tomada, con motivo)
 
-# Venta internacional: cómo cobrarle a alguien de afuera
+- **Webhook sin ventana de tiempo para `ts`:** no se sabe si MP reutiliza el `ts` al reintentar, y un límite rompería los reintentos. Repetir un aviso no hace nada (idempotente).
+- **scrypt N=2^14 en claves del panel:** ver P3.3 del checklist.
+- **Un solo `SESSION_SECRET` para todas las cookies:** cada cookie lleva su propósito firmado, así que una no sirve por otra. Separar claves derivadas del mismo secreto no achica el daño si se filtra.
+- **`SameSite=Lax` en la cookie del panel:** las acciones son POST (Lax ya las bloquea desde otro sitio) y `Strict` rompería los links al panel desde el mail.
 
-## Cómo está hoy
+## Lo que está bien (no romperlo)
 
-El sitio tiene un selector ARS/USD que **solo cambia lo que se muestra**: convierte con el dólar
-oficial (DolarApi). Se cobra siempre en pesos por Mercado Pago, y el checkout lo aclara bien. Para un
-estadounidense hoy pasa esto:
+- RLS en todas las tablas. Los tokens del regalo, del editor y de soporte tienen 192 bits; en la base solo está su
+  SHA-256, y el link del regalo está cifrado con AES-256-GCM y una clave fuera de la base.
+- Todas las Server Actions del panel pasan por `runAction` con rol (revisado una por una el 18/11).
+- Sin HTML crudo (el JSON-LD está escapado). Las URLs del comprador exigen `https://`. Fotos validadas por
+  sus bytes, bucket privado con URLs firmadas.
+- Headers: HSTS preload, `X-Frame-Options: DENY`, `nosniff`, CSP con nonce. Las rutas con token llevan `no-referrer`,
+  `noindex` y `no-store`. Cookies `httpOnly`, `secure`, `SameSite=Lax` y con el path acotado.
+- Panel: 2FA TOTP, revocación inmediata de sesiones y límite de intentos fallidos.
 
-- Ve "US$ 10", entra a Mercado Pago y le cobran en **pesos argentinos**. Su banco convierte con su
-  propio tipo de cambio y casi siempre suma un 3% de "foreign transaction fee", así que paga más de lo
-  que vio.
-- Mercado Pago Argentina está pensado para tarjetas y cuentas argentinas. No encontré ninguna fuente
-  oficial que garantice que acepta tarjetas emitidas afuera, y en la práctica el rechazo es alto. Eso
-  es una venta perdida.
+## Fuera de seguridad, encontrado de paso
 
-## La decisión
+- **Error de hidratación en la home** (React #418, también en producción): una parte del HTML del servidor no
+  coincide con el del navegador, así que React re-renderiza en el cliente. No es de seguridad, pero hace la
+  carga más lenta. Pendiente de revisar.
 
-**Dos carriles según dónde está el comprador:**
+## Pagos internacionales
 
-| Comprador         | Cobro                                                  | Moneda                                       |
-| ----------------- | ------------------------------------------------------ | -------------------------------------------- |
-| Desde Argentina   | **Mercado Pago** (como hoy)                            | ARS, con cuotas, efectivo y dinero en cuenta |
-| Desde el exterior | **Un Merchant of Record: Paddle** (alternativa: Polar) | USD, o su moneda local si el MoR la localiza |
-
-**Por qué un Merchant of Record (MoR).** Un MoR es una empresa que le vende al cliente final en tu
-nombre: cobra, factura y **liquida el IVA o sales tax de cada país**, y a vos te paga en USD. Si un
-europeo compra un producto digital, la ley de la UE dice que el vendedor tiene que cobrarle el IVA de
-su país y declararlo. Con un MoR eso deja de ser problema tuyo. Para un emprendimiento argentino de
-una persona, es la diferencia entre poder vender afuera o no.
-
-**Por qué Paddle primero:**
-
-- Es el MoR más establecido. Acepta tarjetas internacionales, Apple Pay, Google Pay y PayPal, y
-  muestra el precio en la moneda del comprador.
-- Trabaja con negocios de cualquier país salvo una lista de sancionados, y **Argentina no está en esa
-  lista**.
-- Comisión de referencia: 5% + US$0,50 por venta. Sobre un ticket de unos US$10 es cerca del 10%.
-
-**Riesgo honesto:** Paddle se orienta a software y SaaS, y aprueba a mano. Ribbly es una app web, así
-que encaja, pero la aprobación no está garantizada. Por eso, en paralelo, conviene aplicar a
-**Polar**, que es MoR, paga a Argentina vía Stripe Connect Express (figura explícitamente en su
-lista) y tiene comisiones parecidas. Se usa el que apruebe primero.
-
-**Lo que descarté y por qué:**
-
-- **Mercado Pago para extranjeros:** rechaza muchas tarjetas de afuera, cobra en ARS y no resuelve
-  impuestos.
-- **Stripe directo:** no acepta cuentas argentinas; hace falta una LLC en EE.UU. Es mucho costo fijo
-  para esta etapa.
-- **PayPal directo:** comisiones altas, retirar fondos en Argentina es engorroso y no resuelve
-  impuestos.
-- **dLocal Go:** es más barato (alrededor de 3,5% + IVA) y fuerte en medios locales de Latinoamérica
-  (Pix, OXXO), pero **no es MoR**: los impuestos de cada país siguen siendo tuyos. Tiene sentido
-  más adelante, si Latinoamérica pesa mucho.
-
-## Cómo se arma (cuando tengas la cuenta aprobada)
-
-1. **Precio propio en USD por plan**, no convertido del peso. Conviene un precio redondo pensado para
-   ese mercado (por ejemplo US$ 9,99). El peso se mueve y los precios argentinos no tienen por qué ser
-   los de afuera. El MoR se encarga de pasarlo a EUR, GBP, MXN, etc.
-2. **Elegir el carril:** por defecto según el país de la IP (Vercel manda el header
-   `x-vercel-ip-country`), con un selector visible "¿Pagás desde Argentina?" para corregirlo.
-3. **Código:** la base ya está preparada. `orders.currency` existe y `apply_payment` ya valida moneda
-   y monto. Falta:
-   - Columna `price_usd_cents` en `plans` y un precio en USD en el panel.
-   - Proveedor `paddle` en `PaymentNotice` y en `payment_provider`.
-   - Checkout de Paddle (overlay de Paddle.js) con el `order.id` en `custom_data`.
-   - Webhook `/api/webhooks/paddle` que valide la firma `Paddle-Signature` y llame a
-     `applyPaymentNotice`. Ojo: con precios con impuesto incluido, hay que comparar contra el
-     subtotal sin impuesto.
-   - Estimado: 1 a 2 días de trabajo más pruebas en el sandbox de Paddle.
-4. **Contador:** con un MoR, tu cliente pasa a ser una sola empresa del exterior. Lo normal es emitir
-   una factura de exportación (tipo E) por cada liquidación. Confirmá con tu contador cómo encaja con
-   tu categoría y cómo te conviene recibir los dólares.
-
-**Qué necesito de vos para avanzar:** crear la cuenta en Paddle (y en Polar, en paralelo) y pasarme
-las credenciales del **sandbox**. Con eso integro el carril internacional y lo pruebo de punta a punta
-sin tocar dinero real.
-
-### Fuentes
-
-- [Paddle · países soportados](https://www.paddle.com/help/start/intro-to-paddle/which-countries-are-supported-by-paddle)
-- [Polar · países soportados para pagos](https://polar.sh/docs/merchant-of-record/supported-countries)
-- [Paddle · pricing 2026 (5% + 50¢)](https://adlega.com/compare/paddle-pricing/)
-- [dLocal Go · costos](https://helpcenter.dlocalgo.com/es/articles/9251261-que-costos-tengo-por-vender-con-dlocal-go)
-- [Stripe Managed Payments no cubre Argentina](https://www.paddle.com/resources/stripe-managed-payments)
-- [Mercado Pago · Checkout Pro](https://www.mercadopago.com.ar/herramientas-para-vender/check-out)
+Postergado a propósito: por ahora se cobra solo en ARS con Mercado Pago. Se retoma cuando lo de seguridad esté
+cerrado, con información actualizada sobre opciones sin LLC, gratuitas o de comisión baja.

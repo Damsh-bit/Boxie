@@ -8,55 +8,18 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
-import { ArrowRight, ChevronDown, PauseCircle, Play, Smartphone, Wand2, Zap } from 'lucide-react'
+import { ArrowRight, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import type { Route } from 'next'
-import {
-  useEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-  type PointerEvent,
-  type ReactNode,
-} from 'react'
+import { useRef, useState, useSyncExternalStore, type PointerEvent } from 'react'
 import type { Occasion } from '@/content/home'
 import type { SocialProof } from '@/domain/social-proof'
 import type { Showcase } from '@/slides/showcase'
-import { ButtonLink, Nudge } from '@/ui/Button'
-import { cn } from '@/ui/cn'
-import { Emoji, Icon } from '@/ui/Icon'
-import { rememberRecipient } from '@/ui/recipient'
-import { MercadoPagoLogo } from '@/ui/MercadoPagoLogo'
-import { Swap, ease, spring, useCalm } from '@/ui/motion'
+import { Icon } from '@/ui/Icon'
+import { ease, spring, useCalm } from '@/ui/motion'
+import { HeroBuilder } from './HeroBuilder'
 import { HeroPreview } from './HeroPreview'
-import { Magnetic, useMouseParallax } from './primitives'
-import { PurchaseTicker } from './PurchaseTicker'
+import { useMouseParallax } from './primitives'
 import { avatarGradient, type HomeTheme } from './theme-look'
-
-/** La bandera en SVG: Windows no dibuja los emojis de banderas. */
-function FlagAR({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 18 12" aria-hidden className={className}>
-      <rect width="18" height="12" rx="2.5" fill="#74ACDF" />
-      <rect y="4" width="18" height="4" fill="#fff" />
-      <circle cx="9" cy="6" r="1.3" fill="#F6B40E" />
-    </svg>
-  )
-}
-
-const TRUST: { icon: ReactNode; label: string }[] = [
-  {
-    icon: <MercadoPagoLogo className="size-5 text-[#00B1EA]" />,
-    label: 'Pago seguro con Mercado Pago',
-  },
-  { icon: <Zap className="size-4 text-brand" aria-hidden />, label: 'Llega al instante' },
-  { icon: <Smartphone className="size-4 text-brand" aria-hidden />, label: 'Sin apps ni cuentas' },
-  {
-    icon: <FlagAR className="h-3 w-[18px] shadow-[0_0_0_1px_rgba(42,36,51,0.08)]" />,
-    label: 'Hecho en Argentina',
-  },
-]
 
 const count = new Intl.NumberFormat('es-AR')
 
@@ -89,8 +52,8 @@ const line = {
 
 /**
  * La portada: titular, un armador en vivo (elegís la temática, escribís el
- * nombre y el celular de al lado lo muestra) y el llamado a comprar con el
- * precio a la vista.
+ * nombre y el celular de al lado lo muestra; HeroBuilder.tsx) y el llamado a
+ * comprar con el precio a la vista.
  */
 export function Hero({
   themes,
@@ -115,7 +78,6 @@ export function Hero({
 }) {
   const ref = useRef<HTMLElement>(null)
   const calm = useCalm()
-  const router = useRouter()
   const [slug, setSlug] = useState(themes[0]?.slug ?? 'pareja')
   const [name, setName] = useState('')
   // Hasta que eligen una temática, el celular intercala lo mejor de cada Ribbly.
@@ -152,12 +114,6 @@ export function Hero({
   if (!theme) return null
 
   const short = name.trim()
-  // El nombre viaja a la ficha, al checkout y al editor: no se vuelve a pedir.
-  const href =
-    `/tematicas/${theme.slug}${short ? `?para=${encodeURIComponent(short)}` : ''}` as Route
-  // CTA adaptado: si ya compraron antes, "Crear otra Ribbly"
-  const baseCtaLabel = hasPreviousPurchases ? 'Crear otra Ribbly' : 'Crear su Ribbly'
-  const cta = short && short.length <= 10 ? `Crear la Ribbly de ${short}` : baseCtaLabel
 
   return (
     <section
@@ -223,8 +179,8 @@ export function Hero({
             </motion.a>
           )}
 
-          {/* Badge de bienvenida personalizado si está logueado, ticker de compras si no */}
-          {userName ? (
+          {/* Si volvió con su cuenta, el saludo (la prueba social va al lado del celular). */}
+          {userName && (
             <motion.span
               data-reveal=""
               variants={rise}
@@ -241,30 +197,6 @@ export function Hero({
               <span className="truncate">
                 ¡Hola, {userName.split(' ')[0]}! Bienvenido de vuelta
               </span>
-            </motion.span>
-          ) : proof.events.length ? (
-            <motion.div
-              data-reveal=""
-              variants={rise}
-              className="flex w-full justify-center lg:justify-start"
-            >
-              <PurchaseTicker events={proof.events} themes={themes} />
-            </motion.div>
-          ) : (
-            <motion.span
-              data-reveal=""
-              variants={rise}
-              className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 text-xs font-bold tracking-wide text-ink shadow-[0_6px_20px_rgba(42,36,51,0.08)] ring-1 ring-black/5 backdrop-blur"
-            >
-              <motion.span
-                aria-hidden
-                className="inline-flex"
-                animate={calm ? undefined : { rotate: [0, 18, -10, 0], scale: [1, 1.25, 1] }}
-                transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.4 }}
-              >
-                <Icon name="destellos" size={16} />
-              </motion.span>
-              <span className="truncate">Regalo digital personalizado · Hecho en Argentina</span>
             </motion.span>
           )}
 
@@ -314,114 +246,16 @@ export function Hero({
           variants={rise}
           className="w-full max-w-xl min-w-0 justify-self-center [grid-area:builder] lg:self-start lg:justify-self-start"
         >
-          <form
-            id="armador"
-            className="rounded-[28px] bg-white/80 p-3.5 shadow-[0_24px_60px_-20px_rgba(42,36,51,0.28)] ring-1 ring-black/5 backdrop-blur-md min-[380px]:p-4 sm:p-5"
-            onSubmit={(e) => {
-              e.preventDefault()
-              rememberRecipient(short)
-              router.push(href)
-            }}
-          >
-            <p className="mb-3 flex items-center justify-center gap-2 text-sm font-bold text-ink lg:justify-start">
-              <Wand2 className="size-4 shrink-0 text-brand" aria-hidden />
-              Armala acá mismo y mirá cómo queda
-            </p>
-
-            <ThemePicker themes={themes} value={theme.slug} onChange={choose} />
-
-            <label className="group relative mt-3 block">
-              <span className="sr-only">¿Para quién es la Ribbly?</span>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value.slice(0, 16))}
-                maxLength={16}
-                autoComplete="off"
-                enterKeyHint="go"
-                placeholder="¿Para quién es? Ej: Sofi"
-                className="h-13 w-full rounded-full border-2 border-transparent bg-white px-5 pr-12 text-base font-semibold text-ink shadow-[inset_0_0_0_1px_rgba(42,36,51,0.12)] transition-[border-color,box-shadow] duration-200 outline-none placeholder:font-medium placeholder:text-ink/40 focus:border-brand focus:shadow-[0_0_0_4px_rgba(244,78,99,0.15)]"
-              />
-              <motion.span
-                aria-hidden
-                className="pointer-events-none absolute top-1/2 right-4 flex -translate-y-1/2"
-                animate={short ? { scale: [1, 1.35, 1], rotate: [0, -12, 0] } : { scale: 1 }}
-                transition={{ duration: 0.4 }}
-                key={short.length}
-              >
-                <Icon name={short ? 'corazon-brillo' : 'escribir'} size={22} />
-              </motion.span>
-            </label>
-
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-              <Magnetic strength={0.18} className="min-w-0 sm:flex-1">
-                <ButtonLink
-                  href={href}
-                  onClick={() => rememberRecipient(short)}
-                  size="lg"
-                  block
-                  className="min-w-0 px-6 text-base sm:text-lg"
-                >
-                  <span className="relative inline-flex min-w-0">
-                    <Swap id={cta} className="truncate">
-                      {cta}
-                    </Swap>
-                  </span>
-                  <Nudge x={4}>
-                    <ArrowRight className="size-5" aria-hidden />
-                  </Nudge>
-                </ButtonLink>
-              </Magnetic>
-              <ButtonLink
-                href={
-                  `/ejemplo/${theme.slug}${short ? `?para=${encodeURIComponent(short)}` : ''}` as Route
-                }
-                onClick={() => rememberRecipient(short)}
-                variant="white"
-                size="lg"
-                block
-                className="px-5 text-base sm:w-auto"
-              >
-                <span className="grid size-7 place-items-center rounded-full bg-brand text-white">
-                  <Play className="size-3 translate-x-px fill-current" aria-hidden />
-                </span>
-                Ver ejemplo
-              </ButtonLink>
-            </div>
-
-            {salesPaused ? (
-              <p className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-amber-50 px-3 py-2 text-sm text-amber-900 lg:justify-start">
-                <PauseCircle className="size-4 shrink-0" aria-hidden />
-                Pausamos las ventas por un rato: podés armarla y probarla igual.
-              </p>
-            ) : (
-              <p className="mt-3 text-center text-sm text-ink/65 lg:text-left">
-                <span className="relative inline-block font-display text-base font-bold text-ink">
-                  <Swap id={theme.priceLabel}>{theme.priceLabel}</Swap>
-                </span>{' '}
-                · pago único · sin suscripciones
-              </p>
-            )}
-          </form>
-
-          <ul className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm font-semibold text-ink/70 lg:justify-start">
-            {TRUST.map(({ icon, label }) => (
-              <motion.li
-                key={label}
-                className="flex cursor-default items-center gap-1.5 transition-colors hover:text-ink"
-                whileHover="hover"
-              >
-                <motion.span
-                  className="flex"
-                  variants={{ hover: { rotate: [0, -14, 10, 0], scale: [1, 1.25, 1.1] } }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {icon}
-                </motion.span>
-                {label}
-              </motion.li>
-            ))}
-          </ul>
+          <HeroBuilder
+            themes={themes}
+            theme={theme}
+            chosen={chosen}
+            name={name}
+            onName={setName}
+            onChoose={choose}
+            salesPaused={salesPaused}
+            hasPreviousPurchases={hasPreviousPurchases ?? false}
+          />
         </motion.div>
 
         <motion.div className="min-w-0 [grid-area:phone] lg:py-6" style={{ y: phoneY }}>
@@ -537,111 +371,5 @@ function SoldCount({
         entregados
       </p>
     </motion.div>
-  )
-}
-
-/**
- * Las temáticas del armador. Con pocas, reparten el ancho; con más (el panel
- * publica las que quiera), son una fila que se desliza con el dedo, con los
- * bordes difuminados y la elegida siempre a la vista.
- */
-function ThemePicker({
-  themes,
-  value,
-  onChange,
-}: {
-  themes: HomeTheme[]
-  value: string
-  onChange(slug: string): void
-}) {
-  const scroller = useRef<HTMLDivElement>(null)
-  const many = themes.length > 3
-  const [edges, setEdges] = useState({ start: false, end: many })
-
-  useEffect(() => {
-    const el = scroller.current
-    if (!el || !many) return
-    const update = () =>
-      setEdges({
-        start: el.scrollLeft > 4,
-        end: el.scrollLeft + el.clientWidth < el.scrollWidth - 4,
-      })
-    const observer = new ResizeObserver(update)
-    observer.observe(el)
-    el.addEventListener('scroll', update, { passive: true })
-    return () => {
-      observer.disconnect()
-      el.removeEventListener('scroll', update)
-    }
-  }, [many])
-
-  // La temática elegida (o la que eligió otra sección) queda centrada.
-  useEffect(() => {
-    const el = scroller.current
-    const selected = el?.querySelector<HTMLElement>('[aria-pressed="true"]')
-    if (!el || !selected || el.scrollWidth <= el.clientWidth) return
-    el.scrollTo({
-      left: selected.offsetLeft - (el.clientWidth - selected.offsetWidth) / 2,
-      behavior: 'smooth',
-    })
-  }, [value])
-
-  const fade = 28
-  const mask = many
-    ? `linear-gradient(to right, ${edges.start ? 'transparent' : '#000'} 0, #000 ${fade}px, #000 calc(100% - ${fade}px), ${edges.end ? 'transparent' : '#000'} 100%)`
-    : undefined
-
-  return (
-    <div
-      ref={scroller}
-      role="group"
-      aria-label="Temática"
-      className={cn(
-        'relative flex gap-1 rounded-full bg-paper/80 p-1',
-        many &&
-          'snap-x snap-proximity scroll-px-2 [scrollbar-width:none] overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden',
-      )}
-      style={{ maskImage: mask, WebkitMaskImage: mask }}
-    >
-      {themes.map((t) => {
-        const selected = t.slug === value
-        return (
-          <motion.button
-            key={t.slug}
-            type="button"
-            aria-pressed={selected}
-            onClick={() => onChange(t.slug)}
-            className={cn(
-              'relative rounded-full py-2.5 text-sm font-semibold transition-colors duration-200',
-              many ? 'shrink-0 snap-center px-3.5' : 'min-w-0 flex-1 px-2 sm:px-3',
-              selected ? 'text-ink' : 'text-ink/60 hover:text-ink',
-            )}
-            whileHover="hover"
-            whileTap={{ scale: 0.94 }}
-            transition={spring.snappy}
-          >
-            {selected && (
-              <motion.span
-                layoutId="hero-theme"
-                className="absolute inset-0 rounded-full bg-white shadow-[0_4px_14px_rgba(42,36,51,0.12)]"
-                transition={spring.snappy}
-                aria-hidden
-              />
-            )}
-            <span className="relative flex items-center justify-center gap-1.5 whitespace-nowrap">
-              <motion.span
-                aria-hidden
-                className="inline-flex"
-                variants={{ hover: { rotate: [0, -16, 12, 0], scale: [1, 1.3, 1.15] } }}
-                transition={{ duration: 0.5 }}
-              >
-                <Emoji value={t.emoji} size={20} />
-              </motion.span>
-              <span className={cn(!many && 'truncate')}>{t.name}</span>
-            </span>
-          </motion.button>
-        )
-      })}
-    </div>
   )
 }

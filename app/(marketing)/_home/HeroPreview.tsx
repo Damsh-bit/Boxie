@@ -1019,8 +1019,7 @@ function PurchaseChip({
   running: boolean
   mouse: { x: MotionValue<number>; y: MotionValue<number> }
 }) {
-  // Arranca por la mitad: la cinta de compras de arriba arranca por la primera.
-  const event = events[useRotation(events.length, running, 0.6, Math.ceil(events.length / 2))]
+  const event = events[useRotation(events.length, running, 0.6)]
   if (!event) return null
   const theme = themes.find((t) => t.slug === event.theme)
   const detail =

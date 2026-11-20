@@ -6,6 +6,8 @@ import { formatARS } from '@/domain/money'
 import { describeLifetime } from '@/domain/plans'
 import { sponsorFor } from '@/domain/sponsors'
 import type { SlideKind } from '@/slides/schemas'
+import { buildShowcase } from '@/slides/showcase'
+import { getThemeVersionConfig } from '@/server/catalog'
 import { getCustomerHeroContext } from '@/server/customer/data'
 import { getCustomerSession } from '@/server/customer/session'
 import { getSocialProof } from '@/server/social-proof'
@@ -180,11 +182,20 @@ function structuredData(sf: Storefront, faqs: FaqItem[]) {
 export default async function HomePage() {
   const sf = await getStorefront()
   const session = await getCustomerSession()
-  const [proof, sponsors, heroCtx] = await Promise.all([
+  const [proof, sponsors, heroCtx, configs] = await Promise.all([
     getSocialProof({ themes: sf.themes, salesPaused: sf.salesPaused }),
     getLiveSponsors(),
     session ? getCustomerHeroContext(session.email) : Promise.resolve(null),
+    // Ya las pidió el catálogo (getStorefront): salen de la caché del pedido.
+    Promise.all(
+      sf.themes.map(async (t) => ({
+        slug: t.slug,
+        config: await getThemeVersionConfig(t.versionId),
+      })),
+    ),
   ])
+  // Las pantallas de verdad que pasan en el celular de la portada.
+  const showcase = buildShowcase(configs)
   const byPlans = sf.plans.length > 1
   const price = formatARS(sf.priceFromCents)
   const sample = sf.themes[0]
@@ -236,6 +247,7 @@ export default async function HomePage() {
         userName={session?.name ?? null}
         hasPreviousPurchases={heroCtx?.hasPreviousPurchases ?? false}
         draft={heroCtx?.draft ?? null}
+        showcase={showcase}
       />
       <OccasionMarquee />
       <ThemeShowcase

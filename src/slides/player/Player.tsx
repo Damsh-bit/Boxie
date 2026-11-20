@@ -61,7 +61,8 @@ export interface PlayerProps {
   editing?: boolean
 }
 
-const BACKGROUND_CLASS: Record<string, string> = {
+/** La clase del fondo de cada slide (también la usa la vidriera de la portada). */
+export const BACKGROUND_CLASS: Record<string, string> = {
   intro: 'bx-bg-intro',
   salmon: 'bx-bg-salmon',
   white: 'bx-bg-white',
@@ -365,7 +366,8 @@ function NavButton({
   )
 }
 
-function SlideBody({
+/** El componente de la slide con el contenido del comprador ya validado contra su schema. */
+export function SlideBody({
   slide,
   buyer,
   ctx,

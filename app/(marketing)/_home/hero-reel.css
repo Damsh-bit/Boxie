@@ -1,0 +1,21 @@
+/* La pantalla real dentro del celular de la portada (HeroReel.tsx).
+
+   Lo que se toca de la pantalla (botones, la torta, la piñata, las
+   galletitas) responde de verdad; el resto deja pasar el toque a las zonas
+   del celular de abajo (la izquierda vuelve, la derecha sigue), como en las
+   historias. El doble .hero-reel le gana a cualquier regla de una pantalla. */
+
+.hero-reel.hero-reel,
+.hero-reel.hero-reel * {
+  pointer-events: none;
+}
+
+.hero-reel.hero-reel :is(button, a, input, textarea, select, label, [role='button']) {
+  pointer-events: auto;
+}
+
+/* Compartir en historias descarga una imagen: en la portada no va (se
+   esconde sin mover nada de lugar). */
+.hero-reel .rb-ig-share {
+  visibility: hidden;
+}

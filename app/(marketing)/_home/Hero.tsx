@@ -21,6 +21,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { SocialProof } from '@/domain/social-proof'
+import type { Showcase } from '@/slides/showcase'
 import { ButtonLink, Nudge } from '@/ui/Button'
 import { cn } from '@/ui/cn'
 import { Emoji, Icon } from '@/ui/Icon'
@@ -97,6 +98,7 @@ export function Hero({
   userName,
   hasPreviousPurchases,
   draft,
+  showcase = null,
 }: {
   themes: HomeTheme[]
   salesPaused: boolean
@@ -104,13 +106,21 @@ export function Hero({
   userName?: string | null
   hasPreviousPurchases?: boolean
   draft?: { id: string; recipientName: string; editUrl: string } | null
+  /** Las pantallas de verdad que pasan en el celular (src/slides/showcase.ts). */
+  showcase?: Showcase | null
 }) {
   const ref = useRef<HTMLElement>(null)
   const calm = useCalm()
   const router = useRouter()
   const [slug, setSlug] = useState(themes[0]?.slug ?? 'pareja')
   const [name, setName] = useState('')
+  // Hasta que eligen una temática, el celular intercala lo mejor de cada Ribbly.
+  const [chosen, setChosen] = useState(false)
   const theme = themes.find((t) => t.slug === slug) ?? themes[0]
+  const choose = (next: string) => {
+    setSlug(next)
+    setChosen(true)
+  }
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const markY = useTransform(scrollYProgress, [0, 1], [0, calm ? 0 : 160])
@@ -314,7 +324,7 @@ export function Hero({
               Armala acá mismo y mirá cómo queda
             </p>
 
-            <ThemePicker themes={themes} value={theme.slug} onChange={setSlug} />
+            <ThemePicker themes={themes} value={theme.slug} onChange={choose} />
 
             <label className="group relative mt-3 block">
               <span className="sr-only">¿Para quién es la Ribbly?</span>
@@ -411,7 +421,14 @@ export function Hero({
         </motion.div>
 
         <motion.div className="min-w-0 [grid-area:phone] lg:py-6" style={{ y: phoneY }}>
-          <HeroPreview theme={theme} name={name} />
+          <HeroPreview
+            theme={theme}
+            themes={themes}
+            name={name}
+            showcase={showcase}
+            mix={!chosen && !short}
+            onPickTheme={choose}
+          />
         </motion.div>
       </motion.div>
 

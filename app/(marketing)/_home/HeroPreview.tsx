@@ -10,9 +10,12 @@ import {
   useTransform,
   type MotionValue,
 } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import {
   useEffect,
+  useEffectEvent,
   useRef,
   useState,
   type KeyboardEvent,
@@ -20,8 +23,9 @@ import {
   type PointerEvent,
 } from 'react'
 import type { IconName } from '@/domain/icons'
+import type { Showcase, ShowcaseSlide, ShowcaseTheme } from '@/slides/showcase'
 import { cn } from '@/ui/cn'
-import { EmojiText, Icon } from '@/ui/Icon'
+import { Emoji, EmojiText, Icon } from '@/ui/Icon'
 import { Float, ease, spring, useCalm } from '@/ui/motion'
 import {
   CoverScene,
@@ -35,32 +39,116 @@ import {
 import { PhoneFrame, useMouseParallax, useTilt } from './primitives'
 import { lookOf, type HomeTheme } from './theme-look'
 
-/** Las pantallas de la Ribbly de muestra, en orden, y cuánto dura cada una. */
-const SCENES = [
-  { id: 'portada', label: 'Portada', emoji: 'regalo', seconds: 4.2, light: false },
-  { id: 'fotos', label: 'Fotos', emoji: 'camara', seconds: 4.8, light: false },
-  { id: 'dedicatoria', label: 'Dedicatoria', emoji: 'carta-de-amor', seconds: 6.2, light: true },
-  { id: 'cancion', label: 'Su canción', emoji: 'musica', seconds: 5.2, light: false },
-  { id: 'trivia', label: 'Trivia', emoji: 'trivia', seconds: 6.4, light: true },
-  { id: 'sorpresa', label: 'Sorpresa', emoji: 'cotillon', seconds: 6.8, light: false },
-] as const
+/**
+ * Las pantallas de verdad se cargan aparte (registro de pantallas y sus
+ * estilos): mientras tanto se ve la portada, que no las necesita.
+ */
+const loadReel = () => import('./HeroReel')
+const HeroReel = dynamic(() => loadReel().then((m) => m.HeroReel), {
+  ssr: false,
+  loading: () => (
+    <div className="absolute inset-0 grid place-items-center bg-[linear-gradient(170deg,#ff8a9a,#f44e63)]">
+      <span className="size-10 animate-pulse rounded-full bg-white/40" />
+    </div>
+  ),
+})
 
-type SceneId = (typeof SCENES)[number]['id']
+/** Una pantalla de la Ribbly que pasa en el celular. */
+interface BaseItem {
+  id: string
+  label: string
+  icon: IconName
+  /** Cuánto dura cuando pasa sola. */
+  seconds: number
+  /** Fondo claro: la barrita de arriba va oscura. */
+  light: boolean
+}
+
+type HandmadeScene = 'fotos' | 'dedicatoria' | 'cancion' | 'trivia' | 'sorpresa'
+
+type Item = BaseItem &
+  (
+    | { type: 'cover' }
+    | { type: 'scene'; scene: HandmadeScene }
+    | { type: 'real'; theme: ShowcaseTheme; slide: ShowcaseSlide }
+  )
+
+/** La portada de la Ribbly de muestra: la temática y el nombre del armador. */
+const COVER: Item = {
+  type: 'cover',
+  id: 'portada',
+  label: 'Portada',
+  icon: 'regalo',
+  seconds: 4.2,
+  light: false,
+}
+
+/**
+ * Las pantallas dibujadas a mano para la portada: quedan por si una temática
+ * no tiene ninguna pantalla para la vidriera (src/slides/showcase.ts).
+ */
+const HANDMADE: Item[] = [
+  COVER,
+  {
+    type: 'scene',
+    scene: 'fotos',
+    id: 'fotos',
+    label: 'Fotos',
+    icon: 'camara',
+    seconds: 4.8,
+    light: false,
+  },
+  {
+    type: 'scene',
+    scene: 'dedicatoria',
+    id: 'dedicatoria',
+    label: 'Dedicatoria',
+    icon: 'carta-de-amor',
+    seconds: 6.2,
+    light: true,
+  },
+  {
+    type: 'scene',
+    scene: 'cancion',
+    id: 'cancion',
+    label: 'Su canción',
+    icon: 'musica',
+    seconds: 5.2,
+    light: false,
+  },
+  {
+    type: 'scene',
+    scene: 'trivia',
+    id: 'trivia',
+    label: 'Trivia',
+    icon: 'trivia',
+    seconds: 6.4,
+    light: true,
+  },
+  {
+    type: 'scene',
+    scene: 'sorpresa',
+    id: 'sorpresa',
+    label: 'Sorpresa',
+    icon: 'cotillon',
+    seconds: 6.8,
+    light: false,
+  },
+]
 
 // Las etiquetas apenas pisan el borde del celular para no tapar la pantalla
 // (entre lg y xl la columna es angosta: ahí son más chicas para no cortarse).
 const LEFT = 'right-[calc(100%-18px)]'
 const RIGHT = 'left-[calc(100%-18px)]'
 
-/** Dónde flota cada etiqueta alrededor del celular y cuánto la corre el mouse. */
-const CHIPS: { scene: SceneId; className: string; depth: number; float: number; delay: number }[] =
-  [
-    { scene: 'fotos', className: `${LEFT} top-[12%]`, depth: 16, float: 6, delay: 0.9 },
-    { scene: 'dedicatoria', className: `${RIGHT} top-[27%]`, depth: -12, float: 7, delay: 1 },
-    { scene: 'cancion', className: `${LEFT} top-[45%]`, depth: 20, float: 5.5, delay: 1.1 },
-    { scene: 'trivia', className: `${RIGHT} top-[61%]`, depth: -16, float: 6.5, delay: 1.2 },
-    { scene: 'sorpresa', className: `${LEFT} top-[78%]`, depth: 12, float: 6, delay: 1.3 },
-  ]
+/** Dónde flotan las etiquetas alrededor del celular (de arriba abajo) y cuánto las corre el mouse. */
+const CHIP_SPOTS: { className: string; depth: number; float: number; delay: number }[] = [
+  { className: `${LEFT} top-[12%]`, depth: 16, float: 6, delay: 0.9 },
+  { className: `${RIGHT} top-[27%]`, depth: -12, float: 7, delay: 1 },
+  { className: `${LEFT} top-[45%]`, depth: 20, float: 5.5, delay: 1.1 },
+  { className: `${RIGHT} top-[61%]`, depth: -16, float: 6.5, delay: 1.2 },
+  { className: `${LEFT} top-[78%]`, depth: 12, float: 6, delay: 1.3 },
+]
 
 /** Segundos sin tocar nada para que la Ribbly vuelva a pasar sola. */
 const RESUME_SECONDS = 9
@@ -74,6 +162,10 @@ const BACK_ZONE = 0.3
  */
 const CANVAS = 286
 
+/** Lo que se toca dentro de una pantalla (no pasa ni vuelve: se juega). */
+const CONTROL =
+  '[data-hero-interactive], [data-hero-reel] :is(button, a, input, textarea, select, label, [role="button"])'
+
 /** Hacia dónde salen las chispas de un toque. */
 const SPARKS = [
   [0, -34],
@@ -84,7 +176,7 @@ const SPARKS = [
   [-28, -20],
 ] as const
 
-type Hint = 'open' | 'next' | 'back' | 'again' | 'paused'
+type Hint = 'open' | 'next' | 'back' | 'again' | 'paused' | 'play'
 
 const HINTS: Record<Hint, string> = {
   open: 'Abrir 🎁',
@@ -92,9 +184,10 @@ const HINTS: Record<Hint, string> = {
   back: '‹ Volver',
   again: 'De nuevo ↺',
   paused: 'En pausa',
+  play: 'Tocá 👆',
 }
 
-const slide = {
+const slideIn = {
   enter: (dir: number) => ({
     x: dir === 0 ? '0%' : `${dir * 38}%`,
     opacity: 0,
@@ -109,34 +202,85 @@ const slide = {
   }),
 }
 
+/** Las pantallas que pasan: la portada y las de la vidriera (o las dibujadas a mano). */
+function itemsOf(showcase: Showcase | null, slug: string, mix: boolean): Item[] {
+  if (!showcase) return HANDMADE
+  const byslug = new Map(showcase.themes.map((t) => [t.slug, t]))
+  const picked =
+    mix && showcase.mix.length
+      ? showcase.mix.flatMap(({ theme, index }) => {
+          const source = byslug.get(theme)
+          const slide = source?.slides[index]
+          return source && slide ? [{ theme: source, slide }] : []
+        })
+      : (byslug.get(slug)?.slides.map((slide) => ({ theme: byslug.get(slug)!, slide })) ?? [])
+  if (!picked.length) return HANDMADE
+  return [
+    COVER,
+    ...picked.map(({ theme, slide }): Item => ({
+      type: 'real',
+      id: slide.id,
+      label: slide.label,
+      icon: slide.icon,
+      seconds: slide.seconds,
+      light: slide.light,
+      theme,
+      slide,
+    })),
+  ]
+}
+
 /**
- * Una Ribbly de muestra que se abre en el celular de la portada. Pasa sola
- * como una historia (portada con el nombre, fotos, dedicatoria, canción,
- * trivia y el regalo del final) y se puede tocar: la izquierda vuelve, la
- * derecha sigue, mantener apretado pausa y los juegos se juegan de verdad.
- * Lo que se elige en el armador (temática y nombre) vuelve a la portada para
- * mostrarlo. Las etiquetas de alrededor llevan a cada pantalla.
+ * Una Ribbly de muestra que se abre en el celular de la portada y pasa sola
+ * como una historia: primero la portada con el nombre del armador y después
+ * pantallas de verdad, las mismas del regalo (la torta que se sopla, el
+ * tragamonedas, la piñata…). Mientras no se elige temática ni se escribe un
+ * nombre, intercala lo mejor de cada Ribbly; después, las de la elegida.
+ *
+ * Se puede tocar: la izquierda vuelve, la derecha sigue, mantener apretado
+ * pausa y los juegos se juegan de verdad (si nadie los toca, se juegan solos).
+ * Las etiquetas de alrededor llevan a cada pantalla.
  */
-export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string }) {
+export function HeroPreview({
+  theme,
+  themes,
+  name,
+  showcase,
+  mix,
+  onPickTheme,
+}: {
+  theme: HomeTheme
+  themes: HomeTheme[]
+  name: string
+  showcase: Showcase | null
+  /** Intercalar lo mejor de cada Ribbly (todavía no eligieron temática). */
+  mix: boolean
+  onPickTheme(slug: string): void
+}) {
   const calm = useCalm()
   const look = lookOf(theme.slug)
   const typed = name.trim()
   const phone = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLDivElement>(null)
   const inView = useInView(phone, { amount: 0.35 })
+  // Con apenas un pedacito a la vista, la pantalla sigue animada.
+  const visible = useInView(phone)
   const tilt = useTilt(7)
   const mouse = useMouseParallax()
 
+  const items = itemsOf(showcase, theme.slug, mix)
+  const hasReal = items.some((i) => i.type === 'real')
+
   // La pantalla que se ve y de qué lado entró (1 adelante, -1 atrás, 0 sin deslizar).
-  const signature = `${theme.slug}|${typed}`
+  const signature = `${mix ? 'mezcla' : theme.slug}|${typed}`
   const [view, setView] = useState({ index: 0, dir: 0, signature })
   const [auto, setAuto] = useState(true)
   const [touches, setTouches] = useState(0)
   const [held, setHeld] = useState(false)
   const [nameIndex, setNameIndex] = useState(0)
-  // De qué lado del celular está el mouse (null: afuera o sobre algo que se toca).
-  const [zone, setZone] = useState<'back' | 'forward' | null>(null)
-  const [sparks, setSparks] = useState<{ id: number; x: number; y: number }[]>([])
+  // De qué lado del celular está el mouse (null: afuera); `control`: sobre algo que se toca.
+  const [zone, setZone] = useState<'back' | 'forward' | 'control' | null>(null)
+  const [sparks, setSparks] = useState<{ id: number; x: number; y: number; particle: string }[]>([])
   const [warm, setWarm] = useState(false)
   const progress = useMotionValue(0)
 
@@ -145,15 +289,16 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
     setView({ index: 0, dir: 0, signature })
     setAuto(true)
   }
-  const { index, dir } = view
-  const scene = SCENES[index]!
-  const last = SCENES.length - 1
+  const index = Math.min(view.index, items.length - 1)
+  const { dir } = view
+  const item = items[index]!
+  const last = items.length - 1
   const running = auto && !held && inView && !calm
 
   const go = (next: number) => {
     setView((v) => ({
       ...v,
-      index: (next + SCENES.length) % SCENES.length,
+      index: (next + items.length) % items.length,
       dir: next > v.index ? 1 : -1,
     }))
   }
@@ -171,12 +316,12 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
   useEffect(() => {
     if (!running) return
     const controls = animate(progress, 1, {
-      duration: scene.seconds * (1 - progress.get()),
+      duration: item.seconds * (1 - progress.get()),
       ease: 'linear',
-      onComplete: () => setView((v) => ({ ...v, index: (v.index + 1) % SCENES.length, dir: 1 })),
+      onComplete: () => setView((v) => ({ ...v, index: (v.index + 1) % items.length, dir: 1 })),
     })
     return () => controls.stop()
-  }, [running, index, signature, scene.seconds, progress])
+  }, [running, index, signature, item.seconds, items.length, progress])
 
   // Si la tocaron y la dejaron, al rato vuelve a pasar sola.
   useEffect(() => {
@@ -192,11 +337,14 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
     return () => clearInterval(timer)
   }, [calm, typed, index])
 
-  // Las fotos se piden un rato después de cargar (sin competir con la portada).
+  // Las fotos y las pantallas se piden un rato después de cargar (sin competir con la portada).
   useEffect(() => {
     const timer = setTimeout(() => setWarm(true), 1500)
     return () => clearTimeout(timer)
   }, [])
+  useEffect(() => {
+    if (warm && hasReal) void loadReel()
+  }, [warm, hasReal])
 
   // ── Mouse y toques ──────────────────────────────────────────────────────
 
@@ -214,7 +362,51 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
   const cursorY = useSpring(0, { stiffness: 600, damping: 40 })
   const hold = useRef<{ timer?: ReturnType<typeof setTimeout>; held: boolean }>({ held: false })
   const sparkId = useRef(0)
+  // Un toque de demostración (el juego que se juega solo): no cuenta como que la tocaron.
+  const demo = useRef(false)
   useEffect(() => () => clearTimeout(hold.current.timer), [])
+
+  const particleOf = (i: Item) => lookOf(i.type === 'real' ? i.theme.slug : theme.slug).particle
+
+  /** Chispas en un punto del lienzo, con lo que flota en la temática. */
+  const sparkAt = (x: number, y: number, particle: string) => {
+    if (calm) return
+    const id = ++sparkId.current
+    setSparks((s) => [...s.slice(-3), { id, x, y, particle }])
+    setTimeout(() => setSparks((s) => s.filter((p) => p.id !== id)), 800)
+  }
+
+  // Si nadie la toca, el juego de la pantalla se juega solo, con chispas donde "toca".
+  const demoTap = useEffectEvent((selector: string) => {
+    const root = canvas.current
+    const target = root?.querySelector<HTMLElement>(
+      `[data-reel-item="${CSS.escape(item.id)}"] ${selector}`,
+    )
+    if (!root || !target || target.matches(':disabled')) return
+    const r = root.getBoundingClientRect()
+    const t = target.getBoundingClientRect()
+    const scale = r.width / CANVAS
+    sparkAt(
+      (t.left + t.width / 2 - r.left) / scale,
+      (t.top + t.height / 2 - r.top) / scale,
+      particleOf(item),
+    )
+    demo.current = true
+    try {
+      target.click()
+    } finally {
+      demo.current = false
+    }
+  })
+  const taps = item.type === 'real' ? item.slide.taps : undefined
+  useEffect(() => {
+    if (!running || !taps?.length) return
+    const elapsed = progress.get() * item.seconds
+    const timers = taps
+      .filter(([, at]) => at >= elapsed)
+      .map(([selector, at]) => setTimeout(() => demoTap(selector), (at - elapsed) * 1000))
+    return () => timers.forEach(clearTimeout)
+  }, [running, taps, item.id, item.seconds, progress])
 
   const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
     tilt.handlers.onPointerMove(e)
@@ -229,8 +421,18 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
     const move = zone ? 'set' : 'jump'
     cursorX[move](e.clientX - r.left)
     cursorY[move](e.clientY - r.top)
-    const onControl = (e.target as Element | null)?.closest?.('[data-hero-interactive]')
-    setZone(onControl ? null : x < BACK_ZONE ? 'back' : 'forward')
+    const target = e.target as Element | null
+    const onControl = target?.closest?.(CONTROL)
+    // Las pantallas dibujadas a mano no avisan de sus botones: ahí no se muestra nada.
+    setZone(
+      onControl
+        ? target?.closest('[data-hero-reel]')
+          ? 'control'
+          : null
+        : x < BACK_ZONE
+          ? 'back'
+          : 'forward',
+    )
   }
   const onPointerLeave = () => {
     tilt.handlers.onPointerLeave()
@@ -253,18 +455,13 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
     setHeld(false)
   }
 
-  /** Chispas donde se tocó, con lo que flota en la temática. */
+  /** Chispas donde se tocó. */
   const spark = (e: MouseEvent) => {
     const el = canvas.current
-    if (!el || calm || e.detail === 0) return
+    if (!el || e.detail === 0) return
     const r = el.getBoundingClientRect()
     const scale = r.width / CANVAS
-    const id = ++sparkId.current
-    setSparks((s) => [
-      ...s.slice(-3),
-      { id, x: (e.clientX - r.left) / scale, y: (e.clientY - r.top) / scale },
-    ])
-    setTimeout(() => setSparks((s) => s.filter((p) => p.id !== id)), 800)
+    sparkAt((e.clientX - r.left) / scale, (e.clientY - r.top) / scale, particleOf(item))
   }
 
   const tap = (e: MouseEvent<HTMLButtonElement>, step: 1 | -1) => {
@@ -278,6 +475,16 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
     go(index + step)
   }
 
+  // Tocaron algo de una pantalla de verdad (un botón, la torta, la piñata): se
+  // juega y la Ribbly espera un rato antes de seguir sola.
+  const onCanvasClick = (e: MouseEvent<HTMLDivElement>) => {
+    if (demo.current) return
+    const target = e.target as Element | null
+    if (!target?.closest('[data-hero-reel]')) return
+    spark(e)
+    touch()
+  }
+
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
     e.preventDefault()
@@ -286,10 +493,11 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
   }
 
   const example = look.names[nameIndex % look.names.length]!
+  const shownName = typed || example
   const props: SceneProps = {
     theme,
     story: look.story,
-    name: typed || example,
+    name: shownName,
     auto: running,
     pointer,
     onInteract: touch,
@@ -303,13 +511,19 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
     ? 'paused'
     : !zone
       ? null
-      : index === 0
-        ? 'open'
-        : zone === 'back'
-          ? 'back'
-          : index === last
-            ? 'again'
-            : 'next'
+      : zone === 'control'
+        ? 'play'
+        : index === 0
+          ? 'open'
+          : zone === 'back'
+            ? 'back'
+            : index === last
+              ? 'again'
+              : 'next'
+
+  // En la mezcla, de qué Ribbly es la pantalla que se ve.
+  const source =
+    mix && item.type === 'real' ? themes.find((t) => t.slug === item.theme.slug) : undefined
 
   return (
     <motion.div
@@ -331,8 +545,9 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
               <div
                 role="region"
                 aria-roledescription="vista previa"
-                aria-label={`Ribbly de muestra para ${typed || example}`}
+                aria-label={`Ribbly de muestra para ${shownName}`}
                 onKeyDown={onKeyDown}
+                onClickCapture={onCanvasClick}
                 ref={canvas}
                 className="absolute top-0 left-0 w-[286px] origin-top-left select-none [-webkit-touch-callout:none]"
                 style={{ transform: 'scale(var(--s))', height: 'calc(100% / var(--s))' }}
@@ -387,41 +602,52 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
                 <div className="pointer-events-none absolute inset-0 z-10">
                   <AnimatePresence initial={false} custom={dir}>
                     <motion.div
-                      key={scene.id}
-                      className="absolute inset-0"
+                      key={item.id}
+                      className="absolute inset-0 overflow-hidden"
                       custom={dir}
-                      variants={slide}
+                      variants={slideIn}
                       initial="enter"
                       animate="center"
                       exit="exit"
                     >
-                      {scene.id === 'portada' ? (
+                      {item.type === 'cover' ? (
                         <CoverScene
                           theme={theme}
                           typed={typed}
                           example={example}
                           pointer={pointer}
                         />
+                      ) : item.type === 'scene' ? (
+                        <Scene id={item.scene} {...props} />
                       ) : (
-                        <Scene id={scene.id} {...props} />
+                        <HeroReel
+                          theme={item.theme}
+                          item={item.slide}
+                          order={index}
+                          canvas={CANVAS}
+                          name={shownName}
+                          active={visible}
+                          onNext={() => go(index + 1)}
+                          onRestart={() => go(0)}
+                        />
                       )}
                     </motion.div>
                   </AnimatePresence>
                 </div>
 
                 <div className="pointer-events-none absolute inset-x-3 top-8 z-20 flex gap-[3px]">
-                  {SCENES.map((s, i) => (
+                  {items.map((s, i) => (
                     <span
                       key={s.id}
                       className={cn(
                         'h-[3px] flex-1 overflow-hidden rounded-full transition-colors duration-500',
-                        scene.light ? 'bg-ink/15' : 'bg-white/35',
+                        item.light ? 'bg-ink/15' : 'bg-white/35',
                       )}
                     >
                       <Fill
                         progress={progress}
                         state={i < index ? 'done' : i === index ? 'current' : 'next'}
-                        className={scene.light ? 'bg-ink/75' : 'bg-white'}
+                        className={item.light ? 'bg-ink/75' : 'bg-white'}
                       />
                     </span>
                   ))}
@@ -449,14 +675,14 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
                         animate={{ x, y, opacity: 0, scale: 1.15 }}
                         transition={{ duration: 0.7, ease: ease.out }}
                       >
-                        {look.particle}
+                        {s.particle}
                       </motion.span>
                     ))}
                   </span>
                 ))}
 
                 <p className="sr-only" aria-live="polite">
-                  {auto ? '' : `Pantalla ${index + 1} de ${SCENES.length}: ${scene.label}`}
+                  {auto ? '' : `Pantalla ${index + 1} de ${items.length}: ${item.label}`}
                 </p>
               </div>
 
@@ -489,29 +715,50 @@ export function HeroPreview({ theme, name }: { theme: HomeTheme; name: string })
         </Float>
       </motion.div>
 
-      {CHIPS.map((chip) => {
-        const i = SCENES.findIndex((s) => s.id === chip.scene)
-        const s = SCENES[i]!
-        return (
-          <Chip
-            key={chip.scene}
-            {...chip}
-            icon={s.emoji}
-            label={s.label}
-            active={i === index}
-            mouse={mouse}
-            onSelect={() => {
-              touch()
-              go(i)
-            }}
-          />
-        )
-      })}
+      {items.slice(1, CHIP_SPOTS.length + 1).map((chip, i) => (
+        <Chip
+          key={chip.id}
+          {...CHIP_SPOTS[i]!}
+          icon={chip.icon}
+          label={chip.label}
+          active={i + 1 === index}
+          mouse={mouse}
+          onSelect={() => {
+            touch()
+            go(i + 1)
+          }}
+        />
+      ))}
+
+      {/* En la mezcla: de qué Ribbly es lo que se ve, y un toque para armar esa. */}
+      <div className="absolute top-[calc(100%+22px)] left-1/2 z-10 -translate-x-1/2">
+        <AnimatePresence mode="wait" initial={false}>
+          {source && (
+            <motion.button
+              key={source.slug}
+              type="button"
+              onClick={() => onPickTheme(source.slug)}
+              className="group flex cursor-pointer items-center gap-1.5 rounded-full bg-white/90 py-1.5 pr-2 pl-3 text-xs font-bold whitespace-nowrap text-ink shadow-[0_10px_26px_rgba(42,36,51,0.16)] ring-1 ring-black/5 backdrop-blur transition-colors hover:bg-white"
+              initial={{ opacity: 0, y: 8, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.9, transition: { duration: 0.18 } }}
+              transition={spring.snappy}
+              whileTap={{ scale: 0.94 }}
+            >
+              <Emoji value={source.emoji} size={16} />
+              Ribbly de {source.name}
+              <span className="ml-0.5 grid size-5 place-items-center rounded-full bg-brand text-white transition-transform group-hover:translate-x-0.5">
+                <ArrowRight className="size-3" aria-hidden />
+              </span>
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
     </motion.div>
   )
 }
 
-function Scene({ id, ...props }: SceneProps & { id: Exclude<SceneId, 'portada'> }) {
+function Scene({ id, ...props }: SceneProps & { id: HandmadeScene }) {
   switch (id) {
     case 'fotos':
       return <PhotosScene {...props} />

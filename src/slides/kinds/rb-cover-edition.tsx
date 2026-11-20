@@ -4,7 +4,7 @@ import { EDITION_PHOTO, editionScene, STORY_H, STORY_W } from '../ribbly/love-ar
 import { SceneView, useSceneMeasure, type Entrance } from '../ribbly/scene-svg'
 import { createMeasure, drawScene } from '../ribbly/story-image'
 import { StoryShare } from '../ribbly/StoryShare'
-import { slideOfKind, Stage } from '../ribbly/ui'
+import { editable, slideOfKind, Stage } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { Appear } from './motion'
 import type { Props } from './shared'
@@ -35,8 +35,10 @@ export function CoverEdition({ theme, buyer, ctx }: Props<'cover.edition'>) {
   const moments = momentsKey
     ? (ctx.buyerContent(momentsKey)?.moments as { photo?: BuyerPhoto | null }[] | undefined)
     : undefined
-  const photo =
-    ctx.resolveMedia(buyer.photo) ?? ctx.resolveMedia(moments?.find((m) => m.photo)?.photo)
+  // Sin fotos (lo eligió quien regala): va la ilustración del diseño.
+  const photo = ctx.noPhotos
+    ? undefined
+    : (ctx.resolveMedia(buyer.photo) ?? ctx.resolveMedia(moments?.find((m) => m.photo)?.photo))
   const caption = (buyer.caption.trim() || fill(theme.defaultCaption, ctx.vars))
     .replace(/\s*♥\s*$/, '')
     .trim()
@@ -53,6 +55,7 @@ export function CoverEdition({ theme, buyer, ctx }: Props<'cover.edition'>) {
         {/* Del borde de arriba hasta donde la tapan las ondas (en la escala de la escena). */}
         <div
           className="rb-le-photo"
+          {...editable(ctx, 'photo')}
           style={{
             height: `calc(${EDITION_PHOTO.h} * min(100cqw / ${STORY_W}, 100cqh / ${STORY_H}))`,
           }}

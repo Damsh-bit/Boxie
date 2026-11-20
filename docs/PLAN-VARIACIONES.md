@@ -32,8 +32,12 @@ fases 0 a 3 están en el código; todo el arte es SVG y CSS dibujado en el repo.
   `editable(ctx, campos, 'torta,velas')` (o `StyleSpot` si no tiene campos, y `style` en los
   grupos de las escenas). Colores, tipografía, decoración y las piezas que ahora no se ven van en el
   lápiz de la pantalla (el botón redondo de la paleta, abajo a la izquierda del teléfono).
-- Pendiente: editar estilos desde el editor de formulario (hoy solo el directo, que es el de
-  Cumpleaños).
+- **20/11:** el maquetador suma mover y agrandar fotos y piezas, y la versión "Sin fotos" de cada
+  pantalla con fotos (`src/slides/layout.ts`, ver `docs/DECISIONES.md`). Pareja pasa al editor
+  directo con su propio menú de estilos (`PAREJA_STYLES`); para verlo en producción hay que
+  **publicar Pareja** igual que Cumpleaños (`npm run themes:publish -- pareja --apply`).
+- Pendiente: editar estilos desde el editor de formulario (hoy solo el directo, que usan
+  Cumpleaños y Pareja) y pasar Amistad al maquetador (sus pantallas son las viejas).
 
 ## Cómo está hoy (antes de empezar)
 

@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import type { BuyerPhoto } from '../fields'
 import { Confetti, CoupleScene, PETALS } from '../ribbly/art'
-import { Btn, Chip, slideOfKind, Stage, T, u, useStored } from '../ribbly/ui'
+import { Btn, Chip, piece, slideOfKind, Stage, T, u, useStored } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { ease, frames, Loop, spring } from './motion'
 import type { Props } from './shared'
@@ -51,7 +51,7 @@ export function ReflectDiary({ theme, ctx }: Props<'reflect.diary'>) {
   const moments = momentsKey
     ? (ctx.buyerContent(momentsKey)?.moments as { photo?: BuyerPhoto | null }[] | undefined)
     : undefined
-  const photo = ctx.resolveMedia(moments?.find((m) => m.photo)?.photo)
+  const photo = ctx.noPhotos ? undefined : ctx.resolveMedia(moments?.find((m) => m.photo)?.photo)
   const written = !!entry.text || entry.items.some(Boolean)
 
   const begin = () => {
@@ -131,6 +131,7 @@ export function ReflectDiary({ theme, ctx }: Props<'reflect.diary'>) {
               <Loop active={active} duration={6} frames={frames.float(6, 0.8)}>
                 <motion.div
                   className="rb-notebook"
+                  {...piece(ctx, 'libreta')}
                   initial={false}
                   animate={
                     saved ? { rotate: [-4, -7, -3, -4], scale: [1, 1.04, 1] } : { rotate: -4 }
@@ -202,7 +203,7 @@ export function ReflectDiary({ theme, ctx }: Props<'reflect.diary'>) {
               exit={{ y: 120, scale: 0.4, opacity: 0, transition: { duration: 0.35 } }}
             >
               <div className="rb-diary-page">
-                <div className="rb-diary-photo">
+                <div className="rb-diary-photo" {...piece(ctx, 'foto')}>
                   <div
                     style={{ aspectRatio: '1 / 0.9', overflow: 'hidden', background: '#2b1b4e' }}
                   >

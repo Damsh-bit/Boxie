@@ -142,9 +142,21 @@ export function IntroBrand({ theme, ctx }: Props<'intro.brand'>) {
         <Confetti seed={1} count={30} />
       </div>
       <Bunting />
-      <IntroBalloons kind={ctx.style.globos} age={ctx.vars.edad} />
+      {/* Se mueven y agrandan juntos (desde el centro de su lugar, el de la marca). */}
+      <div
+        data-mv="globos"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          transformOrigin: '50% 63%',
+        }}
+      >
+        <IntroBalloons kind={ctx.style.globos} age={ctx.vars.edad} />
+      </div>
       <StyleSpot
         ctx={ctx}
+        move
         styles="globos"
         style={{ left: '4%', right: '4%', top: '46%', height: '34%' }}
       />

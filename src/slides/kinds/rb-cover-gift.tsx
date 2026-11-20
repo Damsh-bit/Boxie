@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { Bokeh, Bow, Burst, Heart, ROSE } from '../ribbly/art'
-import { Btn, Stage, T, TapMark, u } from '../ribbly/ui'
+import { Btn, editable, piece, Stage, T, TapMark, u } from '../ribbly/ui'
 import { Appear, ease, frames, Loop, Pop, spring } from './motion'
 import type { Props } from './shared'
 
@@ -79,6 +79,7 @@ export function CoverGift({ theme, ctx }: Props<'cover.gift'>) {
                 animate={open && !calm ? { y: [0, -26, 0], scale: [1, 1.06, 1] } : { y: 0 }}
                 transition={{ duration: 0.55, ease: 'easeOut' }}
                 style={{ width: u(150), height: u(140) }}
+                {...piece(ctx, 'regalo')}
               >
                 <motion.i
                   className="rb-gift-light"
@@ -151,6 +152,7 @@ export function CoverGift({ theme, ctx }: Props<'cover.gift'>) {
             from={0.5}
             className="rb-love-name"
             style={{ fontSize: u(nameSize(name)), marginTop: u(10), maxWidth: '100%' }}
+            {...editable(ctx, '@recipientName')}
           >
             {name}
             <svg
@@ -180,7 +182,14 @@ export function CoverGift({ theme, ctx }: Props<'cover.gift'>) {
               <T text={open ? theme.opened : theme.hint} ctx={ctx} />
             </Btn>
           </Appear>
-          <Appear as="p" active={active} delay={1.05} y={10} className="rb-sender">
+          <Appear
+            as="p"
+            active={active}
+            delay={1.05}
+            y={10}
+            className="rb-sender"
+            {...editable(ctx, '@senderName')}
+          >
             <T text={theme.senderPrefix} ctx={ctx} /> {ctx.senderName}
           </Appear>
         </div>

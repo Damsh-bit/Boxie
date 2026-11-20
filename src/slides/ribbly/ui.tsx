@@ -10,6 +10,7 @@ import {
 } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { spring } from '../player/motion'
+import { PIECE_ID } from '../layout'
 import { useSlideStyle } from '../style-context'
 import type { SlideContext } from '../types'
 import { DecoLayer } from './deco'
@@ -30,7 +31,8 @@ import './screens-c.css'
  * En el editor directo, marca un elemento como editable: el editor dibuja
  * encima un recuadro y, al tocarlo, abre el campo `path` del comprador de esta
  * slide (p. ej. `wish`, `moments.2`, `@recipientName` para el nombre).
- * Fuera del editor no agrega nada.
+ * Siempre la marca con `data-mv` (su campo o sus estilos): así lo que el
+ * comprador movió o agrandó se ve también en el regalo (src/slides/layout.ts).
  */
 export function editable(
   ctx: SlideContext,
@@ -40,9 +42,25 @@ export function editable(
    * aparecen en el mismo globo, debajo de los campos (src/slides/styles.ts).
    */
   styles?: string,
-): { 'data-edit'?: string; 'data-style'?: string } {
-  if (!ctx.editing) return {}
-  return { ...(path ? { 'data-edit': path } : {}), ...(styles ? { 'data-style': styles } : {}) }
+): { 'data-edit'?: string; 'data-style'?: string; 'data-mv'?: string } {
+  const id = path || styles || ''
+  const mv = PIECE_ID.test(id) ? { 'data-mv': id } : {}
+  if (!ctx.editing) return mv
+  return {
+    ...mv,
+    ...(path ? { 'data-edit': path } : {}),
+    ...(styles ? { 'data-style': styles } : {}),
+  }
+}
+
+/**
+ * Una pieza del dibujo que se puede mover y agrandar aunque no tenga campos ni
+ * estilos (la caja del regalo, las galletitas, la libreta): en el editor
+ * directo tiene su recuadro con "Mover y cambiar tamaño" (src/slides/layout.ts).
+ * Con `editable` en el mismo elemento, va después (su id manda).
+ */
+export function piece(ctx: SlideContext, id: string): { 'data-mv': string; 'data-piece'?: string } {
+  return { 'data-mv': id, ...(ctx.editing ? { 'data-piece': '' } : {}) }
 }
 
 /**
@@ -54,17 +72,24 @@ export function StyleSpot({
   ctx,
   styles,
   style,
+  move = false,
 }: {
   ctx: SlideContext
   styles: string
   /** Dónde está la pieza (left/top/width/height, en % del escenario). */
   style: CSSProperties
+  /**
+   * La pieza se puede mover y agrandar: la pieza de verdad tiene que llevar
+   * `data-mv` con estos mismos estilos (la marca se mueve con ella).
+   */
+  move?: boolean
 }) {
   if (!ctx.editing) return null
   return (
     <i
       aria-hidden
       data-style={styles}
+      data-mv={move ? styles : undefined}
       style={{ position: 'absolute', pointerEvents: 'none', zIndex: 1, ...style }}
     />
   )

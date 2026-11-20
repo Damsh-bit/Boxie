@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import {
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -12,6 +13,8 @@ import {
   type ReactNode,
 } from 'react'
 import { buyerStyle, type ParsedSlide, type ParsedThemeConfig } from '../config'
+import { placementCss, readLayout } from '../layout'
+import { STORY_H, STORY_W } from '../ribbly/love-art'
 import { SlideStyleContext } from '../style-context'
 import type { BuyerPhoto } from '../fields'
 import { slideComponents } from '../registry'
@@ -86,6 +89,8 @@ export function Player({
   editing = false,
 }: PlayerProps) {
   const count = config.slides.length
+  // Para acotar las reglas de la maqueta a este reproductor (puede haber dos en la página).
+  const uid = useId().replace(/[^w-]/g, '')
   const [selected, setSelected] = useState(() => Math.max(slide ?? initialSlide, 0))
   // Controlado: si la slide que manda el editor cambia, se la sigue.
   const [lastSlide, setLastSlide] = useState(slide)
@@ -214,24 +219,29 @@ export function Player({
           </motion.button>
         )}
 
-        <div className="bx-nav-hint">
-          <NavButton label="Slide anterior" disabled={current === 0} onClick={() => go(-1)}>
-            <ChevronUp size={18} />
-          </NavButton>
-          <NavButton
-            label="Slide siguiente"
-            disabled={current === count - 1}
-            onClick={() => go(1)}
-            nudge={current === 0}
-          >
-            <ChevronDown size={18} />
-          </NavButton>
-        </div>
+        {/* En el editor directo sobran (tiene sus flechas abajo) y se pisaban con los lápices. */}
+        {!editing && (
+          <div className="bx-nav-hint">
+            <NavButton label="Slide anterior" disabled={current === 0} onClick={() => go(-1)}>
+              <ChevronUp size={18} />
+            </NavButton>
+            <NavButton
+              label="Slide siguiente"
+              disabled={current === count - 1}
+              onClick={() => go(1)}
+              nudge={current === 0}
+            >
+              <ChevronDown size={18} />
+            </NavButton>
+          </div>
+        )}
 
         {mounted.map(({ index, slot }) => {
           const slideConfig = config.slides[index]!
           const active = index === current
           const style = buyerStyle(config, slideConfig, data.content[slideConfig.key])
+          const layout = readLayout(data.content[slideConfig.key])
+          const scope = `${uid}-${index}`
           const ctx: SlideContext = {
             recipientName: data.recipientName,
             senderName: data.senderName,
@@ -250,6 +260,7 @@ export function Player({
             vars,
             editing,
             style,
+            noPhotos: layout.sinFotos,
           }
           return (
             <SlideFrame
@@ -259,7 +270,17 @@ export function Player({
               slot={slot}
               current={current}
               position={position}
+              scope={scope}
+              noPhotos={layout.sinFotos}
             >
+              {Object.keys(layout.piezas).length > 0 && (
+                <style>
+                  {placementCss(`[data-maqueta="${scope}"]`, layout.piezas, {
+                    w: STORY_W,
+                    h: STORY_H,
+                  })}
+                </style>
+              )}
               <SlideStyleContext.Provider value={style}>
                 <SlideBody slide={slideConfig} buyer={data.content[slideConfig.key]} ctx={ctx} />
               </SlideStyleContext.Provider>
@@ -377,6 +398,8 @@ function SlideFrame({
   slot,
   current,
   position,
+  scope,
+  noPhotos,
   children,
 }: {
   slide: ParsedSlide
@@ -385,6 +408,9 @@ function SlideFrame({
   slot: number
   current: number
   position: MotionValue<number>
+  /** Para las reglas de la maqueta (lo que el comprador movió y agrandó). */
+  scope: string
+  noPhotos: boolean
   children: ReactNode
 }) {
   const { frame } = slide
@@ -412,6 +438,8 @@ function SlideFrame({
       className={`bx-slide ${BACKGROUND_CLASS[frame.background] ?? ''} ${active ? 'is-active' : ''}`}
       aria-hidden={!active}
       inert={!active}
+      data-maqueta={scope}
+      data-sin-fotos={noPhotos || undefined}
       style={{
         y,
         scale,

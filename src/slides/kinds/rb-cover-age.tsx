@@ -1,5 +1,6 @@
 import type { BuyerPhoto } from '../fields'
-import { coverScene } from '../ribbly/cumple-art'
+import { coverScene, type CoverData } from '../ribbly/cumple-art'
+import { withoutPhotos, type Measure, type Scene } from '../ribbly/love-art'
 import { SceneView, useSceneMeasure, type Entrance } from '../ribbly/scene-svg'
 import { createMeasure, drawScene } from '../ribbly/story-image'
 import { StoryShare } from '../ribbly/StoryShare'
@@ -31,8 +32,9 @@ export function CoverAge({ theme, buyer, ctx }: Props<'cover.age'>) {
   const moments = momentsKey
     ? (ctx.buyerContent(momentsKey)?.moments as { photo?: BuyerPhoto | null }[] | undefined)
     : undefined
-  const photo =
-    ctx.resolveMedia(buyer.photo) ?? ctx.resolveMedia(moments?.find((m) => m.photo)?.photo)
+  const photo = ctx.noPhotos
+    ? undefined
+    : (ctx.resolveMedia(buyer.photo) ?? ctx.resolveMedia(moments?.find((m) => m.photo)?.photo))
   const data = {
     variant: buyer.variant,
     photo,
@@ -49,7 +51,8 @@ export function CoverAge({ theme, buyer, ctx }: Props<'cover.age'>) {
   }
 
   const measure = useSceneMeasure()
-  const scene = coverScene(data, measure)
+  const noPhotos = !!ctx.noPhotos
+  const scene = buildCover(data, measure, noPhotos)
 
   return (
     <Stage
@@ -77,10 +80,32 @@ export function CoverAge({ theme, buyer, ctx }: Props<'cover.age'>) {
             data.wish,
             data.age,
             JSON.stringify(data.style),
+            noPhotos,
           ].join('|')}
-          draw={(families) => drawScene(coverScene(data, createMeasure(families)), families)}
+          draw={(families) =>
+            drawScene(buildCover(data, createMeasure(families), noPhotos), families)
+          }
         />
       </Appear>
     </Stage>
+  )
+}
+
+/**
+ * Sin fotos: en el marco va la edad grande (o un corazón), con los colores del
+ * diseño elegido.
+ */
+function buildCover(data: CoverData, measure: Measure, noPhotos: boolean): Scene {
+  const scene = coverScene(data, measure)
+  if (!noPhotos) return scene
+  const celeste = data.variant === 'celeste'
+  return withoutPhotos(
+    scene,
+    {
+      colors: celeste ? ['#F3FAFF', '#BFE2F8'] : ['#FFF3F6', '#FFC6D8'],
+      ink: celeste ? '#2F86C9' : '#E2557F',
+      texts: [data.age],
+    },
+    measure,
   )
 }

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { missingRequired, type MissingField } from './fields'
+import { LAYOUT_FIELD, layoutValue, readLayout } from './layout'
 import {
   offeredAxes,
   readStyleChoice,
@@ -156,7 +157,11 @@ export function parseBuyerContent(
     // El estilo elegido se guarda en todas las slides, también en las que no
     // tienen nada más para completar.
     const style = readStyleChoice(raw)
-    const withStyle = Object.keys(style).length ? { [STYLE_FIELD]: style } : {}
+    const layout = layoutValue(readLayout(raw))
+    const withStyle = {
+      ...(Object.keys(style).length ? { [STYLE_FIELD]: style } : {}),
+      ...(layout ? { [LAYOUT_FIELD]: layout } : {}),
+    }
     const schema = slideDefinitions[slide.kind].buyerSchema as z.ZodType | null
     if (!schema) {
       if (Object.keys(withStyle).length) slides[slide.key] = withStyle
@@ -182,7 +187,10 @@ export function missingForLock(config: ParsedThemeConfig, content: BuyerContent)
   for (const slide of buyerSlides(config)) {
     const schema = slideDefinitions[slide.kind].buyerSchema
     if (!schema) continue
-    for (const m of missingRequired(schema, content.slides[slide.key] ?? {})) {
+    const raw = content.slides[slide.key] ?? {}
+    // Sin fotos: las fotos de la pantalla no hacen falta.
+    const skipPhotos = readLayout(raw).sinFotos
+    for (const m of missingRequired(schema, raw, '', '', { skipPhotos })) {
       missing.push({ path: `${slide.key}.${m.path}`, label: m.label })
     }
   }

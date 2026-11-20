@@ -64,11 +64,17 @@ function writeFlag(key: string, on: boolean) {
 export function SupportWidget({
   hint,
   nudge = true,
+  docked = false,
 }: {
   /** Lo que sabe la página (el código de la Ribbly en el editor). */
   hint?: { boxieCode?: string; topic?: SupportTopic }
   /** El saludo de "¿Necesitás ayuda?" la primera vez (en escritorio). */
   nudge?: boolean
+  /**
+   * En el editor: debajo de 1024 px el botón no flota (taparía el diseño y
+   * sus lápices); lo abre el de la barra de abajo del editor.
+   */
+  docked?: boolean
 }) {
   const pathname = usePathname()
   const desktop = useIsDesktop()
@@ -291,7 +297,10 @@ export function SupportWidget({
       </AnimatePresence>
 
       <div
-        className="fixed left-4 z-[60] transition-[bottom] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:left-6"
+        className={cn(
+          'fixed left-4 z-[60] transition-[bottom] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:left-6',
+          docked && 'max-lg:hidden',
+        )}
         style={{ bottom: offset }}
       >
         <AnimatePresence>

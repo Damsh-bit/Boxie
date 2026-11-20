@@ -34,6 +34,8 @@
       "ink": "#2A2433",
       "accent": "#FFC56E"
     },
+    "editor": "inline",
+    "buyerStyles": true,
     "slides": [
       {
         "key": "intro",

@@ -38,7 +38,7 @@ export default async function SandboxPage({ params }: PageProps<'/ejemplo/[slug]
         theme={{ name: theme.name, slug: theme.slug }}
         lifetimeDays={settings.giftLifetimeDays}
       />
-      <SupportWidget nudge={false} />
+      <SupportWidget nudge={false} docked />
     </>
   )
 }

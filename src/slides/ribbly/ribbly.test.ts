@@ -303,9 +303,9 @@ describe('cumpleaños: variantes de diseño y editor directo', () => {
       n.type === 'group' ? [...(n.edit ? [n.edit] : []), ...edits(n.children)] : [],
     )
 
-  it('la temática de cumpleaños se edita directo sobre el diseño; las demás, con formulario', () => {
+  it('Cumpleaños y Pareja se editan directo sobre el diseño (el maquetador estándar)', () => {
     expect(config.editor).toBe('inline')
-    expect(readThemeConfig(parejaSeed.config).editor).toBe('form')
+    expect(readThemeConfig(parejaSeed.config).editor).toBe('inline')
   })
 
   it('las pantallas 03, 05 y 14 tienen dos diseños en Cumpleaños (y la 05 y la 14, ninguno en Pareja)', () => {

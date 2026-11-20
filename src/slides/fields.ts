@@ -258,6 +258,8 @@ export function missingRequired(
   value: unknown,
   prefix = '',
   parentLabel = '',
+  /** skipPhotos: la pantalla va sin fotos (layout.ts), las fotos no hacen falta. */
+  opts: { skipPhotos?: boolean } = {},
 ): MissingField[] {
   const m = getFieldMeta(schema)
   const label = [parentLabel, m?.label].filter(Boolean).join(' · ')
@@ -270,6 +272,7 @@ export function missingRequired(
         obj[key],
         prefix ? `${prefix}.${key}` : key,
         m?.widget === 'group' ? label : parentLabel,
+        opts,
       ),
     )
   }
@@ -287,6 +290,7 @@ export function missingRequired(
     const filled = list.filter((item) => !isEmpty(item)).length
     return filled < expected ? [{ path: prefix, label: label || prefix }] : []
   }
+  if (opts.skipPhotos && m?.widget === 'photo') return []
   if (m?.required && isEmpty(value)) return [{ path: prefix, label: label || prefix }]
   return []
 }

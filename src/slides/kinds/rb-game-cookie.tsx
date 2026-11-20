@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
 import { Burst, Constellation, Cookie, Moon, Stars } from '../ribbly/art'
-import { Btn, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
+import { Btn, editable, piece, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
 import { ease, frames, Loop, spring } from './motion'
 import type { Props } from './shared'
 
@@ -60,7 +60,11 @@ export function GameCookie({ theme, buyer, ctx }: Props<'game.cookie'>) {
             </p>
 
             <div className="rb-grow">
-              <div className="rb-cookies">
+              <div
+                className="rb-cookies"
+                {...editable(ctx, 'message')}
+                {...piece(ctx, 'galletitas')}
+              >
                 {[0, 1, 2].map((i) => {
                   const hint = i === 1
                   return (
@@ -150,6 +154,7 @@ export function GameCookie({ theme, buyer, ctx }: Props<'game.cookie'>) {
             <div className="rb-grow">
               <motion.div
                 className="rb-fortune"
+                {...editable(ctx, 'message')}
                 style={{ background: '#FFF9EE' }}
                 initial={{ opacity: 0, y: -70, scaleY: 0.2, rotate: 0 }}
                 animate={{

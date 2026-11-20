@@ -1,6 +1,7 @@
 import type { z } from 'zod'
 import { buyerSlides, type ParsedThemeConfig } from '../config'
 import { missingRequired, type MissingField } from '../fields'
+import { readLayout } from '../layout'
 import { slideEditorInfo } from '../labels'
 import { slideDefinitions, type SlideKind } from '../schemas'
 import type { SlideDefinition, SummaryIcon } from '../types'
@@ -115,7 +116,7 @@ export function moduleProgress(
   const schema = slideDefinitions[module.slideKind!].buyerSchema as z.ZodType | null
   const value = draft.slides[module.slideKey!] ?? {}
   if (!schema) return { state: 'complete', missing: [] }
-  const missing = missingRequired(schema, value)
+  const missing = missingRequired(schema, value, '', '', { skipPhotos: readLayout(value).sinFotos })
   if (missing.length) return { state: 'incomplete', missing }
   return { state: isBlank(value) ? 'optional' : 'complete', missing: [] }
 }

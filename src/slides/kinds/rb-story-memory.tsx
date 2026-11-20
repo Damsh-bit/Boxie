@@ -16,7 +16,7 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
   const active = ctx.active
   const [liked, setLiked] = useState(false)
   const [sharing, setSharing] = useState(false)
-  const photo = ctx.resolveMedia(buyer.photo)
+  const photo = ctx.noPhotos ? undefined : ctx.resolveMedia(buyer.photo)
   const title = buyer.title.trim() || fill(theme.defaultTitle, ctx.vars)
   const text = buyer.text.trim() || fill(theme.defaultText, ctx.vars)
 

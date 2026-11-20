@@ -63,6 +63,11 @@ export interface SlideDefinition<
    * la paleta…), según la configuración de la temática (src/slides/styles.ts).
    */
   styleAxes?: (themeProps: Record<string, unknown>) => readonly StyleAxis[]
+  /**
+   * Muestra fotos y tiene su versión sin ellas (`ctx.noPhotos`): el editor
+   * ofrece "Sin fotos" en esta pantalla (src/slides/layout.ts).
+   */
+  offersNoPhotos?: boolean
 }
 
 export interface SlideVariant {
@@ -107,6 +112,8 @@ export interface SlideContext {
   editing?: boolean
   /** El estilo de esta pantalla: cada eje con su opción (src/slides/styles.ts). */
   style: StyleValues
+  /** El comprador la quiere sin fotos (src/slides/layout.ts): se arma sin ellas. */
+  noPhotos?: boolean
 }
 
 export interface SlideComponentProps<TTheme = unknown, TBuyer = unknown> {

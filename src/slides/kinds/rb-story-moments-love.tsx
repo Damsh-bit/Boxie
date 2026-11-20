@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { SCENES_PAREJA } from '../ribbly/art'
 import { cumpleMomentsScene } from '../ribbly/cumple-art'
-import { momentsScene } from '../ribbly/love-art'
+import { momentsScene, withoutPhotos, type Measure } from '../ribbly/love-art'
 import { SceneView, useSceneMeasure, type Entrance } from '../ribbly/scene-svg'
 import { createMeasure, drawScene } from '../ribbly/story-image'
 import { StoryShare } from '../ribbly/StoryShare'
@@ -33,6 +33,7 @@ interface Moment {
   src?: string
   scene: number
   caption: string
+  year: string
 }
 
 /**
@@ -44,15 +45,20 @@ interface Moment {
  */
 export function StoryMomentsGrid({ theme, buyer, ctx }: Props<'story.moments'>) {
   const active = ctx.active
-  const loaded = buyer.moments.filter((m) => m.photo || m.caption.trim() || m.year.trim())
+  // Sin fotos (lo eligió quien regala): cada polaroid lleva su año grande.
+  const noPhotos = !!ctx.noPhotos
+  const loaded = buyer.moments.filter(
+    (m) => (m.photo && !noPhotos) || m.caption.trim() || m.year.trim(),
+  )
   const moments: Moment[] = loaded.length
     ? loaded.map((m, i) => ({
-        src: ctx.resolveMedia(m.photo),
+        src: noPhotos ? undefined : ctx.resolveMedia(m.photo),
         scene: i % SCENES_PAREJA.length,
         caption: m.caption.trim() || m.year.trim(),
+        year: m.year.trim(),
       }))
     : // Sin fotos todavía: cuatro lugares vacíos para ver cómo queda.
-      [0, 1, 2, 3].map((i) => ({ scene: i % SCENES_PAREJA.length, caption: '' }))
+      [0, 1, 2, 3].map((i) => ({ scene: i % SCENES_PAREJA.length, caption: '', year: '' }))
 
   const shown = moments.slice(0, 4)
   const [zoom, setZoom] = useState<number | null>(null)
@@ -72,7 +78,19 @@ export function StoryMomentsGrid({ theme, buyer, ctx }: Props<'story.moments'>) 
       letra: ctx.style.letra,
     },
   }
-  const build = cumple ? cumpleMomentsScene : momentsScene
+  const base = cumple ? cumpleMomentsScene : momentsScene
+  const build = (d: typeof data, measure: Measure) =>
+    noPhotos
+      ? withoutPhotos(
+          base(d, measure),
+          {
+            colors: cumple ? ['#FFF6E5', '#FFD27A'] : ['#FFF1F5', '#FFB8CF'],
+            ink: cumple ? '#E8743B' : '#E04E7A',
+            texts: shown.map((m) => m.year),
+          },
+          measure,
+        )
+      : base(d, measure)
   const measure = useSceneMeasure()
   const scene = build(data, measure)
 
@@ -111,6 +129,7 @@ export function StoryMomentsGrid({ theme, buyer, ctx }: Props<'story.moments'>) 
             data.phrase,
             data.days,
             JSON.stringify(data.style),
+            noPhotos ? `sin-fotos-${shown.map((m) => m.year).join(',')}` : '',
           ].join('|')}
           draw={(families) => drawScene(build(data, createMeasure(families)), families)}
         />
@@ -120,9 +139,9 @@ export function StoryMomentsGrid({ theme, buyer, ctx }: Props<'story.moments'>) 
           type="button"
           className="rb-lm-more"
           onClick={() => setZoom(shown.length)}
-          aria-label={`Ver las ${moments.length} fotos`}
+          aria-label={`Ver los ${moments.length} momentos`}
         >
-          +{moments.length - shown.length} fotos
+          +{moments.length - shown.length} {noPhotos ? 'más' : 'fotos'}
         </button>
       )}
 

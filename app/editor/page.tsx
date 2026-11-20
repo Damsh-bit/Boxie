@@ -103,7 +103,7 @@ export default async function EditorPage({ searchParams }: PageProps<'/editor'>)
         locked={null}
       />
       {/* El botón de ayuda ya sabe de qué Ribbly se trata. */}
-      <SupportWidget hint={{ boxieCode: data.code, topic: 'boxie' }} nudge={false} />
+      <SupportWidget hint={{ boxieCode: data.code, topic: 'boxie' }} nudge={false} docked />
     </>
   )
 }

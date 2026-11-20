@@ -1,6 +1,7 @@
 import type { z } from 'zod'
 import { buyerSlides, type BuyerContent, type ParsedThemeConfig } from '../config'
 import { initialBuyerProps, slideDefinitions } from '../schemas'
+import { LAYOUT_FIELD, layoutValue, readLayout } from '../layout'
 import { readStyleChoice, STYLE_FIELD } from '../styles'
 
 /**
@@ -30,12 +31,14 @@ export function initialDraft(
     const parsed = schema.safeParse(base)
     slides[slide.key] = (parsed.success ? parsed.data : schema.parse({})) as Record<string, unknown>
   }
-  // El estilo elegido, en todas las slides (también las que no tienen campos).
+  // El estilo elegido y la maqueta, en todas las slides (también las que no tienen campos).
   for (const slide of config.slides) {
     const style = readStyleChoice(stored?.slides?.[slide.key])
     if (Object.keys(style).length) {
       slides[slide.key] = { ...slides[slide.key], [STYLE_FIELD]: style }
     }
+    const layout = layoutValue(readLayout(stored?.slides?.[slide.key]))
+    if (layout) slides[slide.key] = { ...slides[slide.key], [LAYOUT_FIELD]: layout }
   }
   return {
     recipientName: stored?.recipientName ?? '',

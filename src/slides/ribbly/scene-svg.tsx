@@ -245,7 +245,8 @@ function renderNodes(nodes: SceneNode[], ctx: Ctx): ReactNode[] {
         ) : (
           children
         )
-        return (
+        const mv = node.edit || node.style
+        const group = (
           <g
             key={node.id ?? i}
             transform={transform}
@@ -263,6 +264,15 @@ function renderNodes(nodes: SceneNode[], ctx: Ctx): ReactNode[] {
           >
             {inner}
           </g>
+        )
+        // Lo que el comprador movió o agrandó (layout.ts) va en un grupo sin
+        // transform propio, para que agrande desde el centro de la pieza.
+        return mv ? (
+          <g key={node.id ?? i} data-mv={mv}>
+            {group}
+          </g>
+        ) : (
+          group
         )
       }
     }

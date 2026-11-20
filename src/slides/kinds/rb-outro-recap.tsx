@@ -31,9 +31,11 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
   )
   const wishes = (content('story.wishes')?.wishes as string[] | undefined)?.filter(Boolean).length
   const song = (content('media.video')?.songTitle as string | undefined)?.trim()
-  const photos = (
-    (content('story.moments')?.moments as { photo?: BuyerPhoto | null }[] | undefined) ?? []
-  )
+  // Sin fotos (lo eligió quien regala): el collage va con las ilustraciones.
+  const moments = ctx.noPhotos
+    ? []
+    : ((content('story.moments')?.moments as { photo?: BuyerPhoto | null }[] | undefined) ?? [])
+  const photos = moments
     .map((m) => ctx.resolveMedia(m.photo))
     .filter((src): src is string => !!src)
     .slice(0, 3)

@@ -121,6 +121,7 @@ export const COVER_AGE_VARIANTS: SlideVariant[] = [
 ]
 
 const coverAge = {
+  offersNoPhotos: true,
   label: 'Ribbly · Edición cumple',
   description:
     'Su foto en un marco orgánico dorado, con globos, confeti y el saludo en dos colores. Dos diseños (rosa o celeste) y se comparte como historia de Instagram.',
@@ -219,6 +220,7 @@ export const MOMENTS_CUMPLE_VARIANTS: SlideVariant[] = [
 ]
 
 const storyMoments = {
+  offersNoPhotos: true,
   label: 'Ribbly · Mejores momentos',
   description:
     'Cuatro polaroids en grilla. En Cumpleaños, con moños y globos en dos diseños (celeste o crema); en Pareja, con cinta washi.',
@@ -789,6 +791,7 @@ export const MAGAZINE_BANKS = [
 ] as const
 
 const storyMagazine = {
+  offersNoPhotos: true,
   label: 'Ribbly · Revista',
   description:
     'Tapa editorial sobre papel. El texto sale de un banco de 100 variaciones según el vínculo y el tono.',
@@ -1089,6 +1092,7 @@ const gamePinata = {
 // ── 18 · Anécdota ───────────────────────────────────────────────────────────
 
 const storyMemory = {
+  offersNoPhotos: true,
   label: 'Ribbly · Anécdota',
   description: 'Tarjeta con foto y un recuerdo contado por quien regala, lista para Stories.',
   category: 'story',
@@ -1126,6 +1130,7 @@ const storyMemory = {
 // ── 19 · Todo lo que festejamos ─────────────────────────────────────────────
 
 const outroRecap = {
+  offersNoPhotos: true,
   label: 'Ribbly · Resumen',
   description: 'Tarjeta para compartir con las fotos, los números y el índice de la Ribbly.',
   category: 'outro',
@@ -1232,6 +1237,7 @@ const coverGift = {
 // ── 03 · Love edition ───────────────────────────────────────────────────────
 
 const coverEdition = {
+  offersNoPhotos: true,
   label: 'Ribbly · Love edition',
   description:
     'Su foto enmarcada en ondas rosas, con la marca arriba y tu frase grande al pie. Se comparte como historia de Instagram.',
@@ -1414,6 +1420,7 @@ const reflectPause = {
 // ── 16 · Diario ─────────────────────────────────────────────────────────────
 
 const reflectDiary = {
+  offersNoPhotos: true,
   label: 'Ribbly · Diario',
   description: 'Una libreta sobre la mesa con su nombre: adentro escribe lo que quiere recordar.',
   category: 'reflect',
@@ -1549,12 +1556,12 @@ export const ribblyDefinitions = {
   'outro.recap': styled('outro.recap', outroRecap),
   'outro.finale': styled('outro.finale', outroFinale),
   // Pareja
-  'cover.gift': coverGift,
+  'cover.gift': styled('cover.gift', coverGift),
   'cover.edition': coverEdition,
-  'story.magazine-love': storyMagazineLove,
-  'reflect.pause': reflectPause,
-  'reflect.diary': reflectDiary,
-  'game.cookie': gameCookie,
+  'story.magazine-love': styled('story.magazine-love', storyMagazineLove),
+  'reflect.pause': styled('reflect.pause', reflectPause),
+  'reflect.diary': styled('reflect.diary', reflectDiary),
+  'game.cookie': styled('game.cookie', gameCookie),
 } as const
 
 /** Contenido con el que arranca el editor del comprador en estas pantallas. */

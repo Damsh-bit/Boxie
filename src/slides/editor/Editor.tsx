@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Check, CloudOff, Eye, Gift, RotateCcw } from 'lucide-react'
+import { ArrowRight, Check, CloudOff, Eye, Gift, MessageCircle, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { z } from 'zod'
@@ -13,6 +13,7 @@ import { Input, Label } from '@/ui/form'
 import { Icon } from '@/ui/Icon'
 import { Modal } from '@/ui/Modal'
 import { ease, Notice, Spinner, spring, Swap, useCalm } from '@/ui/motion'
+import { openSupport } from '@/ui/support-bridge'
 import { useBottomBar } from '@/ui/use-bottom-bar'
 import { collectAssetIds, type ParsedThemeConfig } from '../config'
 import { Player, type PlayerData } from '../player/Player'
@@ -283,7 +284,8 @@ export function Editor({
             {isSandbox && (
               <div className="border-b border-amber-200 bg-amber-50">
                 <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2.5 text-sm text-amber-900">
-                  <p className="flex-1">
+                  {/* En el celular el texto va entero y los dos botones debajo. */}
+                  <p className="w-full sm:w-auto sm:flex-1">
                     <Icon
                       name="idea"
                       size="1.2em"
@@ -294,13 +296,13 @@ export function Editor({
                   </p>
                   <a
                     href={`/checkout?tematica=${theme.slug}${draft.recipientName.trim() ? `&para=${encodeURIComponent(draft.recipientName.trim())}` : ''}`}
-                    className="font-semibold text-brand-dark underline-offset-2 hover:underline"
+                    className="py-1 font-semibold text-brand-dark underline-offset-2 hover:underline"
                   >
                     Comprarla
                   </a>
                   <motion.button
                     type="button"
-                    className="inline-flex items-center gap-1.5 font-semibold underline-offset-2 hover:underline"
+                    className="inline-flex items-center gap-1.5 py-1 font-semibold underline-offset-2 hover:underline"
                     onClick={() => setConfirmReset(true)}
                     initial="rest"
                     animate="rest"
@@ -637,15 +639,24 @@ export function Editor({
               animate={{ y: 0 }}
               transition={{ ...spring.gentle, delay: 0.3 }}
             >
-              <div className="mx-auto flex max-w-lg gap-3">
+              <div className="mx-auto flex max-w-lg items-center gap-2 sm:gap-3">
+                {/* La ayuda va acá y no flotando: así no tapa el diseño (SupportWidget docked). */}
+                <button
+                  type="button"
+                  onClick={() => openSupport()}
+                  aria-label="Ayuda: escribinos"
+                  className="grid size-11 shrink-0 place-items-center rounded-full bg-brand/10 text-brand transition hover:bg-brand/15"
+                >
+                  <MessageCircle className="size-5" aria-hidden />
+                </button>
                 <Button
                   variant="secondary"
-                  className="flex-1"
+                  className="min-w-0 flex-1"
                   onClick={() => setOverlay({ index: previewIndex })}
                 >
                   <Eye className="size-4" aria-hidden /> Vista previa
                 </Button>
-                <GiftButton ready={ready} className="flex-1" onClick={openReview} />
+                <GiftButton ready={ready} className="min-w-0 flex-1" onClick={openReview} />
               </div>
             </motion.div>
 

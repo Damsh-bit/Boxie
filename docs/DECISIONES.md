@@ -390,6 +390,36 @@ size`) y todo se mide en `--u`, un píxel del diseño (390 × 760) escalado al t
   el escenario común (`Stage` en `ribbly/ui.tsx`): la paleta pisa el fondo según el `tone` de la
   pantalla (de color, claro o de noche) y las variables `--rb-coral`, `--rb-sol`, etc.; la
   tipografía pisa `--rb-display` y `--rb-hand`.
+- **Maquetador (20/11), el estándar de las Ribbly nuevas:** además de editar y elegir estilos,
+  el comprador mueve y agranda las fotos y las piezas del dibujo. Lo guardado va en el campo
+  `maqueta` de cada slide (`src/slides/layout.ts`): por pieza, cuánto se corrió (fracción del
+  ancho y del alto de la pantalla) y su escala, acotados (el centro no sale de la pantalla; de
+  0,5× a 2,2×). Las piezas se marcan con `data-mv` (`editable` lo pone siempre; `piece(ctx, id)`
+  para dibujos sin campos ni estilos, como la caja del regalo; las escenas lo ponen en un grupo
+  sin `transform` propio) y el reproductor les aplica las propiedades CSS `translate` y `scale`
+  con una regla por pantalla: se suman a las animaciones (que usan `transform`), se ven igual en
+  el editor y en el regalo, y sin `maqueta` todo queda como siempre. Se mueven las fotos y las
+  piezas con estilos, no los textos (ni la letra de una frase). Con el mouse se arrastran
+  directo; en el celular, "Mover y cambiar tamaño" del globo deja la pieza lista para arrastrar
+  (solo ella toma el dedo, la página se sigue deslizando) con una barra fija de −, +, volver a su
+  lugar y Listo. La historia de Instagram todavía se dibuja con la composición original.
+- **Sin fotos (20/11):** las pantallas que muestran fotos (`offersNoPhotos`) tienen su versión
+  sin ellas, para quien no tiene tantas: arriba del teléfono, "Con fotos / Sin fotos" y
+  "Armar todo el regalo sin fotos". Va en `maqueta.sinFotos`; con eso las fotos de la pantalla no
+  se piden (`missingRequired` con `skipPhotos`, también al bloquear) y no se usan las que ya
+  estaban. Las pantallas con una ilustración de respaldo (revista, anécdota, resumen, diario,
+  Love edition) la muestran; en las escenas (tapa 03 y polaroids de la 05) el lugar de la foto
+  se pinta con el motivo grande: la edad, el año de cada momento o un corazón (`withoutPhotos`).
+- **Pareja con el mismo maquetador (20/11):** `editor: 'inline'` y `buyerStyles`. Sus pantallas
+  usan los ejes de `PAREJA_STYLES` (`ribbly/slide-styles.ts`): las piezas que comparte con
+  Cumpleaños, paleta y tipografía, y decoración romántica (sin globos ni banderines); las de fondo
+  propio (diario, cartelera, inicio) solo letra y decoración. Amistad sigue con el formulario
+  (pantallas viejas, sin marcas): pasarla es otra tanda.
+- **Editor en el celular sin botones encima:** la ayuda no flota sobre el diseño debajo de
+  1024 px (`SupportWidget docked`): es un botón de la barra de abajo. Los lápices van en una capa
+  por encima de todos los recuadros (si no, el recuadro de otra pieza tapaba el toque) y cada uno
+  elige una esquina libre de su pieza; "Falta" se marca en el primer lugar vacío de una lista,
+  no en todos. El reproductor no muestra sus flechas dentro del editor (están las de abajo).
 
 ## Marca Ribbly (antes Boxie)
 

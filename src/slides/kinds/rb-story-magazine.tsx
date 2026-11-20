@@ -42,8 +42,10 @@ export function StoryMagazine({
   const moments = momentsKey
     ? (ctx.buyerContent(momentsKey)?.moments as { photo?: BuyerPhoto | null }[] | undefined)
     : undefined
-  const photo =
-    ctx.resolveMedia(buyer.photo) ?? ctx.resolveMedia(moments?.find((m) => m.photo)?.photo)
+  // Sin fotos (lo eligió quien regala): va la ilustración del diseño.
+  const photo = ctx.noPhotos
+    ? undefined
+    : (ctx.resolveMedia(buyer.photo) ?? ctx.resolveMedia(moments?.find((m) => m.photo)?.photo))
 
   return (
     <Stage tone="soft" bg={pareja ? '#FFFFFF' : '#FFF9EE'} className={pareja ? 'is-pareja' : ''}>

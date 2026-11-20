@@ -148,9 +148,14 @@ describe('estilos: los ejes de las pantallas', () => {
     }
   })
 
-  it('Pareja no ofrece estilos (por ahora solo Cumpleaños)', () => {
+  it('Pareja ofrece estilos con su propio menú (sin piezas de cumpleaños)', () => {
     const config = readThemeConfig(pareja.config)
-    for (const slide of config.slides) expect(styleAxesOf(slide), slide.key).toEqual([])
+    expect(config.buyerStyles).toBe(true)
+    for (const slide of config.slides) {
+      const keys = styleAxesOf(slide).map((a) => a.key)
+      expect(keys, slide.key).not.toContain('torta')
+      expect(keys, slide.key).not.toContain('globos')
+    }
   })
 
   it('solo las pantallas de Cumpleaños declaran ejes', () => {

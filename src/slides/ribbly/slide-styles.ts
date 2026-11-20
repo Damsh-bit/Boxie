@@ -133,11 +133,69 @@ export const CUMPLE_STYLES: Record<string, readonly StyleAxis[]> = {
   ],
 }
 
-/** Los ejes de una pantalla según el estilo de la ocasión (solo Cumpleaños, por ahora). */
+// ── Pareja ──────────────────────────────────────────────────────────────────
+
+/** En Pareja la decoración es romántica: sin globos ni banderines de cumpleaños. */
+const loveDeco = (skip: Parameters<typeof decoAxis>[0] = []) =>
+  decoAxis(['globos', 'banderines', ...skip])
+const loveCommon = (skip: Parameters<typeof decoAxis>[0] = []): StyleAxis[] => [
+  PALETTE_AXIS,
+  TYPE_AXIS,
+  loveDeco(skip),
+]
+
+/**
+ * Lo que se puede variar en cada pantalla de Pareja: las piezas que comparte
+ * con Cumpleaños (se dibujan igual con el look de Pareja) y, en las pantallas
+ * con fondo propio (la mesa del diario, la noche de la cartelera), solo la
+ * letra y la decoración, para no pisar el dibujo. Las escenas (03 y 05) no
+ * tienen ejes, como en Cumpleaños: ahí se mueven y agrandan las piezas.
+ */
+export const PAREJA_STYLES: Record<string, readonly StyleAxis[]> = {
+  'intro.brand': [TYPE_AXIS, loveDeco(['corazones'])],
+  'cover.gift': [TYPE_AXIS, loveDeco(['corazones'])],
+  'story.card': CUMPLE_STYLES['story.card']!.slice(0, 2).concat(loveCommon(['confeti'])),
+  'media.video': [pieceAxis('filtro', 'Filtro', VIDEO_FILTERS), ...loveCommon(['confeti'])],
+  'media.mix': [pieceAxis('portada', 'Portada', MIX_COVERS), ...loveCommon()],
+  'game.quiz': [pieceAxis('tarjetas', 'Tarjetas', QUIZ_CARDS), ...loveCommon(['confeti'])],
+  'connector.premiere': CUMPLE_STYLES['connector.premiere']!.slice(0, 2).concat(
+    loveCommon(['estrellas']),
+  ),
+  'media.poster': [TYPE_AXIS, loveDeco(['confeti'])],
+  'game.slots': CUMPLE_STYLES['game.slots']!.slice(0, 2).concat(loveCommon(['confeti'])),
+  'game.vouchers': CUMPLE_STYLES['game.vouchers']!.slice(0, 2).concat(loveCommon(['confeti'])),
+  'story.magazine-love': CUMPLE_STYLES['story.magazine']!.slice(0, 2).concat(loveCommon()),
+  'story.wishes': [
+    pieceAxis('notas', 'Notas', WISH_NOTES),
+    pieceAxis('sujecion', 'Cómo se sostienen', WISH_FASTENERS),
+    TYPE_AXIS,
+    loveDeco(),
+  ],
+  'reflect.pause': [TYPE_AXIS, loveDeco()],
+  'reflect.diary': [TYPE_AXIS, loveDeco()],
+  'game.cookie': [TYPE_AXIS, loveDeco()],
+  'story.memory': CUMPLE_STYLES['story.memory']!.slice(0, 2).concat(loveCommon()),
+  'outro.recap': CUMPLE_STYLES['outro.recap']!.slice(0, 2).concat(loveCommon(['confeti'])),
+  'outro.finale': CUMPLE_STYLES['outro.finale']!.slice(0, 2).concat(
+    loveCommon(['confeti', 'estrellas']),
+  ),
+}
+
+/** Las pantallas que son solo de Pareja (no tienen el campo `look`). */
+const PAREJA_ONLY = new Set([
+  'cover.gift',
+  'cover.edition',
+  'story.magazine-love',
+  'reflect.pause',
+  'reflect.diary',
+  'game.cookie',
+])
+
+/** Los ejes de una pantalla según el estilo de la ocasión (Cumpleaños o Pareja). */
 export function cumpleStyleAxes(
   kind: string,
   props: Record<string, unknown>,
 ): readonly StyleAxis[] {
-  if (props.look === 'pareja') return []
+  if (props.look === 'pareja' || PAREJA_ONLY.has(kind)) return PAREJA_STYLES[kind] ?? []
   return CUMPLE_STYLES[kind] ?? []
 }

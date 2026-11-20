@@ -122,6 +122,99 @@ export interface Scene {
   fg: SceneNode[]
 }
 
+/** Cómo se pinta el lugar de una foto en una pantalla sin fotos (src/slides/layout.ts). */
+export interface PhotoFreeArt {
+  /** Degradé del fondo (del claro al fuerte). */
+  colors: [string, string]
+  /** Color del motivo. */
+  ink: string
+  /** El motivo de cada foto, en orden (la edad, el año); sin texto, un corazón. */
+  texts?: (string | undefined)[]
+}
+
+/**
+ * La escena sin fotos: cada foto se cambia por su mismo lugar pintado con la
+ * paleta y un motivo grande, así el marco queda armado y no parece que falta
+ * algo. Lo dibujan igual la pantalla (SVG) y la historia de Instagram (canvas).
+ */
+export function withoutPhotos(scene: Scene, art: PhotoFreeArt, measure: Measure): Scene {
+  let n = 0
+  const swap = (nodes: SceneNode[]): SceneNode[] =>
+    nodes.map((node) => {
+      if (node.type === 'group') return { ...node, children: swap(node.children) }
+      if (node.type !== 'photo') return node
+      return { type: 'group', children: photoFreeNodes(node, art, art.texts?.[n++], measure) }
+    })
+  return { bg: scene.bg, fg: swap(scene.fg) }
+}
+
+function photoFreeNodes(
+  p: PhotoNode,
+  art: PhotoFreeArt,
+  text: string | undefined,
+  measure: Measure,
+): SceneNode[] {
+  const d = p.clip ?? `M${p.x} ${p.y}H${p.x + p.w}V${p.y + p.h}H${p.x}Z`
+  const cx = p.x + p.w / 2
+  const cy = p.y + p.h / 2
+  const m = Math.min(p.w, p.h)
+  const out: SceneNode[] = [
+    {
+      type: 'path',
+      d,
+      fill: {
+        linear: [p.x, p.y, p.x + p.w, p.y + p.h],
+        stops: [
+          [0, art.colors[0]],
+          [1, art.colors[1]],
+        ],
+      },
+    },
+    {
+      type: 'heart',
+      x: p.x + p.w * 0.2,
+      y: p.y + p.h * 0.22,
+      size: m * 0.08,
+      rotate: -14,
+      fill: 'rgba(255,255,255,0.75)',
+    },
+    {
+      type: 'heart',
+      x: p.x + p.w * 0.82,
+      y: p.y + p.h * 0.76,
+      size: m * 0.1,
+      rotate: 12,
+      fill: 'rgba(255,255,255,0.65)',
+    },
+    {
+      type: 'heart',
+      x: p.x + p.w * 0.78,
+      y: p.y + p.h * 0.2,
+      size: m * 0.05,
+      rotate: 8,
+      fill: 'rgba(255,255,255,0.55)',
+    },
+  ]
+  const word = text?.trim()
+  if (word) {
+    const base: Font = { family: 'fredoka', weight: 700, size: 100 }
+    const size = Math.min(m * 0.46, (p.w * 0.74 * 100) / Math.max(1, measure(word, base)))
+    const font = { ...base, size }
+    out.push({
+      type: 'text',
+      x: cx - measure(word, font) / 2,
+      y: cy + size * 0.36,
+      text: word,
+      font,
+      color: art.ink,
+      shadow: true,
+    })
+  } else {
+    out.push({ type: 'heart', x: cx, y: cy, size: m * 0.4, fill: art.ink })
+  }
+  return out
+}
+
 /** Corazón en un cuadro de 24 × 24 (centro en 12, 12.5). */
 export const HEART_PATH =
   'M12 21.2s-7.6-4.7-9.8-9.4C.7 8.3 2.8 4.3 6.6 4.3c2.2 0 3.7 1.2 5.4 3.3 1.7-2.1 3.2-3.3 5.4-3.3 3.8 0 5.9 4 4.4 7.5-2.2 4.7-9.8 9.4-9.8 9.4z'
@@ -384,6 +477,7 @@ export function editionScene(data: EditionData, measure: Measure): Scene {
     fg.push({
       type: 'group',
       id: 'caption',
+      edit: 'caption',
       x: 306,
       y: 172,
       rotate: -8,
@@ -448,6 +542,7 @@ export function editionScene(data: EditionData, measure: Measure): Scene {
       },
     ],
   })
+  const quotes: SceneNode[] = []
   rows.forEach((row, i) => {
     const children: SceneNode[] = [
       { type: 'text', x: left, y: row.y - shift, text: row.text, font: row.font, color: row.color },
@@ -462,8 +557,10 @@ export function editionScene(data: EditionData, measure: Measure): Scene {
         color: '#63474B',
       })
     }
-    fg.push({ type: 'group', id: `quote-${i}`, children })
+    quotes.push({ type: 'group', id: `quote-${i}`, children })
   })
+  // La frase entera, un solo lápiz en el editor directo.
+  fg.push({ type: 'group', edit: 'wish', children: quotes })
   if (data.sender) {
     fg.push({
       type: 'group',
@@ -743,6 +840,7 @@ export function momentsScene(data: MomentsData, measure: Measure): Scene {
   fg.push({
     type: 'group',
     id: 'title',
+    edit: 'title',
     children: [
       ...(plain
         ? [
@@ -837,13 +935,14 @@ export function momentsScene(data: MomentsData, measure: Measure): Scene {
       width: 1.8,
     },
   )
-  fg.push({ type: 'group', id: 'phrase', children: pill })
+  fg.push({ type: 'group', id: 'phrase', edit: 'phrase', children: pill })
 
   // Días juntos, abajo a la izquierda.
   if (data.days) {
     fg.push({
       type: 'group',
       id: 'days',
+      edit: 'since',
       children: [
         ...calendar(24, 597),
         line('M49.5 598V615', '#4A4247', 1, 0.5),

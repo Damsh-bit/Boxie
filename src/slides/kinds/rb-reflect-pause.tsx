@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { Stars } from '../ribbly/art'
-import { Btn, Stage, Steps, T, u, useStored } from '../ribbly/ui'
+import { Btn, piece, Stage, Steps, T, u, useStored } from '../ribbly/ui'
 import { ease, spring } from './motion'
 import type { Props } from './shared'
 
@@ -84,7 +84,7 @@ export function ReflectPause({ theme, ctx }: Props<'reflect.pause'>) {
               <T text={theme.subtitle} ctx={ctx} />
             </p>
             <div className="rb-grow">
-              <div className="rb-breath" aria-hidden>
+              <div className="rb-breath" aria-hidden {...piece(ctx, 'respiro')}>
                 <i />
                 <i />
                 <i />

@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
+import { isDemoMode } from '../demo'
 import { env } from '../env'
 import type { Database } from '../db/database.types'
 
@@ -60,6 +61,8 @@ export function hasTrustedLogin(amr: unknown): boolean {
 
 /** Obtiene el usuario autenticado actual o null si no inició sesión */
 export async function getCustomerSession(): Promise<CustomerSession | null> {
+  // En modo demo no hay Supabase: nadie inició sesión.
+  if (isDemoMode()) return null
   const supabase = await createCustomerSupabase()
   const {
     data: { user },

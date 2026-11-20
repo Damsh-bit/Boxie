@@ -21,11 +21,15 @@ import {
   type KeyboardEvent,
   type MouseEvent,
   type PointerEvent,
+  type ReactNode,
 } from 'react'
-import type { IconName } from '@/domain/icons'
+import type { Occasion } from '@/content/home'
+import { themeDetail } from '@/content/social-proof'
+import { isFresh, timeAgo, type PurchaseEvent } from '@/domain/social-proof'
 import type { Showcase, ShowcaseSlide, ShowcaseTheme } from '@/slides/showcase'
 import { cn } from '@/ui/cn'
-import { Emoji, EmojiText, Icon } from '@/ui/Icon'
+import { Emoji, EmojiText } from '@/ui/Icon'
+import { SLIDE_SPRING } from '@/slides/player/motion'
 import { Float, ease, spring, useCalm } from '@/ui/motion'
 import {
   CoverScene,
@@ -37,7 +41,7 @@ import {
   type SceneProps,
 } from './hero-scenes'
 import { PhoneFrame, useMouseParallax, useTilt } from './primitives'
-import { lookOf, type HomeTheme } from './theme-look'
+import { avatarGradient, lookOf, type HomeTheme } from './theme-look'
 
 /**
  * Las pantallas de verdad se cargan aparte (registro de pantallas y sus
@@ -56,8 +60,8 @@ const HeroReel = dynamic(() => loadReel().then((m) => m.HeroReel), {
 /** Una pantalla de la Ribbly que pasa en el celular. */
 interface BaseItem {
   id: string
+  /** Cómo se llama (lo anuncia el lector de pantalla al pasarla a mano). */
   label: string
-  icon: IconName
   /** Cuánto dura cuando pasa sola. */
   seconds: number
   /** Fondo claro: la barrita de arriba va oscura. */
@@ -78,7 +82,6 @@ const COVER: Item = {
   type: 'cover',
   id: 'portada',
   label: 'Portada',
-  icon: 'regalo',
   seconds: 4.2,
   light: false,
 }
@@ -94,7 +97,6 @@ const HANDMADE: Item[] = [
     scene: 'fotos',
     id: 'fotos',
     label: 'Fotos',
-    icon: 'camara',
     seconds: 4.8,
     light: false,
   },
@@ -103,7 +105,6 @@ const HANDMADE: Item[] = [
     scene: 'dedicatoria',
     id: 'dedicatoria',
     label: 'Dedicatoria',
-    icon: 'carta-de-amor',
     seconds: 6.2,
     light: true,
   },
@@ -112,7 +113,6 @@ const HANDMADE: Item[] = [
     scene: 'cancion',
     id: 'cancion',
     label: 'Su canción',
-    icon: 'musica',
     seconds: 5.2,
     light: false,
   },
@@ -121,7 +121,6 @@ const HANDMADE: Item[] = [
     scene: 'trivia',
     id: 'trivia',
     label: 'Trivia',
-    icon: 'trivia',
     seconds: 6.4,
     light: true,
   },
@@ -130,7 +129,6 @@ const HANDMADE: Item[] = [
     scene: 'sorpresa',
     id: 'sorpresa',
     label: 'Sorpresa',
-    icon: 'cotillon',
     seconds: 6.8,
     light: false,
   },
@@ -138,8 +136,10 @@ const HANDMADE: Item[] = [
 
 // Las etiquetas apenas pisan el borde del celular para no tapar la pantalla
 // (entre lg y xl la columna es angosta: ahí son más chicas para no cortarse).
-const LEFT = 'right-[calc(100%-18px)]'
-const RIGHT = 'left-[calc(100%-18px)]'
+// Las de la derecha no entran entre el celular y el borde de la pantalla entre
+// lg y xl: ahí quedan solo las de la izquierda.
+const LEFT = 'right-[calc(100%-18px)] sm:block'
+const RIGHT = 'left-[calc(100%-18px)] sm:block lg:hidden xl:block'
 
 /** Dónde flotan las etiquetas alrededor del celular (de arriba abajo) y cuánto las corre el mouse. */
 const CHIP_SPOTS: { className: string; depth: number; float: number; delay: number }[] = [
@@ -166,6 +166,14 @@ const CANVAS = 286
 const CONTROL =
   '[data-hero-interactive], [data-hero-reel] :is(button, a, input, textarea, select, label, [role="button"])'
 
+/** Las flechas: abajo y a la derecha siguen, arriba y a la izquierda vuelven. */
+const STEP_KEYS: Record<string, 1 | -1> = {
+  ArrowDown: 1,
+  ArrowRight: 1,
+  ArrowUp: -1,
+  ArrowLeft: -1,
+}
+
 /** Hacia dónde salen las chispas de un toque. */
 const SPARKS = [
   [0, -34],
@@ -180,26 +188,56 @@ type Hint = 'open' | 'next' | 'back' | 'again' | 'paused' | 'play'
 
 const HINTS: Record<Hint, string> = {
   open: 'Abrir 🎁',
-  next: 'Seguir ›',
-  back: '‹ Volver',
+  next: 'Seguir ↓',
+  back: '↑ Volver',
   again: 'De nuevo ↺',
   paused: 'En pausa',
   play: 'Tocá 👆',
 }
 
-const slideIn = {
-  enter: (dir: number) => ({
-    x: dir === 0 ? '0%' : `${dir * 38}%`,
-    opacity: 0,
-    scale: dir === 0 ? 1.04 : 0.96,
-  }),
-  center: { x: '0%', opacity: 1, scale: 1, transition: { duration: 0.55, ease: ease.out } },
-  exit: (dir: number) => ({
-    x: dir === 0 ? '0%' : `${dir * -26}%`,
-    opacity: 0,
-    scale: 0.95,
-    transition: { duration: 0.4, ease: ease.out },
-  }),
+/** El resorte del maquetador, y el lugar en el mazo (arriba o abajo) sin animarse. */
+const DECK = { default: SLIDE_SPRING, zIndex: { duration: 0 } }
+
+/**
+ * Como en el maquetador: la pantalla que sigue sube desde abajo tapando a la
+ * actual, que se achica y se oscurece atrás; al volver, la de adelante baja y
+ * deja ver la anterior. Sin dirección (cambió el armador), aparece.
+ */
+const deck = {
+  enter: (dir: number) =>
+    dir > 0
+      ? { y: '100%', scale: 1, opacity: 1, filter: 'brightness(1)', borderRadius: 30, zIndex: 2 }
+      : dir < 0
+        ? {
+            y: '-28%',
+            scale: 0.9,
+            opacity: 1,
+            filter: 'brightness(0.5)',
+            borderRadius: 30,
+            zIndex: 1,
+          }
+        : { y: '0%', scale: 1.03, opacity: 0, filter: 'brightness(1)', borderRadius: 0, zIndex: 2 },
+  center: {
+    y: '0%',
+    scale: 1,
+    opacity: 1,
+    filter: 'brightness(1)',
+    borderRadius: 0,
+    transition: DECK,
+  },
+  exit: (dir: number) =>
+    dir > 0
+      ? {
+          y: '-28%',
+          scale: 0.9,
+          filter: 'brightness(0.5)',
+          borderRadius: 30,
+          zIndex: 1,
+          transition: DECK,
+        }
+      : dir < 0
+        ? { y: '100%', borderRadius: 30, zIndex: 2, transition: DECK }
+        : { opacity: 0, zIndex: 1, transition: { duration: 0.35, ease: ease.out } },
 }
 
 /** Las pantallas que pasan: la portada y las de la vidriera (o las dibujadas a mano). */
@@ -221,13 +259,38 @@ function itemsOf(showcase: Showcase | null, slug: string, mix: boolean): Item[] 
       type: 'real',
       id: slide.id,
       label: slide.label,
-      icon: slide.icon,
       seconds: slide.seconds,
       light: slide.light,
       theme,
       slide,
     })),
   ]
+}
+
+/** Dónde va la compra reciente (a la derecha, abajo); el resto son momentos para regalarla. */
+const PURCHASE_SPOT = 3
+
+type Spot = { type: 'occasions'; list: Occasion[] } | { type: 'purchase' }
+
+/**
+ * Las etiquetas de alrededor: los momentos para regalarla repartidos entre los
+ * lugares (cada uno va pasando los suyos) y, si hay ventas, una compra reciente.
+ * Los momentos se intercalan por temática: arrancan uno de cada una.
+ */
+function spotsOf(occasions: Occasion[], purchases: boolean): Spot[] {
+  const byTheme = new Map<string, Occasion[]>()
+  for (const o of occasions) byTheme.set(o.theme, [...(byTheme.get(o.theme) ?? []), o])
+  const groups = [...byTheme.values()]
+  const mixed: Occasion[] = []
+  for (let i = 0; mixed.length < occasions.length; i++) {
+    for (const group of groups) if (group[i]) mixed.push(group[i]!)
+  }
+  const places = CHIP_SPOTS.map((_, i) => i).filter((i) => !purchases || i !== PURCHASE_SPOT)
+  return CHIP_SPOTS.map((_, i): Spot => {
+    if (purchases && i === PURCHASE_SPOT) return { type: 'purchase' }
+    const place = places.indexOf(i)
+    return { type: 'occasions', list: mixed.filter((_, k) => k % places.length === place) }
+  })
 }
 
 /**
@@ -239,13 +302,16 @@ function itemsOf(showcase: Showcase | null, slug: string, mix: boolean): Item[] 
  *
  * Se puede tocar: la izquierda vuelve, la derecha sigue, mantener apretado
  * pausa y los juegos se juegan de verdad (si nadie los toca, se juegan solos).
- * Las etiquetas de alrededor llevan a cada pantalla.
+ * Alrededor flotan los momentos para regalarla (tocarlos elige esa temática)
+ * y una compra reciente de verdad.
  */
 export function HeroPreview({
   theme,
   themes,
   name,
   showcase,
+  occasions,
+  purchases,
   mix,
   onPickTheme,
 }: {
@@ -253,6 +319,10 @@ export function HeroPreview({
   themes: HomeTheme[]
   name: string
   showcase: Showcase | null
+  /** Los momentos para regalarla (las etiquetas de alrededor). */
+  occasions: Occasion[]
+  /** Compras recientes de verdad (una etiqueta las va pasando). */
+  purchases: PurchaseEvent[]
   /** Intercalar lo mejor de cada Ribbly (todavía no eligieron temática). */
   mix: boolean
   onPickTheme(slug: string): void
@@ -269,6 +339,7 @@ export function HeroPreview({
   const mouse = useMouseParallax()
 
   const items = itemsOf(showcase, theme.slug, mix)
+  const spots = spotsOf(occasions, purchases.length > 0)
   const hasReal = items.some((i) => i.type === 'real')
 
   // La pantalla que se ve y de qué lado entró (1 adelante, -1 atrás, 0 sin deslizar).
@@ -391,11 +462,17 @@ export function HeroPreview({
       (t.top + t.height / 2 - r.top) / scale,
       particleOf(item),
     )
+    // Un juego que se juega solo no hace vibrar el celular de quien mira (la
+    // piñata vibra con cada golpe): durante el toque, vibrar no hace nada.
+    const vibrate = Object.getOwnPropertyDescriptor(navigator, 'vibrate')
+    Object.defineProperty(navigator, 'vibrate', { value: () => false, configurable: true })
     demo.current = true
     try {
       target.click()
     } finally {
       demo.current = false
+      if (vibrate) Object.defineProperty(navigator, 'vibrate', vibrate)
+      else Reflect.deleteProperty(navigator, 'vibrate')
     }
   })
   const taps = item.type === 'real' ? item.slide.taps : undefined
@@ -486,10 +563,11 @@ export function HeroPreview({
   }
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+    const step = STEP_KEYS[e.key]
+    if (!step) return
     e.preventDefault()
     touch()
-    go(index + (e.key === 'ArrowRight' ? 1 : -1))
+    go(index + step)
   }
 
   const example = look.names[nameIndex % look.names.length]!
@@ -603,9 +681,9 @@ export function HeroPreview({
                   <AnimatePresence initial={false} custom={dir}>
                     <motion.div
                       key={item.id}
-                      className="absolute inset-0 overflow-hidden"
+                      className="absolute inset-0 overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.22)]"
                       custom={dir}
-                      variants={slideIn}
+                      variants={deck}
                       initial="enter"
                       animate="center"
                       exit="exit"
@@ -715,20 +793,30 @@ export function HeroPreview({
         </Float>
       </motion.div>
 
-      {items.slice(1, CHIP_SPOTS.length + 1).map((chip, i) => (
-        <Chip
-          key={chip.id}
-          {...CHIP_SPOTS[i]!}
-          icon={chip.icon}
-          label={chip.label}
-          active={i + 1 === index}
-          mouse={mouse}
-          onSelect={() => {
-            touch()
-            go(i + 1)
-          }}
-        />
-      ))}
+      {spots.map((spot, i) =>
+        spot.type === 'occasions' ? (
+          <OccasionChip
+            key={i}
+            {...CHIP_SPOTS[i]!}
+            list={spot.list}
+            offset={i * 1.3}
+            running={inView && !calm}
+            mouse={mouse}
+            onPick={(o) => {
+              if (themes.some((t) => t.slug === o.theme)) onPickTheme(o.theme)
+            }}
+          />
+        ) : (
+          <PurchaseChip
+            key={i}
+            {...CHIP_SPOTS[i]!}
+            events={purchases}
+            themes={themes}
+            running={inView && !calm}
+            mouse={mouse}
+          />
+        ),
+      )}
 
       {/* En la mezcla: de qué Ribbly es lo que se ve, y un toque para armar esa. */}
       <div className="absolute top-[calc(100%+22px)] left-1/2 z-10 -translate-x-1/2">
@@ -796,71 +884,172 @@ function Fill({
   )
 }
 
+/** Cada cuánto cambia lo que dice una etiqueta (con varias cosas para decir). */
+const CHIP_EVERY = 5.2
+
+/** Lo que va cambiando en una etiqueta: el índice, cada CHIP_EVERY segundos. */
+function useRotation(count: number, running: boolean, offset: number, start = 0) {
+  const [index, setIndex] = useState(start)
+  useEffect(() => {
+    if (!running || count < 2) return
+    let interval: ReturnType<typeof setInterval> | undefined
+    const first = setTimeout(
+      () => {
+        setIndex((i) => i + 1)
+        interval = setInterval(() => setIndex((i) => i + 1), CHIP_EVERY * 1000)
+      },
+      (CHIP_EVERY + offset) * 1000,
+    )
+    return () => {
+      clearTimeout(first)
+      clearInterval(interval)
+    }
+  }, [count, running, offset])
+  return count ? index % count : 0
+}
+
+const chipLook =
+  'block rounded-full bg-white text-ink shadow-[0_12px_30px_rgba(42,36,51,0.15)] whitespace-nowrap'
+
 /**
- * Una etiqueta que flota al lado del celular y lleva a esa pantalla. Se
- * corre con el mouse (cada una a su profundidad) y se prende cuando su
- * pantalla está a la vista.
+ * Una etiqueta que flota al lado del celular: se corre con el mouse (cada una
+ * a su profundidad), sube y baja sola, y lo que dice cambia con un fundido.
  */
-function Chip({
-  icon,
-  label,
+function FloatingChip({
   className,
   depth,
   float,
   delay,
-  active,
   mouse,
-  onSelect,
+  swap,
+  children,
 }: {
-  icon: IconName
-  label: string
   className: string
   depth: number
   float: number
   delay: number
-  active: boolean
   mouse: { x: MotionValue<number>; y: MotionValue<number> }
-  onSelect(): void
+  /** Cambia cuando cambia lo que dice (para el fundido). */
+  swap: string
+  children: ReactNode
 }) {
   const calm = useCalm()
   const x = useTransform(mouse.x, (v) => v * depth)
   const y = useTransform(mouse.y, (v) => v * depth * 0.6)
   return (
     <motion.div
-      className={cn('absolute z-10 hidden sm:block', className)}
+      className={cn('absolute z-10 hidden', className)}
       style={{ x, y }}
       initial={{ opacity: 0, scale: 0.6 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ ...spring.bouncy, delay }}
     >
+      <motion.div
+        animate={
+          calm
+            ? undefined
+            : { transform: ['translateY(0px)', 'translateY(-8px)', 'translateY(0px)'] }
+        }
+        transition={{ duration: float, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={swap}
+            initial={
+              calm ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.92, filter: 'blur(3px)' }
+            }
+            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+            exit={calm ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.92, filter: 'blur(3px)' }}
+            transition={{ duration: 0.35, ease: ease.out }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+/** Un momento para regalarla ("Para su cumple"): tocarlo elige esa temática en el armador. */
+function OccasionChip({
+  list,
+  offset,
+  running,
+  onPick,
+  ...spot
+}: (typeof CHIP_SPOTS)[number] & {
+  list: Occasion[]
+  /** Segundos de más antes del primer cambio (así no cambian todas juntas). */
+  offset: number
+  running: boolean
+  mouse: { x: MotionValue<number>; y: MotionValue<number> }
+  onPick(occasion: Occasion): void
+}) {
+  const occasion = list[useRotation(list.length, running, offset)]
+  if (!occasion) return null
+  return (
+    <FloatingChip {...spot} swap={occasion.id}>
       <motion.button
         type="button"
-        onClick={onSelect}
-        aria-pressed={active}
+        onClick={() => onPick(occasion)}
         className={cn(
-          'block cursor-pointer rounded-full px-3.5 py-2 text-sm font-semibold whitespace-nowrap transition-[background-color,color,box-shadow] duration-300 lg:px-3 lg:py-1.5 lg:text-xs xl:px-3.5 xl:py-2 xl:text-sm',
-          active
-            ? 'bg-brand text-white shadow-[0_14px_30px_rgba(244,78,99,0.45)]'
-            : 'bg-white text-ink shadow-[0_12px_30px_rgba(42,36,51,0.15)] hover:bg-brand-soft',
+          chipLook,
+          'flex cursor-pointer items-center gap-1.5 px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-brand-soft lg:px-3 lg:py-1.5 lg:text-xs xl:px-3.5 xl:py-2 xl:text-sm',
         )}
-        animate={{ scale: active ? 1.1 : 1 }}
-        whileHover={{ scale: active ? 1.14 : 1.08, rotate: -3 }}
+        whileHover={{ scale: 1.08, rotate: -3 }}
         whileTap={{ scale: 0.92 }}
         transition={spring.snappy}
       >
-        <motion.span
-          className="flex items-center gap-1.5"
-          animate={
-            calm
-              ? undefined
-              : { transform: ['translateY(0px)', 'translateY(-8px)', 'translateY(0px)'] }
-          }
-          transition={{ duration: float, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <Icon name={icon} size="1.35em" />
-          {label}
-        </motion.span>
+        <Emoji value={occasion.emoji} size="1.35em" />
+        {occasion.moment ?? occasion.label}
       </motion.button>
-    </motion.div>
+    </FloatingChip>
+  )
+}
+
+/** Una compra de verdad ("Martina regaló una Ribbly · para su mamá"), una por vez. */
+function PurchaseChip({
+  events,
+  themes,
+  running,
+  ...spot
+}: (typeof CHIP_SPOTS)[number] & {
+  events: PurchaseEvent[]
+  themes: HomeTheme[]
+  running: boolean
+  mouse: { x: MotionValue<number>; y: MotionValue<number> }
+}) {
+  // Arranca por la mitad: la cinta de compras de arriba arranca por la primera.
+  const event = events[useRotation(events.length, running, 0.6, Math.ceil(events.length / 2))]
+  if (!event) return null
+  const theme = themes.find((t) => t.slug === event.theme)
+  const detail =
+    event.detail ?? themeDetail[event.theme] ?? (theme ? `temática ${theme.name}` : 'de regalo')
+  return (
+    // Es la más ancha: pisa un poco más el celular y en las tablets chicas no va.
+    <FloatingChip
+      {...spot}
+      className={cn(spot.className, 'left-[calc(100%-34px)] sm:hidden md:block')}
+      swap={event.id}
+    >
+      <div className={cn(chipLook, 'flex items-center gap-2 py-1.5 pr-3.5 pl-1.5 text-left')}>
+        <span
+          aria-hidden
+          className="grid size-8 shrink-0 place-items-center rounded-full font-fun text-sm font-semibold text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.25)]"
+          style={{ background: avatarGradient(theme?.color ?? '#F44E63') }}
+        >
+          {event.name.charAt(0)}
+        </span>
+        <span className="leading-tight">
+          <span className="block text-xs text-ink">
+            <b className="font-bold">{event.name}</b> regaló una Ribbly
+          </span>
+          <span className="block max-w-[10rem] truncate text-[11px] font-medium text-ink/55">
+            {detail}
+            {isFresh(event.minutesAgo) ? ' · recién' : ` · ${timeAgo(event.minutesAgo)}`}
+          </span>
+        </span>
+      </div>
+    </FloatingChip>
   )
 }

@@ -20,6 +20,7 @@ import {
   type PointerEvent,
   type ReactNode,
 } from 'react'
+import type { Occasion } from '@/content/home'
 import type { SocialProof } from '@/domain/social-proof'
 import type { Showcase } from '@/slides/showcase'
 import { ButtonLink, Nudge } from '@/ui/Button'
@@ -99,6 +100,7 @@ export function Hero({
   hasPreviousPurchases,
   draft,
   showcase = null,
+  occasions = [],
 }: {
   themes: HomeTheme[]
   salesPaused: boolean
@@ -108,6 +110,8 @@ export function Hero({
   draft?: { id: string; recipientName: string; editUrl: string } | null
   /** Las pantallas de verdad que pasan en el celular (src/slides/showcase.ts). */
   showcase?: Showcase | null
+  /** Los momentos para regalarla, que flotan al lado del celular. */
+  occasions?: Occasion[]
 }) {
   const ref = useRef<HTMLElement>(null)
   const calm = useCalm()
@@ -426,6 +430,8 @@ export function Hero({
             themes={themes}
             name={name}
             showcase={showcase}
+            occasions={occasions}
+            purchases={proof.events}
             mix={!chosen && !short}
             onPickTheme={choose}
           />

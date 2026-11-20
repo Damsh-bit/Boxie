@@ -20,6 +20,8 @@ export interface Occasion {
   label: string
   theme: string
   pitch: string
+  /** El momento para regalarla, como lo dice la etiqueta al lado del celular de la portada. */
+  moment?: string
 }
 
 export const occasions: readonly Occasion[] = [
@@ -28,6 +30,7 @@ export const occasions: readonly Occasion[] = [
     emoji: 'corazon-flechado',
     label: 'Aniversario',
     theme: 'pareja',
+    moment: 'Para su aniversario',
     pitch: 'Su historia en fotos, su canción y una carta que se abre como un sobre.',
   },
   {
@@ -35,6 +38,7 @@ export const occasions: readonly Occasion[] = [
     emoji: 'rosa',
     label: 'San Valentín',
     theme: 'pareja',
+    moment: 'En San Valentín',
     pitch:
       'El regalo romántico que no se marchita: llega al instante y la abre las veces que quiera.',
   },
@@ -43,6 +47,7 @@ export const occasions: readonly Occasion[] = [
     emoji: 'viaje',
     label: 'Amor a distancia',
     theme: 'pareja',
+    moment: 'Aunque esté lejos',
     pitch: 'Cruza cualquier distancia: la abre desde su celular, esté donde esté.',
   },
   {
@@ -50,6 +55,7 @@ export const occasions: readonly Occasion[] = [
     emoji: 'torta',
     label: 'Cumpleaños',
     theme: 'cumpleanos',
+    moment: 'Para su cumple',
     pitch: 'Un regalo de cumpleaños con fiesta, deseos, juegos y sus mejores momentos.',
   },
   {
@@ -57,6 +63,7 @@ export const occasions: readonly Occasion[] = [
     emoji: 'cotillon',
     label: 'Saludo grupal',
     theme: 'cumpleanos',
+    moment: 'De parte de todos',
     pitch: 'Juntá fotos y mensajes de todos en un solo regalo para su día.',
   },
   {
@@ -64,6 +71,7 @@ export const occasions: readonly Occasion[] = [
     emoji: 'acuerdo',
     label: 'Día del Amigo',
     theme: 'amistad',
+    moment: 'Por el Día del Amigo',
     pitch: 'Selfies, anécdotas y ese temazo que cantan a los gritos.',
   },
   {
@@ -71,6 +79,7 @@ export const occasions: readonly Occasion[] = [
     emoji: 'gracias',
     label: 'Para agradecer',
     theme: 'amistad',
+    moment: 'Para decir gracias',
     pitch: 'Para esa persona que está en todas: decile gracias de una forma que no olvide.',
   },
 ]

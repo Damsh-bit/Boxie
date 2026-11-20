@@ -196,6 +196,7 @@ export default async function HomePage() {
   ])
   // Las pantallas de verdad que pasan en el celular de la portada.
   const showcase = buildShowcase(configs)
+  const homeOccasions = occasionsOf(sf.themes)
   const byPlans = sf.plans.length > 1
   const price = formatARS(sf.priceFromCents)
   const sample = sf.themes[0]
@@ -248,13 +249,10 @@ export default async function HomePage() {
         hasPreviousPurchases={heroCtx?.hasPreviousPurchases ?? false}
         draft={heroCtx?.draft ?? null}
         showcase={showcase}
+        occasions={homeOccasions}
       />
       <OccasionMarquee />
-      <ThemeShowcase
-        themes={homeThemes}
-        occasions={occasionsOf(sf.themes)}
-        maxScreens={sf.maxScreens}
-      />
+      <ThemeShowcase themes={homeThemes} occasions={homeOccasions} maxScreens={sf.maxScreens} />
       <InsideRibbly
         photos={photos}
         exampleHref={exampleHref}

@@ -1,4 +1,3 @@
-import type { IconName } from '@/domain/icons'
 import { buyerStyle, type ParsedSlide, type ParsedThemeConfig } from './config'
 import { buildVars } from './ribbly/vars'
 import { sampleGift } from './sample'
@@ -23,9 +22,8 @@ export interface ShowcasePick {
   kind: SlideKind
   /** Solo con este estilo de ocasión (las pantallas nuevas). Sin look: cualquiera. */
   look?: Look
-  /** La etiqueta que flota al lado del celular. */
+  /** Cómo se llama (lo anuncia el celular al pasarla a mano). */
   label: string
-  icon: IconName
   /** Cuánto se queda en pantalla cuando pasa sola. */
   seconds: number
   /**
@@ -46,37 +44,32 @@ export const SHOWCASE_PICKS: readonly ShowcasePick[] = [
   {
     kind: 'cover.cake',
     label: 'Torta',
-    icon: 'torta',
     seconds: 5.4,
     taps: [['.rb-cake-tap', 2.1]],
   },
-  { kind: 'cover.edition', label: 'Portada', icon: 'revista', seconds: 4.6 },
-  { kind: 'story.moments', label: 'Fotos', icon: 'camara', seconds: 4.8 },
+  { kind: 'cover.edition', label: 'Portada', seconds: 4.6 },
+  { kind: 'story.moments', label: 'Fotos', seconds: 4.8 },
   {
     kind: 'game.slots',
     label: 'Tragamonedas',
-    icon: 'tragamonedas',
     seconds: 7.2,
     taps: [['.rb-btn-yellow', 1.4]],
   },
   {
     kind: 'story.card',
     label: 'Tarjeta',
-    icon: 'carta-de-amor',
     seconds: 6,
     taps: [['.rb-seal', 1.9]],
   },
   {
     kind: 'game.cookie',
     label: 'Galletita',
-    icon: 'galletita',
     seconds: 6.2,
     taps: [['.rb-cookie.is-hint', 1.9]],
   },
   {
     kind: 'game.pinata',
     label: 'Piñata',
-    icon: 'cotillon',
     seconds: 6.6,
     taps: [
       ['.rb-pinata', 1.5],
@@ -85,27 +78,26 @@ export const SHOWCASE_PICKS: readonly ShowcasePick[] = [
       ['.rb-pinata', 3.6],
     ],
   },
-  { kind: 'media.mix', label: 'Su playlist', icon: 'musica', seconds: 4.6 },
+  { kind: 'media.mix', label: 'Su playlist', seconds: 4.6 },
   {
     kind: 'outro.finale',
     label: 'Sorpresa',
-    icon: 'regalo',
     seconds: 6.4,
     taps: [['.rb-actions .rb-btn-primary', 2.2]],
   },
-  { kind: 'game.quiz', label: 'Trivia', icon: 'trivia', seconds: 5.2 },
-  { kind: 'reflect.candles', label: 'Velitas', icon: 'destellos', seconds: 5 },
+  { kind: 'game.quiz', label: 'Trivia', seconds: 5.2 },
+  { kind: 'reflect.candles', label: 'Velitas', seconds: 5 },
   // Las temáticas con las pantallas anteriores.
-  { kind: 'cover.recipient', label: 'Portada', icon: 'regalo', seconds: 4.4 },
-  { kind: 'cover.friends', label: 'Portada', icon: 'regalo', seconds: 4.4 },
-  { kind: 'cover.birthday', label: 'Portada', icon: 'torta', seconds: 4.4 },
-  { kind: 'story.dedication', label: 'Dedicatoria', icon: 'carta-de-amor', seconds: 5.6 },
-  { kind: 'game.trivia', label: 'Trivia', icon: 'trivia', seconds: 5.4 },
-  { kind: 'game.jackpot', label: 'Tragamonedas', icon: 'tragamonedas', seconds: 5.4 },
-  { kind: 'game.fortune', label: 'Galletita', icon: 'galletita', seconds: 5.2 },
-  { kind: 'game.coupons', label: 'Vales', icon: 'entrada', seconds: 5 },
-  { kind: 'story.reasons', label: 'Razones', icon: 'corazon', seconds: 5 },
-  { kind: 'outro.thanks', label: 'Final', icon: 'cotillon', seconds: 4.6 },
+  { kind: 'cover.recipient', label: 'Portada', seconds: 4.4 },
+  { kind: 'cover.friends', label: 'Portada', seconds: 4.4 },
+  { kind: 'cover.birthday', label: 'Portada', seconds: 4.4 },
+  { kind: 'story.dedication', label: 'Dedicatoria', seconds: 5.6 },
+  { kind: 'game.trivia', label: 'Trivia', seconds: 5.4 },
+  { kind: 'game.jackpot', label: 'Tragamonedas', seconds: 5.4 },
+  { kind: 'game.fortune', label: 'Galletita', seconds: 5.2 },
+  { kind: 'game.coupons', label: 'Vales', seconds: 5 },
+  { kind: 'story.reasons', label: 'Razones', seconds: 5 },
+  { kind: 'outro.thanks', label: 'Final', seconds: 4.6 },
 ]
 
 /** Cuántas pantallas de cada temática (más la portada de la vidriera). */
@@ -209,7 +201,7 @@ export function buildShowcase(
         const url = sample.media[id]
         if (url) media[id] = url
       }
-      const { label, icon, seconds, taps } = SHOWCASE_PICKS[pick]!
+      const { label, seconds, taps } = SHOWCASE_PICKS[pick]!
       return {
         id: `${slug}:${slide.key}`,
         slide,
@@ -217,7 +209,6 @@ export function buildShowcase(
         style: buyerStyle(config, slide, content),
         light: slide.frame.chrome === 'dark',
         label,
-        icon,
         seconds,
         ...(taps && { taps }),
       }

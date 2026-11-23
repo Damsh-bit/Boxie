@@ -1,24 +1,26 @@
 import { musicOutput } from './sound'
 
 /**
- * La música de fondo de la Ribbly de cumpleaños: el "Cumpleaños feliz" (de
- * dominio público) en una cajita musical, como un vals lento, con un bajo y
- * acordes suaves; después, ocho compases que arpegian los mismos acordes para
- * que la vuelta no canse. Todo sintetizado y bajito: acompaña, no protagoniza
- * (y baja sola cuando suena un momento importante, ver `duck` en sound.ts).
+ * La música de fondo de la Ribbly de cumpleaños: un vals de fiesta, alegre y
+ * saltarín, con el "Cumpleaños feliz" (de dominio público) en una marimba.
+ * Bombo en el 1, palmas en el 2 y el 3, shaker, acordes cortitos y un bajo
+ * que salta. Cuatro partes para que la vuelta no canse: la canción, un riff
+ * propio, la canción con glockenspiel y el riff con otro ritmo. Todo
+ * sintetizado y bajito: acompaña, no protagoniza (y baja sola cuando suena un
+ * momento importante, ver `duck` en sound.ts).
  *
  * Se programa de a poco con el reloj del audio (no con timers), así no se
  * atrasa aunque la página esté ocupada.
  */
 
-const BPM = 88
+const BPM = 138
 const BEAT = 60 / BPM
 /** Volumen de la música: de fondo, por debajo de los efectos. */
 const LEVEL = 0.28
-/** Una vuelta: 16 compases de 3/4. */
-const LOOP = 48
+/** Una vuelta: 32 compases de 3/4 (cuatro partes de ocho). */
+const LOOP = 96
 
-type Part = 'melody' | 'arp' | 'bass' | 'pah' | 'pad'
+type Part = 'melody' | 'glock' | 'riff' | 'bass' | 'pah' | 'kick' | 'clap' | 'shaker'
 interface Note {
   beat: number
   part: Part
@@ -27,14 +29,14 @@ interface Note {
 }
 
 const CHORDS = {
-  C: { pah: [60, 64, 67], bass: 48, arp: [72, 76, 79, 84] },
-  G7: { pah: [59, 62, 65], bass: 43, arp: [71, 74, 77, 79] },
-  C7: { pah: [58, 64, 67], bass: 48, arp: [70, 72, 76, 79] },
-  F: { pah: [60, 65, 69], bass: 41, arp: [69, 72, 77, 81] },
+  C: { pah: [60, 64, 67], bass: [48, 55], riff: [72, 76, 79, 84] },
+  G7: { pah: [59, 62, 65], bass: [43, 50], riff: [71, 74, 77, 79] },
+  C7: { pah: [58, 64, 67], bass: [48, 55], riff: [70, 72, 76, 79] },
+  F: { pah: [60, 65, 69], bass: [41, 48], riff: [69, 72, 77, 81] },
 } as const
 type Chord = keyof typeof CHORDS
 
-/** El acorde de cada tiempo de los ocho compases (se repiten en la variación). */
+/** El acorde de cada tiempo de los ocho compases (las cuatro partes los repiten). */
 const HARMONY: Chord[][] = [
   ['C', 'C', 'C'],
   ['G7', 'G7', 'G7'],
@@ -46,8 +48,8 @@ const HARMONY: Chord[][] = [
   ['C', 'C', 'C'],
 ]
 
-/** La melodía: [tiempo, nota MIDI, duración en tiempos]. El "Que los" final es el comienzo. */
-const MELODY: [number, number, number][] = [
+/** La canción: [tiempo, nota MIDI, duración en tiempos], en ocho compases. */
+const SONG: [number, number, number][] = [
   [0, 69, 1],
   [1, 67, 1],
   [2, 72, 1],
@@ -71,39 +73,87 @@ const MELODY: [number, number, number][] = [
   [19, 72, 1],
   [20, 74, 1],
   [21, 72, 3],
-  [47, 67, 0.75],
-  [47.75, 67, 0.25],
+]
+/** El "Que los" que da pie a la canción (el levare, en el último tiempo de la parte anterior). */
+const PICKUP: [number, number, number][] = [
+  [-1, 67, 0.75],
+  [-0.25, 67, 0.25],
 ]
 
+/**
+ * El riff: por compás, seis corcheas con la nota del acorde que toca (0 a 3,
+ * de grave a agudo) o un silencio (-1). Dos ritmos que se alternan.
+ */
+const RIFFS = {
+  bounce: [
+    [0, -1, 1, 2, -1, 1],
+    [2, 1, -1, 3, -1, 2],
+  ],
+  offbeat: [
+    [-1, 0, 1, -1, 2, 1],
+    [3, -1, 2, 1, -1, 0],
+  ],
+}
+
 function buildScore(): Note[] {
-  const notes: Note[] = MELODY.map(([beat, midi, beats]) => ({
-    beat,
-    part: 'melody',
-    midi: [midi],
-    beats,
-  }))
-  HARMONY.forEach((bar, b) => {
-    // Primera mitad: vals (bajo y "pa-pá"). Segunda: bajo, colchón y arpegio.
-    const a = b * 3
-    const v = 24 + b * 3
-    notes.push({ beat: a, part: 'bass', midi: [CHORDS[bar[0]!].bass], beats: 1 })
-    notes.push({ beat: a + 1, part: 'pah', midi: [...CHORDS[bar[1]!].pah], beats: 1 })
-    notes.push({ beat: a + 2, part: 'pah', midi: [...CHORDS[bar[2]!].pah], beats: 1 })
-    notes.push({ beat: v, part: 'bass', midi: [CHORDS[bar[0]!].bass], beats: 1 })
-    notes.push({ beat: v, part: 'pad', midi: [...CHORDS[bar[0]!].pah], beats: 3 })
-    if (b === 7) {
-      // Cierra en una nota larga y vuelve a empezar.
-      notes.push({ beat: v, part: 'arp', midi: [84], beats: 2 })
-      return
+  const notes: Note[] = []
+  const add = (beat: number, part: Part, midi: number[], beats = 1) =>
+    notes.push({ beat, part, midi, beats })
+
+  // La canción en la primera y la tercera parte (la tercera, con glockenspiel).
+  for (const [start, glock] of [
+    [0, false],
+    [48, true],
+  ] as const) {
+    for (const [beat, midi, beats] of [...PICKUP, ...SONG]) {
+      add(start + beat, 'melody', [midi], beats)
+      if (glock) add(start + beat, 'glock', [midi + 12], beats)
     }
-    const pattern = b % 2 ? [3, 2, 1, 2, 3, 1] : [0, 1, 2, 3, 2, 1]
-    pattern.forEach((index, i) => {
-      if (b % 2 && i === 5) return
-      const chord = CHORDS[bar[Math.floor(i / 2)]!]
-      notes.push({ beat: v + i * 0.5, part: 'arp', midi: [chord.arp[index]!], beats: 0.5 })
+  }
+
+  // El riff en la segunda y la cuarta parte.
+  for (const [start, riff] of [
+    [24, RIFFS.bounce],
+    [72, RIFFS.offbeat],
+  ] as const) {
+    HARMONY.forEach((bar, b) => {
+      const at = start + b * 3
+      if (b === 7) {
+        // Cierra arriba y deja lugar para el "Que los" de la parte siguiente.
+        add(at, 'riff', [CHORDS[bar[0]!].riff[0]!], 1)
+        add(at + 1, 'riff', [CHORDS[bar[0]!].riff[3]!], 1)
+        return
+      }
+      riff[b % 2]!.forEach((index, i) => {
+        if (index < 0) return
+        add(at + i * 0.5, 'riff', [CHORDS[bar[Math.floor(i / 2)]!].riff[index]!], 0.5)
+      })
     })
-  })
-  return notes.sort((x, y) => x.beat - y.beat)
+  }
+
+  // El acompañamiento: bajo, "pa-pá", bombo, palmas y shaker, en los 32 compases.
+  for (let section = 0; section < 4; section++) {
+    // La primera vuelta de la canción va más liviana (sin palmas ni bajo que salta).
+    const full = section > 0
+    HARMONY.forEach((bar, b) => {
+      const at = section * 24 + b * 3
+      add(at, 'bass', [CHORDS[bar[0]!].bass[0]!])
+      if (full) add(at + 2.5, 'bass', [CHORDS[bar[2]!].bass[1]!], 0.5)
+      add(at + 1, 'pah', [...CHORDS[bar[1]!].pah])
+      add(at + 2, 'pah', [...CHORDS[bar[2]!].pah])
+      add(at, 'kick', [])
+      if (full) {
+        add(at + 1, 'clap', [])
+        add(at + 2, 'clap', [])
+      }
+      for (let i = 0; i < 6; i++) add(at + i * 0.5, 'shaker', [i % 2], 0.5)
+    })
+  }
+
+  // El levare de la primera parte suena al final de la vuelta.
+  return notes
+    .map((n) => (n.beat < 0 ? { ...n, beat: n.beat + LOOP } : n))
+    .sort((x, y) => x.beat - y.beat)
 }
 
 const SCORE = buildScore()
@@ -128,6 +178,8 @@ function partial(
   osc.type = type
   osc.frequency.value = f
   const g = ac.createGain()
+  // En silencio desde ya: si no, el cuadro antes de `t` suena entero (un clic).
+  g.gain.value = 0.0001
   g.gain.setValueAtTime(0.0001, t)
   g.gain.exponentialRampToValueAtTime(gain, t + attack)
   g.gain.exponentialRampToValueAtTime(0.0001, t + attack + decay)
@@ -137,12 +189,58 @@ function partial(
   osc.stop(t + attack + decay + 0.05)
 }
 
-/** Cajita musical: la púa de metal, con su parcial agudo que brilla y se apaga rápido. */
-function musicBox(ac: BaseAudioContext, dest: AudioNode, t: number, midi: number, gain: number) {
+let whiteNoise: AudioBuffer | null = null
+function noise(ac: BaseAudioContext): AudioBuffer {
+  if (!whiteNoise || whiteNoise.sampleRate !== ac.sampleRate) {
+    whiteNoise = ac.createBuffer(1, ac.sampleRate, ac.sampleRate)
+    const data = whiteNoise.getChannelData(0)
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1
+  }
+  return whiteNoise
+}
+
+/** Un golpe de ruido filtrado (palmas, shaker). */
+function burst(
+  ac: BaseAudioContext,
+  dest: AudioNode,
+  t: number,
+  type: BiquadFilterType,
+  f: number,
+  gain: number,
+  decay: number,
+) {
+  const src = ac.createBufferSource()
+  src.buffer = noise(ac)
+  const filter = ac.createBiquadFilter()
+  filter.type = type
+  filter.frequency.value = f
+  filter.Q.value = 0.9
+  const g = ac.createGain()
+  // En silencio desde ya: si no, el cuadro antes de `t` suena entero (un clic).
+  g.gain.value = 0.0001
+  g.gain.setValueAtTime(0.0001, t)
+  g.gain.exponentialRampToValueAtTime(gain, t + 0.002)
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.002 + decay)
+  src.connect(filter)
+  filter.connect(g)
+  g.connect(dest)
+  src.start(t, Math.random() * 0.8)
+  src.stop(t + decay + 0.05)
+}
+
+/** Marimba: la tabla de madera, con su parcial agudo que golpea y se apaga enseguida. */
+function marimba(ac: BaseAudioContext, dest: AudioNode, t: number, midi: number, gain: number) {
   const f = mtof(midi)
-  partial(ac, dest, t, f, gain, 1.5)
-  partial(ac, dest, t, f * 2, gain * 0.16, 0.45)
-  partial(ac, dest, t, f * 4.2, gain * 0.06, 0.12)
+  partial(ac, dest, t, f, gain, 0.5, 'sine', 0.002)
+  partial(ac, dest, t, f * 3.93, gain * 0.14, 0.06, 'sine', 0.001)
+  partial(ac, dest, t, f * 2, gain * 0.08, 0.18, 'sine', 0.002)
+}
+
+/** Glockenspiel: chapitas de metal que brillan. */
+function glock(ac: BaseAudioContext, dest: AudioNode, t: number, midi: number, gain: number) {
+  const f = mtof(midi)
+  partial(ac, dest, t, f, gain, 0.9, 'sine', 0.001)
+  partial(ac, dest, t, f * 2.76, gain * 0.18, 0.22, 'sine', 0.001)
 }
 
 function lowpass(ac: BaseAudioContext, dest: AudioNode, f: number) {
@@ -154,48 +252,54 @@ function lowpass(ac: BaseAudioContext, dest: AudioNode, f: number) {
 }
 
 export function playNote(ac: BaseAudioContext, dest: AudioNode, note: Note, t: number) {
-  const seconds = note.beats * BEAT
   switch (note.part) {
     case 'melody':
-      musicBox(ac, dest, t, note.midi[0]!, 0.06)
+      marimba(ac, dest, t, note.midi[0]!, 0.07)
       break
-    case 'arp':
-      musicBox(ac, dest, t, note.midi[0]!, 0.034)
+    case 'glock':
+      glock(ac, dest, t, note.midi[0]!, 0.022)
       break
-    case 'bass':
-      partial(ac, dest, t, mtof(note.midi[0]!), 0.06, 0.7, 'sine', 0.008)
-      partial(ac, dest, t, mtof(note.midi[0]!) * 2, 0.014, 0.25, 'triangle', 0.008)
+    case 'riff':
+      marimba(ac, dest, t, note.midi[0]!, 0.05)
       break
-    case 'pah': {
-      const soft = lowpass(ac, dest, 1500)
-      for (const midi of note.midi) partial(ac, soft, t, mtof(midi), 0.013, 0.28, 'triangle', 0.006)
+    case 'bass': {
+      const f = mtof(note.midi[0]!)
+      partial(ac, dest, t, f, 0.055, 0.26, 'triangle', 0.004)
+      partial(ac, dest, t, f, 0.05, 0.3, 'sine', 0.004)
       break
     }
-    case 'pad': {
-      // Un colchón tibio: sierras desafinadas apenas, muy filtradas.
-      const soft = lowpass(ac, dest, 700)
-      const env = ac.createGain()
-      env.gain.setValueAtTime(0, t)
-      env.gain.linearRampToValueAtTime(1, t + 0.5)
-      env.gain.setValueAtTime(1, t + seconds)
-      env.gain.linearRampToValueAtTime(0, t + seconds + 0.6)
-      env.connect(soft)
-      for (const midi of note.midi) {
-        for (const cents of [-7, 7]) {
-          const osc = ac.createOscillator()
-          osc.type = 'sawtooth'
-          osc.frequency.value = mtof(midi)
-          osc.detune.value = cents
-          const g = ac.createGain()
-          g.gain.value = 0.0045
-          osc.connect(g)
-          g.connect(env)
-          osc.start(t)
-          osc.stop(t + seconds + 0.7)
-        }
+    case 'pah': {
+      // Acordes cortitos, con resorte: el "pa-pá" del vals.
+      const soft = lowpass(ac, dest, 2400)
+      for (const midi of note.midi) partial(ac, soft, t, mtof(midi), 0.014, 0.1, 'triangle', 0.003)
+      break
+    }
+    case 'kick':
+      // Bombo blandito: se siente más de lo que se oye.
+      {
+        const osc = ac.createOscillator()
+        osc.frequency.setValueAtTime(130, t)
+        osc.frequency.exponentialRampToValueAtTime(48, t + 0.1)
+        const g = ac.createGain()
+        g.gain.value = 0.0001
+        g.gain.setValueAtTime(0.0001, t)
+        g.gain.exponentialRampToValueAtTime(0.08, t + 0.004)
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16)
+        osc.connect(g)
+        g.connect(dest)
+        osc.start(t)
+        osc.stop(t + 0.2)
       }
       break
-    }
+    case 'clap':
+      // Palmas: tres chasquidos casi juntos y la cola.
+      for (const at of [0, 0.009, 0.018]) burst(ac, dest, t + at, 'bandpass', 1500, 0.03, 0.012)
+      burst(ac, dest, t + 0.02, 'bandpass', 1300, 0.02, 0.07)
+      break
+    case 'shaker':
+      // En los contratiempos, un poquito más fuerte: eso es lo que hace bailar.
+      burst(ac, dest, t, 'bandpass', 7500, note.midi[0] ? 0.012 : 0.007, 0.03)
+      break
   }
 }
 
@@ -235,7 +339,7 @@ function tick() {
     gain.gain.setValueAtTime(0, now)
     gain.gain.linearRampToValueAtTime(LEVEL, now + 3)
     gain.connect(input)
-    // El levare (tiempo 47 de la vuelta anterior) suena enseguida.
+    // El levare (último tiempo de la vuelta anterior) suena enseguida.
     run = { gain, origin: now + 0.2 + BEAT, index: FIRST, loop: -1 }
   }
   const horizon = ac.currentTime + 0.35

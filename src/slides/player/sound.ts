@@ -181,7 +181,7 @@ const MIN_GAP: Partial<Record<Cue, number>> = {
   note: 0.04,
   photo: 0.05,
   tape: 0.04,
-  scratch: 0.045,
+  keystroke: 0.04,
   tick: 0.05,
   blow: 0.6,
   unfold: 0.6,
@@ -211,7 +211,7 @@ const DUCK = new Set<Cue>([
   'horn',
   'stamp',
   'drop',
-  'pencil',
+  'write',
   'signature',
 ])
 

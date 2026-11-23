@@ -1,9 +1,9 @@
 /**
  * Cómo suena cada cosa. Todo sintetizado (no hay archivos): los objetos con
- * ruido moldeado muestra por muestra (el grafito de un lápiz, una hoja que se
- * da vuelta, una cinta que se pega, los pochoclos), lo musical con notas
- * afinadas en do mayor pentatónica. Cada elemento tiene su sonido: el papel
- * que se escribe suena a lápiz, la revista a página, la cámara a obturador.
+ * ruido moldeado muestra por muestra (una hoja que se da vuelta, una cinta
+ * que se pega, los pochoclos), lo musical con notas afinadas en do mayor
+ * pentatónica. Cada elemento tiene su sonido: la carta se escribe con tinta
+ * mágica, la revista suena a página, la cámara a obturador.
  */
 
 export type Cue =
@@ -25,11 +25,11 @@ export type Cue =
   | 'peel'
   /** La tarjeta de cartulina que se abre. */
   | 'unfold'
-  /** Lápiz escribiendo: trazos de grafito. Dura `duration`. */
-  | 'pencil'
-  /** Un trazo corto de lápiz (cada letra que se escribe). */
-  | 'scratch'
-  /** La firma: un garabato rápido. */
+  /** La carta que se escribe sola: trazos suaves de tinta y notitas que suben. Dura `duration`. */
+  | 'write'
+  /** Cada letra que se escribe: un "toc" suave y redondo. */
+  | 'keystroke'
+  /** La firma: un trazo que va y vuelve, y un brillito. */
   | 'signature'
   /** Una página de revista que se da vuelta. */
   | 'pageflip'
@@ -112,7 +112,7 @@ export type Cue =
 export interface CueOptions {
   /** Lugar en una secuencia (sube la nota). */
   step?: number
-  /** Para los que duran (`pencil`, `spin`), en segundos. */
+  /** Para los que duran (`write`, `spin`), en segundos. */
   duration?: number
   /** Más fuerte o más suave que lo normal (1 = normal). */
   gain?: number
@@ -151,6 +151,8 @@ function noise(ac: BaseAudioContext): AudioBuffer {
 
 /** Envolvente: sube en `attack` y se apaga en `decay` (exponencial, suena natural). */
 function adsr(g: GainNode, t: number, peak: number, attack: number, decay: number) {
+  // En silencio desde ya: si no, el cuadro antes de `t` suena entero (un clic).
+  g.gain.value = 0.0001
   g.gain.setValueAtTime(0.0001, t)
   g.gain.exponentialRampToValueAtTime(Math.max(peak, 0.0002), t + attack)
   g.gain.exponentialRampToValueAtTime(0.0001, t + attack + decay)
@@ -219,7 +221,7 @@ function hiss(
   src.stop(t + attack + decay + 0.05)
 }
 
-/** Un sonido armado muestra por muestra (las texturas: grafito, papel, burbujas). */
+/** Un sonido armado muestra por muestra (las texturas: papel, burbujas, tinta). */
 function texture(
   ac: BaseAudioContext,
   seconds: number,
@@ -334,52 +336,47 @@ function click(v: Voice, at: number, f: number, gain: number) {
 }
 
 /**
- * Lápiz sobre papel: trazos de grafito con presión que varía, pausas entre
- * trazos (y entre palabras) y cada trazo con su "color" (la dirección cambia
- * el roce).
+ * Escritura con tinta mágica: trazos suaves (un roce redondo de pluma, sin
+ * raspar), cada uno con su vaivén, y cada tantos una notita que sube, como si
+ * la tinta brillara al secarse.
  */
-function pencil(
-  v: Voice,
-  duration: number,
-  { at = 0, gain = 1, quick = false }: { at?: number; gain?: number; quick?: boolean } = {},
-) {
-  const strokes: { start: number; len: number }[] = []
-  let t = 0.005
-  while (t < duration - 0.03) {
-    const len = Math.min(quick ? between(0.035, 0.09) : between(0.06, 0.2), duration - t)
-    strokes.push({ start: t, len })
-    t +=
-      len +
-      (quick ? between(0.01, 0.03) : between(0.025, 0.08)) +
-      (!quick && Math.random() < 0.14 ? between(0.12, 0.26) : 0)
+function writing(v: Voice, duration: number) {
+  const strokes: { start: number; len: number; level: number }[] = []
+  let t = 0.01
+  while (t < duration - 0.08) {
+    const len = Math.min(between(0.12, 0.26), duration - t)
+    strokes.push({ start: t, len, level: between(0.7, 1) })
+    t += len + between(0.05, 0.11) + (Math.random() < 0.18 ? between(0.12, 0.22) : 0)
   }
-  const buffer = texture(v.ac, duration + 0.03, (d, sr) => {
+  const buffer = texture(v.ac, duration + 0.05, (d, sr) => {
     for (const s of strokes) {
-      const i0 = Math.floor(s.start * sr)
-      const n = Math.floor(s.len * sr)
-      let press = 0.7
-      let target = 0.7
-      for (let k = 0; k < n && i0 + k < d.length; k++) {
-        if (k % 220 === 0) target = between(0.45, 1)
-        press += (target - press) * 0.006
-        const local = k / sr
-        const env = Math.min(1, local / 0.009) * Math.min(1, (s.len - local) / 0.018)
-        let x = rnd() * env * press
-        // Granitos de grafito que raspan.
-        if (Math.random() < 0.007) x += rnd() * 1.5 * env
-        d[i0 + k] = x
-      }
+      rush(d, sr, s.start, s.start + s.len, (u) => s.level * Math.sin(Math.PI * u) ** 1.5, 1)
     }
   })
   const [, band] = play(v, buffer, {
-    at,
-    gain: gain * 0.058,
+    gain: 0.05,
     filters: [
-      { type: 'highpass', f: 1100, q: 0.5 },
-      { type: 'bandpass', f: 3400, q: 0.75 },
+      { type: 'highpass', f: 500, q: 0.5 },
+      { type: 'bandpass', f: 1600, q: 1.1 },
+      { type: 'lowpass', f: 3200, q: 0.5 },
     ],
   })
-  for (const s of strokes) band!.frequency.setValueAtTime(between(2400, 5200), v.t + at + s.start)
+  strokes.forEach((s, i) => {
+    // El trazo sube o baja, como la mano que va y vuelve.
+    const from = between(1200, 1900)
+    const to = from * (i % 2 ? 0.75 : 1.35)
+    band!.frequency.setValueAtTime(from, v.t + s.start)
+    band!.frequency.linearRampToValueAtTime(to, v.t + s.start + s.len)
+    if (i % 2 === 0) {
+      tone(v, {
+        at: s.start + 0.04,
+        f: pitch(3 + i / 2),
+        gain: 0.018,
+        attack: 0.012,
+        decay: 0.55,
+      })
+    }
+  })
 }
 
 // ── Los sonidos ─────────────────────────────────────────────────────────────
@@ -464,18 +461,23 @@ export const SYNTHS: Record<Cue, Synth> = {
     hiss(v, { at: 0.27, filter: 'lowpass', f: 430, q: 0.5, gain: 0.09, attack: 0.01, decay: 0.11 })
   },
 
-  pencil(v, { duration = 2 }) {
-    pencil(v, duration)
+  write(v, { duration = 2 }) {
+    writing(v, duration)
   },
 
-  scratch(v) {
-    pencil(v, between(0.05, 0.1), { gain: 1.5, quick: true })
+  keystroke(v) {
+    // Redondo y apagado, como una tecla buena: cada uno apenas distinto.
+    const f = between(520, 660)
+    tone(v, { f, to: f * 0.78, glide: 0.03, gain: 0.09, attack: 0.002, decay: 0.035 })
+    hiss(v, { filter: 'lowpass', f: 1400, gain: 0.03, attack: 0.001, decay: 0.012 })
   },
 
   signature(v) {
-    // Garabato rápido: trazos cortos y veloces, y el punto final.
-    pencil(v, 0.42, { gain: 1, quick: true })
-    hiss(v, { at: 0.46, f: 3600, q: 1.2, gain: 0.05, attack: 0.002, decay: 0.012 })
+    // Un trazo que va y vuelve, rápido, y un brillito al terminar.
+    hiss(v, { f: 900, to: 2400, q: 1, gain: 0.05, attack: 0.05, decay: 0.12 })
+    hiss(v, { at: 0.17, f: 2200, to: 1100, q: 1, gain: 0.045, attack: 0.04, decay: 0.12 })
+    tone(v, { at: 0.36, f: pitch(9), gain: 0.035, attack: 0.004, decay: 0.5 })
+    tone(v, { at: 0.36, f: pitch(9) * 2.76, gain: 0.008, attack: 0.002, decay: 0.15 })
   },
 
   pageflip(v) {
@@ -611,6 +613,7 @@ export const SYNTHS: Record<Cue, Synth> = {
     band.frequency.value = 1150
     band.Q.value = 1.3
     const g = ac.createGain()
+    g.gain.value = 0.0001
     g.gain.setValueAtTime(0.0001, t)
     g.gain.exponentialRampToValueAtTime(0.09 * v.k, t + 0.03)
     g.gain.setValueAtTime(0.09 * v.k, t + 0.4)

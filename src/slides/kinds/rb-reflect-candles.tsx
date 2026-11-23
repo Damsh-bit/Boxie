@@ -159,8 +159,8 @@ export function ReflectCandles({ theme, ctx }: Props<'reflect.candles'>) {
                 className="rb-input rb-wish-input"
                 value={draft}
                 onChange={(e) => {
-                  // Cada letra, un trazo de lápiz.
-                  if (e.target.value.length > draft.length) play('scratch')
+                  // Cada letra, un "toc" suave.
+                  if (e.target.value.length > draft.length) play('keystroke')
                   setDraft(e.target.value.replace(/\n/g, ''))
                 }}
                 onKeyDown={(e) => {

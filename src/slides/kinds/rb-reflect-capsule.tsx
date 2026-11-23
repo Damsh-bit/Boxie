@@ -337,8 +337,8 @@ export function ReflectCapsule({ theme, ctx }: Props<'reflect.capsule'>) {
                 className="rb-input rb-paper-text rb-scroll"
                 value={draft}
                 onChange={(e) => {
-                  // Escribir en la hoja suena a lápiz.
-                  if (e.target.value.length > draft.length) play('scratch')
+                  // Cada letra que se escribe en la hoja, un "toc" suave.
+                  if (e.target.value.length > draft.length) play('keystroke')
                   setDraft(e.target.value)
                 }}
                 maxLength={600}

@@ -136,18 +136,35 @@ const HANDMADE: Item[] = [
 
 // Las etiquetas apenas pisan el borde del celular para no tapar la pantalla
 // (entre lg y xl la columna es angosta: ahí son más chicas para no cortarse).
-// Las de la derecha no entran entre el celular y el borde de la pantalla entre
-// lg y xl: ahí quedan solo las de la izquierda.
-const LEFT = 'right-[calc(100%-18px)] sm:block'
-const RIGHT = 'left-[calc(100%-18px)] sm:block lg:hidden xl:block'
+// En el teléfono el lugar al costado es poco: pisan un poco más, la de la
+// derecha más que la de la izquierda (el celular está girado y arriba la corre
+// para afuera). En los de menos de 360 px ni así entran: no van.
+const LEFT = 'right-[calc(100%-36px)] sm:right-[calc(100%-18px)]'
+const RIGHT = 'left-[calc(100%-48px)] sm:left-[calc(100%-18px)]'
 
-/** Dónde flotan las etiquetas alrededor del celular (de arriba abajo) y cuánto las corre el mouse. */
+/**
+ * Dónde flotan las etiquetas alrededor del celular (de arriba abajo) y cuánto
+ * las corre el mouse. En una columna (celulares y tablets) se ve solo la parte
+ * de arriba del celular: van dos, la de la derecha más arriba (como en el
+ * boceto). En escritorio, las cinco; entre lg y xl las de la derecha no entran
+ * entre el celular y el borde de la pantalla y quedan solo las de la izquierda.
+ */
 const CHIP_SPOTS: { className: string; depth: number; float: number; delay: number }[] = [
-  { className: `${LEFT} top-[12%]`, depth: 16, float: 6, delay: 0.9 },
-  { className: `${RIGHT} top-[27%]`, depth: -12, float: 7, delay: 1 },
-  { className: `${LEFT} top-[45%]`, depth: 20, float: 5.5, delay: 1.1 },
-  { className: `${RIGHT} top-[61%]`, depth: -16, float: 6.5, delay: 1.2 },
-  { className: `${LEFT} top-[78%]`, depth: 12, float: 6, delay: 1.3 },
+  { className: `${LEFT} top-[12%] lg:block`, depth: 16, float: 6, delay: 0.9 },
+  {
+    className: `${RIGHT} top-[13%] block max-[359px]:hidden lg:top-[27%] lg:hidden xl:block`,
+    depth: -12,
+    float: 7,
+    delay: 1,
+  },
+  {
+    className: `${LEFT} top-[29%] block max-[359px]:hidden lg:top-[45%]`,
+    depth: 20,
+    float: 5.5,
+    delay: 1.1,
+  },
+  { className: `${RIGHT} top-[61%] xl:block`, depth: -16, float: 6.5, delay: 1.2 },
+  { className: `${LEFT} top-[78%] lg:block`, depth: 12, float: 6, delay: 1.3 },
 ]
 
 /** Segundos sin tocar nada para que la Ribbly vuelva a pasar sola. */
@@ -607,7 +624,7 @@ export function HeroPreview({
     <motion.div
       ref={phone}
       // En escritorio con poca altura (laptops de 768 px), el celular es un poco más chico: entra entero.
-      className="relative mx-auto w-[240px] [--s:0.7902] sm:w-[270px] sm:[--s:0.8951] lg:w-[300px] lg:[--s:1] lg:[@media(max-height:800px)]:w-[264px] lg:[@media(max-height:800px)]:[--s:0.8741]"
+      className="relative mx-auto w-[224px] [--s:0.7343] sm:w-[270px] sm:[--s:0.8951] lg:w-[300px] lg:[--s:1] lg:[@media(max-height:800px)]:w-[264px] lg:[@media(max-height:800px)]:[--s:0.8741]"
       initial={{ opacity: 0, y: 70, rotate: 8 }}
       animate={{ opacity: 1, y: 0, rotate: 3 }}
       transition={{ ...spring.gentle, delay: 0.25 }}
@@ -620,7 +637,9 @@ export function HeroPreview({
             onPointerMove={onPointerMove}
             onPointerLeave={onPointerLeave}
           >
-            <PhoneFrame>
+            {/* En una columna se corta en la ranura: la sombra larga de abajo quedaría
+                cortada en seco de lado a lado. Una corta que no pasa del ancho de la ranura. */}
+            <PhoneFrame className="max-lg:shadow-[0_0_34px_-14px_rgba(42,36,51,0.5)]">
               <div
                 role="region"
                 aria-roledescription="vista previa"
@@ -819,8 +838,9 @@ export function HeroPreview({
         ),
       )}
 
-      {/* En la mezcla: de qué Ribbly es lo que se ve, y un toque para armar esa. */}
-      <div className="absolute top-[calc(100%+22px)] left-1/2 z-10 -translate-x-1/2">
+      {/* En la mezcla: de qué Ribbly es lo que se ve, y un toque para armar esa
+          (en una columna, sobre lo último que asoma del celular; Hero.tsx da --peek). */}
+      <div className="absolute top-[calc(100%+22px)] left-1/2 z-10 -translate-x-1/2 max-lg:top-[calc(var(--peek)-46px)]">
         <AnimatePresence mode="wait" initial={false}>
           {source && (
             <motion.button
@@ -993,16 +1013,20 @@ function OccasionChip({
       <motion.button
         type="button"
         onClick={() => onPick(occasion)}
+        // En el teléfono, chiquitas y en dos renglones: no entran más anchas al costado del celular.
         className={cn(
           chipLook,
-          'flex cursor-pointer items-center gap-1.5 px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-brand-soft lg:px-3 lg:py-1.5 lg:text-xs xl:px-3.5 xl:py-2 xl:text-sm',
+          'flex cursor-pointer items-center gap-1 px-2 py-1.5 text-left text-[11px] leading-tight font-semibold whitespace-normal transition-colors hover:bg-brand-soft sm:gap-1.5 sm:px-3.5 sm:py-2 sm:text-sm sm:whitespace-nowrap lg:px-3 lg:py-1.5 lg:text-xs xl:px-3.5 xl:py-2 xl:text-sm',
         )}
         whileHover={{ scale: 1.08, rotate: -3 }}
         whileTap={{ scale: 0.92 }}
         transition={spring.snappy}
       >
-        <Emoji value={occasion.emoji} size="1.35em" />
-        {occasion.moment ?? occasion.label}
+        <Emoji value={occasion.emoji} size="1.35em" className="shrink-0" />
+        {/* w-max: anclada a un costado, sin ancho propio se partiría palabra por palabra. */}
+        <span className="w-max max-w-[4rem] text-balance sm:max-w-none">
+          {occasion.moment ?? occasion.label}
+        </span>
       </motion.button>
     </FloatingChip>
   )
@@ -1029,7 +1053,7 @@ function PurchaseChip({
     // Es la más ancha: pisa un poco más el celular y en las tablets chicas no va.
     <FloatingChip
       {...spot}
-      className={cn(spot.className, 'left-[calc(100%-34px)] sm:hidden md:block')}
+      className={cn(spot.className, 'left-[calc(100%-34px)] sm:left-[calc(100%-34px)]')}
       swap={event.id}
     >
       <div className={cn(chipLook, 'flex items-center gap-2 py-1.5 pr-3.5 pl-1.5 text-left')}>

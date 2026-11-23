@@ -148,7 +148,7 @@ export function Hero({
 
       <motion.div
         // grid-cols-1 (minmax(0, 1fr)): nada de adentro puede ensanchar la grilla más que la pantalla.
-        className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-x-10 gap-y-8 px-4 [grid-template-areas:'copy'_'builder'_'phone'] min-[380px]:px-5 sm:px-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-y-5 lg:[grid-template-areas:'copy_phone'_'builder_phone']"
+        className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-x-10 gap-y-7 px-4 [grid-template-areas:'phone'_'copy'_'builder'] min-[380px]:px-5 sm:px-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-y-5 lg:[grid-template-areas:'copy_phone'_'builder_phone']"
         initial="hidden"
         animate="show"
         variants={{ show: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } } }}
@@ -245,16 +245,28 @@ export function Hero({
           />
         </motion.div>
 
-        <motion.div className="min-w-0 [grid-area:phone] lg:py-2" style={{ y: phoneY }}>
-          <HeroPreview
-            theme={theme}
-            themes={themes}
-            name={name}
-            showcase={showcase}
-            occasions={occasions}
-            purchases={proof.events}
-            mix={!chosen && !short}
-            onPickTheme={choose}
+        {/* En una columna el celular va arriba de todo y asoma de una ranura: se
+            ve la parte de arriba (--peek) y el título entra en la primera pantalla. */}
+        <motion.div
+          className="relative min-w-0 [--peek:300px] [grid-area:phone] max-lg:pb-1.5 sm:[--peek:380px] lg:py-2"
+          style={{ y: phoneY }}
+        >
+          {/* Se corta solo abajo, en la ranura: arriba y a los costados flota libre. */}
+          <div className="max-lg:h-[calc(var(--peek)+8px)] max-lg:pt-2 max-lg:[clip-path:inset(-200px_-100vw_0_-100vw)]">
+            <HeroPreview
+              theme={theme}
+              themes={themes}
+              name={name}
+              showcase={showcase}
+              occasions={occasions}
+              purchases={proof.events}
+              mix={!chosen && !short}
+              onPickTheme={choose}
+            />
+          </div>
+          <span
+            aria-hidden
+            className="pointer-events-none absolute top-[calc(var(--peek)+8px)] left-1/2 h-4 w-[264px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_-8px_18px_-8px_rgba(42,36,51,0.45),0_10px_22px_-8px_rgba(42,36,51,0.35)] ring-1 ring-black/5 sm:w-[314px] lg:hidden"
           />
         </motion.div>
       </motion.div>

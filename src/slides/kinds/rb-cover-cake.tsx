@@ -92,6 +92,8 @@ export function CoverCake({ theme, ctx }: Props<'cover.cake'>) {
             active={active}
             delay={0.55}
             from={0.7}
+            // El saludo, con una campanita.
+            cue="chime"
             className="rb-hand rb-shadow-text"
             style={{ fontSize: u(31), fontWeight: 700, marginTop: u(14) }}
           >

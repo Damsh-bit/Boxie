@@ -18,8 +18,8 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
   const [liked, setLiked] = useState(false)
   const [sharing, setSharing] = useState(false)
   const play = useSound()
-  // La tarjeta que sube.
-  useCue(active, 'paper', 0.22)
+  // La tarjeta con la foto que se apoya.
+  useCue(active, 'photo', 0.24)
   const photo = ctx.noPhotos ? undefined : ctx.resolveMedia(buyer.photo)
   const title = buyer.title.trim() || fill(theme.defaultTitle, ctx.vars)
   const text = buyer.text.trim() || fill(theme.defaultText, ctx.vars)

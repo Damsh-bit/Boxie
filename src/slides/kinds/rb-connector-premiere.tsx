@@ -147,9 +147,18 @@ export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
     return () => clearTimeout(timer)
   }, [active, preview, autoAdvance, next])
 
-  // El telón que se corre, los pochoclos que llegan y la entrada VIP.
+  // El telón que se corre, el balde que llega y la entrada VIP.
   useCue(active, 'curtain', 0.25)
-  useCue(active, 'pop', 1.42)
+  // Lo que llega en el balde suena a lo que es.
+  useCue(
+    active,
+    ctx.style.snack === 'gaseosa'
+      ? 'fizz'
+      : ctx.style.snack === 'golosinas'
+        ? 'wrapper'
+        : 'popcorn',
+    1.42,
+  )
   useCue(active, 'ticket', 1.85)
 
   const open = active

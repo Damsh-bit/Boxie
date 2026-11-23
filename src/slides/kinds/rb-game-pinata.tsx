@@ -107,15 +107,15 @@ export function GamePinata({ theme, buyer, ctx }: Props<'game.pinata'>) {
   const candy = TONES[ctx.style.colores ?? ''] ?? (palette ? palette.party : CANDY)
 
   const play = useSound()
-  // El festejo que aparece después de romperla.
-  useCue(broken, 'pop', 0.87)
+  // El festejo que aparece después de romperla, con espantasuegras.
+  useCue(broken, 'horn', 0.85)
 
   const hit = () => {
     if (broken) return
     const next = hits + 1
     setHits(next)
     // Cada golpe un poco más agudo; el último la rompe.
-    play(next >= needed ? 'smash' : 'thud', { step: next })
+    play(next >= needed ? 'smash' : 'thwack', { step: next })
     if (!calm) navigator.vibrate?.(next >= needed ? [30, 40, 80] : 30)
     void swing.start({
       rotate: [0, next % 2 ? 24 : -24, -14, 8, -3, 0],

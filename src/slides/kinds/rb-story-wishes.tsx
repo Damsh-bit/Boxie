@@ -53,11 +53,11 @@ function useWishes({ theme, buyer }: Props<'story.wishes'>, night = false) {
 }
 
 /**
- * Cada nota suena al pegarse (de la #1 a la última, subiendo la escala) y
- * también al tocarla: las notas son un xilofón.
+ * Cada nota suena al pegarse con su cinta (de la #1 a la última, subiendo
+ * apenas) y al tocarla, como un xilofón.
  */
 function NoteSound({ active, index }: { active: boolean; index: number }) {
-  return <SoundCue when={active} cue="note" delay={0.41 + index * 0.15} step={index} />
+  return <SoundCue when={active} cue="tape" delay={0.41 + index * 0.15} step={index} />
 }
 
 function WishesSky(props: Props<'story.wishes'>) {

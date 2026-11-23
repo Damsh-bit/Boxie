@@ -26,7 +26,7 @@ export function StoryMagazine({
   const active = ctx.active
   const [sharing, setSharing] = useState(false)
   // La tapa, como una página de revista que se da vuelta.
-  useCue(active, 'paper', 0.12)
+  useCue(active, 'pageflip', 0.08)
 
   const text = pickMagazine({
     bank: theme.bank,

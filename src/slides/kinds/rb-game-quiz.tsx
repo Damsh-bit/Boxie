@@ -488,7 +488,12 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
                         <EmojiText text={question.hint} />
                       </motion.p>
                     ) : (
-                      <Btn variant="glass" mods="is-small" cue="pop" onClick={() => setHint(true)}>
+                      <Btn
+                        variant="glass"
+                        mods="is-small"
+                        cue="chime"
+                        onClick={() => setHint(true)}
+                      >
                         <Lightbulb size={15} />
                         <T text={theme.hintLabel} ctx={ctx} />
                       </Btn>

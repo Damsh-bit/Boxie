@@ -37,8 +37,8 @@ export function ReflectCandles({ theme, ctx }: Props<'reflect.candles'>) {
     next[step] = text
     setWishes(next.slice(0, total))
     if (step < total - 1) {
-      // Cada deseo guardado, una nota más arriba.
-      play('ting', { step: 4 + step })
+      // Cada deseo es un papelito que se dobla (y suena un poco más arriba).
+      play('fold', { step })
       setStep(step + 1)
       setDraft(wishes[step + 1] ?? '')
     } else {
@@ -158,7 +158,11 @@ export function ReflectCandles({ theme, ctx }: Props<'reflect.candles'>) {
                 key={step}
                 className="rb-input rb-wish-input"
                 value={draft}
-                onChange={(e) => setDraft(e.target.value.replace(/\n/g, ''))}
+                onChange={(e) => {
+                  // Cada letra, un trazo de lápiz.
+                  if (e.target.value.length > draft.length) play('scratch')
+                  setDraft(e.target.value.replace(/\n/g, ''))
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()

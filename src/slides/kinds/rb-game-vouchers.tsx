@@ -64,7 +64,7 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
   const play = useSound()
   // El sello golpea (a mitad de su animación) y después, el confeti.
   useCue(justRedeemed, 'stamp', calm ? 0 : 0.44)
-  useCue(justRedeemed, 'sparkle', calm ? 0.1 : 0.52)
+  useCue(justRedeemed, 'confetti', calm ? 0.1 : 0.52)
 
   return (
     <Stage

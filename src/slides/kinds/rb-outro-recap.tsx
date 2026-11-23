@@ -19,7 +19,7 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
   const pareja = theme.look === 'pareja'
   const [notice, setNotice] = useState<string | null>(null)
   // La tarjeta del resumen que sube (los números suenan al aparecer, con su Pop).
-  useCue(active, 'paper', 0.32)
+  useCue(active, 'flick', 0.3)
 
   const content = (kind: string) => {
     const key = slideOfKind(ctx, kind)
@@ -185,6 +185,8 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
                     active={active}
                     delay={0.55 + i * 0.1}
                     from={0.5}
+                    // Un contador que suma.
+                    cue="tick"
                     className="rb-stat"
                   >
                     <b>{stat.value}</b>

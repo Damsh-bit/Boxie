@@ -243,7 +243,7 @@ function PosterBody({
                 type="button"
                 className={`rb-tab ${on ? 'is-on' : ''}`}
                 onClick={() => {
-                  if (!on) play('swish')
+                  if (!on) play('projector')
                   setSelected(picks.findIndex((p) => p.platform.trim() === platform))
                 }}
                 aria-pressed={on}
@@ -301,8 +301,8 @@ function PosterBody({
           <Btn
             variant="dark"
             style={{ borderRadius: u(10) }}
-            // El póster que cambia suena como pasar de pantalla.
-            cue={last ? 'tap' : 'swish'}
+            // El póster que cambia: el proyector pasa a la diapositiva siguiente.
+            cue={last ? 'tap' : 'projector'}
             onClick={() => (last ? ctx.next() : setSelected(index + 1))}
           >
             <ArrowDown size={16} />

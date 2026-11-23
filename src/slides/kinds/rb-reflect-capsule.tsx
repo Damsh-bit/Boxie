@@ -295,7 +295,7 @@ export function ReflectCapsule({ theme, ctx }: Props<'reflect.capsule'>) {
             </div>
 
             <div className="rb-actions">
-              <Btn variant="white" onClick={begin} cue="paper" style={{ fontSize: u(15) }}>
+              <Btn variant="white" onClick={begin} cue="slide" style={{ fontSize: u(15) }}>
                 <T text={letter ? theme.editLabel : theme.cta} ctx={ctx} />
               </Btn>
             </div>
@@ -336,7 +336,11 @@ export function ReflectCapsule({ theme, ctx }: Props<'reflect.capsule'>) {
                 id={`carta-${ctx.slideKey}`}
                 className="rb-input rb-paper-text rb-scroll"
                 value={draft}
-                onChange={(e) => setDraft(e.target.value)}
+                onChange={(e) => {
+                  // Escribir en la hoja suena a lápiz.
+                  if (e.target.value.length > draft.length) play('scratch')
+                  setDraft(e.target.value)
+                }}
                 maxLength={600}
                 placeholder={fill(theme.placeholder, ctx.vars)}
                 autoFocus={!ctx.preview}

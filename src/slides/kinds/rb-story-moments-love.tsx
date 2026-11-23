@@ -22,10 +22,11 @@ const ENTRANCES: Record<string, Entrance> = {
   kicker: { delay: 0.08, y: 10 },
   title: { delay: 0.16, y: 14 },
   doodles: { delay: 0.9, scale: 0.7, pop: true, silent: true },
-  'polaroid-0': { delay: 0.3, scale: 0.5, rotate: -10, pop: true },
-  'polaroid-1': { delay: 0.42, scale: 0.5, rotate: 10, pop: true },
-  'polaroid-2': { delay: 0.54, scale: 0.5, rotate: -10, pop: true },
-  'polaroid-3': { delay: 0.66, scale: 0.5, rotate: 10, pop: true },
+  // Cada polaroid suena al caer sobre la mesa.
+  'polaroid-0': { delay: 0.3, scale: 0.5, rotate: -10, pop: true, cue: 'photo' },
+  'polaroid-1': { delay: 0.42, scale: 0.5, rotate: 10, pop: true, cue: 'photo' },
+  'polaroid-2': { delay: 0.54, scale: 0.5, rotate: -10, pop: true, cue: 'photo' },
+  'polaroid-3': { delay: 0.66, scale: 0.5, rotate: 10, pop: true, cue: 'photo' },
   phrase: { delay: 0.85, y: 16 },
   days: { delay: 1, y: 10 },
 }
@@ -101,12 +102,12 @@ export function StoryMomentsGrid({ theme, buyer, ctx }: Props<'story.moments'>) 
   }
   const play = useSound()
   const step = (by: number) => {
-    play('paper')
+    play('flick')
     setZoom((z) => (z === null ? z : (z + by + moments.length) % moments.length))
   }
   const current = zoom === null ? null : moments[zoom]
-  // La polaroid que se agranda.
-  useCue(!!current, 'paper')
+  // La polaroid que se agranda: un clic de cámara.
+  useCue(!!current, 'shutter')
 
   return (
     <Stage

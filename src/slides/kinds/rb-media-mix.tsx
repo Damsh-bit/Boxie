@@ -68,6 +68,7 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
           <Pop
             active={active}
             from={0.6}
+            cue={cover === 'cassette' ? 'cassette' : 'vinyl'}
             className="rb-mix-cover"
             {...editable(ctx, '', 'portada')}
           >
@@ -97,6 +98,8 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
           <Pop
             active={active}
             from={0.6}
+            // Las tapas de discos: la púa que cae en el vinilo.
+            cue="vinyl"
             className="rb-mix-cover"
             {...editable(ctx, '', 'portada')}
           >
@@ -186,8 +189,8 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
           <Btn
             variant="glass"
             mods="rb-btn-icon"
-            // Suena el confeti que sale.
-            cue={null}
+            // Espantasuegras (y el confeti que sale suena solo).
+            cue="horn"
             onClick={() => setParty((n) => n + 1)}
             aria-label={pareja ? 'Me encanta' : '¡Fiesta!'}
           >

@@ -118,9 +118,12 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
     ? [palette.balloons[1], palette.accent, palette.primary, palette.balloons[2]]
     : ['#4FC3F7', '#FFD35C', '#F44E63', '#B28DFF']
   const ending = ctx.style.remate ?? 'original'
-  // La caja que se abre y, en el final, el ¡Feliz cumple! con su fanfarria.
+  // La caja que se abre (y la gift card que sale) y, en el final, el ¡Feliz
+  // cumple! con su fanfarria y un espantasuegras.
   useCue(opened, 'unbox', 0.05)
+  useCue(opened, 'flick', 0.5)
   useCue(active && finale, 'fanfare', 0.14)
+  useCue(active && finale, 'horn', 0.75)
 
   return (
     <Stage

@@ -75,7 +75,7 @@ export function Burst({
   count = 34,
   colors = PARTY,
   power = 1,
-  cue = 'sparkle',
+  cue = 'confetti',
 }: {
   x?: string
   y?: string

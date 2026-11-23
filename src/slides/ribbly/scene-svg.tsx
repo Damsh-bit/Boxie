@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { useEffect, useId, useMemo, useState, type ReactNode } from 'react'
 import { ease, spring } from '../player/motion'
+import type { Cue } from '../player/sound'
 import { useCue } from '../player/use-sound'
 import {
   HEART_PATH,
@@ -56,6 +57,8 @@ export interface Entrance {
   pop?: boolean
   /** Con resorte pero sin su "pop" (adornos: que suene lo importante). */
   silent?: boolean
+  /** Cómo suena al llegar, si no es un "pop" (una polaroid, un sticker). */
+  cue?: Cue
 }
 
 interface Ctx {
@@ -300,7 +303,7 @@ function Enter({
   }
   const delay = entrance.delay ?? 0
   // Lo que entra con resorte suena al llegar (seguidos, suben de nota).
-  useCue(active && !!entrance.pop && !entrance.silent, 'pop', delay + 0.07)
+  useCue(active && !!entrance.pop && !entrance.silent, entrance.cue ?? 'pop', delay + 0.07)
   return (
     <motion.g
       style={{ transformBox: 'fill-box', transformOrigin: 'center' }}

@@ -98,12 +98,15 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
   const play = useSound()
   const openCard = () => {
     setOpen(true)
-    play('unfold')
+    // El sticker del sobre que se despega.
+    play('peel')
   }
-  // El sobre que llega; con la tarjeta abierta, el lápiz mientras se escribe y la firma.
-  useCue(active && !open, 'paper', 0.35)
-  useCue(open && !calm, 'scribble', 0.95, { duration: 2.2 })
-  useCue(open && !calm, 'ting', 3.05)
+  // El sobre que se desliza; abierta, la cartulina que se despliega, el lápiz
+  // mientras se escribe la carta y la firma.
+  useCue(active && !open, 'slide', 0.35)
+  useCue(open, 'unfold', 0.2)
+  useCue(open && !calm, 'pencil', 0.95, { duration: 2.2 })
+  useCue(open && !calm, 'signature', 3)
 
   const text = buyer.text.trim() || fill(theme.defaultText, ctx.vars)
   const spine = ctx.vars.edad ? fill(theme.spine, ctx.vars) : ''

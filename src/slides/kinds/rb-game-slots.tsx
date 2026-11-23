@@ -57,9 +57,9 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
     setStopped((n) => Math.max(n, reel + 1))
     if (reel === 2) setPhase('won')
   }
-  // Los rodillos girando (el tic tic que frena) y el jackpot.
+  // Los rodillos girando (el tic tic que frena) y el jackpot: llueven monedas.
   useCue(phase === 'spinning' && !calm, 'spin', 0.28, { duration: 2 })
-  useCue(phase === 'won', 'fanfare', 0.12)
+  useCue(phase === 'won', 'coins', 0.1)
 
   return (
     <Stage

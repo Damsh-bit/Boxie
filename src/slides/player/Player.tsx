@@ -24,6 +24,8 @@ import { slideDefinitions } from '../schemas'
 import type { SlideContext } from '../types'
 import { ConfettiLayer, FloatingParticles, GradientDrift } from './effects'
 import { ease, SLIDE_SPRING, spring } from './motion'
+import { youtubeId } from '../fields'
+import { startMusic } from './music'
 import { playSound, themeSounds } from './sound'
 import { SoundProvider, useMuted } from './use-sound'
 import { useSwipe } from './use-swipe'
@@ -147,6 +149,15 @@ export function Player({
     heard.current = current
     if (sounds) playSound('swish')
   }, [current, sounds])
+
+  // La música de fondo, solo a pantalla completa (el regalo, el ejemplo, la
+  // vista previa grande): en el editor y el panel sería ruido. Se calla en la
+  // pantalla de su canción, para que se escuche esa.
+  const here = config.slides[current]
+  const songHere =
+    here?.kind === 'media.video' && !!youtubeId(String(data.content[here.key]?.youtubeUrl ?? ''))
+  const music = sounds && variant === 'overlay' && !songHere
+  useEffect(() => (music ? startMusic() : undefined), [music])
 
   const summaries = useMemo(
     () =>
@@ -310,7 +321,7 @@ export function Player({
   )
 }
 
-/** Prender o apagar los sonidos (queda elegido en el dispositivo de quien mira). */
+/** Prender o apagar la música y los sonidos (queda elegido en el dispositivo de quien mira). */
 function SoundToggle({ beside }: { beside: boolean }) {
   const [muted, setMuted] = useMuted()
   return (
@@ -321,7 +332,7 @@ function SoundToggle({ beside }: { beside: boolean }) {
         setMuted(!muted)
         if (muted) playSound('tap')
       }}
-      aria-label={muted ? 'Activar los sonidos' : 'Silenciar los sonidos'}
+      aria-label={muted ? 'Activar música y sonidos' : 'Silenciar música y sonidos'}
       aria-pressed={!muted}
       whileTap={{ scale: 0.88 }}
       transition={spring.snappy}

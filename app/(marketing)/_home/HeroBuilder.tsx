@@ -25,11 +25,8 @@ function FlagAR({ className }: { className?: string }) {
   )
 }
 
+/** Lo que da confianza, debajo del armador (el pago seguro va junto al precio). */
 const TRUST: { icon: ReactNode; label: string }[] = [
-  {
-    icon: <MercadoPagoLogo className="size-[18px] text-[#00B1EA]" />,
-    label: 'Pago seguro con Mercado Pago',
-  },
   { icon: <Zap className="size-3.5 text-brand" aria-hidden />, label: 'Llega al instante' },
   {
     icon: <Smartphone className="size-3.5 text-brand" aria-hidden />,
@@ -97,7 +94,7 @@ export function HeroBuilder({
 
         <form
           id="armador"
-          className="relative isolate overflow-hidden rounded-[28px] bg-white/95 p-3.5 backdrop-blur-xl min-[380px]:p-4 sm:p-5"
+          className="relative isolate overflow-hidden rounded-[28px] bg-white/95 p-3.5 backdrop-blur-xl min-[380px]:p-4 sm:px-5"
           onSubmit={(e) => {
             e.preventDefault()
             rememberRecipient(short)
@@ -113,7 +110,7 @@ export function HeroBuilder({
             transition={{ duration: 0.6 }}
           />
 
-          <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="mb-3 flex items-center justify-between gap-3">
             <p className="flex min-w-0 items-center gap-2 text-sm font-bold text-ink">
               <motion.span
                 aria-hidden
@@ -133,7 +130,7 @@ export function HeroBuilder({
           </Step>
           <ThemePicker themes={themes} value={theme.slug} onChange={onChoose} />
 
-          <Step n={2} done={!!short} className="mt-4">
+          <Step n={2} done={!!short} className="mt-3">
             ¿Para quién es?
           </Step>
           <label className="relative block">
@@ -148,7 +145,7 @@ export function HeroBuilder({
               autoComplete="off"
               enterKeyHint="go"
               placeholder="¿Para quién es? Ej: Sofi"
-              className="h-14 w-full rounded-2xl border-2 bg-white px-5 pr-14 text-base font-semibold text-ink transition-[border-color,box-shadow] duration-200 outline-none placeholder:text-transparent"
+              className="h-12 w-full rounded-2xl border-2 bg-white px-4 pr-13 text-base font-semibold text-ink transition-[border-color,box-shadow] duration-200 outline-none placeholder:text-transparent"
               style={{
                 borderColor: focused ? theme.color : 'transparent',
                 boxShadow: focused
@@ -166,23 +163,23 @@ export function HeroBuilder({
             <motion.span
               aria-hidden
               key={short.length}
-              className="pointer-events-none absolute top-1/2 right-3 grid size-9 -translate-y-1/2 place-items-center rounded-xl"
+              className="pointer-events-none absolute top-1/2 right-2.5 grid size-8 -translate-y-1/2 place-items-center rounded-xl"
               style={{ backgroundColor: `color-mix(in srgb, ${theme.color} 18%, white)` }}
               animate={short ? { scale: [1, 1.3, 1], rotate: [0, -12, 0] } : { scale: 1 }}
               transition={{ duration: 0.4 }}
             >
-              <Icon name={short ? 'corazon-brillo' : 'escribir'} size={20} />
+              <Icon name={short ? 'corazon-brillo' : 'escribir'} size={18} />
             </motion.span>
           </label>
 
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
             <Magnetic strength={0.18} className="min-w-0 sm:flex-1">
               <ButtonLink
                 href={href}
                 onClick={() => rememberRecipient(short)}
                 size="lg"
                 block
-                className="relative min-w-0 overflow-hidden px-6 text-base sm:text-lg"
+                className="relative h-12 min-w-0 overflow-hidden px-6 text-base sm:text-[17px]"
               >
                 {!calm && <Shine />}
                 <span className="relative inline-flex min-w-0">
@@ -201,7 +198,7 @@ export function HeroBuilder({
               variant="white"
               size="lg"
               block
-              className="px-5 text-base sm:w-auto"
+              className="h-12 px-5 text-base sm:w-auto"
             >
               <span className="relative grid size-7 place-items-center rounded-full bg-brand text-white">
                 {!calm && (
@@ -219,22 +216,28 @@ export function HeroBuilder({
           </div>
 
           {salesPaused ? (
-            <p className="mt-4 flex items-center gap-2 rounded-2xl bg-amber-50 px-3 py-2 text-sm text-amber-900">
+            <p className="mt-3 flex items-center gap-2 rounded-2xl bg-amber-50 px-3 py-2 text-sm text-amber-900">
               <PauseCircle className="size-4 shrink-0" aria-hidden />
               Pausamos las ventas por un rato: podés armarla y probarla igual.
             </p>
           ) : (
-            <p className="mt-4 flex flex-wrap items-baseline justify-center gap-x-1.5 border-t border-dashed border-ink/10 pt-3.5 text-sm text-ink/60 sm:justify-start">
-              <span className="relative inline-block font-display text-lg font-bold text-ink">
-                <Swap id={theme.priceLabel}>{theme.priceLabel}</Swap>
-              </span>
-              <span>· pago único · sin suscripciones</span>
-            </p>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-dashed border-ink/10 pt-3 sm:justify-between">
+              <p className="flex items-baseline gap-1.5 text-sm text-ink/60">
+                <span className="relative inline-block font-display text-lg font-bold text-ink">
+                  <Swap id={theme.priceLabel}>{theme.priceLabel}</Swap>
+                </span>
+                · pago único
+              </p>
+              <p className="flex items-center gap-1.5 text-xs font-semibold text-ink/60">
+                <MercadoPagoLogo className="size-[18px] text-[#00B1EA]" />
+                Pago seguro con Mercado Pago
+              </p>
+            </div>
           )}
         </form>
       </div>
 
-      <ul className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2.5 px-1 text-[13px] leading-tight font-semibold text-ink/70">
+      <ul className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-2 px-1 text-[13px] leading-tight font-semibold text-ink/70 lg:justify-start">
         {TRUST.map(({ icon, label }) => (
           <motion.li
             key={label}
@@ -242,7 +245,7 @@ export function HeroBuilder({
             whileHover="hover"
           >
             <motion.span
-              className="grid size-7 shrink-0 place-items-center rounded-full bg-white shadow-[0_4px_12px_rgba(42,36,51,0.08)] ring-1 ring-black/5"
+              className="grid size-6 shrink-0 place-items-center rounded-full bg-white shadow-[0_4px_12px_rgba(42,36,51,0.08)] ring-1 ring-black/5"
               variants={{ hover: { rotate: [0, -14, 10, 0], scale: [1, 1.2, 1.1] } }}
               transition={{ duration: 0.5 }}
             >
@@ -292,7 +295,7 @@ function Step({
   return (
     <p
       className={cn(
-        'mb-2 flex items-center gap-2 text-xs font-bold tracking-wide text-ink/55 uppercase',
+        'mb-1.5 flex items-center gap-2 text-xs font-bold tracking-wide text-ink/55 uppercase',
         className,
       )}
     >
@@ -362,7 +365,7 @@ function TypedPlaceholder({ names, paused }: { names: string[]; paused: boolean 
   return (
     <span
       aria-hidden
-      className="pointer-events-none absolute inset-y-0 left-5 flex items-center text-base font-medium whitespace-nowrap text-ink/40"
+      className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-base font-medium whitespace-nowrap text-ink/40"
     >
       {paused ? (
         'Escribí su nombre…'
@@ -449,7 +452,7 @@ function ThemePicker({
       ref={scroller}
       role="group"
       aria-label="Temática"
-      className="-mx-1 flex snap-x snap-proximity scroll-px-2 [scrollbar-width:none] gap-2 overflow-x-auto overscroll-x-contain px-1 py-1.5 [&::-webkit-scrollbar]:hidden"
+      className="-mx-1 flex snap-x snap-proximity scroll-px-2 [scrollbar-width:none] gap-2 overflow-x-auto overscroll-x-contain px-1 py-1 [&::-webkit-scrollbar]:hidden"
       style={{ maskImage: mask, WebkitMaskImage: mask }}
     >
       {themes.map((t) => {
@@ -461,7 +464,7 @@ function ThemePicker({
             aria-pressed={selected}
             onClick={() => onChange(t.slug)}
             className={cn(
-              'relative shrink-0 snap-center rounded-2xl py-1.5 pr-3.5 pl-1.5 text-sm font-semibold transition-[color,box-shadow] duration-200',
+              'relative shrink-0 snap-center rounded-2xl py-1 pr-3 pl-1 text-sm font-semibold transition-[color,box-shadow] duration-200',
               selected
                 ? ''
                 : 'bg-white text-ink/75 shadow-[0_2px_8px_rgba(42,36,51,0.06)] ring-1 ring-black/5 hover:text-ink hover:ring-black/10',
@@ -486,7 +489,7 @@ function ThemePicker({
             <span className="relative flex items-center gap-2 whitespace-nowrap">
               <motion.span
                 aria-hidden
-                className="grid size-8 place-items-center rounded-xl"
+                className="grid size-7 place-items-center rounded-xl"
                 style={{
                   backgroundColor: selected
                     ? 'rgba(255,255,255,0.38)'
@@ -495,7 +498,7 @@ function ThemePicker({
                 animate={selected ? { rotate: [0, -14, 10, 0], scale: [1, 1.18, 1] } : {}}
                 transition={{ duration: 0.5 }}
               >
-                <Emoji value={t.emoji} size={20} />
+                <Emoji value={t.emoji} size={18} />
               </motion.span>
               {t.name}
             </span>

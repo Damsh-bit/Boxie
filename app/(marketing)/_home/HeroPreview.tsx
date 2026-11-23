@@ -606,7 +606,8 @@ export function HeroPreview({
   return (
     <motion.div
       ref={phone}
-      className="relative mx-auto w-[240px] [--s:0.7902] sm:w-[270px] sm:[--s:0.8951] lg:w-[300px] lg:[--s:1]"
+      // En escritorio con poca altura (laptops de 768 px), el celular es un poco más chico: entra entero.
+      className="relative mx-auto w-[240px] [--s:0.7902] sm:w-[270px] sm:[--s:0.8951] lg:w-[300px] lg:[--s:1] lg:[@media(max-height:800px)]:w-[264px] lg:[@media(max-height:800px)]:[--s:0.8741]"
       initial={{ opacity: 0, y: 70, rotate: 8 }}
       animate={{ opacity: 1, y: 0, rotate: 3 }}
       transition={{ ...spring.gentle, delay: 0.25 }}

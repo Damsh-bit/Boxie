@@ -19,9 +19,7 @@ import { ease, spring, useCalm } from '@/ui/motion'
 import { HeroBuilder } from './HeroBuilder'
 import { HeroPreview } from './HeroPreview'
 import { useMouseParallax } from './primitives'
-import { avatarGradient, type HomeTheme } from './theme-look'
-
-const count = new Intl.NumberFormat('es-AR')
+import type { HomeTheme } from './theme-look'
 
 const WIDE = '(min-width: 1024px)'
 
@@ -121,7 +119,7 @@ export function Hero({
       aria-labelledby="hero-title"
       onPointerMove={followLight}
       onPointerLeave={() => lightOn.set(0)}
-      className="relative isolate overflow-hidden bg-[linear-gradient(12.84deg,#F44E63_-14.02%,rgba(255,255,255,0)_38.2%)] pt-[104px] pb-16 sm:pt-[112px] lg:flex lg:min-h-dvh lg:items-center lg:pb-24"
+      className="relative isolate overflow-hidden bg-[linear-gradient(12.84deg,#F44E63_-14.02%,rgba(255,255,255,0)_38.2%)] pt-[96px] pb-14 sm:pt-[104px] lg:flex lg:min-h-dvh lg:items-center lg:pt-[88px] lg:pb-6"
     >
       <motion.div
         aria-hidden
@@ -150,12 +148,12 @@ export function Hero({
 
       <motion.div
         // grid-cols-1 (minmax(0, 1fr)): nada de adentro puede ensanchar la grilla más que la pantalla.
-        className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-x-10 gap-y-10 px-4 [grid-template-areas:'copy'_'builder'_'phone'] min-[380px]:px-5 sm:px-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-y-7 lg:[grid-template-areas:'copy_phone'_'builder_phone']"
+        className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-x-10 gap-y-8 px-4 [grid-template-areas:'copy'_'builder'_'phone'] min-[380px]:px-5 sm:px-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-y-5 lg:[grid-template-areas:'copy_phone'_'builder_phone']"
         initial="hidden"
         animate="show"
         variants={{ show: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } } }}
       >
-        <div className="flex min-w-0 flex-col items-center gap-6 text-center [grid-area:copy] lg:items-start lg:self-end lg:text-left">
+        <div className="flex min-w-0 flex-col items-center gap-4 text-center [grid-area:copy] lg:items-start lg:self-end lg:text-left">
           {/* Banner de borrador pendiente */}
           {draft && (
             <motion.a
@@ -202,7 +200,7 @@ export function Hero({
 
           <h1
             id="hero-title"
-            className="text-[2.6rem] leading-[1.02] font-extrabold tracking-tight text-ink min-[380px]:text-5xl sm:text-6xl md:text-7xl"
+            className="text-[2.4rem] leading-[1.02] font-extrabold tracking-tight text-ink min-[380px]:text-[2.75rem] sm:text-6xl lg:text-[3.1rem] xl:text-[3.4rem] lg:[@media(max-height:760px)]:text-[2.75rem]"
           >
             <span className="block overflow-hidden pb-1">
               <motion.span data-reveal="" className="block" variants={line}>
@@ -212,19 +210,10 @@ export function Hero({
             <span className="block overflow-hidden pb-1">
               <motion.span
                 data-reveal=""
-                className="block font-display text-[3.4rem] leading-[1.05] text-brand min-[380px]:text-[64px] sm:text-7xl md:text-8xl"
+                className="block font-display text-[3.4rem] leading-[1.05] text-brand min-[380px]:text-[3.9rem] sm:text-7xl lg:text-[4.75rem] xl:text-[5.2rem] lg:[@media(max-height:760px)]:text-[4.2rem]"
                 variants={line}
               >
                 <BouncyWord word="RIBBLY" />
-              </motion.span>
-            </span>
-            <span className="block overflow-hidden pb-1">
-              <motion.span
-                data-reveal=""
-                className="block text-[1.35rem] font-bold tracking-normal text-balance text-ink/85 min-[380px]:text-2xl sm:text-3xl"
-                variants={line}
-              >
-                {userName ? '¿a quién le regalás hoy?' : 'el regalo digital que emociona'}
               </motion.span>
             </span>
           </h1>
@@ -232,13 +221,11 @@ export function Hero({
           <motion.p
             data-reveal=""
             variants={rise}
-            className="max-w-xl text-base font-medium text-pretty text-ink/75 min-[380px]:text-lg md:text-xl"
+            className="max-w-xl text-base font-medium text-pretty text-ink/75 min-[380px]:text-[17px] xl:text-lg"
           >
-            Fotos, dedicatoria, su canción y juegos en una experiencia personalizada que se abre
-            desde el celular. La creás en 5 minutos y llega al instante por WhatsApp.
+            Fotos, su canción, dedicatoria y juegos en un regalo digital que se abre en el celular.
+            La armás en 5 minutos y llega al instante por WhatsApp.
           </motion.p>
-
-          {proof.sold && <SoldCount sold={proof.sold} events={proof.events} themes={themes} />}
         </div>
 
         <motion.div
@@ -258,7 +245,7 @@ export function Hero({
           />
         </motion.div>
 
-        <motion.div className="min-w-0 [grid-area:phone] lg:py-6" style={{ y: phoneY }}>
+        <motion.div className="min-w-0 [grid-area:phone] lg:py-2" style={{ y: phoneY }}>
           <HeroPreview
             theme={theme}
             themes={themes}
@@ -273,7 +260,7 @@ export function Hero({
       </motion.div>
 
       <motion.div
-        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 lg:block lg:[@media(max-height:820px)]:hidden"
+        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 lg:block lg:[@media(max-height:900px)]:hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4, duration: 0.6 }}
@@ -324,52 +311,5 @@ function BouncyWord({ word }: { word: string }) {
         ))}
       </span>
     </>
-  )
-}
-
-/**
- * "+500 Ribblys regaladas" con las iniciales de quienes compraron hace poco.
- * Solo aparece cuando las ventas reales pasan el mínimo (content/social-proof).
- */
-function SoldCount({
-  sold,
-  events,
-  themes,
-}: {
-  sold: number
-  events: SocialProof['events']
-  themes: HomeTheme[]
-}) {
-  const faces = events.slice(0, 4)
-  return (
-    <motion.div
-      data-reveal=""
-      variants={rise}
-      className="-mt-1 flex items-center justify-center gap-3 lg:justify-start"
-    >
-      {faces.length > 0 && (
-        <span className="flex -space-x-2.5" aria-hidden>
-          {faces.map((e, i) => {
-            const color = themes.find((t) => t.slug === e.theme)?.color ?? '#F44E63'
-            return (
-              <span
-                key={e.id}
-                className="grid size-8 place-items-center rounded-full font-fun text-sm font-semibold text-white ring-2 ring-white [text-shadow:0_1px_2px_rgba(0,0,0,0.25)]"
-                style={{
-                  background: avatarGradient(color),
-                  zIndex: faces.length - i,
-                }}
-              >
-                {e.name.charAt(0)}
-              </span>
-            )
-          })}
-        </span>
-      )}
-      <p className="text-sm font-medium text-ink/70">
-        <b className="font-display text-lg font-bold text-ink">+{count.format(sold)}</b> regalos
-        entregados
-      </p>
-    </motion.div>
   )
 }

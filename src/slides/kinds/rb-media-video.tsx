@@ -12,6 +12,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { youtubeId } from '../fields'
+import { useSound } from '../player/use-sound'
 import { Bokeh, Confetti, CoupleScene, PartyScene } from '../ribbly/art'
 import { Btn, Chip, editable, Stage, StyleSpot, T, u } from '../ribbly/ui'
 import { Appear, ease, spring } from './motion'
@@ -130,6 +131,12 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
   const id = youtubeId(buyer.youtubeUrl)
   const stage = useRef<HTMLDivElement>(null)
   const { frame, state, listen, toggle, restart, sound } = useYouTube(active && !!id)
+  const play = useSound()
+  /** Los controles hacen "toc" al tocarlos. */
+  const tapped = (action: () => void) => {
+    play('tap')
+    action()
+  }
   const title = buyer.songTitle.trim() || theme.defaultTitle
   const progress = state.duration ? Math.min(state.time / state.duration, 1) : 0
   const showVideo = !!id && active && !state.failed
@@ -312,7 +319,7 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
                   <button
                     type="button"
                     className="rb-ctl"
-                    onClick={() => sound(state.muted)}
+                    onClick={() => tapped(() => sound(state.muted))}
                     aria-label={state.muted ? 'Activar el sonido' : 'Silenciar'}
                   >
                     {state.muted ? <VolumeX /> : <Volume2 />}
@@ -320,7 +327,7 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
                   <button
                     type="button"
                     className="rb-ctl"
-                    onClick={restart}
+                    onClick={() => tapped(restart)}
                     aria-label="Volver a empezar"
                   >
                     <SkipBack fill="currentColor" />
@@ -328,7 +335,7 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
                   <motion.button
                     type="button"
                     className="rb-ctl is-main"
-                    onClick={toggle}
+                    onClick={() => tapped(toggle)}
                     aria-label={state.playing ? 'Pausar' : 'Reproducir'}
                     whileTap={{ scale: 0.9 }}
                     transition={spring.snappy}
@@ -346,7 +353,7 @@ export function MediaVideo({ theme, buyer, ctx }: Props<'media.video'>) {
                   <button
                     type="button"
                     className="rb-ctl"
-                    onClick={fullscreen}
+                    onClick={() => tapped(fullscreen)}
                     aria-label="Pantalla completa"
                   >
                     <Maximize />

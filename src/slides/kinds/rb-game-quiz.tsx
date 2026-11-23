@@ -2,6 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Check, Lightbulb, X } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText, Icon } from '@/ui/Icon'
+import { SoundCue, useSound } from '../player/use-sound'
 import { Balloon, Bokeh, Burst, Confetti, Heart, Rays, ROSE } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { Btn, Chip, editable, Stage, Steps, T, TapMark, u, useStored } from '../ribbly/ui'
@@ -94,9 +95,11 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
     setView(total ? 'game' : 'win')
   }
 
+  const play = useSound()
   const answer = (option: number) => {
     if (answered) return
     setAnswers((list) => [...list, option])
+    play(option === question?.correct ? 'success' : 'miss')
     if (option !== question?.correct && !calm) navigator.vibrate?.(60)
   }
 
@@ -317,6 +320,8 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
 
         {view === 'game' && question && (
           <motion.div key={`pregunta-${index}`} className="rb-body" {...slide}>
+            {/* El globito de la pregunta. */}
+            <SoundCue cue="pop" delay={0.22} />
             <div
               style={{
                 display: 'flex',
@@ -444,7 +449,7 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
                   </motion.span>
                 )}
               </AnimatePresence>
-              {answered && right && <Burst key={`ok-${index}`} y="30%" count={40} />}
+              {answered && right && <Burst key={`ok-${index}`} y="30%" count={40} cue={null} />}
             </div>
 
             <div style={{ minHeight: u(118), width: '100%' }}>
@@ -483,7 +488,7 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
                         <EmojiText text={question.hint} />
                       </motion.p>
                     ) : (
-                      <Btn variant="glass" mods="is-small" onClick={() => setHint(true)}>
+                      <Btn variant="glass" mods="is-small" cue="pop" onClick={() => setHint(true)}>
                         <Lightbulb size={15} />
                         <T text={theme.hintLabel} ctx={ctx} />
                       </Btn>
@@ -497,7 +502,8 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
 
         {view === 'win' && (
           <motion.div key="gano" className="rb-body" {...slide}>
-            <Burst key="premio" y="24%" count={54} power={1.2} />
+            <Burst key="premio" y="24%" count={54} power={1.2} cue={null} />
+            <SoundCue cue="fanfare" delay={0.12} />
             <Loop
               active={active}
               duration={2.6}
@@ -574,6 +580,7 @@ export function GameQuiz({ theme, buyer, ctx }: Props<'game.quiz'>) {
 
         {view === 'lose' && (
           <motion.div key="perdio" className="rb-body" {...slide}>
+            <SoundCue cue="aww" delay={0.15} />
             <motion.div
               style={{ marginTop: u(26) }}
               initial={{ scale: 0, rotate: 20 }}

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { Emoji, EmojiText } from '@/ui/Icon'
+import { useCue, useSound } from '../player/use-sound'
 import { Bokeh, Burst, Confetti, ROSE, Rays } from '../ribbly/art'
 import { Btn, Chip, editable, Stage, T, TapMark, u } from '../ribbly/ui'
 import { ease, spring } from './motion'
@@ -50,10 +51,15 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
     setStopped(0)
     setPhase('spinning')
   }
+  const play = useSound()
   const reelStopped = (reel: number) => {
+    if (stopped <= reel) play('clunk', { step: reel })
     setStopped((n) => Math.max(n, reel + 1))
     if (reel === 2) setPhase('won')
   }
+  // Los rodillos girando (el tic tic que frena) y el jackpot.
+  useCue(phase === 'spinning' && !calm, 'spin', 0.28, { duration: 2 })
+  useCue(phase === 'won', 'fanfare', 0.12)
 
   return (
     <Stage
@@ -215,7 +221,7 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
             </div>
             <div className="rb-coin" />
           </div>
-          {phase === 'won' && <Burst key="jackpot" y="50%" count={56} power={1.25} />}
+          {phase === 'won' && <Burst key="jackpot" y="50%" count={56} power={1.25} cue={null} />}
         </motion.div>
 
         <div className="rb-grow" style={{ justifyContent: 'center' }}>
@@ -297,6 +303,8 @@ export function GameSlots({ theme, buyer, ctx }: Props<'game.slots'>) {
                 variant="yellow"
                 mods="is-big rb-fredoka"
                 style={{ fontWeight: 700, color: 'var(--rb-noche)' }}
+                // La palanca que baja.
+                cue="lever"
                 onClick={spin}
               >
                 <T text={theme.spinLabel} ctx={ctx} />

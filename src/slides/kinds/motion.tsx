@@ -2,6 +2,8 @@
 
 import { motion, useReducedMotion, type HTMLMotionProps, type Transition } from 'framer-motion'
 import { ease, spring } from '../player/motion'
+import type { Cue } from '../player/sound'
+import { useCue } from '../player/use-sound'
 
 /**
  * Piezas de movimiento de las slides. Todas dependen de `active` (la slide
@@ -35,6 +37,9 @@ type Base = Omit<HTMLMotionProps<'div'>, 'initial' | 'animate' | 'variants'> & {
 
 const leave: Transition = { duration: 0.2, ease: ease.out }
 
+/** Cuándo el resorte de `spring.pop` ya se ve (ahí suena su "pop"), en segundos. */
+export const POP_PEAK = 0.07
+
 /** Sube y aparece cuando la slide queda en pantalla. */
 export function Appear({
   as = 'div',
@@ -61,7 +66,10 @@ export function Appear({
   )
 }
 
-/** Aparece con un resorte que se pasa un poquito (logos, stickers, premios). */
+/**
+ * Aparece con un resorte que se pasa un poquito (logos, stickers, premios),
+ * con un "pop" que suena cuando el resorte llega (`cue={null}`: en silencio).
+ */
 export function Pop({
   as = 'div',
   active,
@@ -69,10 +77,12 @@ export function Pop({
   from = 0,
   rotate = 0,
   y = 0,
+  cue = 'pop',
   ...props
-}: Base & { from?: number; rotate?: number; y?: number }) {
+}: Base & { from?: number; rotate?: number; y?: number; cue?: Cue | null }) {
   const Component = tags[as] as typeof motion.div
   const hidden = { opacity: 0, scale: from, rotate, y }
+  useCue(active, cue, delay + POP_PEAK)
   return (
     <Component
       initial={hidden}

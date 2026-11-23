@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown, Play } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
+import { useSound } from '../player/use-sound'
 import { Balloon, CityNightScene, Confetti, Rays, Stars } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { Btn, editable, Stage, StyleSpot, T, u } from '../ribbly/ui'
@@ -229,6 +230,7 @@ function PosterBody({
   kickerColor: string
 }) {
   const active = ctx.active
+  const play = useSound()
   return (
     <div className="rb-body">
       {platforms.length > 1 && (
@@ -240,7 +242,10 @@ function PosterBody({
                 key={platform}
                 type="button"
                 className={`rb-tab ${on ? 'is-on' : ''}`}
-                onClick={() => setSelected(picks.findIndex((p) => p.platform.trim() === platform))}
+                onClick={() => {
+                  if (!on) play('swish')
+                  setSelected(picks.findIndex((p) => p.platform.trim() === platform))
+                }}
                 aria-pressed={on}
               >
                 {platform}
@@ -296,6 +301,8 @@ function PosterBody({
           <Btn
             variant="dark"
             style={{ borderRadius: u(10) }}
+            // El póster que cambia suena como pasar de pantalla.
+            cue={last ? 'tap' : 'swish'}
             onClick={() => (last ? ctx.next() : setSelected(index + 1))}
           >
             <ArrowDown size={16} />

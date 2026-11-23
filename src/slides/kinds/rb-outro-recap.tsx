@@ -2,6 +2,7 @@ import { Music, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText, Icon } from '@/ui/Icon'
 import type { BuyerPhoto } from '../fields'
+import { useCue } from '../player/use-sound'
 import { Bokeh, Bunting, Confetti, SCENES, SCENES_PAREJA } from '../ribbly/art'
 import { Brand, Btn, editable, Sheet, slideOfKind, Stage, T, u, useStored } from '../ribbly/ui'
 import { Appear, Pop } from './motion'
@@ -17,6 +18,8 @@ export function OutroRecap({ theme, ctx }: Props<'outro.recap'>) {
   const active = ctx.active
   const pareja = theme.look === 'pareja'
   const [notice, setNotice] = useState<string | null>(null)
+  // La tarjeta del resumen que sube (los números suenan al aparecer, con su Pop).
+  useCue(active, 'paper', 0.32)
 
   const content = (kind: string) => {
     const key = slideOfKind(ctx, kind)

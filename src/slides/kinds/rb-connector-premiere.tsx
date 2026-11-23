@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect } from 'react'
+import { useCue } from '../player/use-sound'
 import { Stars } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { editable, Stage, T, u } from '../ribbly/ui'
@@ -145,6 +146,11 @@ export function ConnectorPremiere({ theme, ctx }: Props<'connector.premiere'>) {
     const timer = setTimeout(next, (autoAdvance + 1.6) * 1000)
     return () => clearTimeout(timer)
   }, [active, preview, autoAdvance, next])
+
+  // El telón que se corre, los pochoclos que llegan y la entrada VIP.
+  useCue(active, 'curtain', 0.25)
+  useCue(active, 'pop', 1.42)
+  useCue(active, 'ticket', 1.85)
 
   const open = active
   const curtain = (side: -1 | 1) => ({

@@ -1,6 +1,7 @@
 import { MoreHorizontal, Play } from 'lucide-react'
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
+import { useSound } from '../player/use-sound'
 import { Burst, Heart, ROSE } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { Boombox, Cassette, Vinyl } from '../ribbly/pieces'
@@ -50,6 +51,7 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
   const pareja = theme.look === 'pareja'
   const palette = useRbPalette()
   const cover = ctx.style.portada || 'original'
+  const play = useSound()
 
   return (
     <Stage
@@ -184,6 +186,8 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
           <Btn
             variant="glass"
             mods="rb-btn-icon"
+            // Suena el confeti que sale.
+            cue={null}
             onClick={() => setParty((n) => n + 1)}
             aria-label={pareja ? 'Me encanta' : '¡Fiesta!'}
           >
@@ -216,7 +220,10 @@ export function MediaMix({ theme, ctx }: Props<'media.mix'>) {
                 rel="noopener noreferrer"
                 onPointerEnter={() => setSelected(i)}
                 onFocus={() => setSelected(i)}
-                onClick={() => setSelected(i)}
+                onClick={() => {
+                  play('tap')
+                  setSelected(i)
+                }}
               >
                 <Thumb color={p.color} index={i} />
                 <span style={{ flex: 1, minWidth: 0 }}>

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { EmojiText } from '@/ui/Icon'
+import { SoundCue, useSound } from '../player/use-sound'
 import { Bokeh } from '../ribbly/art'
 import { editable, Stage, T, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
@@ -51,6 +52,14 @@ function useWishes({ theme, buyer }: Props<'story.wishes'>, night = false) {
   return wishesFor(theme, buyer, night)
 }
 
+/**
+ * Cada nota suena al pegarse (de la #1 a la última, subiendo la escala) y
+ * también al tocarla: las notas son un xilofón.
+ */
+function NoteSound({ active, index }: { active: boolean; index: number }) {
+  return <SoundCue when={active} cue="note" delay={0.41 + index * 0.15} step={index} />
+}
+
 function WishesSky(props: Props<'story.wishes'>) {
   const { theme, buyer, ctx } = props
   const active = ctx.active
@@ -59,6 +68,7 @@ function WishesSky(props: Props<'story.wishes'>) {
   const colors = pareja ? LOVE_NOTES : NOTE_COLORS
   const title = buyer.title.trim() || theme.title
   const subtitle = buyer.subtitle.trim() || (ctx.vars.edad ? theme.subtitle : theme.subtitleNoAge)
+  const play = useSound()
 
   return (
     <Stage
@@ -170,7 +180,9 @@ function WishesSky(props: Props<'story.wishes'>) {
                       }
                 }
                 whileTap={{ scale: 1.06, rotate: 0 }}
+                onTap={() => play('note', { step: i })}
               >
+                <NoteSound active={active} index={i} />
                 <em>#{i + 1}</em>
                 <p>
                   <EmojiText text={wish} />
@@ -209,6 +221,7 @@ function WishesNight(props: Props<'story.wishes'>) {
   const title = buyer.title.trim() || fill(theme.nightTitle, ctx.vars)
   const subtitle = buyer.subtitle.trim() || fill(theme.nightSubtitle, ctx.vars)
   const featured = wishes.length > 1 ? wishes.length - 1 : -1
+  const play = useSound()
   // Si quedan impares antes de la destacada, la última de la grilla va al medio.
   const loneIndex = featured > 0 && featured % 2 === 1 ? featured - 1 : -1
 
@@ -328,7 +341,9 @@ function WishesNight(props: Props<'story.wishes'>) {
                       }
                 }
                 whileTap={{ scale: 1.05, rotate: 0 }}
+                onTap={() => play('note', { step: i })}
               >
+                <NoteSound active={active} index={i} />
                 <i aria-hidden />
                 <em>#{i + 1}</em>
                 <p>

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { playSound, primeSound } from '@/slides/player/sound'
 import { ConfettiBurst } from '@/ui/ConfettiBurst'
 import { EmojiText, Icon } from '@/ui/Icon'
 import { ease, spring, useCalm } from '@/ui/motion'
@@ -24,10 +25,13 @@ const SPARKLES = [
 export function GiftIntro({
   recipientName,
   senderName,
+  sounds = false,
   onOpen,
 }: {
   recipientName: string
   senderName: string
+  /** La temática tiene sonidos: el toque los habilita y la caja suena al abrirse. */
+  sounds?: boolean
   onOpen(): void
 }) {
   const calm = useCalm()
@@ -36,6 +40,8 @@ export function GiftIntro({
   const open = () => {
     if (opening) return
     setOpening(true)
+    // El toque habilita el audio; la caja suena apenas arranca.
+    if (sounds) void primeSound().then(() => playSound('unbox'))
     window.setTimeout(onOpen, calm ? 150 : 900)
   }
 

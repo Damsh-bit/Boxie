@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
+import { useSound } from '../player/use-sound'
 import { Bokeh, Cake } from '../ribbly/art'
 import { Btn, editable, Stage, Steps, T, u, useStored } from '../ribbly/ui'
 import { ease, spring } from './motion'
@@ -28,6 +29,7 @@ export function ReflectCandles({ theme, ctx }: Props<'reflect.candles'>) {
     setView('write')
   }
 
+  const play = useSound()
   const save = () => {
     const text = draft.trim()
     if (!text) return
@@ -35,9 +37,13 @@ export function ReflectCandles({ theme, ctx }: Props<'reflect.candles'>) {
     next[step] = text
     setWishes(next.slice(0, total))
     if (step < total - 1) {
+      // Cada deseo guardado, una nota más arriba.
+      play('ting', { step: 4 + step })
       setStep(step + 1)
       setDraft(wishes[step + 1] ?? '')
     } else {
+      // Con el último, sopla: las velas se apagan.
+      play('blow')
       setView('done')
     }
   }
@@ -173,6 +179,7 @@ export function ReflectCandles({ theme, ctx }: Props<'reflect.candles'>) {
                 <Btn
                   variant="yellow"
                   type="submit"
+                  cue={null}
                   disabled={!draft.trim()}
                   style={{ opacity: draft.trim() ? 1 : 0.5 }}
                 >

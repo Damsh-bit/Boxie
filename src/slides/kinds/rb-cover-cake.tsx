@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { useSound } from '../player/use-sound'
 import { Bunting, Burst, Cake, Confetti, Rays } from '../ribbly/art'
 import { Btn, editable, Stage, T, TapMark, u } from '../ribbly/ui'
 import { Appear, Pop } from './motion'
@@ -24,10 +25,12 @@ export function CoverCake({ theme, ctx }: Props<'cover.cake'>) {
   // Al volver a la portada, las velas están prendidas de nuevo.
   if (!active && blown) setBlown(false)
   const name = ctx.recipientName || 'Alguien especial'
+  const play = useSound()
 
   const blow = () => {
     if (blown) return ctx.next()
     setBlown(true)
+    play('blow')
   }
 
   return (
@@ -81,7 +84,8 @@ export function CoverCake({ theme, ctx }: Props<'cover.cake'>) {
               />
             </motion.button>
           </Appear>
-          {blown && <Burst key="soplo" y="38%" count={46} power={1.15} />}
+          {/* El soplido ya trae sus brillitos. */}
+          {blown && <Burst key="soplo" y="38%" count={46} power={1.15} cue={null} />}
 
           <Pop
             as="p"
@@ -97,7 +101,12 @@ export function CoverCake({ theme, ctx }: Props<'cover.cake'>) {
 
         <div className="rb-actions" style={{ marginTop: 0 }}>
           <Appear active={active} delay={0.8} y={20} style={{ position: 'relative' }}>
-            <Btn variant="glass" onClick={blow} style={{ fontSize: u(15) }}>
+            <Btn
+              variant="glass"
+              onClick={blow}
+              cue={blown ? 'tap' : null}
+              style={{ fontSize: u(15) }}
+            >
               <T text={blown ? theme.blown : theme.cta} ctx={ctx} />
             </Btn>
             {!blown && <TapMark style={{ left: '50%', top: '50%' }} />}

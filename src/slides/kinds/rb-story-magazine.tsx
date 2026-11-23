@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
 import type { BuyerPhoto } from '../fields'
 import { CoupleScene, PartyScene } from '../ribbly/art'
+import { useCue } from '../player/use-sound'
 import { pickMagazine } from '../ribbly/magazine'
 import { Brand, Btn, editable, Sheet, slideOfKind, Stage, T, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
@@ -24,6 +25,8 @@ export function StoryMagazine({
   const pareja = theme.look === 'pareja'
   const active = ctx.active
   const [sharing, setSharing] = useState(false)
+  // La tapa, como una página de revista que se da vuelta.
+  useCue(active, 'paper', 0.12)
 
   const text = pickMagazine({
     bank: theme.bank,

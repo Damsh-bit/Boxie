@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
+import { useCue, useSound } from '../player/use-sound'
 import { Bunting, Burst, Rays } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { Btn, editable, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
@@ -105,10 +106,16 @@ export function GamePinata({ theme, buyer, ctx }: Props<'game.pinata'>) {
       : STRIPES)
   const candy = TONES[ctx.style.colores ?? ''] ?? (palette ? palette.party : CANDY)
 
+  const play = useSound()
+  // El festejo que aparece después de romperla.
+  useCue(broken, 'pop', 0.87)
+
   const hit = () => {
     if (broken) return
     const next = hits + 1
     setHits(next)
+    // Cada golpe un poco más agudo; el último la rompe.
+    play(next >= needed ? 'smash' : 'thud', { step: next })
     if (!calm) navigator.vibrate?.(next >= needed ? [30, 40, 80] : 30)
     void swing.start({
       rotate: [0, next % 2 ? 24 : -24, -14, 8, -3, 0],
@@ -174,7 +181,15 @@ export function GamePinata({ theme, buyer, ctx }: Props<'game.pinata'>) {
                   </motion.button>
                 </Loop>
                 {hits > 0 && (
-                  <Burst key={hits} y="48%" seed={hits} count={16} power={0.7} colors={candy} />
+                  <Burst
+                    key={hits}
+                    y="48%"
+                    seed={hits}
+                    count={16}
+                    power={0.7}
+                    colors={candy}
+                    cue={null}
+                  />
                 )}
               </div>
 
@@ -208,7 +223,7 @@ export function GamePinata({ theme, buyer, ctx }: Props<'game.pinata'>) {
             </motion.div>
           ) : (
             <motion.div key="mensaje" style={{ display: 'contents' }}>
-              <Burst key="rota" y="26%" count={60} power={1.4} colors={candy} />
+              <Burst key="rota" y="26%" count={60} power={1.4} colors={candy} cue={null} />
               <div
                 style={{
                   position: 'relative',

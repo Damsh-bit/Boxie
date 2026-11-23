@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
+import { useSound } from '../player/use-sound'
 import { Stars } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { Btn, Chip, editable, slideOfKind, Stage, T, u, useStored } from '../ribbly/ui'
@@ -201,10 +202,13 @@ export function ReflectCapsule({ theme, ctx }: Props<'reflect.capsule'>) {
     setJustSaved(false)
     setOpen(true)
   }
+  const play = useSound()
   const save = () => {
     setLetter(draft.trim())
     setOpen(false)
     setJustSaved(!!draft.trim())
+    // La hoja se achica hacia el frasco (y, si tiene algo escrito, cae adentro).
+    play(draft.trim() ? 'drop' : 'whoosh')
   }
 
   return (
@@ -291,7 +295,7 @@ export function ReflectCapsule({ theme, ctx }: Props<'reflect.capsule'>) {
             </div>
 
             <div className="rb-actions">
-              <Btn variant="white" onClick={begin} style={{ fontSize: u(15) }}>
+              <Btn variant="white" onClick={begin} cue="paper" style={{ fontSize: u(15) }}>
                 <T text={letter ? theme.editLabel : theme.cta} ctx={ctx} />
               </Btn>
             </div>
@@ -355,7 +359,7 @@ export function ReflectCapsule({ theme, ctx }: Props<'reflect.capsule'>) {
               <Btn variant="glass" onClick={() => setOpen(false)} style={{ fontSize: u(15) }}>
                 <T text={theme.closeLabel} ctx={ctx} />
               </Btn>
-              <Btn variant="yellow" onClick={save} style={{ fontSize: u(15) }}>
+              <Btn variant="yellow" onClick={save} cue={null} style={{ fontSize: u(15) }}>
                 <T text={theme.saveLabel} ctx={ctx} />
               </Btn>
             </div>

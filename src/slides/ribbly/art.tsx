@@ -3,6 +3,8 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { useMemo, type CSSProperties } from 'react'
 import { seededRandom } from '../player/effects'
+import type { Cue } from '../player/sound'
+import { useCue } from '../player/use-sound'
 import { usePartyColors, useRbPalette } from './look'
 
 /**
@@ -73,6 +75,7 @@ export function Burst({
   count = 34,
   colors = PARTY,
   power = 1,
+  cue = 'sparkle',
 }: {
   x?: string
   y?: string
@@ -80,9 +83,12 @@ export function Burst({
   count?: number
   colors?: string[]
   power?: number
+  /** Cómo suena al estallar (`null`: en silencio, porque ya suena lo que lo causó). */
+  cue?: Cue | null
 }) {
   const calm = useReducedMotion()
   const party = usePartyColors(colors)
+  useCue(true, cue, 0, { gain: Math.min(1.1, 0.55 + power * 0.4) })
   const pieces = useMemo(() => {
     const rand = seededRandom(seed * 131 + count)
     return Array.from({ length: count }, () => {

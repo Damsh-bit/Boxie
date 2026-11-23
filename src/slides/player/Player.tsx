@@ -1,7 +1,7 @@
 'use client'
 
 import { animate, motion, useMotionValue, useTransform, type MotionValue } from 'framer-motion'
-import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, Volume2, VolumeX, X } from 'lucide-react'
 import {
   useCallback,
   useEffect,
@@ -24,6 +24,8 @@ import { slideDefinitions } from '../schemas'
 import type { SlideContext } from '../types'
 import { ConfettiLayer, FloatingParticles, GradientDrift } from './effects'
 import { ease, SLIDE_SPRING, spring } from './motion'
+import { playSound, themeSounds } from './sound'
+import { SoundProvider, useMuted } from './use-sound'
 import { useSwipe } from './use-swipe'
 import './player.css'
 
@@ -136,6 +138,16 @@ export function Player({
 
   const { go } = useSwipe(phoneRef, { index: current, count, position, onChange: change })
 
+  // Sonidos: en las temáticas que los tienen, salvo en el editor directo (ahí
+  // los toques son para editar).
+  const sounds = themeSounds(config) && !editing
+  const heard = useRef(current)
+  useEffect(() => {
+    if (heard.current === current) return
+    heard.current = current
+    if (sounds) playSound('swish')
+  }, [current, sounds])
+
   const summaries = useMemo(
     () =>
       config.slides.flatMap((s) => {
@@ -220,6 +232,8 @@ export function Player({
           </motion.button>
         )}
 
+        {sounds && <SoundToggle beside={preview && !!onClose} />}
+
         {/* En el editor directo sobran (tiene sus flechas abajo) y se pisaban con los lápices. */}
         {!editing && (
           <div className="bx-nav-hint">
@@ -283,7 +297,9 @@ export function Player({
                 </style>
               )}
               <SlideStyleContext.Provider value={style}>
-                <SlideBody slide={slideConfig} buyer={data.content[slideConfig.key]} ctx={ctx} />
+                <SoundProvider enabled={sounds}>
+                  <SlideBody slide={slideConfig} buyer={data.content[slideConfig.key]} ctx={ctx} />
+                </SoundProvider>
               </SlideStyleContext.Provider>
             </SlideFrame>
           )
@@ -291,6 +307,27 @@ export function Player({
       </motion.div>
       {footer && <div className="bx-footer">{footer}</div>}
     </motion.div>
+  )
+}
+
+/** Prender o apagar los sonidos (queda elegido en el dispositivo de quien mira). */
+function SoundToggle({ beside }: { beside: boolean }) {
+  const [muted, setMuted] = useMuted()
+  return (
+    <motion.button
+      type="button"
+      className={`bx-sound ${beside ? 'is-beside' : ''}`}
+      onClick={() => {
+        setMuted(!muted)
+        if (muted) playSound('tap')
+      }}
+      aria-label={muted ? 'Activar los sonidos' : 'Silenciar los sonidos'}
+      aria-pressed={!muted}
+      whileTap={{ scale: 0.88 }}
+      transition={spring.snappy}
+    >
+      {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+    </motion.button>
   )
 }
 

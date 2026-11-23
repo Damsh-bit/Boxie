@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Heart, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText, Icon } from '@/ui/Icon'
+import { useCue, useSound } from '../player/use-sound'
 import { Burst, CoupleScene, PartyScene } from '../ribbly/art'
 import { Brand, Btn, editable, Sheet, Stage, T, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
@@ -16,6 +17,9 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
   const active = ctx.active
   const [liked, setLiked] = useState(false)
   const [sharing, setSharing] = useState(false)
+  const play = useSound()
+  // La tarjeta que sube.
+  useCue(active, 'paper', 0.22)
   const photo = ctx.noPhotos ? undefined : ctx.resolveMedia(buyer.photo)
   const title = buyer.title.trim() || fill(theme.defaultTitle, ctx.vars)
   const text = buyer.text.trim() || fill(theme.defaultText, ctx.vars)
@@ -109,7 +113,10 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
                   type="button"
                   className="rb-btn rb-btn-icon"
                   style={{ background: '#F1F3F9', borderRadius: u(16), color: 'var(--rb-coral)' }}
-                  onClick={() => setLiked((v) => !v)}
+                  onClick={() => {
+                    play(liked ? 'tap' : 'heart')
+                    setLiked((v) => !v)
+                  }}
                   aria-label="Me gusta"
                   aria-pressed={liked}
                   whileTap={{ scale: 0.82 }}
@@ -126,6 +133,7 @@ export function StoryMemory({ theme, buyer, ctx }: Props<'story.memory'>) {
                     count={14}
                     power={0.5}
                     colors={['#F44E63', '#FF8FB1', '#FFD35C']}
+                    cue={null}
                   />
                 )}
               </div>

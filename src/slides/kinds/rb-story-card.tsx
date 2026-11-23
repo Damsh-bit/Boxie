@@ -3,6 +3,7 @@ import { Bookmark } from 'lucide-react'
 import { useState } from 'react'
 import { Icon } from '@/ui/Icon'
 import type { IconName } from '@/domain/icons'
+import { useCue, useSound } from '../player/use-sound'
 import { Balloon, Confetti, Heart, PETALS, Squiggles } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { Btn, editable, Sheet, Stage, T, TapMark, u } from '../ribbly/ui'
@@ -93,6 +94,16 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
   const [saving, setSaving] = useState(false)
   // Si se va de la pantalla, la tarjeta vuelve a su sobre.
   if (!active && open) setOpen(false)
+
+  const play = useSound()
+  const openCard = () => {
+    setOpen(true)
+    play('unfold')
+  }
+  // El sobre que llega; con la tarjeta abierta, el lápiz mientras se escribe y la firma.
+  useCue(active && !open, 'paper', 0.35)
+  useCue(open && !calm, 'scribble', 0.95, { duration: 2.2 })
+  useCue(open && !calm, 'ting', 3.05)
 
   const text = buyer.text.trim() || fill(theme.defaultText, ctx.vars)
   const spine = ctx.vars.edad ? fill(theme.spine, ctx.vars) : ''
@@ -186,7 +197,7 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
                   <motion.button
                     type="button"
                     className={`rb-seal ${pareja ? 'is-wax' : ''}`}
-                    onClick={() => setOpen(true)}
+                    onClick={openCard}
                     aria-label={pareja ? 'Abrir la carta' : 'Abrir la tarjeta'}
                     whileTap={{ scale: 0.88 }}
                   >
@@ -317,7 +328,7 @@ export function StoryCard({ theme, buyer, ctx }: Props<'story.card'>) {
               >
                 <T text={theme.hint} ctx={ctx} />
               </p>
-              <Btn variant="primary" mods="is-flat" onClick={() => setOpen(true)}>
+              <Btn variant="primary" mods="is-flat" onClick={openCard} cue={null}>
                 <T text={theme.openLabel} ctx={ctx} />
               </Btn>
             </motion.div>

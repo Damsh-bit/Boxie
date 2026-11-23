@@ -10,6 +10,8 @@ import {
 } from 'react'
 import { EmojiText } from '@/ui/Icon'
 import { spring } from '../player/motion'
+import type { Cue } from '../player/sound'
+import { useCue, useSound } from '../player/use-sound'
 import { PIECE_ID } from '../layout'
 import { useSlideStyle } from '../style-context'
 import type { SlideContext } from '../types'
@@ -184,10 +186,20 @@ type BtnProps = Omit<HTMLMotionProps<'button'>, 'children'> & {
   children: ReactNode
   /** Con href es un link que abre en otra pestaña. */
   href?: string
+  /** El sonido al tocarlo (`null`: ninguno, porque lo que hace ya suena). */
+  cue?: Cue | null
 }
 
-/** Botón con el toque de siempre: se hunde al apretar y vuelve con resorte. */
-export function Btn({ variant = 'primary', mods = '', children, href, ...props }: BtnProps) {
+/** Botón con el toque de siempre: se hunde al apretar (con un "toc") y vuelve con resorte. */
+export function Btn({
+  variant = 'primary',
+  mods = '',
+  children,
+  href,
+  cue = 'tap',
+  ...props
+}: BtnProps) {
+  const play = useSound()
   const className = `rb-btn rb-btn-${variant} ${mods} ${props.className ?? ''}`
   if (href) {
     return (
@@ -196,6 +208,7 @@ export function Btn({ variant = 'primary', mods = '', children, href, ...props }
         target="_blank"
         rel="noopener noreferrer"
         className={className}
+        onClick={() => cue && play(cue)}
         whileTap={{ scale: 0.95, y: 2 }}
         whileHover={{ y: -2 }}
         transition={spring.snappy}
@@ -211,6 +224,10 @@ export function Btn({ variant = 'primary', mods = '', children, href, ...props }
       whileHover={props.disabled ? undefined : { y: -2 }}
       transition={spring.snappy}
       {...props}
+      onClick={(event) => {
+        if (cue) play(cue)
+        props.onClick?.(event)
+      }}
       className={className}
     >
       {children}
@@ -286,6 +303,7 @@ export function Sheet({
   children: ReactNode
   closeLabel?: string
 }) {
+  useCue(open, 'sheet')
   return (
     <AnimatePresence>
       {open && (

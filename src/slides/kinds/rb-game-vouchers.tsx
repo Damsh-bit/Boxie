@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { Emoji, EmojiText } from '@/ui/Icon'
+import { useCue, useSound } from '../player/use-sound'
 import { Burst, Confetti, ROSE } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { Btn, Chip, editable, Stage, T, u, useStored } from '../ribbly/ui'
@@ -60,6 +61,11 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
     if (!calm) setTimeout(() => navigator.vibrate?.(40), 420)
   }
 
+  const play = useSound()
+  // El sello golpea (a mitad de su animación) y después, el confeti.
+  useCue(justRedeemed, 'stamp', calm ? 0 : 0.44)
+  useCue(justRedeemed, 'sparkle', calm ? 0.1 : 0.52)
+
   return (
     <Stage
       tone="soft"
@@ -111,7 +117,11 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
                   type="button"
                   className={`rb-voucher ${used ? 'is-used' : ''}`}
                   style={{ '--c': voucher.color, flex: 1 } as Vars}
-                  onClick={() => setOpen(i)}
+                  onClick={() => {
+                    // El vale gira al abrirse.
+                    play('flip')
+                    setOpen(i)
+                  }}
                   whileTap={{ scale: 0.95 }}
                   whileHover={{ y: -3 }}
                   transition={spring.snappy}
@@ -273,7 +283,7 @@ export function GameVouchers({ theme, buyer, ctx }: Props<'game.vouchers'>) {
                   <T text={theme.stamp} ctx={ctx} />
                 </motion.span>
               )}
-              {justRedeemed && <Burst key="canje" y="40%" count={44} />}
+              {justRedeemed && <Burst key="canje" y="40%" count={44} cue={null} />}
             </motion.div>
 
             <div style={{ marginTop: 'auto', width: '100%' }}>

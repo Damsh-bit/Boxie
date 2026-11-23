@@ -14,7 +14,7 @@ const ENTRANCES: Record<string, Entrance> = {
   logo: { y: -10 },
   'balloons-right': { delay: 0.25, y: 40 },
   'balloons-left': { delay: 0.35, y: 40 },
-  confetti: { delay: 0.5, scale: 0.8, pop: true },
+  confetti: { delay: 0.5, scale: 0.8, pop: true, silent: true },
   caption: { delay: 0.55, scale: 0.7, rotate: -12, pop: true },
   title: { delay: 0.6, y: 16 },
   wish: { delay: 0.8, y: 14 },

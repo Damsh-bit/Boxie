@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import type { ParsedThemeConfig } from '@/slides/config'
 import { Player, type PlayerData } from '@/slides/player/Player'
+import { themeSounds } from '@/slides/player/sound'
 import { markGiftOpenedAction } from './actions'
 import { GiftAfterglow } from './GiftAfterglow'
 import { GiftIntro } from './GiftIntro'
@@ -60,6 +61,7 @@ export function GiftPlayer({
             key="tapa"
             recipientName={data.recipientName}
             senderName={data.senderName}
+            sounds={themeSounds(config)}
             onOpen={() => setOpened(true)}
           />
         )}

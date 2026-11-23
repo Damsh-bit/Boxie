@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
+import { useCue } from '../player/use-sound'
 import { Balloon, Bokeh, Bow, Bunting, Burst, Confetti, Heart, Stars } from '../ribbly/art'
 import { useRbPalette } from '../ribbly/look'
 import { Brand, Btn, editable, Stage, T, u } from '../ribbly/ui'
@@ -77,7 +78,18 @@ function Fireworks({ active }: { active: boolean }) {
     return () => clearInterval(timer)
   }, [active])
   const [x, y] = FIREWORKS[n % FIREWORKS.length]!
-  return active ? <Burst key={n} x={x} y={y} seed={n + 3} count={38} power={0.9} /> : null
+  // Suenan los primeros; después siguen en silencio (no aturden).
+  return active ? (
+    <Burst
+      key={n}
+      x={x}
+      y={y}
+      seed={n + 3}
+      count={38}
+      power={0.9}
+      cue={n < 3 ? 'firework' : null}
+    />
+  ) : null
 }
 
 /**
@@ -106,6 +118,9 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
     ? [palette.balloons[1], palette.accent, palette.primary, palette.balloons[2]]
     : ['#4FC3F7', '#FFD35C', '#F44E63', '#B28DFF']
   const ending = ctx.style.remate ?? 'original'
+  // La caja que se abre y, en el final, el ¡Feliz cumple! con su fanfarria.
+  useCue(opened, 'unbox', 0.05)
+  useCue(active && finale, 'fanfare', 0.14)
 
   return (
     <Stage
@@ -217,7 +232,7 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
                 <Bow />
               </motion.div>
             </Loop>
-            {opened && <Burst key="abrio" y="34%" count={44} power={1.1} />}
+            {opened && <Burst key="abrio" y="34%" count={44} power={1.1} cue={null} />}
 
             <div className="rb-grow">
               <AnimatePresence>
@@ -305,7 +320,12 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
             <div className="rb-actions" style={{ marginTop: u(10) }}>
               {!opened ? (
                 <Appear active={active} delay={0.5} y={20}>
-                  <Btn variant="primary" mods="is-wide is-flat" onClick={() => setStep('gift')}>
+                  <Btn
+                    variant="primary"
+                    mods="is-wide is-flat"
+                    cue={null}
+                    onClick={() => setStep('gift')}
+                  >
                     <T text={theme.giftCta} ctx={ctx} />
                   </Btn>
                 </Appear>
@@ -366,10 +386,11 @@ export function OutroFinale({ theme, buyer, ctx }: Props<'outro.finale'>) {
               style={{ marginTop: u(64) }}
               {...editable(ctx, '', 'remate')}
             >
-              <Pop as="span" active={active} delay={0.1} from={0.5} rotate={-8}>
+              {/* Suenan con la fanfarria del final. */}
+              <Pop as="span" active={active} delay={0.1} from={0.5} rotate={-8} cue={null}>
                 <T text={theme.title1} ctx={ctx} />
               </Pop>
-              <Pop as="span" active={active} delay={0.28} from={0.5} rotate={6}>
+              <Pop as="span" active={active} delay={0.28} from={0.5} rotate={6} cue={null}>
                 <T text={theme.title2} ctx={ctx} />
               </Pop>
             </h2>

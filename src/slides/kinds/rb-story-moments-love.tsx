@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { EmojiText } from '@/ui/Icon'
+import { useCue, useSound } from '../player/use-sound'
 import { SCENES_PAREJA } from '../ribbly/art'
 import { cumpleMomentsScene } from '../ribbly/cumple-art'
 import { momentsScene, withoutPhotos, type Measure } from '../ribbly/love-art'
@@ -15,12 +16,12 @@ import type { Props } from './shared'
 
 const ENTRANCES: Record<string, Entrance> = {
   balloons: { delay: 0.2, y: 40 },
-  confetti: { delay: 0.6, scale: 0.8, pop: true },
-  candle: { delay: 0.8, scale: 0.6, pop: true },
+  confetti: { delay: 0.6, scale: 0.8, pop: true, silent: true },
+  candle: { delay: 0.8, scale: 0.6, pop: true, silent: true },
   logo: { y: -10 },
   kicker: { delay: 0.08, y: 10 },
   title: { delay: 0.16, y: 14 },
-  doodles: { delay: 0.9, scale: 0.7, pop: true },
+  doodles: { delay: 0.9, scale: 0.7, pop: true, silent: true },
   'polaroid-0': { delay: 0.3, scale: 0.5, rotate: -10, pop: true },
   'polaroid-1': { delay: 0.42, scale: 0.5, rotate: 10, pop: true },
   'polaroid-2': { delay: 0.54, scale: 0.5, rotate: -10, pop: true },
@@ -98,9 +99,14 @@ export function StoryMomentsGrid({ theme, buyer, ctx }: Props<'story.moments'>) 
     const Scene = SCENES_PAREJA[m.scene]!
     return m.src ? <img src={m.src} alt={m.caption || 'Recuerdo'} draggable={false} /> : <Scene />
   }
-  const step = (by: number) =>
+  const play = useSound()
+  const step = (by: number) => {
+    play('paper')
     setZoom((z) => (z === null ? z : (z + by + moments.length) % moments.length))
+  }
   const current = zoom === null ? null : moments[zoom]
+  // La polaroid que se agranda.
+  useCue(!!current, 'paper')
 
   return (
     <Stage

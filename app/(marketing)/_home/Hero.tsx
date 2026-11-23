@@ -245,13 +245,15 @@ export function Hero({
           />
         </motion.div>
 
-        {/* En una columna el celular va arriba de todo y asoma de una ranura: se
-            ve la parte de arriba (--peek) y el título entra en la primera pantalla. */}
+        {/* En una columna el celular va arriba de todo y se ve la parte de arriba
+            (--peek), que se difumina hacia abajo (HeroPreview.tsx): así el título
+            entra en la primera pantalla. */}
         <motion.div
-          className="relative min-w-0 [--peek:300px] [grid-area:phone] max-lg:pb-1.5 sm:[--peek:380px] lg:py-2"
+          className="relative min-w-0 [--peek:300px] [grid-area:phone] sm:[--peek:380px] lg:py-2"
           style={{ y: phoneY }}
         >
-          {/* Se corta solo abajo, en la ranura: arriba y a los costados flota libre. */}
+          {/* Ya invisible donde termina el difuminado, se corta ahí (lo de abajo no se
+              toca ni ocupa lugar); arriba y a los costados flota libre. */}
           <div className="max-lg:h-[calc(var(--peek)+8px)] max-lg:pt-2 max-lg:[clip-path:inset(-200px_-100vw_0_-100vw)]">
             <HeroPreview
               theme={theme}
@@ -264,10 +266,6 @@ export function Hero({
               onPickTheme={choose}
             />
           </div>
-          <span
-            aria-hidden
-            className="pointer-events-none absolute top-[calc(var(--peek)+8px)] left-1/2 h-4 w-[264px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_-8px_18px_-8px_rgba(42,36,51,0.45),0_10px_22px_-8px_rgba(42,36,51,0.35)] ring-1 ring-black/5 sm:w-[314px] lg:hidden"
-          />
         </motion.div>
       </motion.div>
 

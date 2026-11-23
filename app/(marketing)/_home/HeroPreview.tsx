@@ -629,7 +629,13 @@ export function HeroPreview({
       animate={{ opacity: 1, y: 0, rotate: 3 }}
       transition={{ ...spring.gentle, delay: 0.25 }}
     >
-      <motion.div style={{ x: driftX, y: driftY }}>
+      {/* En una columna el celular se difumina hacia abajo hasta --peek (Hero.tsx).
+          La máscara recorta todo lo que sale de esta caja: se agranda 40 px para
+          cada lado (y arriba) para que el celular flote y tenga sombra sin cortarse. */}
+      <motion.div
+        className="max-lg:-mx-10 max-lg:-mt-10 max-lg:[mask-image:linear-gradient(to_bottom,#000_calc(var(--peek)-90px),transparent_calc(var(--peek)+30px))] max-lg:px-10 max-lg:pt-10"
+        style={{ x: driftX, y: driftY }}
+      >
         <Float distance={12} rotate={-1.5} duration={7}>
           <motion.div
             className="relative"
@@ -637,8 +643,8 @@ export function HeroPreview({
             onPointerMove={onPointerMove}
             onPointerLeave={onPointerLeave}
           >
-            {/* En una columna se corta en la ranura: la sombra larga de abajo quedaría
-                cortada en seco de lado a lado. Una corta que no pasa del ancho de la ranura. */}
+            {/* En una columna, la sombra larga de abajo no entra en la caja de la máscara
+                (se cortaría en seco a los costados): una corta, que entra. */}
             <PhoneFrame className="max-lg:shadow-[0_0_34px_-14px_rgba(42,36,51,0.5)]">
               <div
                 role="region"
@@ -839,7 +845,7 @@ export function HeroPreview({
       )}
 
       {/* En la mezcla: de qué Ribbly es lo que se ve, y un toque para armar esa
-          (en una columna, sobre lo último que asoma del celular; Hero.tsx da --peek). */}
+          (en una columna, sobre el difuminado del celular; Hero.tsx da --peek). */}
       <div className="absolute top-[calc(100%+22px)] left-1/2 z-10 -translate-x-1/2 max-lg:top-[calc(var(--peek)-46px)]">
         <AnimatePresence mode="wait" initial={false}>
           {source && (

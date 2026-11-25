@@ -294,6 +294,14 @@ export async function activateMemberAccount(token: string, password: string) {
 /**
  * Envía un correo con token para restablecer la contraseña de un miembro del equipo de administración.
  */
+/** "santiago@x.com" → "san***@x.com": para logs, sin exponer el mail entero. */
+export function maskEmail(email: string): string {
+  return email.replace(
+    /^([^@]{1,3})[^@]*(@.*)?$/,
+    (_m, head: string, domain?: string) => `${head}***${domain ?? ''}`,
+  )
+}
+
 export async function sendPasswordResetEmail(
   emailInput: string,
 ): Promise<{ ok: boolean; error?: string }> {
@@ -301,18 +309,23 @@ export async function sendPasswordResetEmail(
   if (!email) return { ok: false, error: 'Ingresá un correo electrónico válido.' }
 
   const db = serviceDb()
+  // Igual que el login: sin distinguir mayúsculas y solo cuentas con rol.
   const { data: user, error } = await (db.from('users') as any)
     .select('user_id, email, name, role')
-    .eq('email', email)
+    .ilike('email', escapeIlike(email))
+    .not('role', 'is', null)
     .maybeSingle()
 
   if (error) {
     log.error('Error al buscar usuario para restablecer contraseña', error)
+    return { ok: false, error: 'No se pudo buscar la cuenta.' }
   }
 
-  // Por seguridad, si el usuario no existe o no tiene rol de admin, no arrojamos error
-  // para evitar enumeración de correos electrónicos.
-  if (!user || !user.role) {
+  // Por seguridad, a quien lo pide no se le dice si el mail es de un admin (la
+  // respuesta es siempre la misma). Pero queda en el log interno, enmascarado:
+  // "no me llega el mail" casi siempre es un mail que no está en el equipo.
+  if (!user) {
+    log.info('Restablecer clave: el mail no es de ningún admin', { email: maskEmail(email) })
     return { ok: true }
   }
 
@@ -349,6 +362,6 @@ export async function sendPasswordResetEmail(
     return { ok: false, error: 'No se pudo enviar el correo de recuperación.' }
   }
 
-  log.info('Correo de recuperación de contraseña enviado', { email })
+  log.info('Correo de recuperación de contraseña enviado', { email: maskEmail(email) })
   return { ok: true }
 }

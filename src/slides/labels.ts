@@ -1,3 +1,4 @@
+import { chapterLabel, CHAPTER_KIND } from './ribbly/thread'
 import { slideDefinitions, type SlideKind } from './schemas'
 import type { SlideDefinition } from './types'
 
@@ -29,11 +30,23 @@ export function slideSummary(slide: Named) {
   }
 }
 
-export function slideEditorInfo(slide: Named) {
+/**
+ * Con el lugar de la slide en la temática, cada capítulo del hilo se llama por
+ * su número y su tema ("Capítulo 2 · La banda sonora"), no todos igual.
+ */
+export function slideEditorInfo(
+  slide: Named,
+  where?: { slides: readonly { key: string; kind: string }[]; index: number },
+) {
   const definition = slideDefinitions[slide.kind] as SlideDefinition
+  const chapter =
+    where && slide.kind === CHAPTER_KIND
+      ? chapterLabel(where.slides, where.index, own(slide.props, 'topic'))
+      : undefined
   return {
     title:
       own(slide.props, 'editorTitle') ??
+      chapter ??
       definition.editor?.title ??
       own(slide.props, 'screenTitle') ??
       definition.summary?.title ??

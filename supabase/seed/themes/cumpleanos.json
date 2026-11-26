@@ -50,6 +50,13 @@
         "kind": "cover.age"
       },
       {
+        "key": "hilo",
+        "kind": "story.bond",
+        "props": {
+          "look": "cumple"
+        }
+      },
+      {
         "key": "tarjeta",
         "kind": "story.card"
       },
@@ -72,12 +79,26 @@
         }
       },
       {
+        "key": "hilo-musica",
+        "kind": "story.thread",
+        "props": {
+          "look": "cumple"
+        }
+      },
+      {
         "key": "cancion",
         "kind": "media.video"
       },
       {
         "key": "playlist",
         "kind": "media.mix"
+      },
+      {
+        "key": "hilo-juego",
+        "kind": "story.thread",
+        "props": {
+          "look": "cumple"
+        }
       },
       {
         "key": "trivia",
@@ -92,12 +113,26 @@
         "kind": "media.poster"
       },
       {
+        "key": "hilo-premios",
+        "kind": "story.thread",
+        "props": {
+          "look": "cumple"
+        }
+      },
+      {
         "key": "tragamonedas",
         "kind": "game.slots"
       },
       {
         "key": "vales",
         "kind": "game.vouchers"
+      },
+      {
+        "key": "hilo-palabras",
+        "kind": "story.thread",
+        "props": {
+          "look": "cumple"
+        }
       },
       {
         "key": "revista",
@@ -108,6 +143,13 @@
         "kind": "story.wishes"
       },
       {
+        "key": "hilo-turno",
+        "kind": "story.thread",
+        "props": {
+          "look": "cumple"
+        }
+      },
+      {
         "key": "velitas",
         "kind": "reflect.candles"
       },
@@ -116,12 +158,26 @@
         "kind": "reflect.capsule"
       },
       {
+        "key": "hilo-sorpresa",
+        "kind": "story.thread",
+        "props": {
+          "look": "cumple"
+        }
+      },
+      {
         "key": "pinata",
         "kind": "game.pinata"
       },
       {
         "key": "anecdota",
         "kind": "story.memory"
+      },
+      {
+        "key": "hilo-final",
+        "kind": "story.thread",
+        "props": {
+          "look": "cumple"
+        }
       },
       {
         "key": "resumen",

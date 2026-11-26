@@ -53,6 +53,13 @@
         "kind": "cover.edition"
       },
       {
+        "key": "hilo",
+        "kind": "story.bond-love",
+        "props": {
+          "look": "pareja"
+        }
+      },
+      {
         "key": "dedicatoria",
         "kind": "story.card",
         "props": {
@@ -86,6 +93,13 @@
           "title": "Sus mejores momentos",
           "phrase": "Cada foto, un recuerdo nuestro",
           "defaultCaption": "Nuestro primer viaje ✈️"
+        }
+      },
+      {
+        "key": "hilo-musica",
+        "kind": "story.thread",
+        "props": {
+          "look": "pareja"
         }
       },
       {
@@ -161,6 +175,13 @@
         }
       },
       {
+        "key": "hilo-juego",
+        "kind": "story.thread",
+        "props": {
+          "look": "pareja"
+        }
+      },
+      {
         "key": "trivia",
         "kind": "game.quiz",
         "props": {
@@ -232,6 +253,13 @@
               "link": "https://www.disneyplus.com"
             }
           ]
+        }
+      },
+      {
+        "key": "hilo-premios",
+        "kind": "story.thread",
+        "props": {
+          "look": "pareja"
         }
       },
       {
@@ -315,6 +343,13 @@
         }
       },
       {
+        "key": "hilo-palabras",
+        "kind": "story.thread",
+        "props": {
+          "look": "pareja"
+        }
+      },
+      {
         "key": "revista",
         "kind": "story.magazine-love"
       },
@@ -344,12 +379,26 @@
         }
       },
       {
+        "key": "hilo-turno",
+        "kind": "story.thread",
+        "props": {
+          "look": "pareja"
+        }
+      },
+      {
         "key": "gratitud",
         "kind": "reflect.pause"
       },
       {
         "key": "diario",
         "kind": "reflect.diary"
+      },
+      {
+        "key": "hilo-sorpresa",
+        "kind": "story.thread",
+        "props": {
+          "look": "pareja"
+        }
       },
       {
         "key": "fortuna",
@@ -363,6 +412,13 @@
           "editorIntro": "Ese recuerdo de ustedes que siempre vuelve: una foto, un título y dos líneas tuyas.",
           "defaultTitle": "El viaje a Mendoza",
           "defaultText": "Nos perdimos tres veces, llegamos tarde a todo y fue el mejor finde de nuestras vidas."
+        }
+      },
+      {
+        "key": "hilo-final",
+        "kind": "story.thread",
+        "props": {
+          "look": "pareja"
         }
       },
       {

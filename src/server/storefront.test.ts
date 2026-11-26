@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Plan } from '@/domain/plans'
 import { readThemeConfig } from '@/slides/config'
-import { withDefaultPlans } from '@/slides/plans'
+import { contentSlides, withDefaultPlans } from '@/slides/plans'
 import amistad from '../../supabase/seed/themes/amistad.json'
 import { kindTiers, summarizePlans } from './storefront'
 
@@ -40,8 +40,10 @@ describe('vidriera', () => {
       expect(summary[i]!.screens).toBeGreaterThan(summary[i - 1]!.screens)
       expect(summary[i]!.games).toBeGreaterThanOrEqual(summary[i - 1]!.games)
     }
-    // El más completo trae todas las pantallas de la temática más larga.
-    expect(summary[2]!.screens).toBe(Math.max(...configs.map((c) => c.slides.length)))
+    // El más completo trae todas las pantallas de la temática más larga (sin contar el hilo).
+    expect(summary[2]!.screens).toBe(
+      Math.max(...configs.map((c) => contentSlides(c.slides).length)),
+    )
     expect(summary[0]!.games).toBe(0)
     expect(summary.map((p) => p.days)).toEqual([30, 60, 120])
     expect(summary[1]!.savingsPercent).toBe(33)

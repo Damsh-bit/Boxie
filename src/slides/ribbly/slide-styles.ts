@@ -30,6 +30,8 @@ import {
   RECAP_PHOTOS,
   SLOTS_MACHINES,
   SLOTS_SYMBOLS,
+  THREAD_HANDS,
+  THREAD_RIBBONS,
   VIDEO_FILTERS,
   VOUCHER_COLORS,
   VOUCHER_STAMPS,
@@ -50,6 +52,13 @@ const common = (skip: Parameters<typeof decoAxis>[0] = []): StyleAxis[] => [
   TYPE_AXIS,
   decoAxis(skip),
 ]
+
+/** El hilo de la historia: la cinta, la letra de la nota, colores y tipografía (sin decoración: es una pausa). */
+const THREAD_PIECES: StyleAxis[] = [
+  pieceAxis('cinta', 'Cinta', THREAD_RIBBONS),
+  pieceAxis('letra', 'Letra de la nota', THREAD_HANDS),
+]
+const THREAD_AXES: StyleAxis[] = [...THREAD_PIECES, PALETTE_AXIS, TYPE_AXIS]
 
 const cake = [pieceAxis('torta', 'Torta', CAKE_FLAVORS), pieceAxis('velas', 'Velas', CAKE_CANDLES)]
 
@@ -131,6 +140,10 @@ export const CUMPLE_STYLES: Record<string, readonly StyleAxis[]> = {
     pieceAxis('caja', 'Caja del regalo', FINALE_BOXES),
     ...common(['globos', 'confeti', 'estrellas']),
   ],
+  // El hilo: la cinta y, como en todas, colores y letra.
+  'story.bond': THREAD_AXES,
+  'story.bond-love': THREAD_AXES,
+  'story.thread': THREAD_AXES,
 }
 
 // ── Pareja ──────────────────────────────────────────────────────────────────
@@ -179,6 +192,9 @@ export const PAREJA_STYLES: Record<string, readonly StyleAxis[]> = {
   'outro.finale': CUMPLE_STYLES['outro.finale']!.slice(0, 2).concat(
     loveCommon(['confeti', 'estrellas']),
   ),
+  'story.bond': [...THREAD_PIECES, TYPE_AXIS],
+  'story.bond-love': [...THREAD_PIECES, TYPE_AXIS],
+  'story.thread': [...THREAD_PIECES, TYPE_AXIS],
 }
 
 /** Las pantallas que son solo de Pareja (no tienen el campo `look`). */

@@ -46,6 +46,7 @@ import { StoryDedication } from './kinds/story-dedication'
 import { StoryEditorial } from './kinds/story-editorial'
 import { StoryIntro } from './kinds/story-intro'
 import { StoryReasons } from './kinds/story-reasons'
+import { StoryBond, StoryThread } from './kinds/rb-story-thread'
 import type { Props } from './kinds/shared'
 import { slideDefinitions, type SlideKind } from './schemas'
 
@@ -109,6 +110,10 @@ export const slideComponents = {
   'reflect.pause': ReflectPause,
   'reflect.diary': ReflectDiary,
   'game.cookie': GameCookie,
+  // El hilo de la historia
+  'story.bond': StoryBond,
+  'story.bond-love': StoryBond,
+  'story.thread': StoryThread,
 } satisfies { [K in SlideKind]: ComponentType<Props<K>> }
 
 export const slideRegistry = Object.fromEntries(

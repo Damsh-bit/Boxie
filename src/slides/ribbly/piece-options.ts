@@ -285,3 +285,20 @@ export const FINALE_BOXES = [
   ['azul', 'Azul'],
   ['lunares', 'Lunares'],
 ] as const satisfies PieceOptions
+
+/** El hilo · El color de la cinta que une las pantallas. */
+export const THREAD_RIBBONS = [
+  ['original', 'La de la ocasión'],
+  ['roja', 'Roja'],
+  ['dorada', 'Dorada'],
+  ['celeste', 'Celeste'],
+  ['lila', 'Lila'],
+  ['verde', 'Verde'],
+] as const satisfies PieceOptions
+
+/** El hilo · La letra de la nota de quien regala. */
+export const THREAD_HANDS = [
+  ['original', 'A mano'],
+  ['serif', 'Elegante'],
+  ['moderna', 'Moderna'],
+] as const satisfies PieceOptions

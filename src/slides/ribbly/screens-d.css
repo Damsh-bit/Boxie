@@ -1,0 +1,341 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   Ribbly · El hilo de la historia (kinds/rb-story-thread.tsx)
+
+   El prólogo y los capítulos que van entre las pantallas: papel claro, una
+   cinta que cruza y una tarjeta atada con un moño. Todo en --u (escala con el
+   teléfono, ver ribbly.css).
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.rb-thread {
+  --rb-thread-ink: var(--rb-ink, #2a2433);
+  color: var(--rb-thread-ink);
+}
+
+.rb-thread-ribbon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.rb-thread-band {
+  stroke-width: calc(var(--u) * 9);
+  filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 3) rgba(42, 36, 51, 0.16));
+}
+
+.rb-thread-body {
+  justify-content: flex-start;
+  /* Debajo de los botones del player (sonido y cerrar). */
+  padding-top: calc(var(--u) * 74);
+  padding-bottom: calc(var(--u) * 22);
+}
+
+.rb-thread-kicker {
+  color: color-mix(in srgb, var(--rb-thread-ink) 72%, transparent);
+}
+
+/* ── Los nudos del hilo ────────────────────────────────────────────────── */
+
+.rb-thread-knots {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(calc(var(--u) * 240), 70%);
+  height: calc(var(--u) * 18);
+  margin-top: calc(var(--u) * 12);
+}
+
+.rb-thread-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: calc(var(--u) * 2);
+  translate: 0 -50%;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--rb-thread) 30%, transparent);
+}
+
+.rb-thread-knots b {
+  position: relative;
+  width: calc(var(--u) * 9);
+  height: calc(var(--u) * 9);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 0 0 calc(var(--u) * 2) color-mix(in srgb, var(--rb-thread) 55%, transparent);
+}
+
+.rb-thread-knots b[data-state='done'] {
+  background: var(--rb-thread);
+  box-shadow: none;
+}
+
+.rb-thread-knots b[data-state='now'] {
+  width: calc(var(--u) * 16);
+  height: calc(var(--u) * 16);
+  background: var(--rb-thread);
+  box-shadow:
+    0 0 0 calc(var(--u) * 4) #fff,
+    0 0 0 calc(var(--u) * 6) color-mix(in srgb, var(--rb-thread) 40%, transparent);
+}
+
+/* ── Lo que pensó ──────────────────────────────────────────────────────── */
+
+.rb-thread-idea {
+  margin-top: calc(var(--u) * 26);
+  max-width: calc(var(--u) * 330);
+}
+
+.rb-thread-lead {
+  font-size: calc(var(--u) * 30);
+  line-height: 1;
+  font-weight: 700;
+}
+
+.rb-thread-thought {
+  margin-top: calc(var(--u) * 6);
+  font-family: var(--rb-display, var(--font-fredoka)), var(--font-outfit), sans-serif;
+  font-weight: 600;
+  font-size: calc(var(--u) * 38);
+  line-height: 1.04;
+  text-wrap: balance;
+  overflow: hidden;
+  padding-bottom: calc(var(--u) * 4);
+}
+
+.rb-thread-thought > span {
+  display: inline-block;
+}
+
+/* ── La tarjeta atada ──────────────────────────────────────────────────── */
+
+.rb-thread-card {
+  position: relative;
+  width: 100%;
+  max-width: calc(var(--u) * 316);
+  margin-top: calc(var(--u) * 46);
+  padding: calc(var(--u) * 26) calc(var(--u) * 22) calc(var(--u) * 16);
+  border-radius: calc(var(--u) * 18);
+  background: #fff;
+  box-shadow:
+    0 calc(var(--u) * 18) calc(var(--u) * 36) rgba(42, 36, 51, 0.12),
+    0 calc(var(--u) * 2) calc(var(--u) * 6) rgba(42, 36, 51, 0.06);
+  text-align: left;
+}
+
+.rb-thread-bow {
+  position: absolute;
+  left: 50%;
+  width: calc(var(--u) * 78);
+  translate: -50% 0;
+  filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 3) rgba(42, 36, 51, 0.18));
+}
+
+.rb-thread-note {
+  font-family: var(--rb-hand, var(--font-caveat)), 'Segoe Script', cursive;
+  font-size: calc(var(--u) * 23);
+  line-height: 1.22;
+  color: var(--rb-thread-ink);
+  text-wrap: pretty;
+}
+
+.rb-thread-sign {
+  margin-top: calc(var(--u) * 6);
+  font-family: var(--rb-hand, var(--font-caveat)), 'Segoe Script', cursive;
+  font-size: calc(var(--u) * 24);
+  font-weight: 700;
+  text-align: right;
+}
+
+/* La letra de la nota que eligió quien regala (eje `letra`). */
+.rb-thread-card[data-letra='serif'] :is(.rb-thread-note, .rb-thread-sign) {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-style: italic;
+}
+
+.rb-thread-card[data-letra='serif'] .rb-thread-note {
+  font-size: calc(var(--u) * 17.5);
+  line-height: 1.38;
+}
+
+.rb-thread-card[data-letra='moderna'] :is(.rb-thread-note, .rb-thread-sign) {
+  font-family: var(--font-outfit), system-ui, sans-serif;
+}
+
+.rb-thread-card[data-letra='moderna'] .rb-thread-note {
+  font-size: calc(var(--u) * 16.5);
+  line-height: 1.42;
+}
+
+.rb-thread-card[data-letra] .rb-thread-sign {
+  font-size: calc(var(--u) * 16);
+}
+
+/* ── Lo que viene ──────────────────────────────────────────────────────── */
+
+.rb-thread-gifts {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 10);
+  width: 100%;
+  padding: calc(var(--u) * 14) calc(var(--u) * 36) 0;
+}
+
+.rb-thread-gifts-lead {
+  max-width: calc(var(--u) * 290);
+  font-weight: 600;
+  font-size: calc(var(--u) * 14.5);
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--rb-thread-ink) 82%, transparent);
+  text-wrap: balance;
+}
+
+.rb-thread-gifts-label {
+  max-width: calc(var(--u) * 300);
+  font-size: calc(var(--u) * 11);
+  color: color-mix(in srgb, var(--rb-thread-ink) 72%, transparent);
+  text-wrap: balance;
+}
+
+.rb-thread-gifts ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(var(--u) * 8);
+}
+
+.rb-thread-gifts li {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 6);
+  padding: calc(var(--u) * 7) calc(var(--u) * 13) calc(var(--u) * 7) calc(var(--u) * 9);
+  border-radius: 99px;
+  background: #fff;
+  box-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 12) rgba(42, 36, 51, 0.1);
+  font-weight: 600;
+  font-size: calc(var(--u) * 13.5);
+  white-space: nowrap;
+}
+
+.rb-thread-next {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 2);
+  min-height: 44px;
+  padding: 0 calc(var(--u) * 14);
+  border: 0;
+  background: none;
+  color: color-mix(in srgb, var(--rb-thread-ink) 80%, transparent);
+  font-weight: 700;
+  font-size: calc(var(--u) * 13);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* ── Prólogo ───────────────────────────────────────────────────────────── */
+
+.rb-thread-names {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: calc(var(--u) * 24);
+}
+
+.rb-thread-name {
+  max-width: calc(var(--u) * 320);
+  font-family: var(--rb-display, var(--font-fredoka)), var(--font-outfit), sans-serif;
+  font-weight: 600;
+  font-size: calc(var(--u) * 46);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+/* La cinta entre los dos nombres: de borde a borde de la pantalla (100cqw
+   es el ancho del escenario, que es el contenedor). */
+.rb-thread-tie {
+  position: relative;
+  width: calc(var(--u) * 110);
+  height: calc(var(--u) * 58);
+  margin: calc(var(--u) * 6) 0;
+}
+
+.rb-thread-tie-band {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100cqw;
+  height: calc(var(--u) * 46);
+  translate: -50% -50%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.rb-thread-tie-bow {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.rb-thread-tie-bow .rb-thread-bow {
+  position: relative;
+  left: auto;
+  width: 100%;
+  translate: 0 calc(var(--u) * 6);
+}
+
+.rb-thread-since {
+  margin-top: calc(var(--u) * 12);
+  padding: calc(var(--u) * 5) calc(var(--u) * 14);
+  border-radius: 99px;
+  background: #fff;
+  box-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 12) rgba(42, 36, 51, 0.1);
+  font-weight: 700;
+  font-size: calc(var(--u) * 13);
+  letter-spacing: 0.04em;
+}
+
+.rb-thread-card.is-plain {
+  margin-top: calc(var(--u) * 28);
+  padding-top: calc(var(--u) * 18);
+}
+
+.is-bond .rb-thread-note {
+  font-size: calc(var(--u) * 21);
+}
+
+.rb-thread-origin {
+  margin-top: calc(var(--u) * 12);
+  padding-top: calc(var(--u) * 12);
+  border-top: calc(var(--u) * 1.5) dashed rgba(42, 36, 51, 0.16);
+}
+
+.rb-thread-origin .rb-kicker {
+  font-size: calc(var(--u) * 10);
+  color: color-mix(in srgb, var(--rb-thread-ink) 70%, transparent);
+}
+
+.rb-thread-origin .rb-playfair {
+  margin-top: calc(var(--u) * 4);
+  font-style: italic;
+  font-size: calc(var(--u) * 16);
+  line-height: 1.32;
+}
+
+/* Teléfonos altos y angostos: la historia respira un poco más. */
+@container (max-aspect-ratio: 0.5) {
+  .rb-thread-idea {
+    margin-top: calc(var(--u) * 40);
+  }
+  .rb-thread-card {
+    margin-top: calc(var(--u) * 56);
+  }
+}

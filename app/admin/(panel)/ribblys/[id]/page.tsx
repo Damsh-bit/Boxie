@@ -43,7 +43,7 @@ export default async function BoxiePage({ params }: PageProps<'/admin/ribblys/[i
         const touched = content[s.key] && Object.keys(content[s.key]!).length > 0
         return {
           key: s.key,
-          title: slideEditorInfo(s).title,
+          title: slideEditorInfo(s, { slides: shown.slides, index: shown.slides.indexOf(s) }).title,
           done: Boolean(touched) && missing.length === 0,
         }
       })

@@ -5,7 +5,8 @@ import { businessContact, type BusinessContact } from '@/domain/business'
 import { describeCoupon, evaluateCoupon } from '@/domain/coupons'
 import { recommendedPlan, savingsPercent, type Plan } from '@/domain/plans'
 import type { ParsedThemeConfig } from '@/slides/config'
-import { configForPlan, isStructural, planContents } from '@/slides/plans'
+import { configForPlan, contentSlides, isStructural, planContents } from '@/slides/plans'
+import { CHAPTER_KIND, isThreadKind } from '@/slides/ribbly/thread'
 import type { SlideKind } from '@/slides/schemas'
 import {
   findCoupon,
@@ -141,11 +142,20 @@ export interface ScreenRow {
   fromPlan: string
 }
 
-/** Las pantallas que se venden (sin las de apertura y cierre), en su orden. */
+/**
+ * Las pantallas que se venden (sin las de apertura y cierre), en su orden. El
+ * prólogo y los capítulos del hilo van en una sola fila: el hilo que une todo.
+ */
 export function screenRows(plans: Plan[], configs: ParsedThemeConfig[]): ScreenRow[] {
+  let thread = false
   return [...kindFirstPlan(plans, configs)]
     .filter(([kind]) => !isStructural(kind))
-    .map(([kind, plan]) => ({ kind, fromPlan: plan.slug }))
+    .flatMap(([kind, plan]) => {
+      if (!isThreadKind(kind)) return [{ kind, fromPlan: plan.slug }]
+      if (thread) return []
+      thread = true
+      return [{ kind: CHAPTER_KIND, fromPlan: plan.slug }]
+    })
 }
 
 /** El cupón de bienvenida, si existe y está vigente (también lo ofrece el final del regalo). */
@@ -179,7 +189,7 @@ export const getStorefront = cache(async (): Promise<Storefront> => {
   )
   const storePlans = summarizePlans(plans, configs)
   const recommended = recommendedPlan(plans)
-  const longest = Math.max(0, ...configs.map((c) => c.slides.length))
+  const longest = Math.max(0, ...configs.map((c) => contentSlides(c.slides).length))
   const days = storePlans.length ? storePlans.map((p) => p.days) : [settings.giftLifetimeDays]
   const priceFromCents = storePlans.length
     ? Math.min(...storePlans.map((p) => p.priceCents))

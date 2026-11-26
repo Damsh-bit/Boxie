@@ -3,6 +3,7 @@ import { buyerSlides, type ParsedThemeConfig } from '../config'
 import { missingRequired, type MissingField } from '../fields'
 import { readLayout } from '../layout'
 import { slideEditorInfo } from '../labels'
+import { CHAPTER_KIND } from '../ribbly/thread'
 import { slideDefinitions, type SlideKind } from '../schemas'
 import type { SlideDefinition, SummaryIcon } from '../types'
 import type { EditorDraft } from './draft'
@@ -22,6 +23,11 @@ export interface EditorModule {
   /** Clave de la slide (módulos de slide). */
   slideKey: string | null
   slideKind: SlideKind | null
+  /**
+   * Un capítulo del hilo: se puede retocar, pero no cuenta como parte para
+   * completar (ya viene escrito, ribbly/thread.ts).
+   */
+  extra?: boolean
   /** Qué slide mostrar en la vista previa mientras se edita este módulo. */
   previewIndex: number
   title: string
@@ -59,16 +65,18 @@ export function editorModules(
 
   for (const slide of buyerSlides(config)) {
     const definition: SlideDefinition = slideDefinitions[slide.kind]
-    const info = slideEditorInfo(slide)
+    const index = config.slides.indexOf(slide)
+    const info = slideEditorInfo(slide, { slides: config.slides, index })
     modules.push({
       id: slide.key,
       kind: 'slide',
       slideKey: slide.key,
       slideKind: slide.kind,
-      previewIndex: config.slides.indexOf(slide),
+      previewIndex: index,
       title: info.title,
       intro: info.intro,
       icon: definition.summary?.icon ?? 'sparkles',
+      ...(slide.kind === CHAPTER_KIND ? { extra: true } : {}),
     })
   }
 
@@ -127,7 +135,7 @@ export function progressSummary(
   extra: { hasPassword?: boolean } = {},
 ) {
   const all = modules.map((m) => ({ module: m, ...moduleProgress(m, draft, extra) }))
-  const required = all.filter((m) => m.module.kind !== 'password')
+  const required = all.filter((m) => m.module.kind !== 'password' && !m.module.extra)
   return {
     modules: all,
     done: required.filter((m) => m.state === 'complete').length,

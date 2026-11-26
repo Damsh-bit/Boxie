@@ -1,5 +1,6 @@
 import { activePlans, planIncludes, type Plan } from '@/domain/plans'
 import type { ParsedSlide, ParsedThemeConfig } from './config'
+import { isThreadKind, withoutEmptyChapters } from './ribbly/thread'
 import { slideDefinitions, type SlideKind } from './schemas'
 import type { SlideInstanceSchema } from './theme-config'
 import type { z } from 'zod'
@@ -69,6 +70,10 @@ export const DEFAULT_KIND_TIER: Record<SlideKind, 1 | 2 | 3> = {
   'reflect.pause': 1,
   'reflect.diary': 1,
   'game.cookie': 1,
+  // El hilo va en todos los planes: une lo que trae cada uno.
+  'story.bond': 1,
+  'story.bond-love': 1,
+  'story.thread': 1,
 }
 
 /** Las slides que no pueden faltar en ningún plan (sin ellas no hay regalo). */
@@ -104,14 +109,25 @@ export function withDefaultPlans<T extends SlideInput>(
   })
 }
 
-/** La temática tal como la recibe quien compró ese plan. */
+/**
+ * Las pantallas que se cuentan y se venden: sin el prólogo ni los capítulos
+ * del hilo (van en todos los planes y unen a las demás, ribbly/thread.ts).
+ */
+export function contentSlides<T extends { kind: SlideKind }>(slides: readonly T[]): T[] {
+  return slides.filter((s) => !isThreadKind(s.kind))
+}
+
+/**
+ * La temática tal como la recibe quien compró ese plan. Un capítulo del hilo
+ * que se queda sin pantallas que anunciar (el plan no las trae) no va.
+ */
 export function configForPlan(
   config: ParsedThemeConfig,
   plan: Pick<Plan, 'rank'>,
   plans: readonly Pick<Plan, 'slug' | 'rank'>[],
 ): ParsedThemeConfig {
-  const slides = config.slides.filter(
-    (s) => isStructural(s.kind) || planIncludes(plan, s.plan, plans),
+  const slides = withoutEmptyChapters(
+    config.slides.filter((s) => isStructural(s.kind) || planIncludes(plan, s.plan, plans)),
   )
   return { ...config, slides }
 }
@@ -129,10 +145,11 @@ export interface PlanContents {
 export function planContents(config: ParsedThemeConfig, plans: readonly Plan[]): PlanContents[] {
   return activePlans(plans).map((plan) => {
     const { slides } = configForPlan(config, plan, plans)
+    const content = contentSlides(slides)
     return {
       planSlug: plan.slug,
-      screens: slides.length,
-      modules: slides.filter((s) => slideDefinitions[s.kind].buyerSchema !== null).length,
+      screens: content.length,
+      modules: content.filter((s) => slideDefinitions[s.kind].buyerSchema !== null).length,
       games: slides.filter(
         (s) => slideDefinitions[s.kind].category === 'game' && s.kind !== 'connector.gamer',
       ).length,

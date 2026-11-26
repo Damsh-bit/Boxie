@@ -22,6 +22,7 @@ import './ribbly.css'
 import './screens-a.css'
 import './screens-b.css'
 import './screens-c.css'
+import './screens-d.css'
 
 /**
  * Piezas compartidas de las pantallas nuevas de Ribbly: el escenario

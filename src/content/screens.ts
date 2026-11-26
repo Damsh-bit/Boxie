@@ -23,6 +23,8 @@ export const SCREEN_NAMES: Partial<Record<SlideKind, { emoji: string; label: str
   'reflect.gratitude': { emoji: 'gracias', label: 'Gratitud' },
   'reflect.journal': { emoji: 'diario', label: 'Diario' },
   'game.fortune': { emoji: 'galletita', label: 'Galleta de la fortuna' },
+  // El prólogo y los capítulos se muestran como una sola fila.
+  'story.thread': { emoji: 'regalo', label: 'El hilo de la historia' },
 }
 
 export function screenName(kind: SlideKind, fallbackLabel: string) {

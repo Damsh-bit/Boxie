@@ -7,7 +7,8 @@ import { describeLifetime } from '@/domain/plans'
 import { sponsorFor } from '@/domain/sponsors'
 import { getThemeVersionConfig, listPublicPlans } from '@/server/catalog'
 import { getLiveSponsors } from '@/server/sponsors/repo'
-import { isStructural, planContents } from '@/slides/plans'
+import { contentSlides, isStructural, planContents } from '@/slides/plans'
+import { isThreadKind } from '@/slides/ribbly/thread'
 import { slideDefinitions } from '@/slides/schemas'
 import { getStorefront, type Storefront } from '@/server/storefront'
 import { ButtonLink } from '@/ui/Button'
@@ -179,7 +180,13 @@ export default async function PricingPage({ searchParams }: PageProps<'/precios'
     const seen = new Set<string>()
     const modules = byPlan.flatMap((slides, from) =>
       slides.flatMap((s) => {
-        if (isStructural(s.kind) || s.kind.startsWith('connector.') || seen.has(s.kind)) return []
+        if (
+          isStructural(s.kind) ||
+          isThreadKind(s.kind) ||
+          s.kind.startsWith('connector.') ||
+          seen.has(s.kind)
+        )
+          return []
         seen.add(s.kind)
         const name = screenName(s.kind, slideDefinitions[s.kind].label)
         return [
@@ -203,7 +210,7 @@ export default async function PricingPage({ searchParams }: PageProps<'/precios'
         image: t.listing.images[0] ?? '',
         priceCents: t.priceCents,
         modules,
-        screens: byPlan.map((slides) => slides.length),
+        screens: byPlan.map((slides) => contentSlides(slides).length),
         games: byPlan.map(
           (slides) =>
             slides.filter(

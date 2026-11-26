@@ -290,9 +290,10 @@ describe('Catálogo inicial', () => {
         where t.slug in ('pareja', 'amistad', 'cumpleanos') order by t.sort_order`,
     )
     expect(rows).toEqual([
-      { slug: 'pareja', status: 'published', version: 1, slides: 20 },
-      { slug: 'cumpleanos', status: 'published', version: 1, slides: 20 },
-      { slug: 'amistad', status: 'published', version: 1, slides: 20 },
+      // 20 pantallas cada una, más el prólogo y los capítulos del hilo de la historia.
+      { slug: 'pareja', status: 'published', version: 1, slides: 28 },
+      { slug: 'cumpleanos', status: 'published', version: 1, slides: 28 },
+      { slug: 'amistad', status: 'published', version: 1, slides: 29 },
     ])
   })
 

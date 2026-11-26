@@ -32,6 +32,7 @@
     "slides": [
       { "key": "intro", "kind": "intro.logo" },
       { "key": "portada", "kind": "cover.friends" },
+      { "key": "hilo", "kind": "story.bond", "props": { "look": "amistad" } },
       {
         "key": "bienvenida",
         "kind": "story.intro",
@@ -42,12 +43,16 @@
         }
       },
       { "key": "dedicatoria", "kind": "story.dedication" },
+      { "key": "hilo-musica", "kind": "story.thread", "props": { "look": "amistad" } },
       { "key": "cancion", "kind": "media.song" },
       { "key": "playlists", "kind": "media.playlists" },
+      { "key": "hilo-juego", "kind": "story.thread", "props": { "look": "amistad" } },
       { "key": "game-start", "kind": "connector.gamer" },
       { "key": "trivia", "kind": "game.trivia" },
+      { "key": "hilo-cine", "kind": "story.thread", "props": { "look": "amistad" } },
       { "key": "cine", "kind": "connector.cinema" },
       { "key": "streaming", "kind": "media.streaming" },
+      { "key": "hilo-premios", "kind": "story.thread", "props": { "look": "amistad" } },
       { "key": "jackpot", "kind": "game.jackpot" },
       {
         "key": "cuponera",
@@ -65,6 +70,7 @@
           ]
         }
       },
+      { "key": "hilo-palabras", "kind": "story.thread", "props": { "look": "amistad" } },
       {
         "key": "revista",
         "kind": "story.editorial",
@@ -118,10 +124,13 @@
           ]
         }
       },
+      { "key": "hilo-turno", "kind": "story.thread", "props": { "look": "amistad" } },
       { "key": "gratitud", "kind": "reflect.gratitude" },
       { "key": "diario", "kind": "reflect.journal" },
+      { "key": "hilo-sorpresa", "kind": "story.thread", "props": { "look": "amistad" } },
       { "key": "fortuna", "kind": "game.fortune" },
       { "key": "anecdota", "kind": "story.anecdote" },
+      { "key": "hilo-final", "kind": "story.thread", "props": { "look": "amistad" } },
       { "key": "repaso", "kind": "outro.summary" },
       { "key": "gracias", "kind": "outro.thanks" }
     ]

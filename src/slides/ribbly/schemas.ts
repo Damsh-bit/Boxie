@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { field } from '../fields'
 import type { SlideDefinition, SlideVariant } from '../types'
 import { cumpleStyleAxes } from './slide-styles'
+import { THREAD_LOOKS, THREAD_TONES, THREAD_TOPICS } from './thread'
 
 /**
  * El contrato de las pantallas nuevas de Ribbly (base de pantallas de
@@ -1526,6 +1527,143 @@ const gameCookie = {
   },
 } satisfies SlideDefinition
 
+// ── El hilo de la historia (ribbly/thread.ts) ───────────────────────────────
+
+/** Como `screen()`, con las ocasiones del hilo (también Amistad). */
+function threadScreen() {
+  return {
+    look: field.select('Estilo', THREAD_LOOKS, {
+      default: 'cumple',
+      advanced: true,
+      help: 'Colores del fondo y de la cinta.',
+    }),
+    editorTitle: field.text('Título en el editor', { max: 40, advanced: true }),
+    editorIntro: field.textarea('Explicación en el editor', { max: 240, advanced: true }),
+  }
+}
+
+const threadVersion = field.number('Otra frase', {
+  min: 1,
+  max: 30,
+  default: 1,
+  help: 'Subí el número para probar otra frase (hay 8 por pantalla).',
+})
+
+const bondTheme = z.object({
+  ...threadScreen(),
+  kicker: field.text('Arriba', { default: 'Prólogo', max: 24 }),
+  originLabel: field.text('Rótulo de cómo empezó', { default: 'Cómo empezó todo', max: 30 }),
+  nextLead: field.text('Antes de lo que sigue', {
+    default: 'Lo que sigue es todo lo que {{de}} pensó para vos',
+    max: 70,
+  }),
+})
+
+const bondFields = {
+  tone: field.select('Tono de la historia', THREAD_TONES, {
+    default: 'cualquiera',
+    help: 'Cambia cómo suenan el prólogo y todos los capítulos.',
+  }),
+  since: field.text('¿Desde cuándo?', {
+    max: 30,
+    placeholder: '2016 · la primaria · siempre',
+    help: 'Opcional. Va arriba: «Desde 2016».',
+  }),
+  origin: field.textarea('¿Cómo empezó todo?', {
+    max: 160,
+    placeholder: 'Nos conocimos en la facu, en un parcial que reprobamos los dos.',
+    help: 'Opcional. Una o dos líneas: va como recuerdo en el prólogo.',
+  }),
+  version: threadVersion,
+  ownText: field.textarea('O escribí tu frase (opcional)', {
+    max: 280,
+    placeholder: 'Si escribís acá, reemplaza a la frase del prólogo.',
+  }),
+}
+
+const storyBond = {
+  label: 'Ribbly · El hilo · Prólogo',
+  description:
+    'Abre la historia: los dos nombres atados por una cinta, desde cuándo y cómo empezó todo. El vínculo y el tono que elige quien regala dan la voz a todos los capítulos.',
+  category: 'story',
+  themeSchema: bondTheme,
+  buyerSchema: z.object({
+    relation: field.select('¿Qué es para vos?', MAGAZINE_RELATIONS, {
+      default: 'generico',
+      help: 'Con esto los capítulos le hablan como corresponde.',
+    }),
+    ...bondFields,
+  }),
+  frame: FRAME_LIGHT,
+  summary: null,
+  editor: {
+    title: 'El hilo de la historia',
+    intro:
+      'Une todas las pantallas: contá qué son el uno para el otro y elegí el tono. Cada pocas pantallas aparece un capítulo que cuenta qué pensaste para regalarle.',
+  },
+  variables: { vinculo: 'relation', tono: 'tone', desde: 'since', origen: 'origin' },
+} satisfies SlideDefinition
+
+/** El mismo prólogo, con los vínculos de Pareja (los de su revista). */
+const storyBondLove = {
+  ...storyBond,
+  label: 'Ribbly · El hilo · Prólogo (pareja)',
+  buyerSchema: z.object({
+    relation: field.select('¿Qué es para vos?', LOVE_RELATIONS, { default: 'neutro' }),
+    ...bondFields,
+  }),
+} satisfies SlideDefinition
+
+const storyThread = {
+  label: 'Ribbly · El hilo · Capítulo',
+  description:
+    'Entre pantalla y pantalla: «{{de}} pensó en…», una nota suya y lo que viene para regalarte. El tema sale solo de las pantallas que siguen.',
+  category: 'story',
+  themeSchema: z.object({
+    ...threadScreen(),
+    topic: field.select('Tema', THREAD_TOPICS, {
+      default: 'auto',
+      advanced: true,
+      help: 'Según lo que sigue: lo elige solo por las pantallas de después.',
+    }),
+    kicker: field.text('Arriba', {
+      max: 40,
+      advanced: true,
+      help: 'Vacío = «Capítulo N · nombre del tema».',
+    }),
+    lead: field.text('Antes de lo que pensó', { default: '{{de}} pensó en', max: 30 }),
+    thought: field.text('Lo que pensó', {
+      max: 50,
+      advanced: true,
+      help: 'Vacío = el del tema («la canción que los une»).',
+    }),
+    giftLabel: field.text('Rótulo de lo que viene', {
+      max: 24,
+      advanced: true,
+      help: 'Vacío = el del tema («Para regalarte»).',
+    }),
+  }),
+  buyerSchema: z.object({
+    idea: field.text('Lo que pensaste', {
+      max: 50,
+      placeholder: 'la canción que los une',
+      help: 'Opcional. Reemplaza lo que va en grande después de «pensó en».',
+    }),
+    version: threadVersion,
+    ownText: field.textarea('O escribí tu nota (opcional)', {
+      max: 220,
+      placeholder: 'Si escribís acá, reemplaza a la nota del capítulo.',
+    }),
+  }),
+  frame: FRAME_LIGHT,
+  summary: null,
+  editor: {
+    title: 'Capítulo del hilo',
+    intro:
+      'Une lo que viene con ustedes: qué pensaste y para qué. Probá otra frase, escribí la tuya o cambiá lo que pensaste.',
+  },
+} satisfies SlideDefinition
+
 /** Le suma a la definición lo que el comprador puede variar (ribbly/slide-styles.ts). */
 function styled<D extends SlideDefinition>(
   kind: string,
@@ -1562,6 +1700,10 @@ export const ribblyDefinitions = {
   'reflect.pause': styled('reflect.pause', reflectPause),
   'reflect.diary': styled('reflect.diary', reflectDiary),
   'game.cookie': styled('game.cookie', gameCookie),
+  // El hilo de la historia (todas las ocasiones)
+  'story.bond': styled('story.bond', storyBond),
+  'story.bond-love': styled('story.bond-love', storyBondLove),
+  'story.thread': styled('story.thread', storyThread),
 } as const
 
 /** Contenido con el que arranca el editor del comprador en estas pantallas. */

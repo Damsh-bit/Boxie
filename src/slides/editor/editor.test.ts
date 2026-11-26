@@ -22,7 +22,8 @@ const PHOTO = { assetId: '5a5a5a5a-1111-4111-8111-111111111111' }
 
 describe('módulos del editor', () => {
   it('salen de la temática: portada, una por slide con contenido del comprador y la clave', () => {
-    const modules = editorModules(pareja)
+    // El hilo de la historia se prueba aparte (abajo).
+    const modules = editorModules(pareja).filter((m) => !m.id.startsWith('hilo'))
     expect(modules.map((m) => m.id)).toEqual([
       'destinatario',
       'dedicatoria',
@@ -40,6 +41,21 @@ describe('módulos del editor', () => {
       '10 Razones',
       'Anécdota',
       'Clave para abrirla',
+    ])
+  })
+
+  it('el hilo: el prólogo cuenta como parte; cada capítulo se llama por su tema y no suma', () => {
+    const thread = editorModules(pareja).filter((m) => m.id.startsWith('hilo'))
+    expect(thread.map((m) => [m.title, !!m.extra])).toEqual([
+      ['El hilo de la historia', false],
+      ['Capítulo 1 · La banda sonora', true],
+      ['Capítulo 2 · Cuánto se conocen', true],
+      ['Capítulo 3 · Plan de sillón', true],
+      ['Capítulo 4 · Lo que viene', true],
+      ['Capítulo 5 · Lo que ve en vos', true],
+      ['Capítulo 6 · Tu turno', true],
+      ['Capítulo 7 · Una más', true],
+      ['Epílogo', true],
     ])
   })
 
@@ -100,7 +116,8 @@ describe('avance de cada módulo', () => {
 
   it('el resumen lista lo que falta para regalar, con su módulo', () => {
     const summary = progressSummary(modules, initialDraft(pareja))
-    expect(summary.total).toBe(6)
+    // Las 6 de siempre y el prólogo del hilo (los capítulos ya vienen escritos).
+    expect(summary.total).toBe(7)
     expect(summary.missing.map((m) => `${m.module}: ${m.label}`)).toEqual([
       'Para quién es: Para (destinatario)',
       'Para quién es: De parte de',

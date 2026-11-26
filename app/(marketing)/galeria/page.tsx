@@ -10,7 +10,8 @@ import { sponsorFor } from '@/domain/sponsors'
 import { getLiveSponsors } from '@/server/sponsors/repo'
 import { getStorefront } from '@/server/storefront'
 import type { ParsedSlide, ParsedThemeConfig } from '@/slides/config'
-import { isStructural, planContents } from '@/slides/plans'
+import { contentSlides, isStructural, planContents } from '@/slides/plans'
+import { isThreadKind } from '@/slides/ribbly/thread'
 import { slideDefinitions } from '@/slides/schemas'
 import { themeEmoji } from '../_home/theme-look'
 import { Gallery } from './Gallery'
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
 function contentsOf(slides: ParsedSlide[]): GalleryContents {
   const seen = new Set<string>()
   const items = slides.flatMap((s) => {
-    if (isStructural(s.kind) || seen.has(s.kind)) return []
+    if (isStructural(s.kind) || isThreadKind(s.kind) || seen.has(s.kind)) return []
     seen.add(s.kind)
     const def = slideDefinitions[s.kind]
     const name = screenName(s.kind, def.label)
@@ -42,7 +43,7 @@ function contentsOf(slides: ParsedSlide[]): GalleryContents {
       },
     ]
   })
-  return { screens: slides.length, games: items.filter((i) => i.game).length, items }
+  return { screens: contentSlides(slides).length, games: items.filter((i) => i.game).length, items }
 }
 
 /** Qué trae la temática en cada plan (o entera, si no hay planes). */

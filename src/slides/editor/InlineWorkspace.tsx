@@ -132,7 +132,7 @@ export function InlineWorkspace({
   const index = Math.max(0, Math.min(slideIndex, count - 1))
   const slide = config.slides[index]!
   const definition = slideDefinitions[slide.kind] as SlideDefinition
-  const info = slideEditorInfo(slide)
+  const info = slideEditorInfo(slide, { slides: config.slides, index })
   const content = draft.slides[slide.key] ?? {}
   const variants = definition.variants?.(slide.props as Record<string, unknown>) ?? []
   const layout = readLayout(content)
@@ -573,7 +573,7 @@ export function InlineWorkspace({
                 >
                   {config.slides.map((s, i) => (
                     <option key={s.key} value={i}>
-                      {i + 1}. {slideEditorInfo(s).title}
+                      {i + 1}. {slideEditorInfo(s, { slides: config.slides, index: i }).title}
                     </option>
                   ))}
                 </select>

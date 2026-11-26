@@ -76,6 +76,24 @@ export function sampleGift(
     if (slide.kind === 'story.memory' && isLove(slide.props)) {
       content[slide.key] = { photo: { assetId: PHOTOS.anecdote } }
     }
+    // El hilo de la historia: el vínculo y cómo empezó todo.
+    if (slide.kind === 'story.bond') {
+      const look = (slide.props as { look?: string }).look
+      content[slide.key] = {
+        relation: 'amiga',
+        since: look === 'amistad' ? 'la primaria' : '2016',
+        origin:
+          look === 'amistad'
+            ? 'Nos sentaron juntas en primer grado y nunca más nos pudieron separar.'
+            : 'Nos conocimos en primer año de la facu, en un parcial que reprobamos las dos.',
+      }
+    }
+    if (slide.kind === 'story.bond-love') {
+      content[slide.key] = {
+        relation: 'novia',
+        origin: 'Una charla que iba a durar cinco minutos y terminó a las cuatro de la mañana.',
+      }
+    }
     if (slide.kind === 'story.anecdote') {
       content[slide.key] = {
         title: 'El viaje a Mendoza',

@@ -6,6 +6,7 @@ import type { BuyerPhoto } from '../fields'
 import { CoupleScene, PartyScene } from '../ribbly/art'
 import { useCue } from '../player/use-sound'
 import { pickMagazine } from '../ribbly/magazine'
+import { LOVE_RELATIONS, LOVE_TONES, MAGAZINE_RELATIONS, MAGAZINE_TONES } from '../ribbly/schemas'
 import { Brand, Btn, editable, Sheet, slideOfKind, Stage, T, u } from '../ribbly/ui'
 import { fill } from '../ribbly/vars'
 import { Appear, ease } from './motion'
@@ -28,10 +29,21 @@ export function StoryMagazine({
   // La tapa, como una página de revista que se da vuelta.
   useCue(active, 'pageflip', 0.08)
 
+  // Sin vínculo ni tono propios, los del hilo de la historia (el prólogo):
+  // quien regala no tiene que contestar lo mismo dos veces.
+  const love = ctx.slides[ctx.index]?.kind === 'story.magazine-love'
+  const relations: readonly { value: string }[] = love ? LOVE_RELATIONS : MAGAZINE_RELATIONS
+  const tones: readonly { value: string }[] = love ? LOVE_TONES : MAGAZINE_TONES
+  const fromBond = (
+    own: string,
+    unset: string,
+    bond: string | undefined,
+    list: typeof relations,
+  ) => (own === unset && bond && list.some((o) => o.value === bond) ? bond : own)
   const text = pickMagazine({
     bank: theme.bank,
-    relation: buyer.relation,
-    tone: buyer.tone,
+    relation: fromBond(buyer.relation, love ? 'neutro' : 'generico', ctx.vars.vinculo, relations),
+    tone: fromBond(buyer.tone, 'cualquiera', ctx.vars.tono, tones),
     version: buyer.version,
     seed: `${ctx.recipientName}|${ctx.senderName}`,
   })

@@ -10,7 +10,9 @@ import {
   readThemeConfig,
 } from './config'
 import { arrayElement, getFieldMeta, objectShape } from './fields'
+import { contentSlides } from './plans'
 import { ribblyDefinitions } from './ribbly/schemas'
+import { threadKnots, withoutEmptyChapters } from './ribbly/thread'
 import { initialBuyerProps, SLIDE_KINDS, slideDefinitions } from './schemas'
 
 const SEED_DIR = join(import.meta.dirname, '..', '..', 'supabase', 'seed', 'themes')
@@ -50,13 +52,32 @@ describe('temáticas iniciales (criterio de aceptación de la Fase 5)', () => {
     expect(result.success ? [] : result.issues).toEqual([])
   })
 
-  it('las tres tienen 20 slides', () => {
-    for (const seed of seeds) expect(readThemeConfig(seed.config).slides).toHaveLength(20)
+  it('las tres tienen 20 pantallas, más el prólogo y los capítulos del hilo', () => {
+    for (const seed of seeds) {
+      const slides = readThemeConfig(seed.config).slides
+      expect(contentSlides(slides)).toHaveLength(20)
+      expect(slides.filter((s) => s.kind.startsWith('story.bond'))).toHaveLength(1)
+      expect(slides.filter((s) => s.kind === 'story.thread').length).toBeGreaterThanOrEqual(7)
+    }
+  })
+
+  it('el hilo une cada dos o tres pantallas y ningún capítulo queda vacío', () => {
+    for (const seed of seeds) {
+      const slides = readThemeConfig(seed.config).slides
+      expect(withoutEmptyChapters(slides)).toEqual(slides)
+      const knots = threadKnots(slides)
+      for (let i = 1; i < knots.length; i++) {
+        expect(knots[i]! - knots[i - 1]! - 1, seed.slug).toBeGreaterThanOrEqual(2)
+        expect(knots[i]! - knots[i - 1]! - 1, seed.slug).toBeLessThanOrEqual(3)
+      }
+    }
   })
 
   it('cumpleaños usa las 20 pantallas de la base de Ribbly', () => {
-    const kinds = readThemeConfig(cumpleanos.config).slides.map((slide) => slide.kind)
-    expect(kinds).toEqual(Object.keys(ribblyDefinitions).slice(0, 20))
+    const slides = readThemeConfig(cumpleanos.config).slides
+    expect(contentSlides(slides).map((s) => s.kind)).toEqual(
+      Object.keys(ribblyDefinitions).slice(0, 20),
+    )
     // Todas a pantalla completa y con su propio fondo.
     for (const slide of readThemeConfig(cumpleanos.config).slides) {
       expect(slide.frame).toMatchObject({ background: 'none', fullScreen: true })
@@ -66,7 +87,8 @@ describe('temáticas iniciales (criterio de aceptación de la Fase 5)', () => {
   it('pareja usa las pantallas de Ribbly: las compartidas con su estilo y las suyas', () => {
     const slides = readThemeConfig(pareja.config).slides
     expect(slides.every((s) => s.kind in ribblyDefinitions)).toBe(true)
-    expect(slides.map((s) => s.kind)).toEqual([
+    expect(slides.find((s) => s.kind.startsWith('story.bond'))?.kind).toBe('story.bond-love')
+    expect(contentSlides(slides).map((s) => s.kind)).toEqual([
       'intro.brand',
       'cover.gift',
       'cover.edition',
